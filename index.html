@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12141f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nightpaper">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Nightpaper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<style>
+/* Layout: two views on one page. Home is a shelf: tonight's paper large, the archive below. A paper is one reading column for a phone in bed, written like a textbook chapter: roadmap, notation, running examples, equations in the flow, proofs folded under them. Night theme on purpose. */
+:root{
+  --bg:#12141f; --surface:#1a1d2b; --raise:#232739; --line:#2e3346;
+  --fg:#e8e1d3; --muted:#a09cab; --accent:#f0b35a; --accent-ink:#1b1408;
+  --ok:#8cc7a1; --bad:#e3826f; --cool:#8fa9d6; --deep:#b9a3e3;
+  --display:"Young Serif",Georgia,serif;
+  --body:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg)}
+body{color:var(--fg);font-family:var(--body);font-size:19px;line-height:1.64;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));padding-block:20px 80px}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
+h1{font-size:1.75rem;line-height:1.18}
+h2{font-size:1.4rem;line-height:1.25}
+h3{font-size:1.08rem;line-height:1.3}
+p{margin:0}
+b{font-weight:600}
+a{color:var(--accent)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.label{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.brand{font-family:var(--display);font-size:1.15rem;text-decoration:none;color:var(--fg)}
+.brand span{color:var(--accent)}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+
+/* ---------- home ---------- */
+.mast{margin-top:28px;display:grid;gap:6px}
+.mast h1{font-size:2.6rem;line-height:1}
+.mast h1 span{color:var(--accent)}
+.mast p{color:var(--muted);font-size:1rem}
+.featured{margin-top:26px;background:var(--surface);border-radius:20px;padding:20px 18px;display:grid;gap:12px;border:1px solid var(--line)}
+.featured .kick{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.featured .kick .label:first-child{color:var(--accent)}
+.featured h2{font-size:1.55rem;line-height:1.18}
+.featured .dek{font-size:1.02rem}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-family:var(--mono);font-size:.68rem;padding:3px 8px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.read{justify-self:start;display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:10px 18px;font-family:var(--mono);font-size:.82rem;font-weight:600;text-decoration:none}
+.prog{display:grid;gap:4px}
+.prog .bar{height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.prog .bar i{display:block;height:100%;background:var(--accent);width:0}
+.shelf{margin-top:36px;display:grid;gap:12px}
+.shelf-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:8px}
+.entry{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;padding:12px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--fg)}
+.entry .d{font-family:var(--mono);font-size:.72rem;color:var(--muted);line-height:1.3;padding-top:4px;text-align:center}
+.entry .d b{display:block;font-family:var(--display);font-weight:400;font-size:1.4rem;color:var(--fg)}
+.entry .t{font-family:var(--display);font-size:1.02rem;line-height:1.3}
+.entry .s{grid-column:2;font-size:.9rem;color:var(--muted)}
+.empty{color:var(--muted);font-size:.98rem;padding:6px 0}
+
+/* ---------- paper ---------- */
+.back{font-family:var(--mono);font-size:.76rem;color:var(--muted);text-decoration:none}
+.paperhead{margin-top:14px;display:grid;gap:10px}
+.meta{font-size:.95rem;color:var(--muted)}
+.tools{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin-top:16px;padding-block:8px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;justify-content:space-between}
+.tools .label{color:var(--muted)}
+.toggle{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-family:var(--mono);font-size:.72rem}
+.toggle[aria-pressed="true"]{border-color:var(--deep);color:var(--deep)}
+.readbar{position:absolute;left:0;bottom:-1px;height:2px;background:var(--accent);width:0}
+article{display:grid;gap:16px;padding-top:22px}
+article>*,section>*{min-width:0}
+section{display:grid;gap:15px;padding-top:28px}
+.num{font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:.1em}
+.term{font-weight:600;color:var(--accent)}
+.lead{font-size:1.1rem;line-height:1.6}
+.box{background:var(--surface);border-radius:14px;padding:14px 16px;display:grid;gap:8px}
+.box .label{color:var(--accent)}
+.box ul{margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:.98rem}
+.def{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:6px}
+.def .label{color:var(--cool)}
+.fact{border:1px solid var(--accent);border-radius:14px;padding:12px 14px;display:grid;gap:6px}
+.fact .label{color:var(--accent)}
+.short{font-size:.98rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px}
+.short b{color:var(--fg);font-weight:600}
+.notation{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.95rem}
+.notation dt{font-family:var(--mono);color:var(--accent);white-space:nowrap}
+.notation dd{margin:0}
+.math{overflow-x:auto;padding:4px 0;font-size:1.05rem}
+.math math{font-size:1.1em}
+.math.fallback{font-family:var(--mono);font-size:.85rem;white-space:pre-wrap;word-break:break-word}
+.eqn{font-family:var(--mono);font-size:.68rem;color:var(--muted);text-align:right;margin-top:-10px}
+details.pf{background:var(--surface);border-radius:14px;padding:0 14px;border-left:2px solid var(--deep)}
+details.pf>summary{list-style:none;cursor:pointer;display:flex;gap:10px;align-items:baseline;padding:11px 0;font-size:.98rem}
+details.pf>summary::-webkit-details-marker{display:none}
+details.pf>summary .tagd{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;flex:none;padding:2px 7px;border-radius:999px;color:var(--deep);border:1px solid var(--deep)}
+details.pf>summary .q{font-style:italic}
+details.pf>summary::after{content:"+";margin-left:auto;font-family:var(--mono);color:var(--muted)}
+details.pf[open]>summary::after{content:"−"}
+.pfbody{display:grid;gap:12px;padding-bottom:14px}
+.pfbody>*{min-width:0}
+.qed{text-align:right;font-family:var(--mono);color:var(--muted);font-size:.8rem}
+.aside{border-left:2px solid var(--accent);padding-left:14px;font-size:.98rem}
+.aside .label{display:block;margin-bottom:4px;color:var(--accent)}
+.note{font-size:.9rem;color:var(--muted)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;font-size:.92rem;width:100%}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:400}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.refs{display:grid;gap:8px;font-size:.92rem}
+
+/* animations */
+.player{background:var(--surface);border-radius:16px;padding:14px 12px;display:grid;gap:12px}
+.player .ptitle{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.stage{overflow-x:auto}
+.stage svg{display:block;width:100%;min-width:300px;height:auto}
+.bit circle{fill:var(--raise);stroke:var(--line);stroke-width:2;transition:fill .4s,stroke .4s}
+.bit.truth circle{stroke:var(--bad);stroke-dasharray:4 3}
+.bit.guess circle{fill:var(--bad);stroke:var(--bad)}
+.bit text{fill:var(--fg);font-family:var(--mono);font-size:12px;text-anchor:middle}
+.chk rect{fill:var(--bg);stroke:var(--line);stroke-width:2;transition:fill .4s}
+.chk.lit rect{fill:var(--accent);stroke:var(--accent)}
+.chk text{font-family:var(--mono);font-size:11px;text-anchor:middle;fill:var(--muted)}
+.chk.lit text{fill:var(--accent-ink)}
+.edge{stroke:var(--line);stroke-width:2}
+.lab{font-family:var(--mono);font-size:10px;fill:var(--muted);text-anchor:middle}
+.msg{font-family:var(--mono);font-size:10.5px;text-anchor:middle;font-weight:600}
+.caption{min-height:8em;font-size:1rem;line-height:1.5}
+.caption .step{font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:4px}
+.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn{background:var(--raise);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-family:var(--mono);font-size:.78rem}
+.btn.play{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600;min-width:84px}
+.dots{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap;max-width:50%}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.scen{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-family:var(--mono);font-size:.72rem}
+.chip[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.sw.ring{background:none;border:1.5px dashed var(--bad);border-radius:50%}
+footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
+</style>
+</head>
+<body>
+
+
+<!-- ================= HOME ================= -->
+<div class="wrap" id="view-home">
+  <div class="top"><a class="brand" href="#home">Night<span>paper</span></a><span class="label" id="todayLabel"></span></div>
+  <div class="mast">
+    <h1>Night<span>paper</span></h1>
+    <p>One new paper a night, written up like a textbook chapter.</p>
+  </div>
+  <div id="featured"></div>
+  <div class="shelf">
+    <div class="shelf-head"><h3>Archive</h3><span class="label" id="count"></span></div>
+    <div id="archive"></div>
+  </div>
+</div>
+
+<!-- ================= PAPER: 2611.07144 ================= -->
+<div class="wrap" id="view-p-2611-07144" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Fri, Nov 6</span></div>
+  <div class="paperhead">
+    <h1>Dithered Belief Propagation for Real-Time Quantum Memory Decoding</h1>
+    <p class="meta">Zhengyu Cai, Mohamad Ali Jarkas, Bokun Zhao, Warren J. Gross · posted Nov 4, 2026 · quant-ph, cs.IT · <a href="https://arxiv.org/abs/2611.07144" target="_blank" rel="noopener">arXiv 2611.07144</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label" id="secLabel">Overview</span>
+    <button class="toggle" id="openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar" id="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">A quantum computer can only run long calculations if it corrects its own errors in real time, and the part that decides what to correct, the decoder, has to finish its work in about a microsecond. This paper takes the fastest kind of decoder, belief propagation, which tends to get stuck on modern quantum codes, and unsticks it with two cheap doses of randomness. In simulation, the result roughly matches the best competing decoder while using about 2% of its multiplications.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what a decoder is given, what it must output, and why it doesn't need to find the true error;</li>
+        <li>how belief propagation passes messages, derived from Bayes' rule;</li>
+        <li>exactly why it gets stuck on quantum codes, using a two-bit example you can check by hand;</li>
+        <li>the paper's two fixes, why each one works, and what they cost.</li>
+      </ul>
+    </div>
+
+    <details class="pf" id="notation"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>n</dt><dd>number of possible faults</dd>
+        <dt>E, Ê</dt><dd>the true error and the decoder's guess, both vectors in {0,1}ⁿ</dd>
+        <dt>H</dt><dd>parity-check matrix: rows are checks, columns are faults</dd>
+        <dt>σ</dt><dd>the syndrome, σ = HE mod 2</dd>
+        <dt>A</dt><dd>logical matrix: how a fault pattern acts on the stored information</dd>
+        <dt>p<sub>j</sub>, λ<sub>j</sub></dt><dd>fault j's probability and its prior belief ln((1 − p<sub>j</sub>)/p<sub>j</sub>)</dd>
+        <dt>m<sub>i→j</sub></dt><dd>a message from check i to fault j (or the reverse, m<sub>j→i</sub>)</dd>
+        <dt>L<sub>j</sub></dt><dd>fault j's current total belief</dd>
+        <dt>N(i), M(j)</dt><dd>the faults on check i; the checks that touch fault j</dd>
+        <dt>ℓ, r</dt><dd>iteration (round) number; restart number</dd>
+        <dt>ρ, χ, q</dt><dd>damping fraction; blend weight; a failed run's final beliefs</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Two running examples</span>
+      <ul>
+        <li><b>The chain.</b> Five bits in a row, with a check between each neighboring pair. Simple enough to decode by hand, and belief propagation always works on it.</li>
+        <li><b>The trap.</b> Two bits and two checks that both look at the same two bits. It is the smallest example where belief propagation fails, and it shows the exact failure this paper fixes.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · The setting">
+      <span class="num">1 · THE SETTING</span>
+      <h2>Why decoding has to be fast</h2>
+      <p>Qubits are fragile, so no single physical qubit can hold information for long. The standard answer is to spread each unit of information, a <span class="term">logical qubit</span>, across many <span class="term">physical qubits</span> and to check them repeatedly for damage. The checks are designed so that they never reveal the stored information itself. Each one only reports whether a small group of qubits still has the parity it should. The list of check results is the <span class="term">syndrome</span>, and the algorithm that turns a syndrome into a correction is the <span class="term">decoder</span>.</p>
+      <p>On current hardware a round of checks takes about a microsecond, and a new syndrome arrives every round. If the decoder takes longer than the stream it is reading, a backlog builds and errors accumulate faster than they are fixed. That is why this paper cares as much about operation counts and clock cycles as about accuracy.</p>
+      <div class="def"><span class="label">Definition · code parameters</span>
+        <p>A quantum code labeled [[n, k, d]] uses n physical qubits to protect k logical qubits, with <span class="term">distance</span> d: the smallest number of faults that can change the stored information without setting off any check.</p>
+        <p>Said another way, d measures how many things must go wrong at once, in exactly the wrong pattern, before the code is fooled.</p>
+      </div>
+      <p>The paper's main test case is the [[144,12,12]] bivariate-bicycle code, often called the <span class="term">Gross code</span>, which protects 12 logical qubits with 144 physical ones at distance 12. A surface code at the same distance needs a few hundred physical qubits for a single logical qubit, which is why codes like this one, called <span class="term">qLDPC codes</span> (quantum low-density parity-check), attract so much attention. Each check touches only a few qubits, but the checks are wired across the device in a tangle of short loops. Section 5 shows why those loops are a problem.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">A distance-d code corrects up to ⌊(d − 1)/2⌋ faults. Why?</span></summary><div class="pfbody">
+        <p>Suppose the true error has t faults, with 2t &lt; d. Any other error that produces the same syndrome but acts differently on the stored information must differ from the truth by a pattern that trips no check and changes the information, and by the definition of distance that pattern has at least d faults. So the other error has at least d − t faults, which is more than t. A decoder that always chooses the lightest explanation therefore never picks one with the wrong effect. The largest t with 2t &lt; d is ⌊(d − 1)/2⌋, which is 5 for the Gross code.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> a decoder reads parity checks, never the data, and must keep up with a new syndrome every microsecond.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · The problem">
+      <span class="num">2 · THE PROBLEM</span>
+      <h2>What the decoder is given, and what it must return</h2>
+      <p>To state the decoding problem precisely, we need three ingredients: a list of the things that can go wrong, a record of which checks each one sets off, and a rule for what counts as a correct answer.</p>
+      <h3>Faults and the parity-check matrix</h3>
+      <p>A <span class="term">fault</span> is one specific thing that can go wrong anywhere in the circuit: a qubit flipping, a gate misbehaving, a measurement reporting the wrong value. Number the possible faults 1 to n. An error is then a vector E in {0,1}ⁿ, where E<sub>j</sub> = 1 means fault j happened. The <span class="term">parity-check matrix</span> H has one row per check and one column per fault, and H<sub>ij</sub> = 1 exactly when fault j trips check i. The syndrome is the vector of check results,</p>
+      <div class="math" data-tex="\sigma = HE \pmod 2."></div>
+      <p class="eqn">Eq. 2</p>
+      <p>The arithmetic is mod 2 because a check reports parity: two faults on the same check cancel, so 1 + 1 = 0. Read the equation column by column. Column j of H is fault j's <span class="term">signature</span>, the set of checks it trips, and σ is the mod-2 sum of the signatures of every fault that happened. Decoding means working backward from that sum to a set of columns that produces it.</p>
+      <p>For the chain, the four checks compare neighboring bits. If bit 3 flips, checks 2 and 3 fire:</p>
+      <div class="math" data-tex="\begin{pmatrix}1&1&0&0&0\\0&1&1&0&0\\0&0&1&1&0\\0&0&0&1&1\end{pmatrix}\begin{pmatrix}0\\0\\1\\0\\0\end{pmatrix}=\begin{pmatrix}0\\1\\1\\0\end{pmatrix}."></div>
+      <p>In the paper's real problem the columns are not just qubits. Under <span class="term">circuit-level noise</span>, every gate and measurement over several rounds of checking is a possible fault, and faults with identical signatures are merged. For the Gross code that makes H a 1,872 × 71,280 matrix: about 38 possible explanations for every clue.</p>
+      <h3>Which explanation to prefer</h3>
+      <p>Many error patterns produce the same syndrome, so the decoder needs a preference. The natural one is the most probable. Faults happen independently, fault j with probability p<sub>j</sub>, and the paper writes the probability of a pattern as</p>
+      <div class="math" data-tex="\Pr(E) = \prod_{j=1}^{n} (1-p_j)\left(\frac{p_j}{1-p_j}\right)^{E_j}."></div>
+      <p class="eqn">Eq. 1</p>
+      <p>Maximizing this turns out to be the same as minimizing a weighted count of faults,</p>
+      <div class="math" data-tex="\sum_{j} \lambda_j E_j, \qquad\text{where}\qquad \lambda_j = \ln\frac{1-p_j}{p_j}."></div>
+      <p>Each fault has a weight λ<sub>j</sub>, rarer faults weigh more, and the decoder looks for the lightest set of faults that explains the syndrome. At p = 0.1 the weight is ln 9 ≈ 2.20, and at p = 0.003 it is about 5.81.</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why does Eq. 1 hold, and why does it become a weighted sum?</span></summary><div class="pfbody">
+        <p>Look at a single factor. When E<sub>j</sub> = 0 the exponent is 0, the fraction becomes 1, and the factor is 1 − p<sub>j</sub>, the probability that fault j did not happen. When E<sub>j</sub> = 1 the factor is (1 − p<sub>j</sub>) · p<sub>j</sub>/(1 − p<sub>j</sub>) = p<sub>j</sub>. The exponent acts as a switch that selects the right probability. Independence lets us multiply the factors.</p>
+        <p>Taking the negative logarithm turns the product into a sum and the exponent into a coefficient:</p>
+        <div class="math" data-tex="-\ln\Pr(E) = \underbrace{-\sum_j \ln(1-p_j)}_{\text{independent of } E} \;+\; \sum_j E_j \ln\frac{1-p_j}{p_j}."></div>
+        <p>The first sum is the same for every E. Since −ln is decreasing, the E that maximizes Pr(E) is the E that minimizes Σ λ<sub>j</sub>E<sub>j</sub>.</p>
+        <p class="qed">∎</p>
+        <div class="aside"><span class="label">A connection you'll recognize</span>Minimizing a weighted sum of binary variables subject to parity constraints is an integer program, the same family as the QUBOs you ran on D-Wave. Solving it exactly is hard in general, which is why real-time decoders use fast approximate methods. This link is ours; the paper doesn't make it.</div>
+      </div></details>
+      <h3>What counts as success</h3>
+      <p>Here quantum decoding departs from intuition. The decoder does not have to find the error that actually happened. Its guess Ê only has to explain the syndrome, and the leftover pattern E + Ê has to leave the stored information alone:</p>
+      <div class="math" data-tex="H\hat E = \sigma \qquad\text{and}\qquad A\,(E+\hat E) = 0 \pmod 2."></div>
+      <p class="eqn">Eqs. 4 and 5</p>
+      <p>The matrix A records how a pattern acts on each logical qubit. When several different guesses are all acceptable, the code is called <span class="term">degenerate</span>, and sparse quantum codes are highly degenerate. The failure case is a <span class="term">logical error</span>: the guess explains every check, yet the leftover changes the stored information, with no trace in the syndrome.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">The leftover never trips a check. Why?</span></summary><div class="pfbody">
+        <p>Write R = E + Ê. Because multiplication by H is linear, HR = HE + HÊ = σ + σ = 0 mod 2. So as long as the guess explains the syndrome, the leftover is invisible to every check. Invisible patterns come in two kinds: those that act trivially on the stored information, which are harmless, and those that act as a logical operation, which are logical errors. The distance d is the weight of the lightest pattern of the second kind.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Both running examples show this. In the chain, the only invisible patterns are 00000 and 11111, and 11111 flips the stored bit. If the true error is 10101, the lighter explanation 01010 matches every check, and the leftover is 11111: a logical error that no decoder could have avoided, because the lighter explanation really is more likely. In the trap, both checks look at both bits and both fire. Exactly one bit must have flipped, but nothing says which, so 10 and 01 are equally light. The trap is a classical cousin of a two-qubit quantum code studied by Poulin and Chung, where the two analogous corrections differ by a harmless pattern, so either one is correct. Here we simply treat 10 and 01 as equally good. Keep that symmetry in mind; it is the whole story of Section 5.</p>
+      <p class="short"><b>In short:</b> given σ = HE, find a light Ê with HÊ = σ whose leftover E + Ê doesn't touch the stored information. The exact error is not required.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Beliefs">
+      <span class="num">3 · BELIEFS</span>
+      <h2>Storing a belief as one signed number</h2>
+      <p>Belief propagation does not keep a yes-or-no answer for each fault. It keeps a graded belief, and it stores that belief in a form chosen so that combining evidence is just addition.</p>
+      <div class="def"><span class="label">Definition · log-likelihood ratio (LLR)</span>
+        <div class="math" data-tex="m = \ln\frac{\Pr(\text{fine})}{\Pr(\text{faulty})}."></div>
+        <p>In words: positive means probably fine, negative means probably faulty, zero means a coin flip, and the size is the confidence.</p>
+      </div>
+      <p>Before reading any checks, a fault's belief is its <span class="term">prior</span>, which is the same weight λ<sub>j</sub> from Section 2:</p>
+      <div class="math" data-tex="\lambda_j = \ln\frac{1-p_j}{p_j}."></div>
+      <p class="eqn">Eq. 6</p>
+      <p>So a fault with a 10% chance starts at +2.20 and one with a 0.3% chance starts at +5.81. The same number does two jobs: it is the confidence that a fault is fine, and it is the cost of blaming that fault.</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why a log ratio? Why does evidence add?</span></summary><div class="pfbody">
+        <p>Bayes' rule in odds form says that each independent piece of evidence D multiplies the odds by its likelihood ratio:</p>
+        <div class="math" data-tex="\frac{\Pr(\text{fine}\mid D_1,D_2)}{\Pr(\text{faulty}\mid D_1,D_2)} = \frac{\Pr(\text{fine})}{\Pr(\text{faulty})}\cdot\frac{\Pr(D_1\mid\text{fine})}{\Pr(D_1\mid\text{faulty})}\cdot\frac{\Pr(D_2\mid\text{fine})}{\Pr(D_2\mid\text{faulty})}."></div>
+        <p>Taking logs turns every product into a sum: the final belief is the prior plus one term per piece of evidence. That is why, in the next section, a fault simply adds up the messages it receives, and why decoding hardware can get by with adders instead of multipliers.</p>
+        <p>One identity will be needed later. Solving m = ln((1 − p)/p) for p gives p = 1/(1 + eᵐ), and therefore</p>
+        <div class="math" data-tex="1-2p = \frac{e^{m}-1}{e^{m}+1} = \tanh\frac{m}{2}."></div>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> a belief is ln(P(fine)/P(faulty)); independent evidence adds.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Belief propagation">
+      <span class="num">4 · BELIEF PROPAGATION</span>
+      <h2>Checks and faults pass notes until they agree</h2>
+      <p>Finding the lightest Ê exactly is too slow, so decoders approximate it. Belief propagation (BP) approximates it locally. It runs on the <span class="term">Tanner graph</span>, which has one node per fault, one per check, and an edge wherever H<sub>ij</sub> = 1. In each round, every check tells each of its faults what the other faults on that check imply about it. Then every fault adds those messages to its prior and reports back. Once beliefs stop changing, the decoder blames every fault whose belief is negative.</p>
+      <p>The paper uses the <span class="term">Min-Sum</span> version of BP. A check i sends fault j a sign and a size:</p>
+      <div class="math" data-tex="s = (-1)^{\sigma_i}\prod_{j'\in N(i)\setminus j}\operatorname{sgn}\big(m_{j'\to i}\big), \qquad m_{i\to j} = s\cdot \min_{j'\in N(i)\setminus j}\big|m_{j'\to i}\big|."></div>
+      <p class="eqn">Eqs. 8 and 9</p>
+      <p>The sign is the parity of the other faults' current guesses, flipped if the check fired. In words: if the check fired and everyone else looks fine, you are probably the culprit. The size is the confidence of the least confident other fault, because a parity is only as certain as its shakiest member. Each fault then combines its evidence:</p>
+      <div class="math" data-tex="m_{j\to i} = \lambda_j + \sum_{i'\in M(j)\setminus i} m_{i'\to j}, \qquad L_j = \lambda_j + \sum_{i'\in M(j)} m_{i'\to j}, \qquad \hat E_j = \begin{cases}1 & L_j<0\\ 0 & \text{otherwise.}\end{cases}"></div>
+      <p class="eqn">Eqs. 10, 11 and 12</p>
+      <p>The message back to check i leaves out what check i said, so no check hears its own opinion echoed back as new evidence. L<sub>j</sub> includes everything and is the belief used for the decision.</p>
+      <p>Here is round 1 on the chain with bit 3 flipped and p = 0.1. Every fault starts at 2.20. Check 2 fired, so its message to bit 3 has sign (−1)¹ · sgn(+2.20) = −1 and size 2.20, giving −2.20. Check 3 sends the same. Bit 3's belief is 2.20 − 2.20 − 2.20 = −2.20, so it is blamed. Bit 2 hears +2.20 from the quiet check 1 and −2.20 from check 2, so it stays at 2.20. The animation runs the same arithmetic to the end.</p>
+
+      <div class="player" id="pChain">
+        <div class="ptitle"><span class="label">Animation · the chain</span><div class="scen"><button class="chip" data-scen="one" aria-pressed="true">1 error</button><button class="chip" data-scen="three" aria-pressed="false">3 errors</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 214" role="img" aria-label="Belief propagation on five bits and four checks"></svg></div>
+        <div class="legend"><span><i class="sw ring"></i>true error (hidden from decoder)</span><span><i class="sw" style="background:var(--accent)"></i>check fired</span><span><i class="sw" style="background:var(--cool)"></i>belief: fine</span><span><i class="sw" style="background:var(--bad)"></i>belief: faulty</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Where do Eqs. 8 and 9 come from?</span></summary><div class="pfbody">
+        <p>Start from the exact answer. By Section 3, a fault with belief m has 1 − 2p = tanh(m/2), and 1 − 2p is the expected value of (−1)<sup>x</sup> for a bit that is 1 with probability p. For independent bits, expected values of products multiply, so the expected value of (−1) raised to the parity of several bits is the product of their tanh terms. Check i says that fault j equals σ<sub>i</sub> plus the parity of the other faults, mod 2. Therefore</p>
+        <div class="math" data-tex="\mathbb{E}\big[(-1)^{x_j}\big] = (-1)^{\sigma_i}\prod_{j'\neq j}\tanh\frac{m_{j'}}{2}, \qquad\text{so}\qquad m_{i\to j} = 2\operatorname{artanh}\Big((-1)^{\sigma_i}\prod_{j'\neq j}\tanh\frac{m_{j'}}{2}\Big)."></div>
+        <p>This is the exact check message, called the tanh rule. Min-Sum simplifies it in two steps. Since tanh(m/2) has the same sign as m, the sign of the product is (−1)<sup>σ</sup> times the product of the signs, which is Eq. 8. Since every |tanh| is below 1, the product is controlled by its smallest factor, and keeping only that factor gives the minimum of the sizes, which is Eq. 9.</p>
+        <p>With two other faults at 2.2 and 3.0, the exact rule gives 2 artanh(tanh 1.1 · tanh 1.5) ≈ 1.83 while Min-Sum gives 2.2. Multiplying by extra factors below 1 can only shrink the product, so Min-Sum is never less confident than the exact rule. That overconfidence is part of why it can overshoot. In return, hardware needs only sign comparisons and a minimum: no tanh, no multiplier.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Fact · BP is exact on graphs without loops</span><p>If the Tanner graph is a tree, BP's beliefs equal the true probabilities once messages have crossed the longest path. That is why the chain settles by round 4.</p></div>
+      <details class="pf"><summary><span class="tagd">proof sketch</span><span class="q">Why exactly on a tree?</span></summary><div class="pfbody">
+        <p>The tanh rule assumed that the other faults on a check are independent. On a tree, cutting any edge splits the graph into two separate pieces, so the evidence arriving from one side shares nothing with the evidence from the other. Each message is then an exact summary of everything on its side, and Section 3 says independent evidence adds. By induction on distance from the leaves, every message is exact after enough rounds. A loop breaks the induction: two neighbors of a check can both depend on the same fault further around the cycle, so their evidence is counted twice.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> checks send "sign = parity of the others, size = the weakest of them"; faults add; negative means blame. On a tree this is exact.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · The failure">
+      <span class="num">5 · THE FAILURE</span>
+      <h2>Why BP gets stuck on quantum codes</h2>
+      <p>Classical LDPC codes can be designed with few short loops, and BP works very well on them. Quantum codes can't avoid them. The checks of a quantum code have to be compatible measurements, and Poulin and Chung showed in 2008 that this requirement forces every quantum code's Tanner graph to contain loops of length four. Sparse quantum codes are also highly degenerate. Together these produce a failure that the chain could never show, and the trap shows it in its smallest form.</p>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why must quantum codes contain 4-loops?</span></summary><div class="pfbody">
+        <p>This is Poulin and Chung's argument, sketched. A 4-loop exists when two checks share two or more qubits, so suppose every pair of checks shares at most one. Quantum checks must commute, and two checks that overlap on a single qubit only commute if they apply the same type of operation there. Following this around a qubit forces every check on that qubit to be of one type, say Z. A Z error on that qubit then commutes with every check and sets nothing off, so the code can't detect it. That breaks the code unless the qubit is trivially decoupled. So a useful quantum code has 4-loops.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In the trap, both checks connect to both bits, so the Tanner graph is a single 4-loop: bit 1, check 1, bit 2, check 2, back to bit 1. Both checks fire. Work through BP by hand with both priors at λ = 2.20.</p>
+      <p><b>Round 1.</b> Each check tells bit 1 "the other bit looks fine and I fired, so it's you": −2.20, twice. Bit 1's belief is 2.20 − 2.20 − 2.20 = −2.20. By symmetry, bit 2 gets the same. The guess is 11, which trips neither check, because each check now sees two flips. It fails.</p>
+      <p><b>Round 2.</b> Bit 1 sends each check its total minus that check's message: −2.20 − (−2.20) = 0. Every message is now 0, so the checks send back 0, and both beliefs return to the prior 2.20. The guess is 00, which also fails.</p>
+      <p><b>Round 3</b> is round 1 again. BP alternates between 11 and 00 forever, never landing on 10 or 01, because nothing in the computation distinguishes bit 1 from bit 2. A correct answer requires treating two identical bits differently, and BP, which treats them identically, can't.</p>
+
+      <div class="player" id="pTrapPlain">
+        <div class="ptitle"><span class="label">Animation · the trap, plain BP</span></div>
+        <div class="stage"><svg viewBox="0 0 340 254" role="img" aria-label="Belief propagation oscillating on a two-bit four-cycle"></svg></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+
+      <p>Real codes show the same behavior on a larger scale. Around each 4-loop, messages return to where they started and are counted again, and Min-Sum's overconfidence amplifies them. Wherever two equally light corrections exist, the faults where they differ receive votes in both directions. Beliefs swing between rounds, split evenly, or stall near zero, and the decoder never produces a guess that explains every check. The paper names loops, symmetries and degeneracy as the causes. Poulin and Chung's own remedy was to break the symmetry by randomly perturbing the priors, and the paper builds on that idea.</p>
+      <p class="short"><b>In short:</b> 4-loops recycle messages, and degeneracy gives BP ties it has no rule to break. The trap oscillates between 11 and 00 forever.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Fix one">
+      <span class="num">6 · FIX ONE</span>
+      <h2>Damping messages that flip sign</h2>
+      <p>The paper's decoder, which it calls qDither, starts as ordinary Min-Sum and adds two mechanisms. The first targets the swinging directly. In each round, a randomly chosen fraction ρ of faults follow an extra rule: if a fault's outgoing message has the opposite sign from the previous round, add the previous message to it. Messages that keep their sign pass through unchanged.</p>
+      <div class="math" data-tex="\delta = \frac{1-\operatorname{sgn}\big(m^{(\ell)}\big)\operatorname{sgn}\big(m^{(\ell-1)}\big)}{2}, \qquad m'' = \delta\, m^{(\ell-1)} + m^{(\ell)}."></div>
+      <p class="eqn">Eqs. 16 and 17</p>
+      <p>Here ℓ is the round. The product of the two signs is +1 when they agree and −1 when they don't, so δ is 0 or 1: an indicator for "the sign flipped," written as arithmetic. For example, suppose the previous message was +3 and the new one is −2. Then δ = (1 − (−1)(+1))/2 = 1 and m″ = 3 + (−2) = +1. The message still moves toward the new evidence, but a swing of five units shrinks to two. On the Gross code, ρ = 0.65.</p>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why this form, and where did the randomness go?</span></summary><div class="pfbody">
+        <p>In hardware, the product of two signs is the XOR of two sign bits, so the rule costs one XOR, one multiplexer and one adder, with no multiplication. The classical trick it replaces (the paper's Eq. 14) multiplies messages by a random −1 with probability ρ, which shakes BP out of a rut but requires a random number generator inside every node. qDither keeps ρ only to choose which faults use the damper; the damper itself is deterministic. That is the basis for the paper's claim of eliminating node-level random number generators.</p>
+        <p>The authors also note a trade-off. A larger ρ calms the dynamics, but it also makes successive runs behave more alike, which weakens the restarts in Section 7.</p>
+      </div></details>
+      <p class="short"><b>In short:</b> when a message flips sign, add back the previous one. That's one XOR and one addition, and it softens oscillation.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Fix two">
+      <span class="num">7 · FIX TWO</span>
+      <h2>Restarting from a nearby place</h2>
+      <p>Damping softens swings but can't break an exact tie, because the trap's two bits would still be damped identically. The second mechanism supplies the asymmetry. If a run ends without a guess that explains every check, qDither starts a new run whose starting belief for each fault is a random blend of the original prior and the failed run's final belief q:</p>
+      <div class="math" data-tex="\lambda_j^{(r)} = \big(1-\chi_j^{(r)}\big)\,\lambda_j^{\text{base}} + \chi_j^{(r)}\, q_j^{(r-1)}, \qquad \chi_j^{(r)} \sim \operatorname{Unif}[\alpha,\beta]."></div>
+      <p class="eqn">Eq. 18</p>
+      <p>The key detail is the subscript j on χ: every fault draws its own blend weight. Even when the failed run left two faults with identical beliefs, different weights give them different starting points, and the tie is broken. Runs are chained this way, each starting from a neighborhood of the last failure, until one produces a valid guess.</p>
+      <p>Apply this to the trap. Suppose the first run stopped after round 5, where both beliefs were −2.20, so q = (−2.20, −2.20). Draw χ<sub>1</sub> = 0.10 and χ<sub>2</sub> = 0.15. The new priors are</p>
+      <div class="math" data-tex="\lambda_1 = 0.90(2.20) + 0.10(-2.20) = 1.76, \qquad \lambda_2 = 0.85(2.20) + 0.15(-2.20) = 1.54."></div>
+      <p>The difference is small, but now BP has something to amplify. The animation runs the restart round by round.</p>
+
+      <div class="player" id="pTrapDither">
+        <div class="ptitle"><span class="label">Animation · the trap, after a dithered restart</span></div>
+        <div class="stage"><svg viewBox="0 0 340 254" role="img" aria-label="Belief propagation escaping the four-cycle after asymmetric priors"></svg></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+
+      <div class="fact"><span class="label">Fact · on the trap, the gap grows every round</span><p>With priors a and b, after round t the two beliefs differ by exactly (2t + 1)(a − b), while their sum alternates between −(a + b) and a + b. When a = b the gap stays at zero and BP oscillates forever. When a ≠ b the gap grows until one belief crosses zero alone, after about (a + b)/(2|a − b|) rounds.</p></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Derive the gap formula</span></summary><div class="pfbody">
+        <p>Each check has only one other bit, so Min-Sum is exact here: a check's message to one bit is just the negative of what the other bit sent (sign flipped because the check fired, size unchanged). Both checks are identical, so call the message every check sends bit 1 in round t x<sub>t</sub>, and the one sent to bit 2 y<sub>t</sub>. Bit 1 sends each check its prior plus the other check's message, a + x<sub>t</sub>, and similarly bit 2 sends b + y<sub>t</sub>. Therefore</p>
+        <div class="math" data-tex="x_{t+1} = -(b + y_t), \qquad y_{t+1} = -(a + x_t), \qquad x_1 = -b,\; y_1 = -a."></div>
+        <p>Subtract to get the difference d<sub>t</sub> = x<sub>t</sub> − y<sub>t</sub>: d<sub>t+1</sub> = d<sub>t</sub> + (a − b), with d<sub>1</sub> = a − b, so d<sub>t</sub> = t(a − b). Add to get the sum s<sub>t</sub> = x<sub>t</sub> + y<sub>t</sub>: s<sub>t+1</sub> = −(a + b) − s<sub>t</sub>, with s<sub>1</sub> = −(a + b), so s<sub>t</sub> alternates between −(a + b) and 0. The beliefs are L<sub>1</sub> = a + 2x<sub>t</sub> and L<sub>2</sub> = b + 2y<sub>t</sub>, so</p>
+        <div class="math" data-tex="L_1 - L_2 = (a-b) + 2d_t = (2t+1)(a-b), \qquad L_1 + L_2 = (a+b) + 2s_t = \mp(a+b)."></div>
+        <p>On odd rounds, L<sub>1</sub> = ½[(2t + 1)(a − b) − (a + b)], which stops being negative once (2t + 1)(a − b) ≥ a + b. With a = 1.76 and b = 1.54 that is 2t + 1 ≥ 15, so t = 7, and at round 7 the guess is 01, which explains both checks. That is exactly what the animation shows.</p>
+        <p class="qed">∎</p>
+        <p class="note">This toy calculation is ours, not the paper's. It shows the mechanism behind the paper's claim on the smallest possible case.</p>
+      </div></details>
+      <p>Two more details complete the method. Each run gets a fixed budget, 15 iterations on the surface code with up to 3,000 runs and 100 on the Gross code with up to 1,500, and the decoder stops at the first valid guess. In practice very few runs are needed: in the paper's cost example, the average is about 2.6. The surface-code variant labeled qDither-BP-5 instead collects up to five different valid guesses and returns the one with the smallest Σ λ<sub>j</sub>Ê<sub>j</sub>, the most likely explanation from Section 2.</p>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why allow a negative blend weight?</span></summary><div class="pfbody">
+        <p>(1 − χ)a + χb is the point a fraction χ of the way from a to b. With χ between 0 and 1 the new start lies between the prior and the failed ending. With χ below 0 it lies past the prior, on the side away from the failure. For example, with λ<sup>base</sup> = 2.2, q = −1.4 and χ = −0.1, the start is 1.1(2.2) − 0.1(−1.4) = 2.56: more confident than the original prior and pointed away from where the failed run went. That lets the chain back out of a bad direction instead of moving further into it. The paper's ranges were [−0.14, 0.85] for the surface code and [−0.07, 0.5] for the Gross code. The classical version of the trick (Eq. 15) adds plain random noise to the prior instead of reusing what the failed run learned.</p>
+      </div></details>
+      <p class="short"><b>In short:</b> each restart starts every fault from its own random point between the prior and the last failure. Different weights break ties, and BP amplifies the difference until it escapes.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Results">
+      <span class="num">8 · RESULTS</span>
+      <h2>What the simulations show</h2>
+      <p>All results are simulations under circuit-level noise. The authors tested a distance-11 rotated surface code and the Gross code, against four baselines: plain BP; BP+OSD, which falls back on a costly Gaussian elimination when BP fails; Relay-BP, IBM's memory-based BP variant and the main rival; and, on the surface code, minimum-weight perfect matching (MWPM), the standard surface-code decoder. On the Gross code they decoded in two ways. <span class="term">XZ</span> decoding handles bit-flip and phase-flip errors separately, while <span class="term">XYZ</span> decoding handles them jointly, keeping the fact that a Y error is both at once. XYZ is more accurate and far more expensive, and it is where the headline comparison happens.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Setting</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Surface code, p ≥ 0.003</td><td>Beats Relay-BP and the other BP decoders by orders of magnitude; MWPM remains best overall</td></tr>
+          <tr><td>Gross code, XZ</td><td>Nearly ties Relay-BP; beats BP+OSD at every reported noise level</td></tr>
+          <tr><td>Gross code, XYZ, p = 0.003</td><td class="n">7.15×10⁻⁶ vs 7×10⁻⁶ (Relay-BP)</td></tr>
+          <tr><td>Gross code, XYZ, p = 0.005</td><td>Beats Relay-BP</td></tr>
+          <tr><td>Cost, XYZ, p = 0.003</td><td>About 2.9× the additions and 1.9% of the multiplications of Relay-BP</td></tr>
+        </tbody>
+      </table></div>
+      <p>The cost comparison is the paper's real selling point. Multipliers take far more chip area and time than adders, and qDither's decoding loop contains none. A real-time decoder for this code has a budget of about 600 iterations, and qDither averages under 250.</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Where do "1.9%" and "600 iterations" come from?</span></summary><div class="pfbody">
+        <p>Let V be the number of faults and N the average number of runs. Every run after the first needs new priors, and Eq. 18 costs two multiplications per fault, so setup takes 2(N − 1)V multiplications. Nothing else in qDither multiplies. For the XYZ Gross code at p = 0.003, V = 71,280 and N = 2.6:</p>
+        <div class="math" data-tex="2\,(2.6-1)\cdot 71{,}280 = 228{,}096, \qquad \frac{228{,}096}{12{,}117{,}600} \approx 1.9\%,"></div>
+        <p>where 12,117,600 is Relay-BP's count. Additions go the other way: 222,663,168 for qDither at 200 iterations against 77,442,480 for Relay-BP at 85, a ratio of about 2.88.</p>
+        <p>For the time budget, a distance-12 code is decoded over a window of 12 rounds at 1 µs each, so 12 µs. At 20 ns per iteration, that allows 12 µs ÷ 20 ns = 600 iterations.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> about as accurate as Relay-BP, better at higher noise, with a decoding loop that never multiplies.</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · Assessment">
+      <span class="num">9 · ASSESSMENT</span>
+      <h2>What is shown, and what isn't yet</h2>
+      <p>The contribution is clear and well supported in simulation: two old classical ideas, random sign flips and random restarts, reshaped so that they suit quantum codes and cheap hardware. The headline claims, though, are narrower than the abstract makes them sound. "98% fewer multiplications" counts only the setup of each restart and depends on the average of 2.6 runs, which changes with the noise level. "No node-level random number generators" describes one proposed hardware unit, but the algorithm as written still draws a random blend weight and a random selection coin for every fault, and the hardware is described but not built. Every setting was tuned on 1,000 samples at a single noise level, p = 0.005.</p>
+      <p>The deepest open question is why dithering works. The paper shows that it does, but it doesn't analyze which loop and degeneracy structures trap BP on real codes, or how often a restart escapes. The trap gives the mechanism in miniature: a tie, a random asymmetry, and BP amplifying it. Whether that picture explains the Gross code is unproven. The authors list hardware architectures, cheaper hyperparameter tuning and more code families as next steps.</p>
+      <p class="short"><b>In short:</b> a promising, cheap decoder with strong simulations, an unbuilt hardware story, and no theory yet for why it works.</p>
+    </section>
+
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <div class="refs">
+        <p>Cai, Jarkas, Zhao and Gross, <a href="https://arxiv.org/abs/2611.07144" target="_blank" rel="noopener">Dithered Belief Propagation for Real-Time Quantum Memory Decoding</a> (2026). The paper.</p>
+        <p>Poulin and Chung, <a href="https://ar5iv.arxiv.org/html/0801.1241" target="_blank" rel="noopener">On the iterative decoding of sparse quantum codes</a> (2008). The original account of why BP fails on quantum codes, and the first use of random perturbation to fix it.</p>
+        <p>Roffe, <a href="https://ar5iv.arxiv.org/html/1907.11157" target="_blank" rel="noopener">Quantum Error Correction: An Introductory Guide</a> (2019). The best starting point for stabilizer codes and decoding.</p>
+      </div>
+    </section>
+  </article>
+
+  <footer>
+    <p>Built from a full read of arXiv 2611.07144v1. Equation numbers match the paper. The chain and the trap use real Min-Sum arithmetic on toy codes; all benchmark numbers are the paper's. The integer-program connection and the trap's gap formula are ours.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // ================= catalog =================
+  const PAPERS=[
+    {id:'2611-07144',date:'2026-11-06',title:'Dithered Belief Propagation for Real-Time Quantum Memory Decoding',authors:'Cai, Jarkas, Zhao, Gross',field:'quant-ph',tags:['error correction','decoding','qLDPC'],mins:35,
+     dek:'Belief propagation gets stuck on quantum codes because of 4-loops and look-alike errors. Two cheap doses of randomness unstick it, matching the best rival decoder with about 2% of its multiplications.'}
+  ];
+  const store={get(k,d){try{const v=localStorage.getItem('np:'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('np:'+k,JSON.stringify(v))}catch(e){}}};
+  const fmtD=(s,o)=>new Date(s+'T12:00:00').toLocaleDateString('en-US',o);
+  const todayISO=(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
+  document.getElementById('todayLabel').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  function renderHome(){
+    const sorted=[...PAPERS].sort((a,b)=>b.date.localeCompare(a.date));const f=sorted[0];const prog=store.get('prog',{});
+    const isToday=f.date===todayISO;
+    const pct=Math.round((prog[f.id]||0)*100);
+    document.getElementById('featured').innerHTML=`<div class="featured">
+      <div class="kick"><span class="label">${isToday?"Tonight's paper":'Latest paper'}</span><span class="label">${fmtD(f.date,{weekday:'short',month:'short',day:'numeric'})}</span></div>
+      <h2>${f.title}</h2><p class="meta">${f.authors}</p><p class="dek">${f.dek}</p>
+      <div class="tags"><span class="tag">${f.field}</span>${f.tags.map(t=>`<span class="tag">${t}</span>`).join('')}<span class="tag">${f.mins} min</span></div>
+      <div class="prog"><span class="label">${pct?pct+'% read':'Not started'}</span><div class="bar"><i style="width:${pct}%"></i></div></div>
+      <a class="read" href="#p-${f.id}">${pct>2&&pct<98?'Continue reading':'Read'} →</a></div>`;
+    const rest=sorted.slice(1);
+    document.getElementById('count').textContent=PAPERS.length+(PAPERS.length===1?' paper':' papers');
+    document.getElementById('archive').innerHTML=rest.length?rest.map(p=>{const pc=Math.round((prog[p.id]||0)*100);return `<a class="entry" href="#p-${p.id}"><span class="d">${fmtD(p.date,{month:'short'})}<b>${fmtD(p.date,{day:'numeric'})}</b></span><span class="t">${p.title}</span><span class="s">${p.field} · ${p.tags[0]} · ${pc?pc+'% read':p.mins+' min'}</span></a>`}).join('')
+      :`<p class="empty">Earlier papers will collect here, newest first. This is the first one.</p>`;
+  }
+
+  // ================= routing =================
+  const views=[...document.querySelectorAll('[id^="view-"]')];
+  let current=null;
+  function route(){let h=location.hash.slice(1)||'home';if(!document.getElementById('view-'+h))h='home';
+    views.forEach(v=>v.hidden=v.id!=='view-'+h);current=h;if(h==='home')renderHome();window.scrollTo(0,0);onScroll();}
+  window.addEventListener('hashchange',route);
+
+  // ================= math =================
+  document.querySelectorAll('.math').forEach(el=>{const tex=el.dataset.tex;
+    try{if(!window.katex)throw 0;katex.render(tex,el,{displayMode:true,output:'mathml',throwOnError:false})}
+    catch(e){el.classList.add('fallback');el.textContent=tex}});
+
+  // ================= reading progress + section label =================
+  const secs=[...document.querySelectorAll('#view-p-2611-07144 section[data-sec]')],secLabel=document.getElementById('secLabel'),readbar=document.getElementById('readbar');
+  let saveT=null;
+  function onScroll(){if(current!=='p-2611-07144')return;const art=document.querySelector('#view-p-2611-07144 article');
+    const r=art.getBoundingClientRect(),total=r.height-innerHeight*0.6,done=Math.min(1,Math.max(0,(-r.top+innerHeight*0.4)/total));
+    readbar.style.width=(done*100)+'%';
+    let lab='Overview';secs.forEach(s=>{if(s.getBoundingClientRect().top<120)lab=s.dataset.sec});secLabel.textContent=lab;
+    clearTimeout(saveT);saveT=setTimeout(()=>{const p=store.get('prog',{});if(done>(p['2611-07144']||0)){p['2611-07144']=done;store.set('prog',p)}},400);}
+  window.addEventListener('scroll',onScroll,{passive:true});
+  const openAll=document.getElementById('openAll');
+  openAll.addEventListener('click',()=>{const on=openAll.getAttribute('aria-pressed')!=='true';openAll.setAttribute('aria-pressed',on);openAll.textContent=on?'Close all proofs':'Open all proofs';
+    document.querySelectorAll('#view-p-2611-07144 details.pf').forEach(d=>d.open=on)});
+
+  // ================= generic player =================
+  const NS='http://www.w3.org/2000/svg';
+  function Player(root,build){
+    const svg=root.querySelector('svg'),cap=root.querySelector('.caption'),dots=root.querySelector('.dots'),playB=root.querySelector('.play');
+    let F=[],k=0,timer=null,drawFn=null;
+    const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const x in a)e.setAttribute(x,a[x]);(p||svg).appendChild(e);return e};
+    function draw(){svg.innerHTML='';drawFn(F[k],el);cap.innerHTML=`<span class="step">${k+1} / ${F.length} · ${F[k].t}</span>${F[k].c}`;
+      dots.innerHTML=F.map((_,i)=>`<i class="${i<=k?'on':''}"></i>`).join('')}
+    function stop(){clearInterval(timer);timer=null;playB.textContent=k===F.length-1?'↺ Replay':'▶ Play'}
+    playB.addEventListener('click',()=>{if(timer){stop();return}if(k===F.length-1){k=0;draw()}
+      playB.textContent='❚❚ Pause';timer=setInterval(()=>{if(k<F.length-1){k++;draw()}if(k===F.length-1)stop()},F.delay||5200)});
+    root.querySelector('.next').addEventListener('click',()=>{stop();k=Math.min(F.length-1,k+1);draw();stop()});
+    root.querySelector('.prev').addEventListener('click',()=>{stop();k=Math.max(0,k-1);draw();stop()});
+    return{load(frames,fn){stop();F=frames;drawFn=fn;k=0;draw();stop()}};
+  }
+  const f1=x=>(x>=0?'+':'−')+Math.abs(x).toFixed(1),f2=x=>(x>=0?'+':'−')+Math.abs(x).toFixed(2);
+  const LAM=Math.log(9);
+
+  // ================= chain =================
+  (function(){
+    const N=5,M=4,T=4,root=document.getElementById('pChain'),P=Player(root);
+    function decode(E){const sig=[];for(let i=0;i<M;i++)sig.push(E[i]^E[i+1]);
+      let v2c=Array.from({length:M},()=>[LAM,LAM]);const L=[Array(N).fill(LAM)],C=[null];
+      for(let t=0;t<T;t++){const c2v=v2c.map((v,i)=>{const s=sig[i]?-1:1;return[s*v[1],s*v[0]]});
+        const l=Array(N).fill(LAM);c2v.forEach((c,i)=>{l[i]+=c[0];l[i+1]+=c[1]});L.push(l);C.push(c2v);
+        v2c=c2v.map((c,i)=>[l[i]-c[0],l[i+1]-c[1]]);}
+      return{sig,L,C}}
+    const SC={one:[0,0,1,0,0],three:[1,0,1,0,1]};
+    function load(E){const D=decode(E);const fl=D.sig.map((s,i)=>s?'check '+(i+1):null).filter(Boolean),Ef=E.map((e,i)=>e?'bit '+(i+1):null).filter(Boolean);
+      const Lf=D.L[T],Eh=Lf.map(x=>x<0?1:0),R=E.map((e,i)=>e^Eh[i]),bad=R.some(x=>x),swing=D.L[2].some((x,i)=>Math.sign(x)!==Math.sign(D.L[1][i]));
+      const F=[
+        {k:'truth',t:'The error happens',c:`Noise flips ${Ef.join(', ')}. The dashed ring marks it, but the decoder never sees the bits. Everything it learns comes from the checks.`},
+        {k:'syn',t:'The checks report',c:`Each square fires when its two neighbors disagree. ${fl.join(' and ')} ${fl.length>1?'fire':'fires'}, so σ = ${D.sig.join('')}. These four bits are the decoder's only input.`},
+        {k:'prior',r:0,t:'Round 0: the prior',c:`Every bit starts with λ = ln(0.9/0.1) = ${LAM.toFixed(2)}: the same mild confidence that it is fine.`},
+        {k:'msg',r:1,t:'Round 1: checks send messages',c:`Each check tells each neighbor what it must be, given the other neighbor (Eqs. 8 and 9). A quiet check passes the other bit's belief through. A firing check flips its sign: "your neighbor looks fine and I fired, so it's probably you."`},
+        {k:'bel',r:1,t:'Round 1: bits add their evidence',c:`Each bit adds its prior to every incoming message (Eq. 11). ${D.L[1].some(x=>x<0)?'Now negative: '+D.L[1].map((x,i)=>x<0?'bit '+(i+1)+' at '+f1(x):null).filter(Boolean).join(', ')+'.':''} ${D.L[1].some(x=>Math.abs(x)<1e-9)?'A bit at 0.0 is exactly undecided.':''} One + and one − cancel back to the prior.`},
+        {k:'bel',r:2,t:'Round 2: evidence spreads',c:`Bits send back their totals minus what each check told them (Eq. 10), and the checks reply. Evidence moves one step further along the chain each round. ${swing?'Some beliefs swing back, because evidence from the far ends now disagrees with round 1.':'Beliefs grow more confident.'}`},
+        {k:'bel',r:T,t:`Round ${T}: settled`,c:`With no loops, evidence from each direction arrives once and then stops. Final beliefs: ${Lf.map(f1).join(', ')}. Later rounds change nothing, as the tree fact predicts.`},
+        {k:'guess',r:T,t:bad?'The guess: a logical error':'The guess: success',c:bad?`Negative beliefs are blamed: Ê = ${Eh.join('')}. It explains every check and is the lighter explanation, but the truth was ${E.join('')}, so the leftover is ${R.join('')}. That pattern is invisible to the checks and flips the stored bit: a logical error, and an unavoidable one.`:`Negative beliefs are blamed: Ê = ${Eh.join('')}, exactly the true error. The leftover is ${R.join('')}, so the stored information is intact.`}];
+      const bx=i=>30+i*70,BY=46,BASE=152,SC_=7.5;
+      P.load(F,(fr,el)=>{const r=fr.r,showSyn=fr.k!=='truth';
+        for(let i=0;i<M;i++)el('line',{x1:bx(i),y1:BY,x2:bx(i+1),y2:BY,class:'edge'});
+        for(let i=0;i<M;i++){const g=el('g',{class:'chk'+(showSyn&&D.sig[i]?' lit':'')}),x=(bx(i)+bx(i+1))/2;el('rect',{x:x-11,y:BY-11,width:22,height:22,rx:4},g);el('text',{x:x,y:BY+4},g).textContent=showSyn?D.sig[i]:'?';}
+        const Eh=r!=null?D.L[r].map(x=>x<0?1:0):null;
+        for(let i=0;i<N;i++){const c=['bit'];if(E[i])c.push('truth');if(fr.k==='guess'&&Eh[i])c.push('guess');const g=el('g',{class:c.join(' ')});el('circle',{cx:bx(i),cy:BY,r:16},g);el('text',{x:bx(i),y:BY+4},g).textContent=fr.k==='guess'?Eh[i]:'b'+(i+1);}
+        if(fr.k==='msg'||(fr.k==='bel'&&r<T)){const c2v=D.C[r];for(let i=0;i<M;i++)[[0,bx(i)+21],[1,bx(i+1)-21]].forEach(([s,x])=>{const v=c2v[i][s],col=v<0?'var(--bad)':'var(--cool)',d=s===0?-1:1;
+          el('text',{x:x,y:BY-22,class:'msg',fill:col}).textContent=f1(v);el('path',{d:`M${x+d*4} ${BY-15} l${-d*5} 0`,stroke:col,'stroke-width':1.4,fill:'none'});el('path',{d:`M${x-d} ${BY-15} l${d*3} -2.5 l0 5 z`,fill:col})})}
+        el('line',{x1:8,y1:BASE,x2:332,y2:BASE,stroke:'var(--line)','stroke-width':1});
+        if(r!=null){const LL=fr.k==='msg'?D.L[0]:D.L[r];for(let i=0;i<N;i++){const v=Math.max(-7.5,Math.min(7.5,LL[i])),h=Math.abs(v)*SC_;
+          el('rect',{x:bx(i)-13,y:v>=0?BASE-h:BASE,width:26,height:Math.max(h,1),rx:3,fill:v>=0?'var(--cool)':'var(--bad)'});el('text',{x:bx(i),y:v>=0?BASE+14:BASE-h-5,class:'lab'}).textContent=f1(LL[i]);}
+          el('text',{x:170,y:208,class:'lab'}).textContent=fr.k==='msg'?'beliefs before this round':'belief L per bit after round '+r;}
+        else el('text',{x:170,y:BASE-30,class:'lab'}).textContent='beliefs appear at round 0';});}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(SC[b.dataset.scen])}));
+    load(SC.one);
+  })();
+
+  // ================= trap =================
+  function trapRun(a,b,T){let v=[[a,b],[a,b]];const out=[];
+    for(let t=1;t<=T;t++){const c=v.map(x=>[-x[1],-x[0]]);const L=[a+c[0][0]+c[1][0],b+c[0][1]+c[1][1]].map(x=>Math.abs(x)<1e-9?0:x);
+      const E=L.map(x=>x<0?1:0);out.push({t,c:c[0],L,E,ok:(E[0]^E[1])===1});v=[0,1].map(i=>[L[0]-c[i][0],L[1]-c[i][1]]);if(out.at(-1).ok)break;}
+    return out}
+  function trapDraw(fr,el){
+    const B=[{x:105,y:128},{x:235,y:128}],C=[{x:105,y:40},{x:235,y:40}];
+    C.forEach(c=>B.forEach(b=>el('line',{x1:c.x,y1:c.y,x2:b.x,y2:b.y,class:'edge'})));
+    if(fr.loop){el('path',{d:'M105 40 L235 128 L235 40 L105 128 Z',fill:'none',stroke:'var(--accent)','stroke-width':2.5,'stroke-dasharray':'6 4',opacity:.8});}
+    C.forEach((c,i)=>{const g=el('g',{class:'chk lit'});el('rect',{x:c.x-12,y:c.y-12,width:24,height:24,rx:4},g);el('text',{x:c.x,y:c.y+4},g).textContent='1';el('text',{x:c.x+(i?44:-44),y:c.y+4,class:'lab'}).textContent='check '+(i+1);});
+    if(fr.msg){B.forEach((b,j)=>{const v=fr.msg[j],col=v<0?'var(--bad)':v>0?'var(--cool)':'var(--muted)';
+      el('text',{x:b.x+(j?24:-24),y:86,class:'msg',fill:col}).textContent='2 × '+f2(v);});}
+    B.forEach((b,j)=>{const g=el('g',{class:'bit'+(fr.E&&fr.E[j]?' guess':'')});el('circle',{cx:b.x,cy:b.y,r:17},g);el('text',{x:b.x,y:b.y+4},g).textContent=fr.E?fr.E[j]:'b'+(j+1);});
+    const BASE=190,S=9;el('line',{x1:40,y1:BASE,x2:300,y2:BASE,stroke:'var(--line)','stroke-width':1});
+    if(fr.L){B.forEach((b,j)=>{const v=Math.max(-3.6,Math.min(3.6,fr.L[j])),h=Math.abs(v)*S;
+      el('rect',{x:b.x-14,y:v>=0?BASE-h:BASE,width:28,height:Math.max(h,1),rx:3,fill:v>=0?'var(--cool)':'var(--bad)'});
+      el('text',{x:b.x+34,y:BASE+4,class:'lab'}).textContent=f2(fr.L[j]);});}
+    if(fr.verdict){el('text',{x:170,y:246,class:'lab',fill:fr.ok?'var(--ok)':'var(--bad)'}).textContent=fr.verdict;}
+    else el('text',{x:170,y:246,class:'lab'}).textContent=fr.L?(fr.lab||'beliefs'):'';
+  }
+  (function(){
+    const P=Player(document.getElementById('pTrapPlain'));const R=trapRun(LAM,LAM,4);
+    const F=[
+      {t:'The setup',loop:true,c:'Two bits, two checks, and every check looks at both bits. The dashed path is the 4-loop: bit 1, check 1, bit 2, check 2, and back. Both checks fire, so exactly one bit flipped. Either 10 or 01 is a correct answer.'},
+      {t:'Round 0: the prior',L:[LAM,LAM],lab:'prior beliefs',c:`Both bits start at λ = ${LAM.toFixed(2)}. Notice that nothing distinguishes them. Every rule BP applies will treat them the same way.`},
+      ...R.map(r=>({t:`Round ${r.t}: guess ${r.E.join('')}`,msg:r.c,L:r.L,E:r.E,ok:r.ok,lab:'belief L after round '+r.t,verdict:(r.ok?'valid: explains both checks':'fails: '+r.E.join('')+' trips neither check'),
+        c:r.t%2?`Each bit gets ${f2(r.c[0])} from each check: "the other bit looks fine and I fired, so it's you." Belief: ${f2(LAM)} ${f2(2*r.c[0]).replace('−','− ').replace('+','+ ')} = ${f2(r.L[0])} for both bits. Both are blamed, giving 11, and two flips cancel at every check.`:`Each bit sends back its total minus the check's message, which is 0. So the checks send 0, and both beliefs fall back to the prior ${f2(r.L[0])}. Neither bit is blamed: 00, which fails too.`})),
+      {t:'Forever',L:R[R.length-1].L,lab:'stuck: period 2',verdict:'no round ever gives 10 or 01',c:'From here BP alternates 11, 00, 11, 00 without end. To output 10 or 01 it would have to treat two identical bits differently, and nothing in the rules can. Section 7 shows how qDither breaks the tie.'}];
+    F.delay=4800;P.load(F,trapDraw);
+  })();
+  (function(){
+    const P=Player(document.getElementById('pTrapDither'));const a=0.9*LAM+0.1*(-LAM),b=0.85*LAM+0.15*(-LAM);const R=trapRun(a,b,12);
+    const F=[
+      {t:'Phase I ended',L:[-LAM,-LAM],lab:'q: final beliefs of the failed run',c:`The first run stopped after round 5 with both beliefs at ${f2(-LAM)}, guessing 11. Those final beliefs become q = (${f2(-LAM)}, ${f2(-LAM)}). They are still perfectly symmetric.`},
+      {t:'The blend',L:[a,b],lab:'new priors λ⁽²⁾',c:`Each bit draws its own blend weight: χ₁ = 0.10, χ₂ = 0.15. By Eq. 18, bit 1 restarts at ${a.toFixed(2)} and bit 2 at ${b.toFixed(2)}. The gap is only ${(a-b).toFixed(2)}, but the symmetry is gone.`},
+      ...R.map(r=>({t:`Round ${r.t}: guess ${r.E.join('')}`,msg:r.c,L:r.L,E:r.E,ok:r.ok,lab:'belief L after round '+r.t,verdict:(r.ok?'valid: 01 explains both checks':'fails · gap '+(r.L[0]-r.L[1]).toFixed(2)),
+        c:r.ok?`Bit 1 reaches ${f2(r.L[0])}, so it isn't blamed, while bit 2 is at ${f2(r.L[1])}. The guess is 01, which explains both checks. The run stops. It took ${r.t} rounds for a 0.22 head start to decide the tie.`:
+          `Beliefs ${f2(r.L[0])} and ${f2(r.L[1])}. ${r.t%2?'Both are still negative, so the guess is 11 and fails.':'Both are positive, so the guess is 00 and fails.'} But the gap between them is now ${(r.L[0]-r.L[1]).toFixed(2)}, and it grows by ${(2*(a-b)).toFixed(2)} every round.`}))];
+    F.delay=4200;P.load(F,trapDraw);
+  })();
+
+  route();
+})();
+</script>
+
+</body>
+</html>
