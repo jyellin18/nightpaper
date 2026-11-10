@@ -797,10 +797,410 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
   </footer>
 </div>
 
+<!-- ================= PAPER: 2611.11345 ================= -->
+<div class="wrap" id="view-p-2611-11345" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Tue, Nov 10</span></div>
+  <div class="paperhead">
+    <h1>Extremal Graphs for Alon's Graph Coupon-Collector Conjecture</h1>
+    <p class="meta">Xingchao Deng, Guoqing Wang · posted Nov 8, 2026 · math.CO · <a href="https://arxiv.org/abs/2611.11345" target="_blank" rel="noopener">arXiv 2611.11345</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">Three squares take longer to finish than four triangles, and that one comparison is enough to break a conjecture of Noga Alon. In Alon's graph version of the coupon collector, you repeatedly pick a random vertex of a graph and use it to cover one of its uncovered neighbors; the question is which graph of a given size and degree makes this take longest. Alon guessed that piles of disjoint cliques are the slowest. This paper shows the guess fails in every degree from two up, finds the exact slowest graphs when every vertex has two neighbors (almost all four-cycles), and explains why: what slows the process down is pairs of vertices that share all their neighbors, and four-cycles are full of them.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>why collecting all m coupons takes m(1 + 1/2 + … + 1/m) draws on average, and what changes when you need several copies of each;</li>
+        <li>the covering process on a graph, and why the expected time is 7/2 on a triangle and 11/2 on a square;</li>
+        <li>the Poisson-clock trick that turns a sequential process on a disjoint union into independent pieces, so the finishing time is a maximum;</li>
+        <li>why three squares beat four triangles, exactly: 24.134 against 22.998 expected steps;</li>
+        <li>how vertices with identical neighborhoods control the tail of the finishing time, and why that makes K<sub>d,d</sub> the real champion for large graphs;</li>
+        <li>the infection-process reformulation behind the complete answer in degree two, and what the paper does and doesn't prove.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>G, n, d</dt><dd>a graph with no isolated vertices, its number of vertices, its degree when it is regular</dd>
+        <dt>N(v)</dt><dd>the open neighborhood of v: the vertices adjacent to v, not v itself</dd>
+        <dt>K<sub>m</sub>, C<sub>m</sub></dt><dd>the complete graph and the cycle on m vertices; K<sub>3</sub> = C<sub>3</sub> is the triangle</dd>
+        <dt>K<sub>d,d</sub></dt><dd>the complete bipartite graph: two classes of d vertices, every cross pair joined; K<sub>2,2</sub> = C<sub>4</sub></dd>
+        <dt>mF, ⊔</dt><dd>m disjoint copies of a graph F; disjoint union of two graphs</dd>
+        <dt>N<sub>G</sub></dt><dd>the number of discrete steps to cover all of G</dd>
+        <dt>cc(G)</dt><dd>the expected number of steps, cc(G) = E N<sub>G</sub></dd>
+        <dt>T<sub>G</sub></dt><dd>the finishing time when every vertex rings on its own rate-1 Poisson clock</dd>
+        <dt>Exp(λ)</dt><dd>an exponential random variable with rate λ and mean 1/λ</dd>
+        <dt>H<sub>m</sub></dt><dd>the harmonic number 1 + 1/2 + … + 1/m</dd>
+        <dt>q(t), r(t)</dt><dd>the probabilities that one class of a square, and a whole triangle, are finished by time t</dd>
+        <dt>τ(G)</dt><dd>the size of the largest group of degree-d vertices sharing one neighborhood</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Two running examples</span>
+      <ul>
+        <li><b>The triangle and the square.</b> The triangle K<sub>3</sub> and the square C<sub>4</sub> with vertices 1, 2, 3, 4 in order around it. Both have every vertex of degree two. Every probability for them can be worked out by hand.</li>
+        <li><b>The twelve-vertex duel.</b> Four separate triangles, 4K<sub>3</sub>, against three separate squares, 3C<sub>4</sub>. Both have 12 vertices of degree two. Alon's conjecture predicts the triangles are slower; the paper computes that the squares are.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Coupons">
+      <span class="num">1 · THE COUPON COLLECTOR</span>
+      <h2>How long until you've seen everything?</h2>
+      <p>The paper's process is a graph version of a classical puzzle, and its main tools are refinements of the classical solution, so it is worth having that solution in hand. The question is how many random draws it takes before every type has appeared.</p>
+      <div class="def"><span class="label">Definition · coupon collector</span>
+        <p>There are m coupon types. Each draw is uniform over the m types and independent of all other draws. The collection time is the number of draws until every type has appeared at least once. More generally, D<sub>m,d</sub> is the number of draws until every type has appeared at least d times.</p>
+        <p>In words: keep rolling an m-sided die and count rolls until every face has come up, or until every face has come up d times.</p>
+      </div>
+      <p>For a single copy of each type, the expected collection time has a clean formula,</p>
+      <div class="math" data-tex="\mathbb{E}[\text{draws}] = m\left(1+\frac12+\cdots+\frac1m\right) = m\,H_m."></div>
+      <p class="eqn">standard; background, not in the paper</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why does the harmonic number appear?</span></summary><div class="pfbody">
+        <p>This is the textbook argument. Split the process into stages: stage j lasts from the moment you have j − 1 types until you have j. During stage j, a draw is new with probability (m − j + 1)/m, independently of everything else, so the stage length is geometric with that success probability and has mean m/(m − j + 1).</p>
+        <p>Adding over the stages j = 1, …, m and reversing the order of the sum gives</p>
+        <div class="math" data-tex="\sum_{j=1}^{m}\frac{m}{m-j+1} = m\sum_{i=1}^{m}\frac1i = mH_m."></div>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For a fair die, m = 6 and H<sub>6</sub> = 49/20, so on average it takes 6 · 49/20 = 14.7 rolls to see every face. Since H<sub>m</sub> = log m + O(1), the answer grows like m log m: the last few types are the expensive ones, because by then almost every draw is a repeat.</p>
+      <p>When each type must appear d times, the paper quotes the asymptotic formula of Newman and Shepp:</p>
+      <div class="math" data-tex="\mathbb{E}D_{m,d} = m\bigl(\log m + (d-1)\log\log m + O_d(1)\bigr)\qquad(m\to\infty)."></div>
+      <p class="eqn">Eq. 9 · Theorem 2.6</p>
+      <div class="fact"><span class="label">Fact</span><p>The first complete set costs about m log m draws, and each extra required copy costs only about m log log m more. Needing doubles is more expensive than needing singles, but only by a log log factor. That extra log log term is exactly what will separate the slowest graphs from cliques in Section 8.</p></div>
+      <p class="short"><b>In short:</b> collecting m types takes mH<sub>m</sub> ≈ m log m draws, and requiring d copies of each adds about (d − 1)m log log m.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · On a graph">
+      <span class="num">2 · THE GRAPH VERSION</span>
+      <h2>Coupons you collect through your neighbors</h2>
+      <p>Alon asked what happens when a random draw can only help in a limited, local way. Motivating examples in the literature include peer-to-peer networks, where a random node can only pass something to a neighbor. The question is how the shape of the graph changes the collection time.</p>
+      <div class="def"><span class="label">Definition · the covering process and cc(G)</span>
+        <p>Let G be a finite simple graph with no isolated vertices. All vertices start uncovered. At each step a vertex v is sampled uniformly at random, independently of earlier steps. If v has uncovered neighbors, one of them, chosen uniformly, becomes covered; otherwise nothing happens. The sampled vertex may itself be covered or uncovered. The number of steps until every vertex is covered is N<sub>G</sub>, and cc(G) = E N<sub>G</sub>.</p>
+        <p>In words: each vertex you pick hands a coupon to one random neighbor that still lacks one, and a pick is wasted when all its neighbors are already done.</p>
+      </div>
+      <p>The triangle can be done completely by hand. While two or more vertices are uncovered, every vertex has an uncovered neighbor, so the first two steps always succeed. Then one vertex w is left. A step covers it exactly when the sampled vertex is one of w's two neighbors, which has probability 2/3, so the wait for that last covering is geometric with mean 3/2. In total,</p>
+      <div class="math" data-tex="\operatorname{cc}(K_3) = 1 + 1 + \tfrac32 = \tfrac72."></div>
+      <p class="note">This step-by-step count is ours; the paper gets the same distribution in continuous time in Lemma 2.5, and Section 3 recovers 7/2 from it.</p>
+      <p>The square has a hidden simplification that the paper uses repeatedly. Split it into the classes L = {1, 3} and R = {2, 4}. Each vertex of L is adjacent to both vertices of R and to nothing else, so the square is the complete bipartite graph K<sub>2,2</sub>. A sample in L covers a fresh vertex of R as long as one is left, and the same holds with L and R swapped. So the square is covered exactly when L has been sampled at least twice and R has been sampled at least twice: it is the coupon collector with two types, two copies each, D<sub>2,2</sub>. Section 3 shows that its expected value is cc(C<sub>4</sub>) = 11/2.</p>
+
+      <p>The animation runs the actual process. Each frame is one step: the ringed vertex is the one sampled, and an amber vertex is covered. On the square it also keeps the two class tallies, so you can watch the covering finish at the moment both tallies reach two.</p>
+      <div class="player" id="pCover">
+        <div class="ptitle"><span class="label">Animation · the covering process</span><div class="scen"><button class="chip" data-scen="tri" aria-pressed="true">triangle</button><button class="chip" data-scen="sq" aria-pressed="false">square</button><button class="chip" data-scen="rand" aria-pressed="false">new run</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 220" role="img" aria-label="The covering process on a triangle or a square"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--raise);border:1px solid var(--line)"></i>uncovered</span><span><i class="sw" style="background:var(--accent)"></i>covered</span><span><i class="sw ring" style="border-color:var(--cool);border-style:solid"></i>sampled this step</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+
+      <p>Alon asked which regular graphs maximize cc(G). A graph is <span class="term">d-regular</span> when every vertex has exactly d neighbors. His guess was cliques.</p>
+      <div class="def"><span class="label">Conjecture · Alon</span>
+        <p>Let d and n be positive integers with d + 1 dividing n. For every finite simple d-regular graph G on n vertices, cc(G) ≤ cc((n/(d+1)) K<sub>d+1</sub>).</p>
+        <p>In words: among graphs where everyone has d neighbors, a pile of disjoint complete graphs on d + 1 vertices is the slowest to cover.</p>
+      </div>
+      <p>Our reading of the intuition comes from the triangle: in a clique the last vertex can only be reached from its d neighbors, so the final covering waits a long time. Alon also suggested the uniform estimate cc(G) ≤ n + O((n log n)/d), which the paper numbers (31) and also disproves.</p>
+      <p>In degree two the question is concrete. Every 2-regular graph is a disjoint union of cycles, a standard fact we add as background, so for n divisible by three the conjecture says that disjoint triangles are slowest.</p>
+      <p class="short"><b>In short:</b> each sampled vertex covers one random uncovered neighbor; cc(K<sub>3</sub>) = 7/2, the square is the two-type double coupon collector, and Alon conjectured that cliques are slowest.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Poisson clocks">
+      <span class="num">3 · POISSON CLOCKS</span>
+      <h2>Turning one sequence into independent pieces</h2>
+      <p>In discrete time the components of a disjoint union are tangled together: a step spent on one triangle is a step not spent on another. The paper removes that coupling by moving to continuous time, where the components run independently and the finishing time of the whole graph becomes the maximum of the components' times.</p>
+      <div class="def"><span class="label">Definition · exponential variables and Poisson clocks</span>
+        <p>A random variable X ~ Exp(λ) has P(X &gt; t) = e<sup>−λt</sup> for t ≥ 0, and mean 1/λ. A rate-λ Poisson clock rings at times whose gaps are independent Exp(λ) variables, so the number of rings by time t is Poisson with mean λt.</p>
+        <p>In words: a clock that is equally likely to ring in any short instant, no matter how long it has already waited.</p>
+      </div>
+      <p>The process the paper uses gives each vertex its own rate-1 clock and applies the covering rule whenever that vertex's clock rings. Its finishing time is T<sub>G</sub>. Two facts make this work. First, by Lemma 2.1, independent clocks with rates λ<sub>1</sub>, …, λ<sub>s</sub> together form a single clock of rate Λ = λ<sub>1</sub> + … + λ<sub>s</sub>, each ring belongs to clock i with probability λ<sub>i</sub>/Λ, and the labels are independent of the ring times. With n clocks of rate 1, the labels of successive rings are uniform vertices: exactly the discrete process, with Exp(n) gaps between steps. Second, from Lemma 2.3,</p>
+      <div class="math" data-tex="\mathbb{E}T = \int_0^\infty \mathbb{P}(T>t)\,dt"></div>
+      <p class="eqn">Eq. 3 · Lemma 2.3</p>
+      <p>for any nonnegative random variable T. The same lemma gives the tail of a sum of k independent Exp(λ) variables,</p>
+      <div class="math" data-tex="\mathbb{P}(X_1+\cdots+X_k>t) = e^{-\lambda t}\sum_{j=0}^{k-1}\frac{(\lambda t)^j}{j!},"></div>
+      <p>which is the probability that a rate-λ clock has rung fewer than k times by time t, and the expected maximum of k independent Exp(λ) variables, which is H<sub>k</sub>/λ.</p>
+      <div class="fact"><span class="label">Fact · Lemma 2.4</span><p>If G has n vertices and no isolated vertices, then</p>
+        <div class="math" data-tex="\operatorname{cc}(G) = n\,\mathbb{E}T_G."></div>
+        <p>Moreover, the continuous-time processes on different components are independent.</p></div>
+      <p class="eqn">Eq. 4</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the discrete count exactly n times the continuous time?</span></summary><div class="pfbody">
+        <p>The n clocks together form one rate-n clock whose ring labels are independent uniform vertices, independent of the gaps Z<sub>1</sub>, Z<sub>2</sub>, … between rings, each Exp(n). Using independent randomness for the neighbor choices, the covering states at the ring times follow the discrete process exactly, so</p>
+        <div class="math" data-tex="T_G = \sum_{j=1}^{N_G} Z_j."></div>
+        <p>The count N<sub>G</sub> depends only on the labels and neighbor choices, not on the gaps. Conditioning on N<sub>G</sub> gives E T<sub>G</sub> = E N<sub>G</sub> / n. The expectations are finite: from any state with an uncovered vertex u and a neighbor v, sampling v produces a new covering, so each covering takes at most n expected steps, and there are n coverings, so E N<sub>G</sub> ≤ n². Different components use disjoint clocks and independent choices, which makes their processes independent.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Independence is what makes disjoint unions tractable. The union is finished by time t exactly when every component is, so for m copies of a graph F,</p>
+      <div class="math" data-tex="\mathbb{P}(T_{mF}\le t) = \mathbb{P}(T_F\le t)^m."></div>
+      <p>Now the two running examples get exact distributions. Define</p>
+      <div class="math" data-tex="q(t) = 1-(1+2t)e^{-2t},"></div>
+      <p class="eqn">Eq. 5</p>
+      <div class="math" data-tex="r(t) = 1-9e^{-2t}+(8+6t)e^{-3t}."></div>
+      <p class="eqn">Eq. 6</p>
+      <div class="fact"><span class="label">Fact · Lemma 2.5</span><p>The square and the triangle satisfy P(T<sub>C<sub>4</sub></sub> ≤ t) = q(t)² and P(T<sub>K<sub>3</sub></sub> ≤ t) = r(t).</p></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where do q(t)² and r(t) come from?</span></summary><div class="pfbody">
+        <p>For the square, let A<sub>t</sub> and B<sub>t</sub> count the rings in L and in R up to time t. Each class has two rate-1 clocks, so these are independent Poisson variables with mean 2t. The square is finished exactly when both counts are at least two. A Poisson variable with mean 2t is at least two with probability 1 − e<sup>−2t</sup> − 2te<sup>−2t</sup> = q(t), so the probability is q(t)².</p>
+        <p>For the triangle, the first two coverings come from rings of any of the three clocks, so their waiting times are independent Exp(3). Their sum X has density 9se<sup>−3s</sup>. After that, one vertex remains and only its two neighbors can cover it, so by the restart property in Lemma 2.1 the last wait Y is Exp(2) and independent of X. Then</p>
+        <div class="math" data-tex="\mathbb{P}(T_{K_3}\le t) = \int_0^t 9se^{-3s}\bigl(1-e^{-2(t-s)}\bigr)\,ds = 1-9e^{-2t}+(8+6t)e^{-3t}."></div>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The Lemma 2.4 formula recovers both expected counts. For the triangle, E T = E X + E Y = 2/3 + 1/2 = 7/6, so cc(K<sub>3</sub>) = 3 · 7/6 = 7/2, matching the hand count. For the square, the tail-integral formula gives E T<sub>C<sub>4</sub></sub> = 11/8 and so cc(C<sub>4</sub>) = 4 · 11/8 = 11/2.</p>
+      <details class="pf"><summary><span class="tagd">computation</span><span class="q">How does the integral give 11/8?</span></summary><div class="pfbody">
+        <p>This calculation is ours. Expanding the square,</p>
+        <div class="math" data-tex="1-q(t)^2 = 2(1+2t)e^{-2t} - (1+2t)^2e^{-4t}."></div>
+        <p>Using the integral of t<sup>j</sup>e<sup>−at</sup> over [0, ∞), which is j!/a<sup>j+1</sup> and appears in the paper's proof of Corollary 3.5, the first term integrates to 2(1/2 + 2/4) = 2 and the second to 1/4 + 4/16 + 8/64 = 5/8. The difference is 11/8.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> with a rate-1 clock at each vertex, cc(G) = n E T<sub>G</sub>, components finish independently, and the square and triangle have exact laws q(t)² and r(t).</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · The duel">
+      <span class="num">4 · THE TWELVE-VERTEX DUEL</span>
+      <h2>Three squares against four triangles</h2>
+      <p>With exact laws for each piece, any union of squares and triangles can be compared. The smallest order where both 4K<sub>3</sub> and 3C<sub>4</sub> exist is twelve, and the conjecture predicts the triangles are slower there.</p>
+      <p>Raising the component laws to powers gives, for every integer k ≥ 1,</p>
+      <div class="math" data-tex="\mathbb{P}(T_{3kC_4}\le t) = q(t)^{6k},"></div>
+      <p class="eqn">Eq. 7</p>
+      <div class="math" data-tex="\mathbb{P}(T_{4kK_3}\le t) = r(t)^{4k}."></div>
+      <p class="eqn">Eq. 8</p>
+      <p>The paper then shows that the squares lose at every moment, P(T<sub>3kC<sub>4</sub></sub> ≤ t) &lt; P(T<sub>4kK<sub>3</sub></sub> ≤ t) for every t &gt; 0, which is Eq. 23, and therefore</p>
+      <div class="math" data-tex="\operatorname{cc}(3kC_4) > \operatorname{cc}(4kK_3)."></div>
+      <p class="eqn">Eq. 22 · Corollary 3.5</p>
+      <p>For k = 1 the tail-integral formula and Lemma 2.4 turn each side into an explicit integral,</p>
+      <div class="math" data-tex="\operatorname{cc}(3C_4) = 12\int_0^\infty\bigl(1-q(t)^6\bigr)dt,\qquad \operatorname{cc}(4K_3) = 12\int_0^\infty\bigl(1-r(t)^4\bigr)dt,"></div>
+      <p>and expanding the powers gives exact rationals:</p>
+      <div class="math" data-tex="\operatorname{cc}(3C_4) = \frac{390968681}{16200000}\approx 24.134,"></div>
+      <p class="eqn">Eq. 24</p>
+      <div class="math" data-tex="\operatorname{cc}(4K_3) = \frac{222738867019}{9685021500}\approx 22.998."></div>
+      <p class="eqn">Eq. 25</p>
+      <p class="note">We checked both fractions independently by solving the discrete Markov chain on all 4,096 covered sets with exact rational arithmetic; both match digit for digit.</p>
+      <p>The first number has a pleasant second meaning, which the paper points out. Three squares have six classes of two vertices each, and the covering finishes when each class has been sampled twice. Since each class is sampled with probability 1/6, cc(3C<sub>4</sub>) is the expected number of rolls of a fair die until every face has appeared twice.</p>
+      <p>It is worth seeing why the comparison is not obvious from the single components. One triangle averages 7/6 time units and one square 11/8, so a square alone is slower per piece, but cc of a union is not a sum. The union finishes when its slowest component does, so what matters is the whole distribution of each component's time, and especially its upper tail. The animation draws P(T ≤ t) for both twelve-vertex graphs as t grows and accumulates the shaded area 12∫(1 − P(T ≤ s)) ds, which by Eq. 3 and Eq. 4 converges to cc.</p>
+      <div class="player" id="pRace">
+        <div class="ptitle"><span class="label">Animation · the race in continuous time</span></div>
+        <div class="stage"><svg viewBox="0 0 340 220" role="img" aria-label="Distribution functions of the finishing times for three squares and four triangles"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>3C<sub>4</sub>: q(t)<sup>6</sup></span><span><i class="sw" style="background:var(--cool)"></i>4K<sub>3</sub>: r(t)<sup>4</sup></span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The amber curve stays below the blue one at every time, so the squares are always less likely to be done. In our reading, two separate reasons combine: early on, finishing a square needs two rings in each class, which takes a while, and late, the square's tail decays more slowly. The next section explains the second reason, which is the one that generalizes.</p>
+      <p class="short"><b>In short:</b> exact integrals give cc(3C<sub>4</sub>) ≈ 24.134 &gt; cc(4K<sub>3</sub>) ≈ 22.998, so Alon's conjecture already fails at twelve vertices.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Twins">
+      <span class="num">5 · TWINS AT THE FINISH</span>
+      <h2>What controls the slow end of the process</h2>
+      <p>The expected finishing time of a big union is dominated by its slowest component, so what matters is how likely one component is to still be unfinished after a long time. The paper identifies exactly which feature of a graph sets that probability.</p>
+      <p>When the uncovered set is U, a ring is useful exactly when it comes from a vertex adjacent to something in U. So the total rate of the next covering is |N(U)|, the number of vertices with a neighbor in U, and this is at least the minimum degree δ. It equals δ only when all of U sits inside one group of degree-δ vertices that share the same open neighborhood. Call such vertices <span class="term">twins</span>; the word is ours, the paper speaks of equivalence classes of equal open neighborhoods.</p>
+      <div class="def"><span class="label">Definition · τ<sub>δ</sub>(G)</span>
+        <p>Partition the vertices into classes with identical open neighborhoods. For a graph with minimum degree δ ≥ 1, τ<sub>δ</sub>(G) is the size of the largest class consisting of degree-δ vertices. For a d-regular graph, τ(G) = τ<sub>d</sub>(G).</p>
+        <p>In words: the largest number of minimum-degree vertices that all have exactly the same neighbors.</p>
+      </div>
+      <p>In the triangle every vertex has a different neighborhood (vertex 1 sees {2, 3}, vertex 2 sees {1, 3}), so τ = 1. In the square, vertices 1 and 3 both see {2, 4}, so τ = 2. When the last uncovered vertices are twins, each covering has to wait at the slowest possible rate δ, and twins can force several such slow waits in a row.</p>
+      <div class="fact"><span class="label">Fact · Theorem 4.1</span><p>For a finite simple graph G with minimum degree δ ≥ 1 and τ = τ<sub>δ</sub>(G), there is a constant c<sub>G</sub> &gt; 0 with</p>
+        <div class="math" data-tex="\mathbb{P}(T_G>t)\sim c_G\,t^{\tau-1}e^{-\delta t}\qquad(t\to\infty)."></div></div>
+      <details class="pf"><summary><span class="tagd">proof sketch</span><span class="q">Why does each twin add a factor of t?</span></summary><div class="pfbody">
+        <p>Condition on the order in which vertices get covered; every order has positive probability. By Lemma 2.2, the time spent in each state is exponential with rate |N(U)|, independently of the rest. Once the uncovered set falls inside one twin class, it stays inside it, so an order can contain at most τ waits of rate δ, and covering everything outside a largest class first achieves τ.</p>
+        <p>With k waits of rate δ, the finishing time is X + Y where Y is a sum of k independent Exp(δ) variables and X is an independent sum of faster waits. The Erlang tail from Section 3 has leading term (δt)<sup>k−1</sup>e<sup>−δt</sup>/(k − 1)!, and since X has faster rates, E e<sup>δX</sup> is finite and only rescales the constant. Averaging over the finitely many orders, the largest k, namely τ, dominates.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For d-regular graphs this pins down the champion. A class of twins has size at most d, because every common neighbor is adjacent to all of them, and size d happens exactly when the twins and their d common neighbors form a K<sub>d,d</sub> component.</p>
+      <div class="fact"><span class="label">Fact · Corollary 4.2</span><p>For a d-regular graph with d ≥ 2, 1 ≤ τ(G) ≤ d, with τ(G) = d exactly when G has a K<sub>d,d</sub> component. If it has exactly b ≥ 1 of them, then</p>
+        <div class="math" data-tex="\mathbb{P}(T_G>t)\sim\frac{2b\,d^{d-1}}{(d-1)!}\,t^{d-1}e^{-dt}."></div></div>
+      <p>The running examples show the difference at d = 2. The triangle's tail is 1 − r(t) = 9e<sup>−2t</sup> − (8 + 6t)e<sup>−3t</sup>, which behaves like 9e<sup>−2t</sup>. The square's tail is 1 − q(t)², which by the formula with b = 1 behaves like 4te<sup>−2t</sup>. Both decay at rate 2, but the square carries an extra factor of t, so for large t the square is always the one still running. At t = 3 the exact tails are already 0.034 for the square against 0.019 for the triangle, values we computed from Eq. 5 and Eq. 6.</p>
+      <p>Two consequences follow in the paper. Corollary 4.3 says that for any fixed h divisible by 2d, the union (h/(2d))K<sub>d,d</sub> uniquely maximizes P(T<sub>G</sub> &gt; t) among d-regular graphs on h vertices once t is large enough. Theorem 4.4 turns this into a statement about expectations. Fix d ≥ 2 and a bound L ≥ 2d on component sizes; then for all large enough n divisible by 2d, the union B<sub>n</sub> = (n/(2d))K<sub>d,d</sub> uniquely maximizes cc among d-regular graphs whose components have at most L vertices, with a quantitative margin,</p>
+      <div class="math" data-tex="\operatorname{cc}(B_n)-\operatorname{cc}(G)\ge\frac{e^{-d}}{32}\,s(G),"></div>
+      <p>where s(G) counts the vertices of G outside K<sub>d,d</sub> components.</p>
+      <details class="pf"><summary><span class="tagd">idea</span><span class="q">Why does the tail decide the expectation for large unions?</span></summary><div class="pfbody">
+        <p>A union of N components finishes when the slowest one does, and that happens around the time u<sub>N</sub> at which a single K<sub>d,d</sub> has unfinished probability 1/N. That time grows with N, so for large unions only the far tails of the components matter. The proof compares each other component with the corresponding number of K<sub>d,d</sub>'s, shows its finished-probability is larger at all late times by a definite amount, and integrates over the window [u<sub>N</sub>, u<sub>N</sub> + 1], where the K<sub>d,d</sub> tail is still about 1/N. The bounded component size L is what lets one threshold work for all component types at once.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> the tail of the finishing time is t<sup>τ−1</sup>e<sup>−δt</sup>, where τ counts minimum-degree twins; K<sub>d,d</sub> has the most twins, so unions of K<sub>d,d</sub> win for large graphs.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Infection">
+      <span class="num">6 · EVERY CYCLE AT ONCE</span>
+      <h2>From covering to an infection process</h2>
+      <p>To find the slowest 2-regular graph of every order, not just large ones, the paper needs the law of the finishing time on every cycle C<sub>m</sub>. It gets this by rewriting the covering process as a simpler spreading process.</p>
+      <p>For a 2-regular graph G, build an auxiliary multigraph on the same vertices: for each vertex v, put one edge between the two neighbors of v. The paper then computes the rate at which an uncovered vertex u gets covered. Each neighbor v of u covers u at rate 1 divided by the number of v's uncovered neighbors, and that number is 1 or 2 depending on whether v's other neighbor is covered. Adding up,</p>
+      <div class="math" data-tex="\sum_{v\sim u}\frac{1}{\#\{\text{uncovered neighbors of }v\}} = 1+\frac12\,\#\{\text{covered auxiliary neighbors of }u\},"></div>
+      <p>with multiplicities counted. That is the rule of an infection process: each vertex catches it spontaneously at rate 1, and each infected auxiliary neighbor passes it on at rate 1/2. Both processes start from nothing and have the same rates in every state, so by Lemma 2.2 the covered set and the infected set have the same law. The paper notes this is a special case of the discrete Bass model, a model of how products spread through a population.</p>
+      <p>Checking on the triangle with vertex 1 covered: vertex 2 has neighbors 1 and 3. Vertex 1 has two uncovered neighbors, contributing 1/2, and vertex 3 has only vertex 2 uncovered, contributing 1, so the rate is 3/2. On the auxiliary side, vertex 1 contributes the edge 2–3 and vertex 3 contributes the edge 1–2, so vertex 2 has one covered auxiliary neighbor and the formula gives 1 + 1/2 = 3/2. This check is ours.</p>
+      <p>The auxiliary multigraph of an odd cycle is the same cycle, visited in a different order, and that of an even cycle C<sub>2m</sub> splits into two disjoint m-cycles: in the square, vertices 1 and 3 contribute the edge 2–4 twice, and vertices 2 and 4 contribute 1–3 twice. Writing F<sub>m</sub>(t) for the probability that the infection process has filled an m-cycle by time t (with two parallel edges when m = 2, and F<sub>1</sub>(t) = 1 − e<sup>−t</sup> as a convention), the paper gets</p>
+      <div class="math" data-tex="\mathbb{P}(T_{C_\ell}\le t)=\begin{cases}F_\ell(t), & \ell\text{ odd},\\ F_{\ell/2}(t)^2, & \ell\text{ even}.\end{cases}"></div>
+      <p class="eqn">Eq. 10</p>
+      <p>In particular F<sub>2</sub> = q and F<sub>3</sub> = r, and the hexagon has exactly the same finishing-time law as two triangles: C<sub>6</sub> becomes two 3-cycles. Our exact chain computation agrees, cc(C<sub>6</sub>) = cc(2K<sub>3</sub>) = 461/50 = 9.22.</p>
+      <h3>Looking backward in time</h3>
+      <p>To compute F<sub>m</sub>, the paper asks when a given set S of r vertices is still entirely uninfected at time t, and traces backward. Draw spontaneous-infection marks at each vertex as rate-1 clocks and transmission arrows on each oriented edge as rate-1/2 clocks. Going backward from time t, collect every vertex from which an infection path could reach S. Inside a gap of k vertices between consecutive members of S, this ancestor set grows from both ends, each end at rate 1/2, so it gains vertices at total rate 1 until the gap is used up. S is uninfected exactly when no spontaneous mark lands on the ancestor region. Defining</p>
+      <div class="math" data-tex="h_k(t)=\mathbb{E}\exp\!\Bigl(-\int_0^t\min\{P_s,k\}\,ds\Bigr),"></div>
+      <p class="eqn">Eq. 13</p>
+      <p>where P is a rate-1 Poisson process, and writing a = e<sup>−t</sup> and k<sub>1</sub>, …, k<sub>r</sub> for the gap sizes, the paper obtains</p>
+      <div class="math" data-tex="\mathbb{P}(S\text{ is entirely uninfected at time }t)=a^r\prod_{i=1}^r h_{k_i}(t)."></div>
+      <p class="eqn">Eq. 14</p>
+      <p>Conditioning on the first backward arrival gives the recursion</p>
+      <div class="math" data-tex="h_k(t)=e^{-t}\Bigl(1+\int_0^t h_{k-1}(u)\,du\Bigr),\qquad h_0\equiv 1."></div>
+      <p class="eqn">Eq. 15</p>
+      <p>Inclusion–exclusion over which vertices are still uninfected, together with a count of the ways to place r vertices on a cycle with given gaps, gives</p>
+      <div class="math" data-tex="F_m(t)=1+\sum_{r=1}^m\frac{m}{r}(-a)^r\,[x^{m-r}]H(x,t)^r,\qquad H(x,t)=\sum_{k\ge0}h_k(t)x^k."></div>
+      <p class="eqn">Eq. 19</p>
+      <details class="pf"><summary><span class="tagd">check</span><span class="q">Does Eq. 19 really give back q and r?</span></summary><div class="pfbody">
+        <p>This check is ours. From Eq. 15, h<sub>1</sub> = a(1 + t), and integrating that once more gives h<sub>2</sub> = a(3 − 2a − ta). Here [x<sup>j</sup>]H<sup>r</sup> is the coefficient of x<sup>j</sup> in H<sup>r</sup>, so [x<sup>1</sup>]H = h<sub>1</sub>, [x<sup>0</sup>]H² = 1 and so on.</p>
+        <p>For m = 2 the sum has two terms, F<sub>2</sub> = 1 − 2a h<sub>1</sub> + a², which simplifies to</p>
+        <div class="math" data-tex="F_2 = 1-a^2(1+2t) = 1-(1+2t)e^{-2t} = q(t)."></div>
+        <p>For m = 3 the coefficients are [x²]H = h<sub>2</sub>, [x¹]H² = 2h<sub>1</sub> and [x⁰]H³ = 1, so</p>
+        <div class="math" data-tex="F_3 = 1-3a h_2+3a^2h_1-a^3 = 1-9a^2+(8+6t)a^3 = r(t)."></div>
+        <p>Both agree with Lemma 2.5, as Eq. 10 requires.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Summing Eq. 19 against x<sup>m</sup>/m packages every cycle into one generating function, which is Lemma 3.1:</p>
+      <div class="math" data-tex="\sum_{m\ge1}\frac{F_m(t)}{m}x^m=-\log\bigl(1-C_t(x)\bigr),\qquad C_t(x)=\sum_{j\ge1}c_j(t)x^j,"></div>
+      <p class="eqn">Eq. 11</p>
+      <p>with c<sub>1</sub>(t) = 1 − a and every c<sub>j</sub>(t) positive, given by the integral in Eq. 12.</p>
+      <h3>Normalizing by the square</h3>
+      <p>The comparison is cleanest per vertex, measured against squares. Fix t &gt; 0 and let b = √q(t), so a square, made of two halves each with law q, has P(T ≤ t) = b⁴, one factor of b per vertex. Define the normalized function g<sub>m</sub> = F<sub>m</sub>(t)/b<sup>m</sup>. By Eq. 10, a cycle C<sub>ℓ</sub> contributes g<sub>ℓ</sub> if ℓ is odd and g<sub>ℓ/2</sub>² if ℓ is even. Since a graph with larger P(T ≤ t) at every time finishes sooner, the slowest graph is the one that makes the product of its normalized factors smallest.</p>
+      <div class="fact"><span class="label">Fact · Lemma 3.3</span><p>At every t &gt; 0, g<sub>2</sub> = 1 and g<sub>m</sub> &gt; 1 for m ≥ 3, and</p>
+        <div class="math" data-tex="1<g_3<g_5<g_3^3,\qquad g_m>g_3\ (m\ge5),\qquad g_m>g_5\ (m\ge8)."></div></div>
+      <details class="pf"><summary><span class="tagd">idea</span><span class="q">How is anything compared at every t at once?</span></summary><div class="pfbody">
+        <p>The paper rewrites C<sub>t</sub>(x/b) as 1 − (1 − x)e<sup>δx</sup> + Δ(x), where δ = 1 − (1 − e<sup>−t</sup>)/b. The first part is exactly what makes g<sub>2</sub> = 1, and Lemma 3.2 shows the correction Δ has positive coefficients starting at x³, with Δ<sub>4</sub> ≤ Δ<sub>3</sub>/2 and Δ<sub>5</sub> ≤ Δ<sub>3</sub>/4. The positivity comes from comparing two measures of equal mass, one of which sits further right. Then g<sub>m</sub> = 1 + m[x<sup>m</sup>]E(x) for a series E with nonnegative coefficients, which gives g<sub>m</sub> &gt; 1, and the coefficient bounds give the chain of inequalities, ending with g<sub>5</sub> − 1 ≤ (35/4)Δ<sub>3</sub> &lt; 9Δ<sub>3</sub> = 3(g<sub>3</sub> − 1).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>To make the lemma concrete, we computed the normalized values at a few times by solving the cycle chains numerically; these numbers are ours, not the paper's.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>t</th><th>g<sub>3</sub></th><th>g<sub>5</sub></th><th>g<sub>3</sub><sup>3</sup></th></tr></thead>
+        <tbody>
+          <tr><td class="n">0.5</td><td class="n">1.057</td><td class="n">1.101</td><td class="n">1.180</td></tr>
+          <tr><td class="n">1</td><td class="n">1.046</td><td class="n">1.085</td><td class="n">1.146</td></tr>
+          <tr><td class="n">2</td><td class="n">1.022</td><td class="n">1.041</td><td class="n">1.067</td></tr>
+          <tr><td class="n">3</td><td class="n">1.007</td><td class="n">1.013</td><td class="n">1.021</td></tr>
+        </tbody>
+      </table></div>
+      <p class="short"><b>In short:</b> on a 2-regular graph, covering is an infection process on an auxiliary graph; a backward look gives every cycle's law, and per vertex, squares are the slowest cycle at every time.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Degree two">
+      <span class="num">7 · THE ANSWER IN DEGREE TWO</span>
+      <h2>Mostly squares, with a small remainder</h2>
+      <p>The inequalities on g<sub>m</sub> act like exchange rates. The question left is which mix of cycles, with total length n, makes the product of normalized factors smallest, since that graph is slowest at every time and hence in expectation.</p>
+      <div class="fact"><span class="label">Fact · Theorem 1.1</span><p>For n ≥ 3, define</p>
+        <div class="math" data-tex="G_n^\star=\begin{cases}\frac n4\,C_4, & n\equiv0\pmod 4,\\ C_5\sqcup\frac{n-5}4\,C_4, & n\equiv1\pmod 4,\\ C_6\sqcup\frac{n-6}4\,C_4, & n\equiv2\pmod 4,\\ C_3\sqcup\frac{n-3}4\,C_4, & n\equiv3\pmod 4.\end{cases}"></div>
+        <p>For every finite simple 2-regular graph G on n vertices, cc(G) ≤ cc(G<sub>n</sub><sup>⋆</sup>), which is Eq. 1, with equality exactly when G ≅ G<sub>n</sub><sup>⋆</sup>, or n ≡ 2 (mod 4) and G ≅ 2C<sub>3</sub> ⊔ ((n − 6)/4)C<sub>4</sub>. Moreover P(T<sub>G</sub> ≤ t) ≥ P(T<sub>G<sub>n</sub><sup>⋆</sup></sub> ≤ t) for every t &gt; 0, which is Eq. 2, with equality at any positive t for exactly the same graphs.</p></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How do the inequalities on g<sub>m</sub> pin down the winner?</span></summary><div class="pfbody">
+        <p>Work with normalized distribution functions; each replacement below keeps n fixed and does not increase the product. First, Lemma 3.3 lets any long cycle be replaced by squares plus nothing, one C<sub>5</sub>, two C<sub>3</sub>'s or one C<sub>3</sub>, according to its length mod 4, strictly unless the cycle is already C<sub>3</sub>, C<sub>4</sub>, C<sub>5</sub> or C<sub>6</sub>, and C<sub>6</sub> → 2C<sub>3</sub> changes nothing. That leaves uC<sub>3</sub> ⊔ wC<sub>4</sub> ⊔ vC<sub>5</sub>, with normalized function g<sub>3</sub><sup>u</sup>g<sub>5</sub><sup>v</sup>.</p>
+        <p>Then 1 &lt; g<sub>3</sub> &lt; g<sub>5</sub> &lt; g<sub>3</sub>³ gives three strict moves:</p>
+        <div class="math" data-tex="3C_3\to C_5\sqcup C_4,\qquad 2C_5\to 2C_3\sqcup C_4,\qquad C_3\sqcup C_5\to 2C_4."></div>
+        <p>Each adds a square, so repeating them stops, with u ≤ 2, v ≤ 1 and uv = 0. The count 3u + 5v ≡ n (mod 4) then forces (u, v) = (0, 0), (0, 1), (2, 0), (1, 0) in the four residue classes, which is G<sub>n</sub><sup>⋆</sup> up to C<sub>6</sub> ↔ 2C<sub>3</sub>. Components are independent, so the comparisons multiply, and integrating the tails with Lemma 2.4 gives the statement about cc.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Fact · Corollary 3.4</span><p>Every 2-regular graph on n vertices has P(T<sub>G</sub> ≤ t) ≥ q(t)<sup>n/2</sup> for t &gt; 0, with equality exactly when all components are squares. So every slowest graph has all but at most six vertices in squares.</p></div>
+      <p>Triangle unions are slowest only at n = 3 and n = 6, so the first counterexample to Alon's conjecture in degree two has nine vertices:</p>
+      <div class="math" data-tex="\operatorname{cc}(C_4\sqcup C_5) > \operatorname{cc}(3K_3)."></div>
+      <p class="eqn">Eq. 21</p>
+      <p>The table below lists exact values we computed for every 2-regular graph with 6 to 9 vertices, by solving the discrete chain with rational arithmetic. They are ours and serve only to illustrate the theorem; in each row group the theorem's G<sub>n</sub><sup>⋆</sup> comes out on top.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>n</th><th>Graph</th><th>cc(G), ours</th></tr></thead>
+        <tbody>
+          <tr><td class="n">6</td><td>C<sub>6</sub> and 2C<sub>3</sub> (tied, both extremal)</td><td class="n">9.220</td></tr>
+          <tr><td class="n">7</td><td>C<sub>3</sub> ⊔ C<sub>4</sub> (extremal)</td><td class="n">11.649</td></tr>
+          <tr><td class="n">7</td><td>C<sub>7</sub></td><td class="n">11.285</td></tr>
+          <tr><td class="n">8</td><td>2C<sub>4</sub> (extremal)</td><td class="n">14.189</td></tr>
+          <tr><td class="n">8</td><td>C<sub>3</sub> ⊔ C<sub>5</sub></td><td class="n">13.505</td></tr>
+          <tr><td class="n">8</td><td>C<sub>8</sub></td><td class="n">13.484</td></tr>
+          <tr><td class="n">9</td><td>C<sub>4</sub> ⊔ C<sub>5</sub> (extremal)</td><td class="n">16.120</td></tr>
+          <tr><td class="n">9</td><td>3C<sub>3</sub> and C<sub>3</sub> ⊔ C<sub>6</sub> (tied)</td><td class="n">15.826</td></tr>
+        </tbody>
+      </table></div>
+      <p class="short"><b>In short:</b> in degree two, the slowest graph is all squares plus a leftover of at most six vertices set by n mod 4, and the conjecture first fails at nine vertices.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Higher degree">
+      <span class="num">8 · EVERY DEGREE</span>
+      <h2>K<sub>d,d</sub> beats cliques by a log log term</h2>
+      <p>Degree two might look special, so the paper also shows the conjecture fails for every fixed d ≥ 2, by comparing unions of K<sub>d,d</sub> with unions of K<sub>d+1</sub> directly.</p>
+      <p>The square argument generalizes. In B<sub>n,d</sub> = (n/(2d))K<sub>d,d</sub> there are m = n/d classes of d vertices, a sample from a class covers a vertex of the opposite class until it is full, and so the graph is covered exactly when every class has been sampled d times:</p>
+      <div class="math" data-tex="N_{B_{n,d}}\overset{d}{=}D_{n/d,\,d}."></div>
+      <p class="eqn">Eq. 27</p>
+      <p>Newman–Shepp, Eq. 9, then gives</p>
+      <div class="math" data-tex="\operatorname{cc}(B_{n,d})=\frac nd\Bigl(\log\frac nd+(d-1)\log\log\frac nd+O_d(1)\Bigr)."></div>
+      <p class="eqn">Eq. 28</p>
+      <p>A clique K<sub>d+1</sub> has the same structure as the triangle: d coverings at rate d + 1, then one last covering at rate d, so its finishing time S = X + Y satisfies</p>
+      <div class="math" data-tex="e^{-dt}\le\mathbb{P}(S>t)\le(d+1)^de^{-dt}."></div>
+      <p class="eqn">Eq. 29</p>
+      <p>The maximum of h = n/(d+1) independent copies then has expectation between H<sub>h</sub>/d and (log(h(d+1)<sup>d</sup>) + 1)/d, which gives</p>
+      <div class="math" data-tex="\operatorname{cc}(H_{n,d})=\frac nd\Bigl(\log\frac n{d+1}+O_d(1)\Bigr)."></div>
+      <p class="eqn">Eq. 30</p>
+      <div class="fact"><span class="label">Fact · Proposition 5.1</span><p>For n divisible by both 2d and d + 1, as n → ∞,</p>
+        <div class="math" data-tex="\operatorname{cc}(B_{n,d})-\operatorname{cc}(H_{n,d})=\frac{(d-1)n}{d}\log\log n+O_d(n)."></div>
+        <p>So the K<sub>d,d</sub> union is slower than the clique union for all large enough such n.</p></div>
+      <p class="eqn">Eq. 26</p>
+      <p>The log log term is the price of needing d copies of each class in Section 1. A clique's last vertex waits at rate d once, but a K<sub>d,d</sub> class of twins makes the process wait at rate d up to d times. Proposition 5.1 is asymptotic and does not say where the crossover happens for d ≥ 3. As our own check at the first common order for d = 3, n = 12, the exact chain gives cc(2K<sub>3,3</sub>) ≈ 19.566 against cc(3K<sub>4</sub>) ≈ 18.670, so K<sub>3,3</sub> already wins there.</p>
+      <p>The paper also refutes Alon's uniform estimate, Eq. 31. Proposition 5.2 shows that for every m ≥ 2,</p>
+      <div class="math" data-tex="0\le\operatorname{cc}(2K_m)-\Bigl(2m+\frac{2m}{4^m}\binom{2m}{m}\Bigr)\le\frac{3}{m-1},"></div>
+      <p>so cc(2K<sub>m</sub>) ≥ 2m + √m. Two cliques of size m form an (m − 1)-regular graph on n = 2m vertices, and their excess over n grows like √m while (n log n)/d stays of order log m, so no absolute constant works. The source of the √m is imbalance: after 2m samples, one clique has typically received about √m fewer than it needs. With m = 3 the bracket is 6 + 6 · 20/64 = 7.875, and our exact value cc(2K<sub>3</sub>) = 9.22 sits 1.345 above it, inside the allowed 3/2.</p>
+      <p class="short"><b>In short:</b> for every fixed d ≥ 2, unions of K<sub>d,d</sub> beat unions of K<sub>d+1</sub> by about ((d − 1)/d) n log log n, and two cliques already break the suggested uniform bound.</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · Results">
+      <span class="num">9 · RESULTS</span>
+      <h2>What the paper proves, in numbers</h2>
+      <p>Every row is a theorem or explicit computation in the paper.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Statement</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Alon's conjecture, d = 2</td><td>false; smallest counterexample n = 9, cc(C<sub>4</sub> ⊔ C<sub>5</sub>) &gt; cc(3K<sub>3</sub>) (Eq. 21)</td></tr>
+          <tr><td>Twelve vertices</td><td class="n">cc(3C₄) ≈ 24.134 &gt; cc(4K₃) ≈ 22.998 (Eqs. 24, 25)</td></tr>
+          <tr><td>All orders 12k</td><td>cc(3kC<sub>4</sub>) &gt; cc(4kK<sub>3</sub>), and the squares lose at every t (Cor. 3.5)</td></tr>
+          <tr><td>Slowest 2-regular graphs</td><td>G<sub>n</sub><sup>⋆</sup> for every n ≥ 3, unique up to C<sub>6</sub> ↔ 2C<sub>3</sub>, also in distribution (Thm 1.1)</td></tr>
+          <tr><td>Tail of T<sub>G</sub>, any G</td><td>c<sub>G</sub> t<sup>τ−1</sup>e<sup>−δt</sup> (Thm 4.1)</td></tr>
+          <tr><td>Fixed d, bounded components</td><td>(n/(2d))K<sub>d,d</sub> uniquely slowest for large n, margin e<sup>−d</sup>s(G)/32 (Thm 4.4)</td></tr>
+          <tr><td>K<sub>d,d</sub> vs K<sub>d+1</sub> unions</td><td>gap ((d − 1)n/d) log log n + O<sub>d</sub>(n) (Prop. 5.1)</td></tr>
+          <tr><td>Uniform estimate (31)</td><td>false; cc(2K<sub>m</sub>) ≥ 2m + √m (Prop. 5.2)</td></tr>
+        </tbody>
+      </table></div>
+      <p class="short"><b>In short:</b> the conjecture fails in every degree from two up, with an exact answer in degree two and an asymptotic one in general.</p>
+    </section>
+
+    <!-- 10 -->
+    <section data-sec="10 · Assessment">
+      <span class="num">10 · ASSESSMENT</span>
+      <h2>What is shown, and what isn't</h2>
+      <p>The degree-two results are complete and, by the standards of the field, elementary: Poissonization, an exact rate identity, a backward duality on cycles, and power-series coefficient comparisons. The twelve-vertex counterexample is a finite computation and is easy to trust; our independent rational-arithmetic solution of the 4,096-state chain reproduces both of the paper's fractions exactly, and also confirms C<sub>6</sub> and 2C<sub>3</sub> tie and that C<sub>4</sub> ⊔ C<sub>5</sub> beats 3K<sub>3</sub>. The full classification rests on Lemmas 3.1 to 3.3, which are compact but careful; we checked the generating-function formula only for m = 2 and 3, and the inequalities numerically at four times, not in general.</p>
+      <p>Several claims are narrower than the headline. In degree d ≥ 3 the paper does not find the slowest graph at each order. Theorem 4.4 identifies K<sub>d,d</sub> unions as optimal only among graphs whose components have bounded size L and only for n beyond an unspecified threshold depending on d and L, so a graph with one huge component is not covered. Proposition 5.1 disproves the conjecture only for large n, with an unspecified O<sub>d</sub>(n) error, and does not say where the crossover is. Graphs that are not regular are outside the scope except for Theorem 4.1, which applies to any graph with minimum degree at least one.</p>
+      <p>The paper states that the authors used a large language model during preparation, for mathematical exploration, checking arguments, organization and language editing, and that the authors take responsibility for the statements and proofs. It is a fresh preprint and has not been refereed.</p>
+      <div class="aside"><span class="label">A connection, ours</span>The mechanism in Section 5 is general: when a process ends with several items that can only be served by the same bottleneck, the waiting times stack and the tail picks up a polynomial factor. The same thing makes a sum of k exponential service times (an Erlang distribution) far more likely to run long than a single exponential with the same rate. The paper doesn't make this connection.</div>
+      <p class="short"><b>In short:</b> degree two is settled completely and verifiably; higher degree is settled only asymptotically and within bounded component sizes.</p>
+    </section>
+
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <div class="refs">
+        <p>Deng and Wang, <a href="https://arxiv.org/abs/2611.11345" target="_blank" rel="noopener">Extremal Graphs for Alon's Graph Coupon-Collector Conjecture</a> (2026). The paper.</p>
+        <p>Doumas and Papanicolaou, <a href="https://arxiv.org/abs/1412.3626" target="_blank" rel="noopener">The Coupon Collector's Problem Revisited: Generalizing the Double Dixie Cup Problem of Newman and Shepp</a> (2015). Its introduction is a readable survey of the coupon collector and the repeated version behind Eq. 9, including the Erdős–Rényi limit law.</p>
+        <p class="note">The paper's other background sources, Alon's "Problems and results in extremal combinatorics II" (Discrete Mathematics, 2008), Newman and Shepp's "The double Dixie cup problem" (1960) and Durrett's <i>Essentials of Stochastic Processes</i>, could not be opened from here and are listed without links.</p>
+      </div>
+    </section>
+  </article>
+
+  <footer>
+    <p>Built from a full read of arXiv 2611.11345v1. Equation, lemma and theorem numbers match the paper. Both animations run real computations: the covering process step by step on the triangle and square, and the exact distribution functions q(t)<sup>6</sup> and r(t)<sup>4</sup> with numerically integrated tails. The step-by-step derivation of cc(K<sub>3</sub>), the integral for cc(C<sub>4</sub>), the checks of Eq. 19, the g-table, the exact small-n values and the 2K<sub>3,3</sub> versus 3K<sub>4</sub> comparison are ours.</p>
+  </footer>
+</div>
+
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-11345',date:'2026-11-10',title:"Extremal Graphs for Alon's Graph Coupon-Collector Conjecture",authors:'Deng, Wang',field:'math.CO',tags:['coupon collector','graph theory','probability'],mins:35,
+     dek:'Pick a random vertex, cover one of its uncovered neighbors, repeat: Alon guessed that disjoint cliques make this slowest, but three squares already outlast four triangles. Vertices that share all their neighbors stretch the tail of the finishing time, so four-cycles and K<sub>d,d</sub> are the true extremes.'},
     {id:'2611-08869',date:'2026-11-09',title:'As Easy as Rank One: Optimal Algorithms for Matroid Secretary and Single-Sample Matroid Prophet',authors:'Abdi, Banihashem, Hajiaghayi, Huang, Mittal, Singla',field:'cs.DS',tags:['secretary problem','matroids','probability'],mins:35,
      dek:'Choosing many things online under a matroid rule is exactly as hard as choosing one: each optimal element can be kept with probability 1/e, settling a conjecture open since 2007. A short reversible-update trick already gets 1/4, and one sample per distribution suffices for the prophet version.'},
     {id:'2611-07144',date:'2026-11-06',title:'Dithered Belief Propagation for Real-Time Quantum Memory Decoding',authors:'Cai, Jarkas, Zhao, Gross',field:'quant-ph',tags:['error correction','decoding','qLDPC'],mins:35,
@@ -1030,6 +1430,77 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     const rnd=()=>{const X=Array.from({length:6},()=>Math.random()<.5?1:0);const a=[0,1,2,3,4,5];for(let i=5;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return{X,arr:a}};
     root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));const s=b.dataset.scen==='rand'?rnd():EX;load(s.X,s.arr)}));
     load(EX.X,EX.arr);
+  })();
+
+  // ================= 2611.11345: covering process =================
+  (function(){
+    const root=document.getElementById('pCover');if(!root)return;const P=Player(root);
+    const G={tri:{n:3,nb:[[1,2],[0,2],[0,1]],pos:[[170,36],[80,178],[260,178]],cc:'7/2 = 3.5',name:'triangle'},
+             sq:{n:4,nb:[[1,3],[0,2],[1,3],[0,2]],pos:[[100,40],[240,40],[240,178],[100,178]],cc:'11/2 = 5.5',name:'square',cls:['L','R','L','R']}};
+    const rng=seed=>()=>{seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+    const SEED={tri:5,sq:2};let cur='tri';
+    function run(g,rand){const cov=Array(g.n).fill(false),steps=[],tally={L:0,R:0};let k=0;
+      while(cov.some(c=>!c)&&k<80){k++;const v=Math.floor(rand()*g.n),un=g.nb[v].filter(u=>!cov[u]);let u=-1;
+        if(un.length){u=un[Math.floor(rand()*un.length)];cov[u]=true}if(g.cls)tally[g.cls[v]]++;
+        steps.push({v,un,u,cov:[...cov],tally:{...tally}})}
+      return steps}
+    const nm=i=>'vertex '+(i+1);
+    function load(key,seed){cur=key;const g=G[key],S=run(g,rng(seed));
+      const F=[{cov:Array(g.n).fill(false),v:-1,tally:{L:0,R:0},t:'The start',c:g.cls?`A square with every vertex uncovered. Vertices 1 and 3 form class L and share the neighbors 2 and 4; vertices 2 and 4 form class R. A sample in one class can only ever cover a vertex of the other.`:`A triangle with every vertex uncovered. Each step samples one of the three vertices uniformly; the average number of steps to finish is cc = 7/2.`}];
+      S.forEach((s,i)=>{const left=s.cov.filter(c=>!c).length;let c;
+        if(s.u<0)c=`${nm(s.v)[0].toUpperCase()+nm(s.v).slice(1)} is sampled, but all of its neighbors are already covered, so this step is wasted.`;
+        else c=`${nm(s.v)[0].toUpperCase()+nm(s.v).slice(1)} is sampled. Its uncovered ${s.un.length>1?'neighbors are '+s.un.map(x=>x+1).join(' and ')+', and one is chosen at random':'neighbor is '+(s.un[0]+1)}: ${nm(s.u)} is now covered.`;
+        if(g.cls)c+=` Tallies: L has been sampled ${s.tally.L} time${s.tally.L===1?'':'s'}, R ${s.tally.R} time${s.tally.R===1?'':'s'}.${left&&s.u>=0&&s.cov.filter((x,j)=>!x&&g.cls[j]!==g.cls[s.v]).length===0?' Class '+(g.cls[s.v]==='L'?'R':'L')+' is full now, so further samples in '+g.cls[s.v]+' are wasted.':''}`;
+        else if(left===1&&s.u>=0)c+=` Only ${nm(s.cov.indexOf(false))} is left. A step now succeeds only when one of its two neighbors is sampled, which has probability 2/3.`;
+        F.push({cov:s.cov,v:s.v,u:s.u,tally:s.tally,t:`Step ${i+1}`,c})});
+      F.push({cov:S[S.length-1].cov,v:-1,tally:S[S.length-1].tally,end:true,t:'Covered',c:`Every vertex is covered after ${S.length} steps${S.filter(s=>s.u<0).length?', '+S.filter(s=>s.u<0).length+' of them wasted':''}. Averaged over all runs the ${g.name} takes cc = ${g.cc} steps${g.cls?', the expected number of fair coin flips until both heads and tails have appeared twice':''}.`});
+      F.delay=3200;
+      P.load(F,(fr,el)=>{
+        g.nb.forEach((ns,a)=>ns.forEach(b=>{if(a<b){const[x1,y1]=g.pos[a],[x2,y2]=g.pos[b];el('line',{x1,y1,x2,y2,class:'edge'})}}));
+        if(fr.v>=0&&fr.u>=0){const[x1,y1]=g.pos[fr.v],[x2,y2]=g.pos[fr.u],dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L;
+          el('line',{x1:x1+ux*24,y1:y1+uy*24,x2:x2-ux*26,y2:y2-uy*26,stroke:'var(--accent)','stroke-width':2.5});
+          const hx=x2-ux*24,hy=y2-uy*24;el('path',{d:`M${hx} ${hy} L${hx-ux*9-uy*5} ${hy-uy*9+ux*5} L${hx-ux*9+uy*5} ${hy-uy*9-ux*5} Z`,fill:'var(--accent)'})}
+        g.pos.forEach(([x,y],i)=>{if(i===fr.v)el('circle',{cx:x,cy:y,r:24,fill:'none',stroke:'var(--cool)','stroke-width':2.5});
+          el('circle',{cx:x,cy:y,r:17,fill:fr.cov[i]?'var(--accent)':'var(--raise)',stroke:fr.cov[i]?'var(--accent)':'var(--line)','stroke-width':2});
+          el('text',{x,y:y+4,class:'lab',fill:fr.cov[i]?'var(--accent-ink)':'var(--fg)','font-size':12}).textContent=(i+1)+(g.cls?g.cls[i]:'')});
+        el('text',{x:170,y:212,class:'lab'}).textContent=g.cls?`L sampled ${fr.tally.L}  ·  R sampled ${fr.tally.R}  ·  need 2 each`:(fr.end?'all covered':`${fr.cov.filter(c=>c).length} of 3 covered`);});
+    }
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.scen;
+      if(k!=='rand')root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+      load(k==='rand'?cur:k,k==='rand'?Math.floor(Math.random()*1e9):SEED[k])}));
+    load('tri',SEED.tri);
+  })();
+
+  // ================= 2611.11345: three squares vs four triangles =================
+  (function(){
+    const root=document.getElementById('pRace');if(!root)return;const P=Player(root);
+    const q=t=>1-(1+2*t)*Math.exp(-2*t),r=t=>1-9*Math.exp(-2*t)+(8+6*t)*Math.exp(-3*t);
+    const FA=t=>Math.pow(q(t),6),FB=t=>Math.pow(r(t),4);
+    const area=(F,T)=>{const n=2000,h=T/n;let s=0;for(let i=0;i<=n;i++){const w=i===0||i===n?1:i%2?4:2;s+=w*(1-F(i*h))}return s*h/3};
+    const TS=[0.5,1,1.5,2,2.5,3,4,6,20];
+    const F=TS.map((T,i)=>{const a=FA(T),b=FB(T),A=12*area(FA,T),B=12*area(FB,T);const last=i===TS.length-1;
+      let c;
+      if(last)c=`Running out to t = 20 the curves are both at 1 to many decimals and the areas have converged: 12∫(1 − q⁶) = ${A.toFixed(3)} and 12∫(1 − r⁴) = ${B.toFixed(3)}. These are Eqs. 24 and 25: the squares take longer on average, against Alon's conjecture.`;
+      else if(i===0)c=`At t = ${T}, each vertex's clock has rung half a time on average. P(three squares done) = ${a.toFixed(4)} and P(four triangles done) = ${b.toFixed(4)}: almost nothing is finished. The shaded areas so far, times 12, are ${A.toFixed(3)} and ${B.toFixed(3)}.`;
+      else c=`At t = ${T}: P(3C₄ done) = ${a.toFixed(4)}, P(4K₃ done) = ${b.toFixed(4)}. ${a<b?'The squares are behind, as Eq. 23 says they are at every t.':''} Accumulated 12∫(1 − P) so far: ${A.toFixed(3)} for the squares, ${B.toFixed(3)} for the triangles${T>=3?'; the gap keeps widening as the squares’ heavier tail, with its extra factor of t, plays out':''}.`;
+      return{T,a,b,A,B,last,t:last?'The totals':'t = '+T,c}});
+    F.delay=4200;
+    const X0=34,X1=326,Y0=176,Y1=24,TM=6,sx=t=>X0+(Math.min(t,TM)/TM)*(X1-X0),sy=p=>Y0-p*(Y0-Y1);
+    P.load(F,(fr,el)=>{
+      el('line',{x1:X0,y1:Y0,x2:X1,y2:Y0,stroke:'var(--line)'});el('line',{x1:X0,y1:Y0,x2:X0,y2:Y1,stroke:'var(--line)'});
+      el('line',{x1:X0,y1:Y1,x2:X1,y2:Y1,stroke:'var(--line)','stroke-dasharray':'3 4'});
+      [0,1,2,3,4,5,6].forEach(t=>{el('text',{x:sx(t),y:Y0+14,class:'lab'}).textContent=t});
+      el('text',{x:X0-14,y:Y1+4,class:'lab'}).textContent='1';el('text',{x:X0-14,y:Y0+4,class:'lab'}).textContent='0';
+      el('text',{x:(X0+X1)/2,y:Y0+30,class:'lab'}).textContent='time t';
+      const Te=Math.min(fr.T,TM),n=120;
+      const path=f=>{let d='';for(let i=0;i<=n;i++){const t=Te*i/n;d+=(i?'L':'M')+sx(t).toFixed(1)+' '+sy(f(t)).toFixed(1)}return d};
+      el('path',{d:path(FA)+`L${sx(Te)} ${Y1}L${X0} ${Y1}Z`,fill:'var(--accent)',opacity:.13});
+      el('path',{d:path(FB),fill:'none',stroke:'var(--cool)','stroke-width':2.2});
+      el('path',{d:path(FA),fill:'none',stroke:'var(--accent)','stroke-width':2.2});
+      el('line',{x1:sx(Te),y1:Y0,x2:sx(Te),y2:Y1,stroke:'var(--muted)','stroke-dasharray':'2 3'});
+      el('text',{x:X1-4,y:Y0-40,class:'lab',fill:'var(--accent)',style:'text-anchor:end'}).textContent='3C₄: '+fr.A.toFixed(3);
+      el('text',{x:X1-4,y:Y0-24,class:'lab',fill:'var(--cool)',style:'text-anchor:end'}).textContent='4K₃: '+fr.B.toFixed(3);
+    });
   })();
 
   route();
