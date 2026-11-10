@@ -182,9 +182,9 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p class="meta">Zhengyu Cai, Mohamad Ali Jarkas, Bokun Zhao, Warren J. Gross · posted Nov 4, 2026 · quant-ph, cs.IT · <a href="https://arxiv.org/abs/2611.07144" target="_blank" rel="noopener">arXiv 2611.07144</a></p>
   </div>
   <div class="tools" style="position:sticky">
-    <span class="label" id="secLabel">Overview</span>
-    <button class="toggle" id="openAll" aria-pressed="false">Open all proofs</button>
-    <i class="readbar" id="readbar"></i>
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
   </div>
 
   <article>
@@ -470,10 +470,339 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
   </footer>
 </div>
 
+<!-- ================= PAPER: 2611.08869 ================= -->
+<div class="wrap" id="view-p-2611-08869" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Mon, Nov 9</span></div>
+  <div class="paperhead">
+    <h1>As Easy as Rank One: Optimal Algorithms for Matroid Secretary and Single-Sample Matroid Prophet</h1>
+    <p class="meta">Hamed Abdi, Kiarash Banihashem, MohammadTaghi Hajiaghayi, Zhiyi Huang, Danny Mittal, Sahil Singla · posted Nov 6, 2026 · cs.DS, cs.GT · <a href="https://arxiv.org/abs/2611.08869" target="_blank" rel="noopener">arXiv 2611.08869</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">Choosing several things online, one at a time with no take-backs, under a rule like "no cycles" or "at most k", turns out to be exactly as hard as choosing a single thing: this paper proves it. The classical secretary problem picks the best of n candidates arriving in random order with probability 1/e, and since 2007 people had asked whether the same constant works when the allowed choices form a matroid. The best general answer had been stuck at O(log log r) since 2014. The authors give a short algorithm that keeps each optimal element with probability at least 1/4, then a deeper construction that reaches 1/e, the best possible, plus a matching result for the "prophet" version where each value comes with one sample from its distribution.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>why the classical secretary rule succeeds with probability about 1/e, by a one-line integral;</li>
+        <li>what a matroid is, why greedy finds its best set, and what an exchange partner is;</li>
+        <li>why the obvious online rules fail, using a four-town road network small enough to check by hand;</li>
+        <li>the paper's reversible-update algorithm and the snapshot trick that proves its 1/4 guarantee;</li>
+        <li>how the optimal 1/e construction works in outline, and what the paper does and doesn't establish.</li>
+      </ul>
+    </div>
+
+    <details class="pf" id="notation2"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>V, n</dt><dd>the ground set of elements (candidates, roads); n = |V|</dd>
+        <dt>𝓘</dt><dd>the independent sets: the subsets you are allowed to keep</dd>
+        <dt>v<sub>e</sub></dt><dd>the value of element e; v(A) is the total value of a set A</dd>
+        <dt>r</dt><dd>the rank: the size of the largest independent set</dd>
+        <dt>Greedy(T)</dt><dd>the set greedy picks from T, scanning in decreasing value</dd>
+        <dt>Greedy(V)</dt><dd>the canonical optimum, the best independent set overall</dd>
+        <dt>S</dt><dd>the initial sample: arrivals rejected on purpose to learn from</dd>
+        <dt>C, F</dt><dd>the reference configuration and the set of processed elements</dd>
+        <dt>C ⊕ e</dt><dd>C with e's membership toggled: added if absent, removed if present</dd>
+        <dt>C<sub>e</sub></dt><dd>the snapshot: the configuration just before e is processed</dd>
+        <dt>ALG</dt><dd>the set the online algorithm accepts</dd>
+        <dt>p, t</dt><dd>the cutoff time and the current time, in continuous time on [0, 1]</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Two running examples</span>
+      <ul>
+        <li><b>Four applicants.</b> Four candidates with distinct scores arrive in random order and you may hire one, deciding on the spot. Every probability can be checked by listing cases.</li>
+        <li><b>The four-town network.</b> Towns u, a, b, c and six possible roads with values ab = 6, bc = 5, ca = 4, ua = 3, ub = 2, uc = 1. You may build any set of roads that contains no loop. Roads arrive in random order and must be built or refused on arrival. The best network is ab, bc, ua, worth 14.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Secretary">
+      <span class="num">1 · THE SECRETARY PROBLEM</span>
+      <h2>Picking the best when you can't go back</h2>
+      <p>The whole paper generalizes one classical puzzle, so it pays to understand that puzzle completely first. The question is how well anyone can pick the single best item from a stream when each item must be accepted or rejected the moment it appears.</p>
+      <div class="def"><span class="label">Definition · the secretary problem</span>
+        <p>Here n distinct values arrive in uniformly random order. After seeing each value, an algorithm must immediately and irrevocably accept or reject it, and it may accept at most one. It succeeds if it accepts the largest value.</p>
+        <p>In words: you interview candidates one by one, you can only compare them with the people already seen, and a rejected candidate is gone for good.</p>
+      </div>
+      <p>The classical strategy is a <span class="term">cutoff rule</span>: reject the first s arrivals no matter what, then accept the first later arrival that beats all of them. The paper writes its success probability as</p>
+      <div class="math" data-tex="c_n(s) = \frac{s}{n}\sum_{i=s}^{n-1}\frac{1}{i}."></div>
+      <p class="eqn">Theorem 7.2, definition of c<sub>n</sub>(s)</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Where does the formula for c<sub>n</sub>(s) come from?</span></summary><div class="pfbody">
+        <p>This is the standard argument; the paper uses the formula without deriving it. Suppose the best candidate sits in position i + 1, which happens with probability 1/n. If i + 1 ≤ s it is rejected in the sampling phase, so assume i ≥ s. The rule then accepts it exactly when nobody between position s + 1 and position i beat the sample first. That happens exactly when the best of the first i candidates sits among the first s positions.</p>
+        <p>Because the order is uniformly random, the best of the first i candidates is equally likely to be in any of those i positions, so this has probability s/i. Summing over i gives</p>
+        <div class="math" data-tex="\Pr[\text{success}] = \sum_{i=s}^{n-1}\frac{1}{n}\cdot\frac{s}{i} = c_n(s)."></div>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For the four applicants, a cutoff of one gives c<sub>4</sub>(1) = (1/4)(1 + 1/2 + 1/3) = 11/24 ≈ 0.458, and a cutoff of two gives c<sub>4</sub>(2) = (2/4)(1/2 + 1/3) = 5/12 ≈ 0.417. Taking the very first applicant succeeds only with probability 1/4, so a little patience nearly doubles the odds. For eight candidates the best cutoff is three, with c<sub>8</sub>(3) ≈ 0.410.</p>
+      <h3>The continuous-time picture and where 1/e comes from</h3>
+      <p>The cleanest way to see the limit is to give each element an independent arrival time, uniform on [0, 1], and to use a cutoff time p instead of a cutoff count. The paper uses exactly this model. An element that arrives at time t &gt; p and beats everything before it is selected precisely when the largest earlier arrival came before p. Given t, that earlier arrival's time is uniform on [0, t], so it falls before p with probability p/t. The best element arrives at a uniform time, so its chance of being selected is</p>
+      <div class="math" data-tex="\int_{p}^{1}\frac{p}{t}\,dt = p\ln(1/p)."></div>
+      <p class="eqn">Eq. 11</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why is p = 1/e the best cutoff?</span></summary><div class="pfbody">
+        <p>The antiderivative of p/t is p ln t, so the integral is p(ln 1 − ln p) = p ln(1/p). To maximize g(p) = −p ln p, differentiate: g′(p) = −ln p − 1, which is zero at ln p = −1, that is p = 1/e. The second derivative −1/p is negative, so this is a maximum, and the value is</p>
+        <div class="math" data-tex="g(1/e) = \tfrac{1}{e}\ln e = \tfrac{1}{e} \approx 0.368."></div>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Fact</span><p>No algorithm can do better than 1/e in the limit, even for picking one item. The paper calls a guarantee of selecting with probability 1/c "c-competitive", so e is the best possible ratio, and the paper's goal is to match it for matroids.</p></div>
+      <p>The animation runs the cutoff rule on eight candidates with s = 3. Bar height is a candidate's score, from 1 to 8. The dashed line is the bar to beat, set by the best of the first three.</p>
+
+      <div class="player" id="pSec">
+        <div class="ptitle"><span class="label">Animation · the cutoff rule</span><div class="scen"><button class="chip" data-scen="win" aria-pressed="true">success</button><button class="chip" data-scen="early" aria-pressed="false">too early</button><button class="chip" data-scen="miss" aria-pressed="false">best in sample</button><button class="chip" data-scen="rand" aria-pressed="false">shuffle</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 200" role="img" aria-label="Eight candidates arriving with a cutoff of three"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--muted)"></i>sample (rejected)</span><span><i class="sw" style="background:var(--cool)"></i>seen after cutoff</span><span><i class="sw" style="background:var(--accent)"></i>accepted</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+
+      <p class="short"><b>In short:</b> reject the first 1/e of the stream, then take the first item that beats it; this wins with probability p ln(1/p) = 1/e, and nothing does better.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Matroids">
+      <span class="num">2 · MATROIDS</span>
+      <h2>Rules for which sets you may keep</h2>
+      <p>Many real selection problems let you keep more than one item, but not just any combination: a hiring budget, a ban on redundant network links, a limit per department. A matroid is the most general kind of rule under which "take the best things that still fit" is always optimal, which makes it the natural setting for asking whether choosing many is harder than choosing one.</p>
+      <div class="def"><span class="label">Definition · matroid</span>
+        <p>A matroid is a finite ground set V together with a family 𝓘 of subsets, called independent, such that the empty set is independent, every subset of an independent set is independent, and the exchange property holds: if A and B are independent and |A| &lt; |B|, then some b in B but not in A makes A ∪ {b} independent.</p>
+        <p>In words: the allowed sets are closed under throwing things away, and a smaller allowed set can always be grown using something from a bigger one.</p>
+      </div>
+      <p class="note">This axiom list is the standard textbook definition, added here as background. The paper assumes it and works with the derived notions below.</p>
+      <p>Three examples carry the whole chapter. The <span class="term">rank-one</span> matroid allows any set of size at most one, which is exactly the secretary problem. The <span class="term">uniform matroid</span> U<sub>k,n</sub> allows any set of at most k of the n elements. The <span class="term">graphic matroid</span> of a graph takes the edges as the ground set and calls a set of edges independent when it contains no cycle, that is, when it is a forest. The four-town network is the graphic matroid of the complete graph on four vertices.</p>
+      <p>The paper uses a few derived notions. The <span class="term">rank</span> of a set T is the largest size of an independent subset of T. An element is <span class="term">spanned</span> by T if adding it does not raise the rank, and the <span class="term">closure</span> cl(T) is the set of all elements T spans. In the network, the full rank is r = 3, because a forest on four towns has at most three roads. The set {ab, bc} spans ca, since adding ca closes the triangle a, b, c without connecting anything new.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Do forests really satisfy the exchange property?</span></summary><div class="pfbody">
+        <p>This check is ours, as background. A forest with k edges on a fixed set of N vertices has exactly N − k connected components, because each edge that creates no cycle merges two components. If A and B are forests with |A| &lt; |B|, then A has more components than B. Some edge of B must therefore join two different components of A, since otherwise every component of B would sit inside a component of A, and B would have at least as many components as A. Adding that edge to A merges two components and creates no cycle.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> a matroid says which sets are allowed; rank one is the secretary problem, and graphic matroids are "no cycles".</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Greedy">
+      <span class="num">3 · GREEDY</span>
+      <h2>Why greedy is optimal, and the one-element swap</h2>
+      <p>If every value is known in advance, the best independent set is easy to find. The interesting question is how that best set reacts when one element is added, because an online algorithm sees elements one at a time and every arrival is such an addition.</p>
+      <div class="def"><span class="label">Definition · Greedy(T)</span>
+        <p>The set Greedy(T) is built by scanning the elements of T in decreasing value, with ties broken by a fixed order of labels, and keeping each element that leaves the kept set independent. The paper calls Greedy(V) the <span class="term">canonical optimum</span>.</p>
+        <p>In words: take the most valuable thing that still fits, and repeat.</p>
+      </div>
+      <p>Among all downward-closed families, matroids are exactly the ones for which greedy is optimal for every nonnegative choice of values, a classical theorem the paper cites. On a graph, greedy is Kruskal's algorithm for a maximum spanning tree. In the network it keeps ab (6) and bc (5), skips ca (4) because ab and bc already connect a to c, keeps ua (3), and then skips ub and uc because all four towns are already connected. That gives Greedy(V) = {ab, bc, ua}, worth 14.</p>
+      <p>The paper uses three properties of greedy, all standard.</p>
+      <div class="fact"><span class="label">Fact · Lemma 2.1</span>
+        <p>(i) An element of Greedy(V) stays in Greedy(T) for every subset T that contains it. (ii) Adding one element e to T changes Greedy(T) in one of three ways only: no change, e joins, or e joins and exactly one old element f leaves. (iii) Changing one element's value either leaves the greedy set alone or swaps that element with exactly one other.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can adding one element push out at most one old element?</span></summary><div class="pfbody">
+        <p>An element is kept by greedy exactly when the elements scanned before it do not span it. For (i), shrinking the ground set can only remove elements scanned before e, and a smaller set cannot span what a larger set did not.</p>
+        <p>For (ii), inserting e into the scan only adds a predecessor to some old elements, so no old element can newly enter greedy; the only possible newcomer is e. Greedy returns a largest independent subset, and the ranks of T and T + e differ by at most one. So the new greedy set either equals the old one, adds e, or adds e and loses exactly one old element. Part (iii) follows the same way: raising e's value can only bring e in and push others out, and both greedy sets have the same size, so any change is a single swap.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The element f in part (ii) is called e's <span class="term">exchange partner</span>. Take T = {ab, bc, ub} in the network. Greedy keeps all three, a spanning tree. Now insert ua, worth 3. Greedy keeps ab, bc, then ua, which connects u, and then rejects ub, which would close the loop u, a, b. So inserting ua displaced exactly one element, its exchange partner ub.</p>
+      <p class="short"><b>In short:</b> greedy is optimal on matroids, an optimal element stays optimal in any subset, and each insertion displaces at most one exchange partner.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · The conjecture">
+      <span class="num">4 · THE CONJECTURE</span>
+      <h2>Is choosing many harder than choosing one?</h2>
+      <p>With the pieces in place, the online problem can be stated precisely, along with the two ways of measuring success that the paper uses.</p>
+      <div class="def"><span class="label">Definition · matroid secretary problem</span>
+        <p>The n elements arrive in uniformly random order. On each arrival the algorithm sees the element and its value and must accept or reject it irrevocably, and the accepted set must always be independent. Only n is known in advance. Independence can be tested only on sets of elements already seen. An algorithm is <span class="term">c-competitive</span> if its expected value is at least 1/c times v(Greedy(V)), and <span class="term">c-probability-competitive</span> if it accepts every element of Greedy(V) with probability at least 1/c.</p>
+        <p>In words: build the best forest, or the best team, from a random stream, and the score is either expected value or each optimal element's chance of being taken.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does the per-element guarantee imply the value guarantee?</span></summary><div class="pfbody">
+        <p>The paper states this; the line of algebra is ours. Values are nonnegative, so dropping elements outside Greedy(V) can only lower the total, and linearity of expectation gives</p>
+        <div class="math" data-tex="\mathbb{E}[v(\mathrm{ALG})] \;\ge\; \sum_{e\in \mathrm{Greedy}(V)} v_e \Pr[e\in\mathrm{ALG}] \;\ge\; \frac{1}{c}\sum_{e\in\mathrm{Greedy}(V)} v_e = \frac{1}{c}\,v(\mathrm{Greedy}(V))."></div>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Babaioff, Immorlica and Kleinberg asked in 2007 whether some constant c works for every matroid. That is the <span class="term">matroid secretary conjecture</span>; its strong form asks for c = e, matching rank one. The general guarantee improved from O(log r) to O(√log r) and then to O(log log r), where it had stood since 2014. Constant guarantees were known only for special classes, such as graphic, laminar and transversal matroids.</p>
+      <h3>Why the obvious rule fails</h3>
+      <p>The natural idea is to copy the secretary rule: reject about half the arrivals as a sample S, then accept a later element e whenever e ∈ Greedy(S ∪ {e}). Lemma 2.1 (i) promises that every optimal element outside the sample passes this test, so the value looks good. The trouble is that the accepted set need not be independent. The paper's Appendix A shows this on the network itself. Suppose the sample is the three spokes ua, ub, uc and the real arrivals are the triangle ab, bc, ca. For ab, greedy on the spokes plus ab keeps ab, ua and uc, so ab passes. By the same check bc and ca pass. The rule accepts all three sides of the triangle, which is a cycle.</p>
+      <p>Repairing the rule by keeping a running independent set that contains all acceptances also fails, as the paper's "hat" examples show: accepting one cheap edge can make a later, very valuable edge impossible. The paper's technical overview names the real obstacle. When an optimal element e is inserted, it displaces at most one partner f. If f were fixed independently of the random order, e would come before f with probability 1/2 and could be accepted safely. But the partner depends on the algorithm's state, and the state depends on the order.</p>
+      <p class="short"><b>In short:</b> the goal is a constant for every matroid, ideally e; testing each arrival against a sample can accept a cycle, and the exchange partner moves with the order.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Reversible updates">
+      <span class="num">5 · REVERSIBLE UPDATES</span>
+      <h2>An algorithm whose bookkeeping can run backward</h2>
+      <p>The paper's first algorithm, Algorithm 1, keeps a reference set whose greedy solution always contains everything accepted, and it updates that set in a way that can be undone. This section describes the algorithm and why it never builds a cycle; the next section shows why it accepts optimal elements often enough.</p>
+      <h3>The algorithm</h3>
+      <p>First, draw n fair bits X<sub>1</sub>, …, X<sub>n</sub> and let K be the number of ones. Reject the first K arrivals and store them as the sample S. The remaining arrivals are <span class="term">real</span>. The algorithm keeps a configuration C, starting at C = S, and a set F of processed elements, starting empty. It then makes n processing steps. At step i, if X<sub>i</sub> = 1 it takes the next stored sample element, and otherwise the next real arrival. Either way, call the element e and propose C′ = C ⊕ e: a sample element is proposed for deletion from C, a real arrival for insertion.</p>
+      <div class="def"><span class="label">Definition · the preservation test</span>
+        <div class="math" data-tex="\mathrm{Greedy}(C')\cap F \;=\; \mathrm{Greedy}(C)\cap F."></div>
+        <p>In words: the update is allowed only if every element processed so far keeps its greedy status, in or out.</p>
+      </div>
+      <p>If the test passes, the algorithm accepts e when e ∈ Greedy(C′), and in any case replaces C by C′. It updates even when it does not accept. Finally it adds e to F. A sample element is always being deleted, so it is never in C′ and is never accepted.</p>
+      <div class="fact"><span class="label">Fact · Lemma 2.3</span><p>After every step, ALG ⊆ Greedy(C) ∩ F. In particular, the accepted set is always independent.</p></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can an accepted element never be pushed out later?</span></summary><div class="pfbody">
+        <p>The inclusion holds at the start, when ALG and F are empty. If a step's test fails, C and ALG do not change and F only grows. If it passes, every earlier acceptance is in F, and the test says its greedy membership does not change, so it stays in the greedy set. A new acceptance lies in Greedy(C′) and is then added to F. Greedy sets are independent, and so is every subset of one.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The second ingredient is that updates happen even after rejections. Appendix A explains why: if the reference set changed only on acceptances, sample elements would never be removed, and on a uniform matroid the algorithm could get permanently stuck with many unused slots, accepting only on the order of √r elements by the authors' heuristic estimate. Deleting sample elements as they are processed frees room for later real arrivals.</p>
+      <h3>One run, step by step</h3>
+      <p>In the animation's first scenario the bits are 010100, so K = 2 and the first two arrivals, ab and bc, form the sample. The real arrivals then come in the order ub, uc, ua, ca, interleaved with the two sample steps. The real arrival ub is accepted at once, because nothing has been processed and greedy keeps it. Later, inserting ca would push ub out of the greedy set, and since ub has been processed, the test blocks ca. The final accepted set is {ub, ua}, worth 5. That run contains every kind of step: an acceptance, an update without acceptance, a sample deletion that passes, one that fails, and a blocked arrival. The "random run" scenario draws fresh bits and a fresh order every time.</p>
+
+      <div class="player" id="pAlg">
+        <div class="ptitle"><span class="label">Animation · Algorithm 1 on the network</span><div class="scen"><button class="chip" data-scen="ex" aria-pressed="true">example run</button><button class="chip" data-scen="rand" aria-pressed="false">random run</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 262" role="img" aria-label="Algorithm 1 processing six roads on four towns"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--muted)"></i>in C</span><span><i class="sw" style="background:var(--cool)"></i>in Greedy(C)</span><span><i class="sw" style="background:var(--accent)"></i>accepted</span><span><i class="sw" style="background:var(--bad)"></i>blocked</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+
+      <p class="short"><b>In short:</b> sample half, then process sample deletions and real insertions in a random interleaving, updating whenever no processed element changes status; acceptances are always safe.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · The snapshot lemma">
+      <span class="num">6 · THE SNAPSHOT LEMMA</span>
+      <h2>Why each optimal element is taken with probability 1/4</h2>
+      <p>Section 4 ended with the obstacle: an optimal element is safe if it comes before its exchange partner, but the partner depends on a state that depends on the order. The paper's key idea is to show that the state an element sees is, in distribution, completely unrelated to the order.</p>
+      <h3>Reversibility</h3>
+      <p>Look at one step with a fixed element f and fixed processed set F. The test compares Greedy(C) ∩ F with Greedy(C ⊕ f) ∩ F. Starting from C ⊕ f instead of C, the test compares the same two sets in the other order, so it gives the same answer. If it passes, C goes to C ⊕ f and C ⊕ f goes to C; if it fails, both stay put. Each step therefore pairs up configurations and swaps or fixes each pair, which is a bijection on the 2<sup>n</sup> subsets of V that is its own inverse.</p>
+      <p>On the network, take F = {ub} and the sample step f = ab. From C = {ab, bc, ub}, deleting ab leaves ub in the greedy set, so the test passes and C becomes {bc, ub}. From {bc, ub}, toggling ab would add it back, ub would again stay in, and the test would pass the other way. The step simply swaps these two configurations.</p>
+      <div class="fact"><span class="label">Fact · Lemma 2.4 and Corollary 2.5</span>
+        <p>Fix an element e and a processing order. For every T ⊆ V exactly one initial sample S produces the snapshot C<sub>e</sub> = T. Consequently C<sub>e</sub> is a uniformly random subset of V, independent of the processing order.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How can a random sample stay uniformly random after all those updates?</span></summary><div class="pfbody">
+        <p>With the order fixed, every step before e is one of the self-inverse bijections above, so their composition is a bijection from initial samples to snapshots. Each T therefore comes from exactly one S. To run it backward from a configuration D after a step with element f, compare Greedy(D) ∩ F with Greedy(D ⊕ f) ∩ F: if they agree the predecessor was D ⊕ f, otherwise it was D.</p>
+        <p>For the corollary, fix T and a permutation π. Exactly one S<sub>0</sub> gives C<sub>e</sub> = T under π. Exactly one choice of bits and arrival order produces the pair (S<sub>0</sub>, π): the bits are X<sub>i</sub> = 1 when π(i) ∈ S<sub>0</sub>, and the arrival order lists S<sub>0</sub> first, then the rest, each in its order within π. That choice has probability 2<sup>−n</sup>/n!, so</p>
+        <div class="math" data-tex="\Pr[C_e = T,\ \Pi=\pi] = \frac{1}{2^n\, n!},"></div>
+        <p>which is a product of the uniform distribution on subsets and the uniform distribution on orders.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <h3>The 1/4 guarantee</h3>
+      <div class="fact"><span class="label">Fact · Theorem 2.2</span><p>Algorithm 1 always returns an independent set and accepts each element of Greedy(V) with probability at least 1/4. It uses only comparisons of values and O(n<sup>2</sup>) independence queries on elements already seen.</p></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where do the two factors of 1/2 come from?</span></summary><div class="pfbody">
+        <p>Fix e ∈ Greedy(V) and condition on its snapshot C<sub>e</sub> = T with e ∉ T. Only e's own step changes its membership, so e ∉ S and e is processed as a real arrival. By Lemma 2.1 (i), e ∈ Greedy(T + e), so e is accepted whenever the test passes.</p>
+        <p>If inserting e displaces nothing, the test passes. Otherwise Lemma 2.1 (ii) gives a unique partner f with Greedy(T + e) = (Greedy(T) − f) + e. The test passes exactly when f has not been processed yet, that is, when e comes before f. The partner is determined by T, and by Corollary 2.5 the order is still uniform given T, so e comes first with probability 1/2. Either way, Pr[e ∈ ALG | C<sub>e</sub> = T] ≥ 1/2. Finally, e ∉ C<sub>e</sub> exactly when e ∉ S, which has probability 1/2. Averaging gives at least 1/4.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>On the network, take e = ua with snapshot T = {ab, bc, ub}. Section 3 found its partner: ub. If ub has already been processed, inserting ua would change ub's status and the test fails; if ub is still unprocessed, ua is accepted. Given the snapshot, each of these has probability 1/2.</p>
+      <div class="aside"><span class="label">Our check by exhaustive enumeration</span>We ran Algorithm 1 on the network for all 2<sup>6</sup> bit strings and all 6! = 720 arrival orders, 46,080 equally likely runs. The accepted set was never a cycle. For the element ab, each of the 64 possible snapshots occurred exactly 720 times, as Corollary 2.5 predicts. Each optimal road ab, bc and ua was accepted in 17,280 runs, a probability of exactly 3/8, above the guaranteed 1/4. The expected value was about 7.34 against the optimum of 14. These numbers are ours, not the paper's.</div>
+      <p class="short"><b>In short:</b> because every update can be undone, the state an element sees is a fresh uniform random set, independent of the order; that fixes the exchange partner and leaves a fair coin for who comes first.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Reaching 1/e">
+      <span class="num">7 · REACHING 1/e</span>
+      <h2>Design the distribution first, then the algorithm</h2>
+      <p>The 1/4 algorithm already proves the original conjecture with c = 4. Reaching e, the strong form, takes a different route, which this section outlines; the full construction spans the paper's Sections 4 to 6.</p>
+      <h3>Algorithms as distributions</h3>
+      <p>An <span class="term">ordinal</span> algorithm uses values only through their order. For a known matroid, the paper describes such an algorithm by the distribution of its accepted set given which elements have arrived so far:</p>
+      <div class="math" data-tex="\mu_O(A) = \Pr\big[\mathrm{ALG}_m = A \,\big|\, \text{the first } m \text{ arrivals form } O\big],"></div>
+      <p class="eqn">Eq. 1</p>
+      <p>together with the <span class="term">accepting mass</span> y<sub>O,e</sub>(A), the probability that the previous accepted set was A and the latest arrival e is accepted. Two linear conditions constrain these numbers. <span class="term">Capacity</span> says you cannot move more probability than a state holds, and cannot accept into a dependent set:</p>
+      <div class="math" data-tex="0 \le y_{O,e}(A) \le \mu_{O-e}(A), \qquad y_{O,e}(A) = 0 \ \text{ if } A+e\notin\mathcal{I}."></div>
+      <p class="eqn">Eq. 3</p>
+      <p><span class="term">Consistency</span> says the new distribution is what you get by averaging over which element arrived last, since that element is uniform in O:</p>
+      <div class="math" data-tex="\mu_O(A) = \frac{1}{|O|}\Big[\sum_{e\in O\setminus A}\big(\mu_{O-e}(A) - y_{O,e}(A)\big) + \sum_{e\in A} y_{O,e}(A-e)\Big]."></div>
+      <p class="eqn">Eq. 4</p>
+      <div class="fact"><span class="label">Fact · Theorem 4.1</span><p>The families satisfying normalization, capacity and consistency form a finite polytope, and its points are exactly the behaviors of ordinal algorithms. Every point is realized by accepting e from state A with probability y<sub>O,e</sub>(A)/μ<sub>O−e</sub>(A), which is Eq. 2.</p></div>
+      <p>This turns algorithm design into distribution design, and for a fixed small matroid it gives a linear program for the best possible guarantee. In continuous time the same two conditions become Eqs. 8 and 9, and Theorem 4.4 says every feasible family is again realized by a simple rule.</p>
+      <h3>The survivor distributions</h3>
+      <p>The target comes from Eq. 11. Call an arrival <span class="term">eligible</span> if the larger elements seen so far do not span it, the matroid version of "best so far". The plan is to accept each eligible arrival at time t &gt; p with probability p/t. By Lemma 2.1 (i) every optimal element is eligible whenever it arrives, so it would be accepted with probability p ln(1/p), which is 1/e at p = 1/e. The hard part is doing this while keeping the accepted set independent, and the paper's answer is an offline experiment.</p>
+      <div class="def"><span class="label">Definition 5.1 · survivor experiment</span>
+        <p>For an ordered set O and horizon t ∈ [p, 1]: give each element an independent auxiliary time uniform on [0, t] and call it early if that time is at most p. Let its capped spanning time σ<sub>e</sub> be the first moment u ∈ [p, t] at which the larger elements already present span e, or t if that never happens. Each early element survives independently with probability ln(σ<sub>e</sub>/p); late elements never survive.</p>
+        <p>In words: sample about a 1/e fraction, then let each sampled element live with a probability that grows the longer it stays unblocked by bigger elements.</p>
+      </div>
+      <p>At horizon 1 an optimal element is never spanned by larger ones, so σ<sub>e</sub> = 1, and with p = 1/e its survival probability when early is ln(e) = 1. Optimal elements therefore survive independently, each with probability exactly 1/e. Any survivor lies in the greedy set of the early sample, so the survivors are always independent.</p>
+      <details class="pf"><summary><span class="tagd">example</span><span class="q">What happens to a road that isn't optimal, like ca?</span></summary><div class="pfbody">
+        <p>This calculation is ours. The roads larger than ca are ab and bc, and together they span ca. So σ<sub>ca</sub> = max(p, T′<sub>ab</sub>, T′<sub>bc</sub>) at horizon 1. Writing M for the maximum of the two uniform times, Pr[M ≤ m] = m<sup>2</sup>, and ca survives with probability</p>
+        <div class="math" data-tex="p\int_p^1 \ln\!\frac{m}{p}\; 2m\,dm \;=\; p\Big(\ln\frac1p - \frac{1-p^2}{2}\Big) \;=\; \frac{1}{e}\cdot\frac{1+e^{-2}}{2}\;\approx\; 0.209,"></div>
+        <p>using integration by parts and p = 1/e. A simulation of two million runs gave 0.209. So the algorithm may also accept elements outside Greedy(V), which the paper notes; what it guarantees is the 1/e chance for each optimal element.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The accepting masses that realize this target split the probability p/t over predecessor sets using the same experiment in the matroid contracted by e:</p>
+      <div class="math" data-tex="z_{O,e,t}(A) = \frac{p}{t}\,\mathcal{D}_{O-e,t,e}(A) \quad \text{for } t>p \text{ and } e\in\mathrm{Greedy}(O), \ \text{ and } 0 \text{ otherwise}."></div>
+      <p class="eqn">Eq. 12</p>
+      <p>The crux is capacity, Eq. 13: enough probability must always sit in each state to support the next acceptance. The paper proves it by induction, removing the largest element and comparing the experiment with its contracted version (Lemma 5.3). That gives Theorem 5.2: the resulting rule accepts the elements of Greedy(V) independently, each with probability 1/e.</p>
+      <h3>Making it run</h3>
+      <p>The rule needs probabilities of whole survivor sets, which the authors do not know how to compute efficiently. Section 6 instead turns the inductive capacity proof into a recursive sampler that flips the right coin without computing its probability, keeping a sample of the auxiliary times consistent with what has been accepted. Theorem 6.1 states that this algorithm is ordinal, needs only n in advance, and has expected polynomial arithmetic and oracle cost, in a real-number model where drawing a uniform number or evaluating ln or exp costs one step.</p>
+      <p class="short"><b>In short:</b> write down the accepted-set distribution you want, check two linear conditions, and an online rule exists; the survivor experiment meets them and keeps each optimal element with probability 1/e.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · The prophet version">
+      <span class="num">8 · THE PROPHET VERSION</span>
+      <h2>One sample per distribution is enough</h2>
+      <p>The secretary model assumes a random order but knows nothing about values. The prophet model flips this: values are random draws, independent across elements, and arrive in any fixed order. The question here is how much information about the distributions an algorithm needs.</p>
+      <div class="def"><span class="label">Definition · single-sample prophet inequality</span>
+        <p>Each element's value R<sub>e</sub> is drawn independently from an unknown distribution, and before arrivals the algorithm receives one independent sample S<sub>e</sub> from each. The order is fixed in advance, independent of everything else. The benchmark is the expected optimum E[max over independent I of the sum of R<sub>e</sub>].</p>
+        <p>In words: you have seen one past value of each item and must do well against someone who sees the future.</p>
+      </div>
+      <p>Algorithm 2 keeps one value per element, initially its sample. When e arrives, it proposes swapping in e's real value. A fair coin decides, unless the swap would knock a processed element f out of the greedy set: then f's past decision rules, so an accepted f blocks the swap and a rejected f forces it. The arrival is accepted when the swap happens and e is in the new greedy set.</p>
+      <div class="fact"><span class="label">Fact · Theorem 3.1</span>
+        <div class="math" data-tex="\mathbb{E}\Big[\sum_{e\in\mathrm{ALG}} R_e\Big] = \frac{1}{2}\,\mathbb{E}\Big[\max_{I\in\mathcal{I}}\sum_{e\in I} R_e\Big]."></div>
+        <p>More strongly, the accepted elements and values are distributed exactly like a fresh draw's greedy optimum with each element kept independently by a fair coin. The ratio 2 is optimal even for one item with known distributions.</p>
+      </div>
+      <p>The proof follows the same template as Section 6, with exchangeability replacing reversibility: a sample and a real value are two independent draws from the same distribution, so they can be generated as an unordered pair with a fair coin deciding which is which. Before this paper, constant ratios for general matroids needed polylogarithmically many samples per distribution.</p>
+      <div class="aside"><span class="label">A connection, ours</span>Prophet inequalities are optimal-stopping results, the same family as deciding when to exercise an American option or sell an asset. A rank-one prophet inequality says a simple threshold captures half of what perfect foresight would; the matroid version extends that to portfolios of choices with structure. The paper doesn't discuss finance.</div>
+      <p class="short"><b>In short:</b> with one sample per distribution and a coin-plus-override rule, the accepted set is exactly half of a fresh optimum, matching the best possible ratio 2.</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · Results">
+      <span class="num">9 · RESULTS</span>
+      <h2>What the paper proves, in numbers</h2>
+      <p>Every row below is a theorem in the paper except the last, which reports floating-point computations.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Problem</th><th>Before</th><th>This paper</th></tr></thead>
+        <tbody>
+          <tr><td>Matroid secretary, general</td><td class="n">O(log log r)</td><td>e per element, expected polynomial time (Thm 6.1)</td></tr>
+          <tr><td>Combinatorial version</td><td class="n">none constant</td><td>4 per element, O(n²) queries (Thm 2.2)</td></tr>
+          <tr><td>Graphic matroids</td><td class="n">3.95</td><td>covered by e</td></tr>
+          <tr><td>Single-sample prophet</td><td class="n">4 + ε, polylog samples</td><td>2 with one sample, O(n²) queries (Thm 3.1)</td></tr>
+          <tr><td>Uniform U<sub>k,n</sub>, per element</td><td class="n">ratio 1 + O(√(log r/r))</td><td>optimal is 1 − Θ(√(log k/k)) (Thm 7.1)</td></tr>
+          <tr><td>Linear matroids, known</td><td class="n">e (general)</td><td>c<sub>n</sub>(s), better than 1/e for every finite n (Thm 7.2)</td></tr>
+          <tr><td>Intersection of k matroids</td><td class="n">exponential in k</td><td>8k²(k + 1) (Thm 7.3)</td></tr>
+          <tr><td>Submodular objectives</td><td class="n">none listed</td><td>96e (Cor 7.5)</td></tr>
+          <tr><td>Secretary via prophet reduction</td><td class="n">none listed</td><td>64, known matroid (Thm E.1)</td></tr>
+          <tr><td>Small matroids, by LP</td><td class="n">none listed</td><td>all 7-element, 1,655 of 1,723 eight-element, 43 of 44 nonrepresentable: every ratio below e</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">"Per element" means probability-competitive. The graphic and uniform "before" entries are from the paper's Table 1; the uniform row compares a ratio with the corresponding selection fraction, which is its reciprocal. The intersection comparison is the paper's description of the earlier general combination bound.</p>
+      <p class="short"><b>In short:</b> the general ratio drops from O(log log r) to e, with matching optimal answers for prophets, uniform and linear matroids, and new bounds for intersections and submodular goals.</p>
+    </section>
+
+    <!-- 10 -->
+    <section data-sec="10 · Assessment">
+      <span class="num">10 · ASSESSMENT</span>
+      <h2>What is shown, and what isn't yet</h2>
+      <p>This is a merged and extended version of three preprints from September 2026, by Singla, by Abdi, Banihashem, Hajiaghayi and Mittal, and by Huang, and it claims to settle a problem open since 2007. The 1/4 argument of Section 6 is short, complete and checkable; it uses only Lemma 2.1 and a counting argument, and our exhaustive run on the network agrees with every step of it. The prophet result has a similarly self-contained proof. The 1/e result rests on a much longer chain: the realization theorem, the capacity induction of Lemma 5.3 with background schedules, and the forward and reverse procedures behind the efficient algorithm. Those parts are proofs in the paper, but they are new, long and not yet peer reviewed.</p>
+      <p>Several claims are narrower than a quick read suggests. The efficient 1/e algorithm runs in expected polynomial time in a real-number model with exact arithmetic and unit-cost ln and exp, not a bit-complexity bound. The prophet result assumes the order is fixed independently of the samples and values; a stronger adversary that sees everything is not covered, and the paper notes later work on that case. The finite-size improvement over 1/e is proved only for linear matroids known in advance, and the evidence beyond them is floating-point LP solutions, which the authors call observations rather than certificates. The intersection and submodular bounds are large constants, not tight.</p>
+      <p>The paper is also unusually explicit about its process. Its methodology statement says that AI models were used in obtaining the main algorithmic guarantees, including Theorems 2.2, 3.1, 7.2 and 5.2, that the LP and its computations were done without AI, that the exposition was drafted with AI help, and that the authors checked all arguments. It also reports concurrent work: the linear-matroid result was found independently by others, and building on Singla's preprint, Chan, Lin and Wang improved the plain competitive ratio from 4 to about 3.1462.</p>
+      <p class="short"><b>In short:</b> the 4-competitive and prophet proofs are short and convincing; the optimal e result is a long new proof awaiting review, with efficiency stated in an idealized model.</p>
+    </section>
+
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <div class="refs">
+        <p>Abdi, Banihashem, Hajiaghayi, Huang, Mittal and Singla, <a href="https://arxiv.org/abs/2611.08869" target="_blank" rel="noopener">As Easy as Rank One: Optimal Algorithms for Matroid Secretary and Single-Sample Matroid Prophet</a> (2026). The paper.</p>
+        <p>Singla, <a href="https://arxiv.org/abs/2609.14555" target="_blank" rel="noopener">The Matroid Secretary Conjecture is True</a> (2026). The original preprint of the 1/4 algorithm.</p>
+        <p>Huang, <a href="https://arxiv.org/abs/2609.30421" target="_blank" rel="noopener">Settling the Matroid Secretary Problem</a> (2026). The original preprint of the optimal e algorithm.</p>
+        <p>Feldman, Svensson and Zenklusen, <a href="https://arxiv.org/abs/1704.02608" target="_blank" rel="noopener">A Framework for the Secretary Problem on the Intersection of Matroids</a> (2017). The preprocessing used for Theorem 7.3, with a readable introduction to the problem family.</p>
+      </div>
+    </section>
+  </article>
+
+  <footer>
+    <p>Built from a full read of arXiv 2611.08869v1. Equation, lemma and theorem numbers match the paper. Both animations run the real rules: the cutoff rule on eight candidates and Algorithm 1 on the four-town network. The exhaustive enumeration, the survival probability of ca, the forest exchange proof and the finance connection are ours.</p>
+  </footer>
+</div>
+
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-08869',date:'2026-11-09',title:'As Easy as Rank One: Optimal Algorithms for Matroid Secretary and Single-Sample Matroid Prophet',authors:'Abdi, Banihashem, Hajiaghayi, Huang, Mittal, Singla',field:'cs.DS',tags:['secretary problem','matroids','probability'],mins:35,
+     dek:'Choosing many things online under a matroid rule is exactly as hard as choosing one: each optimal element can be kept with probability 1/e, settling a conjecture open since 2007. A short reversible-update trick already gets 1/4, and one sample per distribution suffices for the prophet version.'},
     {id:'2611-07144',date:'2026-11-06',title:'Dithered Belief Propagation for Real-Time Quantum Memory Decoding',authors:'Cai, Jarkas, Zhao, Gross',field:'quant-ph',tags:['error correction','decoding','qLDPC'],mins:35,
      dek:'Belief propagation gets stuck on quantum codes because of 4-loops and look-alike errors. Two cheap doses of randomness unstick it, matching the best rival decoder with about 2% of its multiplications.'}
   ];
@@ -509,18 +838,17 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     try{if(!window.katex)throw 0;katex.render(tex,el,{displayMode:true,output:'mathml',throwOnError:false})}
     catch(e){el.classList.add('fallback');el.textContent=tex}});
 
-  // ================= reading progress + section label =================
-  const secs=[...document.querySelectorAll('#view-p-2611-07144 section[data-sec]')],secLabel=document.getElementById('secLabel'),readbar=document.getElementById('readbar');
+  // ================= reading progress + section label (any paper view) =================
   let saveT=null;
-  function onScroll(){if(current!=='p-2611-07144')return;const art=document.querySelector('#view-p-2611-07144 article');
+  function onScroll(){if(!current||!current.startsWith('p-'))return;const id=current.slice(2),view=document.getElementById('view-'+current);if(!view)return;
+    const art=view.querySelector('article'),bar=view.querySelector('.readbar'),lab=view.querySelector('.secLabel');if(!art)return;
     const r=art.getBoundingClientRect(),total=r.height-innerHeight*0.6,done=Math.min(1,Math.max(0,(-r.top+innerHeight*0.4)/total));
-    readbar.style.width=(done*100)+'%';
-    let lab='Overview';secs.forEach(s=>{if(s.getBoundingClientRect().top<120)lab=s.dataset.sec});secLabel.textContent=lab;
-    clearTimeout(saveT);saveT=setTimeout(()=>{const p=store.get('prog',{});if(done>(p['2611-07144']||0)){p['2611-07144']=done;store.set('prog',p)}},400);}
+    if(bar)bar.style.width=(done*100)+'%';
+    let t='Overview';view.querySelectorAll('section[data-sec]').forEach(s=>{if(s.getBoundingClientRect().top<120)t=s.dataset.sec});if(lab)lab.textContent=t;
+    clearTimeout(saveT);saveT=setTimeout(()=>{const p=store.get('prog',{});if(done>(p[id]||0)){p[id]=done;store.set('prog',p)}},400);}
   window.addEventListener('scroll',onScroll,{passive:true});
-  const openAll=document.getElementById('openAll');
-  openAll.addEventListener('click',()=>{const on=openAll.getAttribute('aria-pressed')!=='true';openAll.setAttribute('aria-pressed',on);openAll.textContent=on?'Close all proofs':'Open all proofs';
-    document.querySelectorAll('#view-p-2611-07144 details.pf').forEach(d=>d.open=on)});
+  document.querySelectorAll('.openAll').forEach(btn=>btn.addEventListener('click',()=>{const on=btn.getAttribute('aria-pressed')!=='true';btn.setAttribute('aria-pressed',on);btn.textContent=on?'Close all proofs':'Open all proofs';
+    btn.closest('[id^="view-"]').querySelectorAll('details.pf').forEach(d=>d.open=on)}));
 
   // ================= generic player =================
   const NS='http://www.w3.org/2000/svg';
@@ -617,6 +945,91 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
         c:r.ok?`Bit 1 reaches ${f2(r.L[0])}, so it isn't blamed, while bit 2 is at ${f2(r.L[1])}. The guess is 01, which explains both checks. The run stops. It took ${r.t} rounds for a 0.22 head start to decide the tie.`:
           `Beliefs ${f2(r.L[0])} and ${f2(r.L[1])}. ${r.t%2?'Both are still negative, so the guess is 11 and fails.':'Both are positive, so the guess is 00 and fails.'} But the gap between them is now ${(r.L[0]-r.L[1]).toFixed(2)}, and it grows by ${(2*(a-b)).toFixed(2)} every round.`}))];
     F.delay=4200;P.load(F,trapDraw);
+  })();
+
+  // ================= 2611.08869: cutoff rule =================
+  (function(){
+    const root=document.getElementById('pSec');if(!root)return;const P=Player(root);const N=8,S=3;
+    const SC={win:[4,2,6,3,8,5,1,7],early:[3,5,2,6,4,8,1,7],miss:[5,8,3,6,2,7,4,1]};
+    const shuffle=()=>{const a=[1,2,3,4,5,6,7,8];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+    function load(ord){
+      const thr=Math.max(...ord.slice(0,S));let acc=-1;for(let i=S;i<N;i++){if(ord[i]>thr){acc=i;break}}
+      const best=ord.indexOf(8),last=acc>=0?acc:N-1;
+      const F=[{seen:0,t:'The setup',c:`Eight candidates with scores 1 to 8 will arrive in this random order. The rule rejects the first ${S}, then accepts the first one who beats all of them. Its success probability over all orders is c₈(3) ≈ 0.410.`}];
+      for(let i=0;i<=last;i++){
+        let c;
+        if(i<S)c=`Candidate ${i+1} scores ${ord[i]}. ${i<S-1?'Still sampling: rejected no matter what.':`Sampling ends. The best of the first three is ${thr}, so ${thr} becomes the bar to beat.`}`;
+        else if(i===acc)c=`Candidate ${i+1} scores ${ord[i]}, which beats the bar of ${thr}. The rule accepts at once and stops looking.`;
+        else c=`Candidate ${i+1} scores ${ord[i]}, which does not beat ${thr}. Rejected for good.`;
+        F.push({seen:i+1,acc:i===acc?i:-1,thr:i>=S-1?thr:null,t:`Arrival ${i+1}`,c});
+      }
+      let v;
+      if(acc>=0&&ord[acc]===8)v=`Success: the rule hired the best candidate. This happens because the best of the candidates before position ${best+1} was inside the sample.`;
+      else if(acc>=0)v=`Failure: the rule hired a ${ord[acc]}, but the 8 was still to come at position ${best+1}. Someone above the bar arrived before the best one did.`;
+      else v=`Failure: the 8 arrived at position ${best+1}, inside the sample, so nobody later could beat the bar and the rule hired nobody.`;
+      F.push({seen:N,acc,thr,end:true,t:'The verdict',c:v});
+      F.delay=3000;
+      P.load(F,(fr,el)=>{const BASE=160,W=32,G=40,X0=26;
+        el('line',{x1:10,y1:BASE,x2:330,y2:BASE,stroke:'var(--line)','stroke-width':1});
+        el('line',{x1:X0+S*G-4,y1:20,x2:X0+S*G-4,y2:BASE+6,stroke:'var(--line)','stroke-width':1,'stroke-dasharray':'3 3'});
+        el('text',{x:X0+S*G/2-6,y:16,class:'lab'}).textContent='sample';
+        for(let i=0;i<N;i++){const x=X0+i*G,shown=i<fr.seen||fr.end;const h=ord[i]*16;
+          if(shown){const isAcc=fr.end?i===acc:i===fr.acc;const col=isAcc?'var(--accent)':i<S?'var(--muted)':'var(--cool)';
+            el('rect',{x:x,y:BASE-h,width:W-4,height:h,rx:3,fill:col,opacity:(i<fr.seen)?1:.35});
+            el('text',{x:x+(W-4)/2,y:BASE-h-5,class:'lab'}).textContent=ord[i];}
+          else el('rect',{x:x,y:BASE-6,width:W-4,height:6,rx:2,fill:'var(--raise)'});
+          el('text',{x:x+(W-4)/2,y:BASE+16,class:'lab'}).textContent=i+1;}
+        if(fr.thr!=null){const y=BASE-fr.thr*16;el('line',{x1:X0-6,y1:y,x2:X0+N*G-8,y2:y,stroke:'var(--accent)','stroke-width':1.2,'stroke-dasharray':'5 4'});}
+        el('text',{x:170,y:192,class:'lab'}).textContent=fr.end?(acc>=0&&ord[acc]===8?'hired the best':'missed the best'):'arrival position';});
+    }
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen==='rand'?shuffle():SC[b.dataset.scen])}));
+    load(SC.win);
+  })();
+
+  // ================= 2611.08869: Algorithm 1 on the four-town network =================
+  (function(){
+    const root=document.getElementById('pAlg');if(!root)return;const P=Player(root);
+    const NET=[{k:'ab',w:6,u:'a',v:'b'},{k:'bc',w:5,u:'b',v:'c'},{k:'ca',w:4,u:'c',v:'a'},{k:'ua',w:3,u:'u',v:'a'},{k:'ub',w:2,u:'u',v:'b'},{k:'uc',w:1,u:'u',v:'c'}];
+    const idx=k=>NET.findIndex(e=>e.k===k);
+    function acyclic(list){const par={};const f=x=>par[x]===undefined?x:(par[x]=f(par[x]));for(const i of list){const a=f(NET[i].u),b=f(NET[i].v);if(a===b)return false;par[a]=b}return true}
+    function greedy(set){const out=[];[...set].sort((x,y)=>NET[y].w-NET[x].w).forEach(i=>{if(acyclic([...out,i]))out.push(i)});return new Set(out)}
+    function alg1(X,arr){const K=X.reduce((a,b)=>a+b,0),S=arr.slice(0,K),R=arr.slice(K);let si=0,ri=0;let C=new Set(S);const F=new Set(),ALG=new Set(),steps=[];
+      for(let i=0;i<NET.length;i++){const isS=X[i]===1,e=isS?S[si++]:R[ri++];const Cp=new Set(C);Cp.has(e)?Cp.delete(e):Cp.add(e);
+        const g=greedy(C),gp=greedy(Cp);const changed=[...F].filter(f=>g.has(f)!==gp.has(f));const pass=changed.length===0;let acc=false;
+        if(pass){if(gp.has(e)){ALG.add(e);acc=true}C=Cp}
+        steps.push({i,e,isS,pass,acc,changed,g,gp,Fb:new Set(F),C:new Set(C),ALG:new Set(ALG)});F.add(e)}
+      return{S,K,steps,order:steps.map(s=>s.e)}}
+    const nm=s=>{const a=[...s].map(i=>NET[i].k);return a.length?'{'+a.join(', ')+'}':'∅'};
+    const POS={u:[170,122],a:[50,188],b:[290,188],c:[170,22]};
+    function load(X,arr){
+      const R=alg1(X,arr),opt=greedy([0,1,2,3,4,5]);
+      const F=[{t:'The sample',C:new Set(R.S),ALG:new Set(),done:-1,c:`The bits are ${X.join('')}, so K = ${R.K}: the first ${R.K} arrivals ${R.K?'('+R.S.map(i=>NET[i].k).join(', ')+') ':''}are rejected and become the starting configuration C = ${nm(R.S)}. Its greedy set, in blue, is ${nm(greedy(R.S))}. The strip below shows the processing order: S marks a sample step, R a real arrival.`}];
+      R.steps.forEach(s=>{const e=NET[s.e].k;let c;
+        if(s.isS){c=s.pass?`Sample step: propose deleting ${e} from C. Greedy changes from ${nm(s.g)} to ${nm(s.gp)}, and no processed element${s.Fb.size?' in '+nm(s.Fb):''} changes status, so the test passes and C shrinks. Sample elements are never accepted.`
+            :`Sample step: deleting ${e} would change the status of ${s.changed.map(i=>NET[i].k).join(', ')}, which ${s.changed.length>1?'are':'is'} already processed (greedy would go from ${nm(s.g)} to ${nm(s.gp)}). The test fails and C stays as it was.`;}
+        else if(!s.pass)c=`Real arrival ${e} (value ${NET[s.e].w}): inserting it would make greedy ${nm(s.gp)}, pushing out ${s.changed.map(i=>NET[i].k).join(', ')}, which is already processed${s.changed.some(i=>s.ALG.has(i))?' and accepted':''}. The test fails, so ${e} is rejected and C is unchanged.`;
+        else if(s.acc)c=`Real arrival ${e} (value ${NET[s.e].w}): with it, greedy becomes ${nm(s.gp)}. No processed element changes status, so the test passes, and ${e} is in the new greedy set, so it is accepted.`;
+        else c=`Real arrival ${e} (value ${NET[s.e].w}): the test passes, but greedy on C′ is ${nm(s.gp)}, which leaves ${e} out because it would close a loop. Rejected, yet C still updates to include ${e}.`;
+        F.push({t:`Step ${s.i+1} · ${s.isS?'sample':'real'} ${e}`,C:s.C,ALG:s.ALG,cur:s.e,blocked:!s.pass?s.e:null,done:s.i,c});});
+      const A=R.steps[R.steps.length-1].ALG,val=[...A].reduce((t,i)=>t+NET[i].w,0),hit=[...opt].filter(i=>A.has(i)).map(i=>NET[i].k);
+      F.push({t:'The result',C:R.steps[R.steps.length-1].C,ALG:A,done:5,end:true,c:`Accepted: ${nm(A)}, worth ${val}, with no loop, as Lemma 2.3 guarantees. The optimum is {ab, bc, ua}, worth 14; this run caught ${hit.length?hit.join(', '):'none of it'}. Over all 46,080 equally likely runs, each optimal road is caught with probability 3/8.`});
+      F.delay=5600;
+      P.load(F,(fr,el)=>{const g=greedy(fr.C);
+        NET.forEach((e,i)=>{const [x1,y1]=POS[e.u],[x2,y2]=POS[e.v];const inC=fr.C.has(i),acc=fr.ALG.has(i),blk=fr.blocked===i;
+          const col=acc?'var(--accent)':blk?'var(--bad)':g.has(i)?'var(--cool)':inC?'var(--muted)':'var(--line)';
+          const a={x1,y1,x2,y2,stroke:col,'stroke-width':acc?5:g.has(i)?4:inC?2.5:1.5,'stroke-linecap':'round'};if(!inC&&!acc)a['stroke-dasharray']='4 4';
+          el('line',a);
+          const mx=(x1+x2)/2,my=(y1+y2)/2,ox=e.k==='ab'?0:e.k==='bc'?14:e.k==='ca'?-14:e.k==='uc'?24:e.k==='ua'?-6:6,oy=e.k==='ab'?14:e.k==='uc'?0:-6;
+          const t=el('text',{x:mx+ox,y:my+oy,class:'lab',fill:fr.cur===i?'var(--fg)':'var(--muted)','font-weight':fr.cur===i?'700':'400'});t.textContent=e.k+' '+e.w;});
+        Object.entries(POS).forEach(([k,[x,y]])=>{el('circle',{cx:x,cy:y,r:10,fill:'var(--raise)',stroke:'var(--line)','stroke-width':2});el('text',{x:x,y:y+4,class:'lab',fill:'var(--fg)'}).textContent=k;});
+        R.order.forEach((ei,j)=>{const x=40+j*52,y=240,s=R.steps[j];const done=j<=fr.done;
+          el('rect',{x:x-22,y:y-11,width:44,height:20,rx:5,fill:j===fr.done&&!fr.end?'var(--raise)':'none',stroke:done?(s.acc?'var(--accent)':!s.pass?'var(--bad)':'var(--muted)'):'var(--line)','stroke-width':1.2});
+          el('text',{x:x,y:y+3,class:'lab',fill:done?'var(--fg)':'var(--muted)'}).textContent=(s.isS?'S ':'R ')+NET[ei].k;});});
+    }
+    const EX={X:[0,1,0,1,0,0],arr:['ab','bc','ub','uc','ua','ca'].map(idx)};
+    const rnd=()=>{const X=Array.from({length:6},()=>Math.random()<.5?1:0);const a=[0,1,2,3,4,5];for(let i=5;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return{X,arr:a}};
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));const s=b.dataset.scen==='rand'?rnd():EX;load(s.X,s.arr)}));
+    load(EX.X,EX.arr);
   })();
 
   route();
