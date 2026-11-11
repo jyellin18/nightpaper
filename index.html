@@ -1195,10 +1195,362 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
   </footer>
 </div>
 
+
+<div class="wrap" id="view-p-2611-13584" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Wed, Nov 11</span></div>
+  <div class="paperhead">
+    <h1>Exact (Non-)Accelerations of Heavy-Ball Discretizations</h1>
+    <p class="meta">Dmitry Pasechnyuk-Vilensky, Martin Takáč · posted Nov 10, 2026 · math.OC · <a href="https://arxiv.org/abs/2611.13584" target="_blank" rel="noopener">arXiv 2611.13584</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">Two momentum methods can follow the same differential equation in the limit and still behave completely differently: one converges fast on every smooth convex bowl, the other can circle forever on some of them, and the deciding quantity is whether the gradient is evaluated at least half a step ahead of the current point. This paper makes that precise for the whole family of two-step momentum methods that includes Polyak's heavy ball, Nesterov's accelerated method and the triple momentum method. It computes the exact worst-case speed of each method when the problem is badly conditioned, finds that the answer is the smaller of two numbers, θ/3 and a quadratic constant, explains where the 1/3 comes from, and shows that any method that looks less than half a step ahead cannot be accelerated on general functions.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>why gradient descent crawls in a narrow valley, and how the condition number κ = L/μ sets its speed at (κ − 1)/(κ + 1) per step;</li>
+        <li>the momentum family, its characteristic polynomial, and why Polyak's tuning reaches the rate 1/2 on a valley with κ = 9;</li>
+        <li>how a momentum method with β close to 1 turns into a damped oscillator, ẍ + θẋ + ∇F(x) = 0, and why its speed on quadratics is the constant c<sub>Q</sub>;</li>
+        <li>the energy argument that limits the oscillator to the rate θ/3 on non-quadratic functions, and the spiraling trajectories that show θ/3 cannot be beaten;</li>
+        <li>the half-step identity behind the wall τ = 1/2, and why heavy ball (τ = 0) can fall into a 3-cycle on a perfectly nice function;</li>
+        <li>the exact constants of Nesterov's method (2/3), its best tuning (√(2/3)) and the triple momentum method (1), and what the paper proves versus what remains open.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>f, x<sup>⋆</sup></dt><dd>the function to minimize and its unique minimizer; we shift so that x<sup>⋆</sup> = 0</dd>
+        <dt>μ, L</dt><dd>strong convexity and smoothness: every curvature of f lies between μ and L</dd>
+        <dt>κ, ε</dt><dd>the condition number κ = L/μ, and ε = κ<sup>−1/2</sup>, the small parameter of the paper</dd>
+        <dt>𝓕<sub>μ,L</sub></dt><dd>the class of all μ-strongly convex functions with L-Lipschitz gradient</dd>
+        <dt>h, β, τ</dt><dd>step size, momentum, and extrapolation (how far ahead the gradient is evaluated)</dd>
+        <dt>x̃<sub>k</sub></dt><dd>the query point, where the gradient is evaluated at step k</dd>
+        <dt>χ<sub>λ</sub>(z)</dt><dd>the characteristic polynomial of the method on a quadratic with curvature λ</dd>
+        <dt>ρ<sub>q</sub>, ρ<sub>𝓕</sub></dt><dd>the worst rate per step over quadratics, and over the whole class 𝓕<sub>μ,L</sub></dd>
+        <dt>θ, y</dt><dd>the slow data: β = 1 − θ/√κ and hL → y</dd>
+        <dt>c<sub>Q</sub>, c<sub>𝓕</sub></dt><dd>the leading constants in 1 − c/√κ on quadratics and on the whole class</dd>
+        <dt>ω, ξ</dt><dd>a frequency in [0, π] and ξ = 1 − cos ω</dd>
+        <dt>Θ(ω)</dt><dd>the spectral phase of the method at frequency ω; Θ(ω)/ω is its phase lead in steps</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Two running examples</span>
+      <ul>
+        <li><b>The κ = 9 valley.</b> The quadratic f(x) = ½(x<sub>1</sub><sup>2</sup> + 9x<sub>2</sub><sup>2</sup>) in the plane, so μ = 1, L = 9 and √κ = 3. Every method in the paper has round numbers here: gradient descent contracts by 0.8 per step, Polyak's heavy ball by 1/2, and the triple momentum method by 2/3.</li>
+        <li><b>The two oscillators.</b> The damped equation ẍ + θẋ + mx = 0 with (θ, m) = (2, 1) and with (θ, m) = (3, 2). The first is the slow limit of Nesterov's method, the second that of the triple momentum method. Their decay rates, 1 and 1 on quadratics but 2/3 and 1 on general functions, are the paper's headline numbers in miniature.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Gradient descent">
+      <span class="num">1 · GRADIENT DESCENT AND THE CONDITION NUMBER</span>
+      <h2>Why is a narrow valley slow?</h2>
+      <p>Everything in the paper is measured against plain gradient descent, so it is worth seeing exactly why gradient descent is slow and what number controls it. The answer is the ratio between the steepest and the flattest curvature of the function.</p>
+      <div class="def"><span class="label">Definition · the class 𝓕<sub>μ,L</sub> and the condition number</span>
+        <p>A differentiable function f belongs to 𝓕<sub>μ,L</sub>, with 0 &lt; μ &lt; L, when f(x) − (μ/2)‖x‖<sup>2</sup> is convex and the gradient is L-Lipschitz, ‖∇f(x) − ∇f(x′)‖ ≤ L‖x − x′‖. The condition number is κ = L/μ.</p>
+        <p>In words: f is a bowl that curves upward at least as fast as μ and at most as fast as L in every direction, and κ measures how elongated the bowl can be.</p>
+      </div>
+      <p>For a quadratic the curvatures are literally the eigenvalues. Take f(x) = ½ Σ<sub>i</sub> λ<sub>i</sub>x<sub>i</sub><sup>2</sup> with μ ≤ λ<sub>i</sub> ≤ L. The gradient has coordinates λ<sub>i</sub>x<sub>i</sub>, so one step of gradient descent with step h acts on each coordinate separately,</p>
+      <div class="math" data-tex="x_{k+1} = x_k - h\nabla f(x_k)\quad\Longrightarrow\quad x_{k+1,i} = (1-h\lambda_i)\,x_{k,i}."></div>
+      <p class="eqn">standard; background, not in the paper</p>
+      <p>The flat direction wants a large step and the steep direction a small one. Balancing the two worst factors, |1 − hμ| = |1 − hL|, gives h = 2/(μ + L) and the contraction</p>
+      <div class="math" data-tex="\max_i |1-h\lambda_i| = \frac{L-\mu}{L+\mu} = \frac{\kappa-1}{\kappa+1}\approx 1-\frac{2}{\kappa}."></div>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why is 2/(μ + L) the best fixed step?</span></summary><div class="pfbody">
+        <p>The function λ ↦ |1 − hλ| is a V-shape with its zero at λ = 1/h, so its maximum over [μ, L] is attained at an endpoint and equals max(|1 − hμ|, |1 − hL|). Increasing h lowers the first and raises the second once hL &gt; 1, so the maximum is smallest where they are equal. That happens when 1 − hμ = hL − 1, that is h = 2/(μ + L), and the common value is 1 − 2μ/(μ + L) = (L − μ)/(L + μ). Dividing top and bottom by μ gives (κ − 1)/(κ + 1).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>On the κ = 9 valley, h = 2/10 = 0.2, and the two coordinates are multiplied by 1 − 0.2 = 0.8 and 1 − 1.8 = −0.8 at every step. The steep coordinate flips sign each step while the flat one creeps toward zero, and the distance to the minimum shrinks by exactly 0.8 per step. Reaching one millionth of the starting distance takes about ln(10<sup>6</sup>)/ln(1/0.8) ≈ 62 steps.</p>
+      <div class="fact"><span class="label">Fact</span><p>Gradient descent needs on the order of κ steps to gain each constant factor of accuracy. The whole subject of acceleration is the search for methods that need only on the order of √κ, which is a large saving when κ is in the thousands or millions.</p></div>
+      <p class="short"><b>In short:</b> curvature spread κ forces gradient descent to rate (κ − 1)/(κ + 1) ≈ 1 − 2/κ, which is 0.8 on the running valley.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Momentum">
+      <span class="num">2 · THE MOMENTUM FAMILY</span>
+      <h2>What does adding momentum buy?</h2>
+      <p>A ball rolling down the valley does not stop and restart at every step; it remembers its velocity, which smooths out the zigzag across the steep direction and builds up speed along the flat one. The paper studies the family of two-step methods built on this idea, which differ in where they evaluate the gradient.</p>
+      <div class="def"><span class="label">Definition · the family 𝓜</span>
+        <p>Given a step h &gt; 0, momentum β ∈ [0, 1) and extrapolation τ ≥ 0, the method computes</p>
+        <div class="math" data-tex="\tilde x_k = x_k + \tau(x_k - x_{k-1}),\qquad x_{k+1} = x_k + \beta(x_k-x_{k-1}) - h\nabla f(\tilde x_k)."></div>
+        <p class="eqn">Eq. 1</p>
+        <p>In words: take the last step again, scaled by β, and correct it with a gradient measured at a point τ steps further along the current direction of motion. The paper starts every trajectory from rest, x<sub>−1</sub> = x<sub>0</sub>.</p>
+      </div>
+      <p>Three famous methods are members. Polyak's heavy ball has τ = 0, so it measures the gradient where it stands. Nesterov's accelerated method has τ = β, so it measures the gradient where momentum is about to carry it. The triple momentum method (TMM) of Van Scoy, Freeman and Lynch has τ approaching 1/2 as κ grows. Polyak's tuning for heavy ball is</p>
+      <div class="math" data-tex="\tau=0,\qquad \beta=\left(\frac{\sqrt\kappa-1}{\sqrt\kappa+1}\right)^{2},\qquad h=\frac{4}{(\sqrt L+\sqrt\mu)^{2}}."></div>
+      <p class="eqn">Theorem 2.7</p>
+      <p>On the κ = 9 valley, √κ = 3, so β = (2/4)<sup>2</sup> = 1/4 and h = 4/(3 + 1)<sup>2</sup> = 1/4. The TMM tuning at κ = 9 (from Eq. 52 with design rate ϱ = 1 − κ<sup>−1/2</sup> = 2/3) works out to hL = 5/3, β = 1/3 and τ = 1/5; that arithmetic is ours.</p>
+
+      <p>To see why the rate improves, treat each coordinate of a quadratic separately, exactly as for gradient descent. On a coordinate with curvature λ, Eq. 1 becomes a linear recurrence with two terms of memory, and its solutions are combinations of powers z<sup>k</sup> where z solves the characteristic equation</p>
+      <div class="math" data-tex="\chi_\lambda(z) = (z-1)(z-\beta) + h\lambda\,N_\tau(z) = 0,\qquad N_\tau(z) = (1+\tau)z - \tau."></div>
+      <p class="eqn">Section 2.1</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Where does this polynomial come from?</span></summary><div class="pfbody">
+        <p>This short check is ours. With ∇f(x) = λx on one coordinate, the update reads x<sub>k+1</sub> = x<sub>k</sub> + β(x<sub>k</sub> − x<sub>k−1</sub>) − hλ[(1 + τ)x<sub>k</sub> − τx<sub>k−1</sub>]. Substituting x<sub>k</sub> = z<sup>k</sup> and dividing by z<sup>k−1</sup> gives z<sup>2</sup> = z + β(z − 1) − hλ[(1 + τ)z − τ]. Moving everything to one side,</p>
+        <div class="math" data-tex="z^2 - (1+\beta)z + \beta + h\lambda\bigl((1+\tau)z-\tau\bigr) = (z-1)(z-\beta) + h\lambda N_\tau(z) = 0."></div>
+        <p>Every solution of the recurrence is a combination of the two roots raised to the power k (or k z<sup>k</sup> at a double root), so the slower root decides the rate on that coordinate.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For Polyak's tuning on the valley, the flat coordinate (λ = 1) gives χ<sub>1</sub>(z) = (z − 1)(z − 1/4) + z/4 = z<sup>2</sup> − z + 1/4 = (z − 1/2)<sup>2</sup>, and the steep one (λ = 9) gives χ<sub>9</sub>(z) = (z − 1)(z − 1/4) + 9z/4 = (z + 1/2)<sup>2</sup>. Both have a double root of size 1/2, so every coordinate decays like k(1/2)<sup>k</sup>. That is the rate 1/2 per step against gradient descent's 0.8, and one millionth is reached in roughly 25 steps instead of 62.</p>
+
+      <p>The animation runs the three methods on the κ = 9 valley from the same start, (3, 0.8), at rest. Each frame is one step. The ellipses are level curves of f, and the bars underneath show each method's distance to the minimum on a log scale, so a constant rate shows up as bars shrinking by equal amounts.</p>
+      <div class="player" id="pValley">
+        <div class="ptitle"><span class="label">Animation · three methods on the κ = 9 valley</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Gradient descent, heavy ball and triple momentum iterates on an elongated quadratic"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--muted)"></i>gradient descent</span><span><i class="sw" style="background:var(--accent)"></i>heavy ball (Polyak)</span><span><i class="sw" style="background:var(--cool)"></i>TMM</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+
+      <p>A method is useless if some coordinate blows up, so the first question about any tuning is whether all roots of χ<sub>λ</sub> lie inside the unit circle for every λ between μ and L. The paper calls such a tuning stable and gives a one-line test.</p>
+      <div class="fact"><span class="label">Fact · Lemma 2.1</span><p>A tuning of 𝓜 is stable if and only if y(1 + 2τ) &lt; 2(1 + β), where y = hL.</p></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does stability reduce to one inequality?</span></summary><div class="pfbody">
+        <p>A real quadratic z<sup>2</sup> − Pz + Q has both roots strictly inside the unit circle exactly when |Q| &lt; 1, 1 + Q − P &gt; 0 and 1 + Q + P &gt; 0 (the Schur–Cohn or Jury conditions). For χ<sub>λ</sub>, P = 1 + β − hλ(1 + τ) and Q = β − hλτ ≤ β &lt; 1.</p>
+        <p>The second condition is 1 + Q − P = χ<sub>λ</sub>(1) = hλ &gt; 0, which always holds. The third is 1 + Q + P = χ<sub>λ</sub>(−1) = 2(1 + β) − hλ(1 + 2τ). It decreases in λ, so it holds for all λ ∈ [μ, L] exactly when it holds at λ = L, which is y(1 + 2τ) &lt; 2(1 + β). Under that inequality also hλτ ≤ yτ &lt; 1 + β, so Q &gt; −1, completing |Q| &lt; 1.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For Polyak on the valley, y = 9/4 and τ = 0, so the test reads 9/4 &lt; 2(5/4) = 5/2, which holds. For TMM, y(1 + 2τ) = (5/3)(7/5) = 7/3 &lt; 2(4/3) = 8/3, which holds too.</p>
+      <p class="short"><b>In short:</b> momentum turns each coordinate into a two-term recurrence with characteristic polynomial χ<sub>λ</sub>; Polyak's tuning gives double roots of size 1/2 on the valley, and stability is the single inequality y(1 + 2τ) &lt; 2(1 + β).</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Worst cases">
+      <span class="num">3 · RATES ON QUADRATICS AND BEYOND</span>
+      <h2>What does it cost to look ahead?</h2>
+      <p>Polyak's rate is the best possible on quadratics, so extrapolation can only make quadratics slower. The paper puts an exact price on it, and then defines the harder target: the worst rate over every function in the class, not just quadratics.</p>
+      <div class="def"><span class="label">Definition · the quadratic rate and the worst-case rate</span>
+        <p>The quadratic rate is ρ<sub>q</sub> = max over λ ∈ [μ, L] of the largest root modulus of χ<sub>λ</sub>. The worst-case rate ρ<sub>𝓕</sub> is defined through the envelope Γ(n) = sup ‖S<sub>k+n</sub>‖/‖S<sub>k</sub>‖, where S<sub>k</sub> = (x<sub>k−1</sub> − x<sup>⋆</sup>, x<sub>k</sub> − x<sup>⋆</sup>) is the state and the supremum runs over all real Hilbert spaces, all f ∈ 𝓕<sub>μ,L</sub> and all trajectories; then ρ<sub>𝓕</sub> = lim Γ(n)<sup>1/n</sup>.</p>
+        <p>In words: ρ<sub>q</sub> is the slowest per-step shrinkage on any quadratic bowl, and ρ<sub>𝓕</sub> is the slowest long-run shrinkage an adversary can force by choosing any bowl at all, of any dimension.</p>
+      </div>
+      <p class="eqn">Definition 2.2</p>
+      <p>Quadratics are in the class, so the adversary can always do at least as badly as on quadratics: ρ<sub>𝓕</sub> ≥ ρ<sub>q</sub> (Lemma 2.3). The interesting question is when the inequality is strict. The first result concerns ρ<sub>q</sub> alone.</p>
+      <div class="math" data-tex="\rho_q \;\ge\; \frac{\sqrt{\kappa_\tau}-1}{\sqrt{\kappa_\tau}+1},\qquad \kappa_\tau := (1+2\tau)\kappa - 2\tau."></div>
+      <p class="eqn">Theorem 2.7 · price of extrapolation</p>
+      <p>Equality holds exactly at Polyak's tuning. So extrapolating by τ is at least as bad, on quadratics, as running the optimal heavy ball on a problem whose condition number is inflated by roughly the factor 1 + 2τ.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can no tuning beat this bound on quadratics?</span></summary><div class="pfbody">
+        <p>Let ρ = ρ<sub>q</sub>, let w<sub>1</sub>, w<sub>2</sub> be the roots of χ<sub>μ</sub> and v<sub>1</sub>, v<sub>2</sub> those of χ<sub>L</sub>, all of modulus at most ρ. Evaluating the factored polynomials at ±1,</p>
+        <div class="math" data-tex="h\mu = \chi_\mu(1) = (1-w_1)(1-w_2) \ge (1-\rho)^2,\qquad \chi_L(-1) = (1+v_1)(1+v_2) \ge (1-\rho)^2,"></div>
+        <p>where for complex conjugate roots one uses |1 − w|<sup>2</sup> ≥ (1 − |w|)<sup>2</sup>. Also the product of the roots of χ<sub>μ</sub> is β − hμτ = w<sub>1</sub>w<sub>2</sub> ≤ ρ<sup>2</sup>.</p>
+        <p>Since χ<sub>L</sub>(−1) = 2(1 + β) − hL(1 + 2τ), the second inequality gives hL(1 + 2τ) ≤ 2(1 + β) − (1 − ρ)<sup>2</sup>, and using β ≤ ρ<sup>2</sup> + hμτ this is at most (1 + ρ)<sup>2</sup> + 2hμτ. Dividing by hμ ≥ (1 − ρ)<sup>2</sup>,</p>
+        <div class="math" data-tex="\kappa(1+2\tau) \le \left(\frac{1+\rho}{1-\rho}\right)^{2} + 2\tau,"></div>
+        <p>which rearranges to the claim. Equality forces equality at every step: double roots w<sub>1</sub> = w<sub>2</sub> = ρ and v<sub>1</sub> = v<sub>2</sub> = −ρ, hence β − hμτ = ρ<sup>2</sup> = β − hLτ, so τ = 0, and then β = ρ<sup>2</sup>, hμ = (1 − ρ)<sup>2</sup>, hL = (1 + ρ)<sup>2</sup>, which is Polyak's tuning.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>On the valley with TMM's τ = 1/5, κ<sub>τ</sub> = 1.4 · 9 − 0.4 = 12.2 and the bound is (√12.2 − 1)/(√12.2 + 1) ≈ 0.555. TMM's actual quadratic rate is 2/3 (its χ<sub>μ</sub> factors as (z − 2/3)(z − 4/9), Theorem F.1), comfortably above the bound. For the standard Nesterov tuning at κ = 9 (h = 1/9, τ = β = 1/2), κ<sub>τ</sub> = 17 and the bound is ≈ 0.610; we computed its quadratic rate numerically as 2/3. Both pay for looking ahead, compared with Polyak's 1/2.</p>
+      <div class="fact"><span class="label">Fact</span><p>On quadratics, heavy ball is the champion and every bit of extrapolation is a cost. The rest of the paper explains why methods pay this cost anyway: on non-quadratic functions, heavy ball's advantage can turn into failure.</p></div>
+      <p class="short"><b>In short:</b> ρ<sub>𝓕</sub> ≥ ρ<sub>q</sub> ≥ (√κ<sub>τ</sub> − 1)/(√κ<sub>τ</sub> + 1), with equality only for Polyak's heavy ball.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · The slow flow">
+      <span class="num">4 · THE SLOW FLOW</span>
+      <h2>What equation does an accelerated method approximate?</h2>
+      <p>When κ is large, accelerated methods take tiny, careful steps along the flat direction, and many steps together look like a smooth motion. Identifying that motion turns questions about rates into questions about a damped oscillator, which can be solved exactly.</p>
+      <div class="def"><span class="label">Definition · accelerated scaling and slow data</span>
+        <p>Normalize L = 1, so μ = ε<sup>2</sup> = 1/κ. A family of tunings is in accelerated scaling with slow data (θ, y) when</p>
+        <div class="math" data-tex="\beta = 1-\theta_\varepsilon\,\varepsilon,\qquad h=y_\varepsilon,\qquad \tau=\tau_\varepsilon,\qquad (\theta_\varepsilon,y_\varepsilon,\tau_\varepsilon)\to(\theta,y,\tau),\quad \theta,y>0."></div>
+        <p class="eqn">Eq. 3</p>
+        <p>In words: the momentum falls short of 1 by θ/√κ, and the step times L tends to y.</p>
+      </div>
+      <p>Each method in Section 2 has slow data. For Polyak, 1 − β ≈ 4/√κ and hL = 4κ/(√κ + 1)<sup>2</sup> → 4, so (θ, y) = (4, 4). For standard Nesterov, (θ, y, τ) → (2, 1, 1) (Corollary 6.6). For TMM, (θ, y, τ) → (3, 2, 1/2) (Corollary 7.1). The Polyak computation is ours.</p>
+      <p>Rescaling time as t = εk, the paper states that the iterates follow the heavy-ball equation</p>
+      <div class="math" data-tex="\ddot x + \theta\dot x + \nabla F(x) = 0,\qquad F = \tfrac{y}{\varepsilon^2}f \in \mathcal F_{y,\,y\kappa}."></div>
+      <p class="eqn">Section 3</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why does a discrete method turn into this differential equation?</span></summary><div class="pfbody">
+        <p>This heuristic is ours; the paper states the limit and proves its consequences rigorously by other means. Write x<sub>k</sub> = X(εk) for a smooth curve X and ignore the small extrapolation shift. Rearranging Eq. 1,</p>
+        <div class="math" data-tex="(x_{k+1}-2x_k+x_{k-1}) + (1-\beta)(x_k-x_{k-1}) = -h\nabla f(\tilde x_k)."></div>
+        <p>By Taylor expansion the second difference is about ε<sup>2</sup>Ẍ and the first difference about εẊ, while 1 − β = θε. The left side is therefore about ε<sup>2</sup>(Ẍ + θẊ), and the right side is about −y∇f(X). Dividing by ε<sup>2</sup> gives Ẍ + θẊ + (y/ε<sup>2</sup>)∇f(X) = 0. The function F = (y/ε<sup>2</sup>)f has curvatures between y and yκ, which explains the class in the display.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>On a quadratic bowl in the flat direction, F = (y/2)x<sup>2</sup>, the equation is ẍ + θẋ + yx = 0. Trying x = e<sup>−ζt</sup> gives ζ<sup>2</sup> − θζ + y = 0. If the roots are complex the solution oscillates and decays at rate θ/2; if real, the slower root ζ<sub>−</sub> wins. Time t corresponds to t/ε = t√κ steps, so decay e<sup>−ct</sup> is a per-step factor e<sup>−c/√κ</sup> ≈ 1 − c/√κ. The paper's quadratic constant is</p>
+      <div class="math" data-tex="c_Q(\theta,y)=\begin{cases}\theta/2, & \theta^2\le 4y,\\[2pt] \bigl(\theta-\sqrt{\theta^2-4y}\bigr)/2, & \theta^2>4y,\end{cases}"></div>
+      <p class="eqn">Eq. 4</p>
+      <p>and Lemma 2.5 shows that √κ(1 − ρ<sub>q</sub>) never exceeds c<sub>Q</sub> in the limit, and tends to c<sub>Q</sub> when y(1 + 2τ) &lt; 4. The constant is largest at critical damping θ = 2√y, where c<sub>Q</sub> = √y.</p>
+      <p>Check this on the running oscillators. For (θ, m) = (2, 1), θ<sup>2</sup> = 4 = 4m is critical damping, c<sub>Q</sub> = 1, and the solutions are (A + Bt)e<sup>−t</sup>. For (3, 2), ζ<sup>2</sup> − 3ζ + 2 = (ζ − 1)(ζ − 2), so c<sub>Q</sub> = 1 again. For Polyak's (4, 4), critical damping gives c<sub>Q</sub> = 2, matching (√κ − 1)/(√κ + 1) ≈ 1 − 2/√κ. On quadratics, then, Nesterov and TMM both have constant 1 and Polyak has 2.</p>
+      <div class="fact"><span class="label">Fact</span><p>Methods with the same slow data (θ, y) discretize the same oscillator, and on quadratics they share the constant c<sub>Q</sub>(θ, y). The paper's point is that on general functions they need not share anything.</p></div>
+      <p class="short"><b>In short:</b> with β = 1 − θ/√κ and hL → y, a momentum method becomes the oscillator ẍ + θẋ + ∇F = 0, and on quadratics it gains the factor 1 − c<sub>Q</sub>/√κ per step.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · θ/3">
+      <span class="num">5 · THE OSCILLATOR ON GENERAL FUNCTIONS</span>
+      <h2>Where does θ/3 come from?</h2>
+      <p>The oscillator is linear only on quadratics. On a general strongly convex F the restoring force ∇F is nonlinear, and an adversary can shape it to keep the ball circling. Theorem 3.1 finds the exact slowest decay, and it is often worse than c<sub>Q</sub>.</p>
+      <p>Write the function as f(x) = (m/2)‖x‖<sup>2</sup> + f<sub>m</sub>(x), where the remainder f<sub>m</sub> is convex with f<sub>m</sub>(0) = 0 and ∇f<sub>m</sub>(0) = 0. Convexity between x and the minimizer gives two inequalities that are the only information the argument uses,</p>
+      <div class="math" data-tex="f_m(x)\ge 0,\qquad \langle\nabla f_m(x),x\rangle - f_m(x)\ge 0."></div>
+      <p class="eqn">Eq. 6</p>
+      <p>The tool is an energy that must decrease. For a trial rate c, put Δ<sub>c</sub> = c<sup>2</sup> − θc + m and</p>
+      <div class="math" data-tex="V_c = f_m(x)+\tfrac{\Delta_c}{2}\lVert x\rVert^2+\tfrac12\lVert\dot x+(\theta-c)x\rVert^2."></div>
+      <p class="eqn">Theorem 3.1(a)</p>
+      <p>Along every solution of ẍ + θẋ + ∇f(x) = 0 it satisfies the exact identity</p>
+      <div class="math" data-tex="\frac{d}{dt}\bigl(e^{2ct}V_c\bigr) = -e^{2ct}\Bigl[(\theta-2c)\Delta_c\lVert x\rVert^2+(\theta-c)\bigl(\langle\nabla f_m(x),x\rangle-f_m(x)\bigr)+(\theta-3c)\,f_m(x)\Bigr]."></div>
+      <p class="eqn">Eq. 9</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does the derivative come out so cleanly?</span></summary><div class="pfbody">
+        <p>The paper's proof, with the algebra filled in. Put v = ẋ, G = ∇f<sub>m</sub>(x) and a = θ − c. The equation of motion is v̇ = −θv − mx − G, so v̇ + av = −cv − mx − G. Differentiating the three terms of V<sub>c</sub>,</p>
+        <div class="math" data-tex="\dot V_c = \langle G,v\rangle + \Delta_c\langle x,v\rangle + \langle v+ax,\,-cv-mx-G\rangle."></div>
+        <p>The terms ⟨G, v⟩ and −⟨v, G⟩ cancel. Now add 2cV<sub>c</sub> = 2cf<sub>m</sub> + cΔ<sub>c</sub>‖x‖<sup>2</sup> + c‖v + ax‖<sup>2</sup> and collect. The ‖v‖<sup>2</sup> terms are −c + c = 0. The ⟨x, v⟩ terms are Δ<sub>c</sub> − m − ac + 2ac = Δ<sub>c</sub> − m + ac = 0, because Δ<sub>c</sub> = m − ca. The ‖x‖<sup>2</sup> terms are −am + cΔ<sub>c</sub> + ca<sup>2</sup> = −am + cm − c<sup>2</sup>a + ca<sup>2</sup> = −(a − c)(m − ca) = −(θ − 2c)Δ<sub>c</sub>. What remains is 2cf<sub>m</sub> − a⟨G, x⟩, which equals −(θ − c)(⟨G, x⟩ − f<sub>m</sub>) − (θ − 3c)f<sub>m</sub>. Multiplying V̇<sub>c</sub> + 2cV<sub>c</sub> by e<sup>2ct</sup> gives Eq. 9.</p>
+        <p>When 0 &lt; c ≤ θ/3 and Δ<sub>c</sub> &gt; 0, all three coefficients θ − 2c, θ − c, θ − 3c are nonnegative, and Eq. 6 makes every bracketed term nonnegative. So e<sup>2ct</sup>V<sub>c</sub> never increases, V<sub>c</sub> ≤ e<sup>−2ct</sup>V<sub>c</sub>(0), and since V<sub>c</sub> controls ‖x‖<sup>2</sup> + ‖ẋ‖<sup>2</sup> from above and below, the state decays at rate c.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The three coefficients explain everything. The middle and last ones need c ≤ θ − c and c ≤ θ/3, and the first needs Δ<sub>c</sub> &gt; 0, which (with c &lt; θ/2) is exactly c &lt; c<sub>Q</sub> (Lemma B.1). The binding one on general functions is θ − 3c. The paper gives the reason it is 3: if the remainder were homogeneous of degree r, so that ⟨∇f<sub>m</sub>(x), x⟩ = rf<sub>m</sub>(x), the f<sub>m</sub> terms in the bracket would combine to (rθ − (r + 2)c)f<sub>m</sub>, which vanishes at c = rθ/(r + 2). Quadratic profiles (r = 2) give θ/2. Cone-shaped profiles (r = 1), the flattest growth convexity allows, give θ/3.</p>
+      <div class="def"><span class="label">Definition · the full-class constant</span>
+        <div class="math" data-tex="c_{\mathcal F}(\theta,y)=\min\Bigl\{\frac{\theta}{3},\;c_Q(\theta,y)\Bigr\}."></div>
+        <p class="eqn">Eq. 5</p>
+        <p>In words: the oscillator decays at least as fast as the slower of the cone rate θ/3 and the quadratic rate c<sub>Q</sub>.</p>
+      </div>
+      <p>The energy argument shows that every solution decays at least at rate c<sub>𝓕</sub>. The converse needs a function on which the ball decays no faster. Theorem 3.1(c) builds one for every rate between θ/3 and c<sub>Q</sub>: a trajectory that is an orthogonal sum of J planar spirals, x(t) = (√ν<sub>j</sub> e<sup>(−c + iγ<sub>j</sub>)t</sup>)<sub>j</sub>, each turning at its own angular speed γ<sub>j</sub> and shrinking at exactly rate c, together with a smooth strongly convex function whose gradient flow produces it. A single spiral does not work (Proposition 3.3): near c = θ/3 it would have to wind so fast that convexity fails at its first return to the starting ray. Mixing spirals with different speeds desynchronizes those returns.</p>
+      <div class="fact"><span class="label">Fact · Theorem 3.1(d)</span><p>Over all strongly convex functions with curvature at least m and all nonzero solutions, the slowest decay exponent of the heavy-ball flow is exactly c<sub>𝓕</sub>(θ, m) = min(θ/3, c<sub>Q</sub>(θ, m)).</p></div>
+      <p>On the running oscillators: for (2, 1), c<sub>Q</sub> = 1 but θ/3 = 2/3, so c<sub>𝓕</sub> = 2/3. Nesterov's slow flow loses a third of its quadratic speed on general functions. For (3, 2), θ/3 = 1 = c<sub>Q</sub>, so c<sub>𝓕</sub> = 1 and nothing is lost. The extra friction in TMM's flow is exactly what balances the two constraints.</p>
+      <div class="fact"><span class="label">Fact · Corollary 3.2</span><p>For fixed m, the best quadratic exponent is √m, at θ = 2√m, and the best full-class exponent is √(m/2), at θ = 3√(m/2), where θ/3 = c<sub>Q</sub>. Optimizing for all functions costs a factor 1/√2 in speed and needs about 1.06 times as much friction.</p></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the full-class maximum at the crossing point?</span></summary><div class="pfbody">
+        <p>For θ ≤ 2√m, c<sub>Q</sub> = θ/2 and c<sub>𝓕</sub> = θ/3 ≤ (2/3)√m, which is below √(m/2). For θ ≥ 2√m, c<sub>Q</sub> = ζ<sub>−</sub> = 2m/(θ + √(θ<sup>2</sup> − 4m)) decreases from √m while θ/3 increases, so the minimum of the two is largest where they meet. They meet when ζ = θ/3 solves ζ<sup>2</sup> − θζ + m = 0, that is θ<sup>2</sup>/9 − θ<sup>2</sup>/3 + m = 0, so θ = 3√(m/2) and the common value is √(m/2).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> an energy identity with coefficient θ − 3c caps the oscillator at θ/3 on general functions, spiral mixtures show the cap is real, and the exact exponent is c<sub>𝓕</sub> = min(θ/3, c<sub>Q</sub>).</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · The half step">
+      <span class="num">6 · THE HALF-STEP WALL</span>
+      <h2>Why does heavy ball fail where Nesterov succeeds?</h2>
+      <p>Heavy ball and Nesterov's method can share slow data, hence the same oscillator, yet heavy ball is not accelerated on 𝓕<sub>μ,L</sub>. The flow cannot see the difference, so it must come from the discretization. The paper locates it in a phase shift of exactly half a step.</p>
+      <p>Think of a slowly rotating trajectory, one that turns by an angle ω per step, written as x<sub>k</sub> = e<sup>iωk</sup> in a plane. A derivative multiplies such a wave by iω. A difference multiplies it by something slightly different, and the paper writes the discrepancy as</p>
+      <div class="math" data-tex="1-e^{i\omega} = \frac{2\sin(\omega/2)}{\omega}\;e^{i\omega/2}\;(-i\omega)."></div>
+      <p class="eqn">Eq. 23</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why is the extra phase exactly ω/2?</span></summary><div class="pfbody">
+        <p>Factor out the midpoint: 1 − e<sup>iω</sup> = e<sup>iω/2</sup>(e<sup>−iω/2</sup> − e<sup>iω/2</sup>) = e<sup>iω/2</sup> · (−2i sin(ω/2)). Writing −2i sin(ω/2) = (2 sin(ω/2)/ω)(−iω) gives Eq. 23. The real factor 2 sin(ω/2)/ω is close to 1 for small ω, so the only real distortion is the phase e<sup>iω/2</sup>: a one-step difference acts like a derivative taken at the midpoint, half a step away.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The energy argument of Section 5 uses the convexity inequalities at matching times. In discrete time the gradient is sampled at query points, and the half-step lag from Eq. 23 has to be compensated by the query being far enough ahead. The paper measures how far ahead with a phase.</p>
+      <div class="def"><span class="label">Definition · the spectral phase lead</span>
+        <p>For the limit method (μ = 0, L = 1, β = 1) of a tuning in 𝓜 with slow step y and extrapolation τ, the phase at frequency ω is</p>
+        <div class="math" data-tex="\Theta_0(\omega) = \arg\bigl(y-(2-y\tau)\,\xi + i\,y\tau\sin\omega\bigr),\qquad \xi = 1-\cos\omega,"></div>
+        <p class="eqn">Section 5.3</p>
+        <p>and Θ<sub>0</sub>(ω)/ω is the phase lead, measured in steps. In words: it says how many steps ahead of the iterate the gradient effectively looks, for a component that rotates by ω per step.</p>
+      </div>
+      <p>For small ω, ξ ≈ ω<sup>2</sup>/2 and sin ω ≈ ω, so Θ<sub>0</sub>(ω) ≈ yτω/y = τω: at low frequencies the lead is τ steps. Remark 5.7 records the two extremes: for the limit of standard Nesterov, (y, τ) = (1, 1), the lead is exactly 1 at every frequency; for TMM, (y, τ) = (2, 1/2), it is exactly 1/2 at every frequency in (0, π).</p>
+      <p>The lead matters because of a resonance test. A one-atom spectrum at ω = 2π/K, which corresponds to a trajectory rotating once every K steps, is feasible at zero decay exactly when |Θ(2π/K)| ≤ π/K, that is, when the lead at that frequency is at most 1/2 step (Lemma C.14). Feasible means a function exists on which the method rotates forever without converging (Proposition 4.10). So the curve Θ<sub>0</sub>(ω)/ω must stay above the half-step line at the frequencies 2π/K, or the method has periodic orbits.</p>
+      <p>The animation computes Θ<sub>0</sub>(ω)/ω for five limit methods and marks every K from 3 to 40 at which the curve passes strictly below the half-step line, which is where periodic witnesses appear. The tuning (y, τ) = (1, 1/4) reproduces the paper's Figure 3, where strict passage starts at K = 8.</p>
+      <div class="player" id="pPhase">
+        <div class="ptitle"><span class="label">Animation · phase lead against the half-step line</span></div>
+        <div class="stage"><svg viewBox="0 0 340 230" role="img" aria-label="Spectral phase lead of five limit methods compared with one half step"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>phase lead Θ₀(ω)/ω</span><span><i class="sw" style="background:var(--muted)"></i>half-step line</span><span><i class="sw" style="background:var(--bad)"></i>resonant 2π/K</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+
+      <p>The same information appears algebraically in the lag-one polynomial. The paper shows (Proposition 6.1) that the quantity Re[(1 − e<sup>iω</sup>)χ<sub>μ</sub>(e<sup>iω</sup>)conj(χ<sub>L</sub>(e<sup>iω</sup>))] equals ξ times a quadratic L<sub>τ</sub>(ξ), that Θ(ω) &gt; ω/2 exactly when L<sub>τ</sub>(ξ) &gt; 0, and that positivity of L<sub>τ</sub> on (0, 2] certifies convergence. In the limit β = 1, μ = 0,</p>
+      <div class="math" data-tex="L_\tau(\xi) = 2y(2\tau-1)\,\xi + 4(1-\tau y)\,\xi^2."></div>
+      <p class="eqn">Proposition 6.1(a)</p>
+      <p>Near ξ = 0 the linear term dominates, and its sign is the sign of 2τ − 1. With τ &lt; 1/2 the polynomial is negative at small ξ, which means at slowly rotating frequencies 2π/K for large K. On the valley, plugging TMM's limiting y = 2, τ = 1/2 gives L<sub>τ</sub> ≡ 0: TMM sits exactly on the wall, tight at every frequency at once.</p>
+      <div class="fact"><span class="label">Fact · Theorem 6.2, the wall τ = 1/2</span><p>If stable tunings are accelerated on quadratics and lim sup τ<sub>κ</sub> &lt; 1/2, then for all large κ there is an integer K ≥ 6 with Θ(2π/K) &lt; π/K, the method has trajectories that approach K-periodic orbits in ℝ<sup>3</sup>, and it does not converge uniformly on 𝓕<sub>μ,L</sub>. Consequently every family accelerated on 𝓕<sub>μ,L</sub> has lim inf τ<sub>κ</sub> ≥ 1/2.</p></div>
+      <details class="pf"><summary><span class="tagd">proof sketch</span><span class="q">How does a negative coefficient become a periodic orbit?</span></summary><div class="pfbody">
+        <p>If the claim failed, Lemma E.4 provides a subsequence of tunings with β → 1, hμ → 0, y<sub>ε</sub> → y &gt; 0 and τ<sub>ε</sub> → τ &lt; 1/2. Along it the lag-one polynomials converge coefficient by coefficient to L<sub>0</sub>(ξ) = 2y(2τ − 1)ξ + 4(1 − τy)ξ<sup>2</sup>. The negative linear coefficient makes L<sub>0</sub> negative on some interval (0, ξ<sub>0</sub>). Choose an integer K ≥ 6 with 1 − cos(2π/K) &lt; ξ<sub>0</sub>; by convergence the actual polynomials are negative there for all small ε. Proposition 6.1 converts this into Θ(2π/K) &lt; π/K, and Proposition 4.10 builds a function in 𝓕<sub>μ,L</sub>(ℝ<sup>3</sup>) on which the iterates approach a K-periodic rotation. Such a trajectory never converges, contradicting acceleration.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In particular, every heavy-ball tuning that accelerates on quadratics has periodic orbits on 𝓕<sub>μ,L</sub> once κ is large. The paper proves this abstractly. To see it happen, the animation below runs a concrete example of our own: the one-dimensional function whose derivative is 25x for x &lt; 1, x + 24 for 1 ≤ x &lt; 2, and 25x − 24 for x ≥ 2. Its derivative is continuous and increasing with slopes between 1 and 25, so it lies in 𝓕<sub>1,25</sub> with κ = 25 and minimizer 0. We run Polyak's heavy ball (β = 4/9, h = 1/9, optimal on quadratics with rate 2/3) and TMM at κ = 25 (ϱ = 0.8, hL = 1.8, β = 8/15, τ = 8/27 from Eq. 52) from x<sub>0</sub> = 3.3 at rest.</p>
+      <div class="player" id="pCycle">
+        <div class="ptitle"><span class="label">Animation · heavy ball cycles, TMM converges (our example)</span><div class="scen"><button class="chip" data-scen="hb" aria-pressed="true">heavy ball</button><button class="chip" data-scen="tmm" aria-pressed="false">TMM</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 230" role="img" aria-label="Iterates of heavy ball and triple momentum on a piecewise quadratic function"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--line)"></i>f(x)</span><span><i class="sw" style="background:var(--accent)"></i>current iterate</span><span><i class="sw ring" style="border-color:var(--muted);border-style:solid"></i>earlier iterates</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p class="note">The function and both runs are ours. They illustrate Theorem 6.2 and Theorem 8.1(b) for one κ; the paper's own witnesses are built differently, in ℝ<sup>3</sup>. The heavy-ball iterates settle onto the 3-cycle −1.802, 2.116, 0.647.</p>
+      <p class="short"><b>In short:</b> a difference lags a derivative by half a step, so a method whose gradient looks less than half a step ahead resonates with slowly rotating trajectories; acceleration on all of 𝓕<sub>μ,L</sub> forces τ ≥ 1/2 in the limit.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Exact constants">
+      <span class="num">7 · THE EXACT CONSTANT AND THE BEST TUNINGS</span>
+      <h2>How fast is each method, exactly?</h2>
+      <p>With the flow ceiling and the wall in hand, the main theorem says that beyond the wall nothing else is lost: the discrete method is exactly as fast as its oscillator on the worst function.</p>
+      <div class="fact"><span class="label">Fact · Theorem 2.6</span><p>For a family of stable tunings in accelerated scaling: (a) for every τ ≥ 0 there are functions in fixed finite dimension on which the iterates from rest decay no faster than e<sup>−(c<sub>𝓕</sub> + δ)εN</sup>; (b) if τ &gt; 1/2 and y(1 + 2τ) &lt; 4, the rate is better than 1 − cε for every c &lt; c<sub>𝓕</sub>, certified by the lag-one criterion. Hence, under (b),</p>
+        <div class="math" data-tex="\lim_{\kappa\to\infty}\sqrt\kappa\,\bigl(1-\rho_{\mathcal F}\bigr) = c_{\mathcal F}(\theta,y)=\min\Bigl(\frac{\theta}{3},\,c_Q(\theta,y)\Bigr)."></div>
+      </div>
+      <p>Theorem 5.2 extends the ceiling to every second-order method with the same slow data and any fixed finite memory, not only two-step methods. The theorem also hands a recipe for designing a target constant c: the paper notes that c<sub>𝓕</sub>(θ, y) ≥ c is equivalent to θ ≥ 3c and y ≥ cθ − c<sup>2</sup>. The smallest step is then y = 2c<sup>2</sup> at θ = 3c, and the stability-type condition y(1 + 2τ) ≤ 4 caps the constant at √(2/(1 + 2τ)) for fixed τ (Corollary E.11).</p>
+      <p>Apply the recipe to the Nesterov family, where τ = β → 1: the cap is √(2/3). Corollary 6.7 shows it is attained by h = 4/(3L), τ = β = 1 − √(6/κ), whose slow data θ = √6, y = 4/3 satisfy θ = 3c and y = 2c<sup>2</sup> with c = √(2/3). At τ → 1/2 the cap is 1, which is TMM.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Nesterov tuning</th><th>θ</th><th>y</th><th>Full-class constant c</th></tr></thead>
+        <tbody>
+          <tr><td>Standard</td><td class="n">2</td><td class="n">1</td><td class="n">2/3</td></tr>
+          <tr><td>Quadratic-optimal</td><td class="n">4/√3</td><td class="n">4/3</td><td class="n">4/(3√3) ≈ 0.770</td></tr>
+          <tr><td>Class-optimal asymptotically</td><td class="n">√6</td><td class="n">4/3</td><td class="n">√(2/3) ≈ 0.816</td></tr>
+        </tbody>
+      </table></div>
+      <p class="eqn">Table 2 · Corollaries 6.6 and 6.7</p>
+      <p>The standard constant 2/3 is the running oscillator (2, 1) from Section 5: θ/3 = 2/3 beats c<sub>Q</sub> = 1, and since τ = 1 &gt; 1/2 and y(1 + 2τ) = 3 &lt; 4, Theorem 2.6 applies directly. This recovers the constant found earlier by Gannot and by Pokutta and Stellato. For squared distances every constant doubles, so standard Nesterov contracts squared distance by 1 − (4/3)κ<sup>−1/2</sup> per step.</p>
+      <p>The optimum over the whole family is c = 1. Corollary E.11(v) shows it forces (θ, y, τ) → (3, 2, 1/2), the second running oscillator, which the paper calls the TMM corner. TMM itself has ρ<sub>𝓕</sub> = ρ<sub>q</sub> = 1 − κ<sup>−1/2</sup> exactly at every κ (Corollary 7.1; the upper bound is due to Van Scoy, Freeman and Lynch), which is 2/3 on the valley, and this rate is optimal among all deterministic first-order methods by Drori and Taylor. Its parameters approach the corner from below the wall, with 1/2 − τ = (5/4)κ<sup>−1/2</sup>(1 + O(κ<sup>−1/2</sup>)), so for every finite κ it looks slightly less than half a step ahead.</p>
+      <p>The paper then classifies every way to reach constant 1. Writing τ = 1/2 − aε and hL = 2 − bε near the corner (Eq. 28), Theorem 7.2(d) says the constant is 1 exactly when θ = 3, a ≤ 5/4 and 2a + b ≥ 7/2. That is a wedge in the (a, b) plane, and TMM, with (a, b) = (5/4, 1), is its vertex. Theorem 7.5 extends the classification to arbitrary rates of approach.</p>
+      <div class="fact"><span class="label">Fact · Theorem 5.8 and Corollary 5.9</span><p>For any fixed finite memory, if the limiting lag-one symbol is nonnegative at every frequency, then y ≤ 2, the full-class constant is at most 1 and the quadratic constant at most √2, which is 1/√2 times Polyak's 2. Equality y = 2 holds only for the limiting transfer function of TMM, −(z − 1)<sup>2</sup>/(3z − 1).</p></div>
+      <p>The proof of Theorem 5.8 is a trace formula: 2/y − 1 equals an integral over frequencies of the lag-one symbol against a positive weight (Eq. 24), so a nonnegative symbol forces 2/y − 1 ≥ 0, and a symbol that vanishes identically forces the transfer function by an analyticity argument.</p>
+      <p>Finally, Section 8 leaves asymptotics behind. Theorem 8.1 says that at fixed (β, τ), every stable choice of h, μ and L converges if and only if τ ≥ τ<sub>3</sub>(β) = (β<sup>2</sup> + 3β − 1)/6; below that threshold some stable choice has 3-periodic orbits. For heavy ball, τ = 0, this means every stable tuning converges at every condition number exactly when β ≤ (√13 − 3)/2 ≈ 0.303. Polyak's tuning on the κ = 9 valley has β = 1/4, under the threshold, so it converges on every function in 𝓕<sub>1,9</sub>. At κ = 25 its β = 4/9 is over the threshold, consistent with the 3-cycle in the last animation. Every stable tuning of the Nesterov family τ = β converges, whatever h, μ and L.</p>
+      <p class="short"><b>In short:</b> beyond the wall the rate is exactly the flow's min(θ/3, c<sub>Q</sub>), which gives 2/3 for standard Nesterov, √(2/3) for its best tuning and 1 only at the TMM corner (θ, y, τ) = (3, 2, 1/2).</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Results">
+      <span class="num">8 · RESULTS</span>
+      <h2>What the paper proves, in numbers</h2>
+      <p>Every row is a theorem or corollary of the paper. Constants c refer to distance factors 1 − cκ<sup>−1/2</sup> + o(κ<sup>−1/2</sup>).</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Statement</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Stability of 𝓜</td><td>iff y(1 + 2τ) &lt; 2(1 + β) (Lemma 2.1)</td></tr>
+          <tr><td>Price of extrapolation</td><td>ρ<sub>q</sub> ≥ (√κ<sub>τ</sub> − 1)/(√κ<sub>τ</sub> + 1), κ<sub>τ</sub> = (1 + 2τ)κ − 2τ; equality only for Polyak (Thm 2.7)</td></tr>
+          <tr><td>Heavy-ball flow</td><td>slowest exponent min(θ/3, c<sub>Q</sub>); best √(m/2) vs √m on quadratics (Thm 3.1, Cor 3.2)</td></tr>
+          <tr><td>Exact constant, τ &gt; 1/2, y(1 + 2τ) &lt; 4</td><td>c = min(θ/3, c<sub>Q</sub>(θ, y)) (Thm 2.6)</td></tr>
+          <tr><td>The wall</td><td>accelerated on 𝓕<sub>μ,L</sub> ⇒ lim inf τ ≥ 1/2; otherwise K-periodic orbits, K ≥ 6 (Thm 6.2)</td></tr>
+          <tr><td>Wall layer</td><td>width A<sub>*</sub>κ<sup>−1/4</sup>, A<sub>*</sub> = √(θ(2 − y)/y) (Thm 6.5)</td></tr>
+          <tr><td>Standard Nesterov</td><td class="n">c = 2/3 (Cor 6.6(i))</td></tr>
+          <tr><td>Quadratic-optimal Nesterov</td><td class="n">c = 4/(3√3) ≈ 0.770 (Cor 6.6(ii))</td></tr>
+          <tr><td>Best Nesterov, h = 4/(3L), τ = β = 1 − √(6/κ)</td><td class="n">c = √(2/3), maximal for τ = β (Cor 6.7)</td></tr>
+          <tr><td>HNAG++</td><td class="n">c = 2√2/3 full class, √2 on quadratics (Cor 6.6(v))</td></tr>
+          <tr><td>TMM</td><td>ρ<sub>𝓕</sub> = ρ<sub>q</sub> = 1 − κ<sup>−1/2</sup> exactly (Cor 7.1)</td></tr>
+          <tr><td>All tunings with c = 1, corner scale</td><td>θ = 3, a ≤ 5/4, 2a + b ≥ 7/2 (Thm 7.2(d))</td></tr>
+          <tr><td>Trace formula</td><td>nonnegative limiting symbol ⇒ y ≤ 2, equality only for TMM's transfer function (Thm 5.8)</td></tr>
+          <tr><td>Finite κ</td><td>all stable tunings converge iff τ ≥ (β<sup>2</sup> + 3β − 1)/6; heavy ball iff β ≤ 0.303 (Thm 8.1)</td></tr>
+          <tr><td>Arithmetic gap, θ = 3, (a, b) = (2, 1)</td><td class="n">constant only located in [0.8485, 0.85] (Remark 7.3)</td></tr>
+        </tbody>
+      </table></div>
+      <p class="short"><b>In short:</b> one formula, min(θ/3, c<sub>Q</sub>), plus one wall, τ ≥ 1/2, organizes the exact asymptotic rates of the whole two-step family.</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · Assessment">
+      <span class="num">9 · ASSESSMENT</span>
+      <h2>What is shown, and what isn't</h2>
+      <p>What is shown is a complete picture for two-step methods in the large-κ limit. Upper bounds come from explicit certificates (nonnegative combinations of interpolation inequalities) and lower bounds from explicit functions built from spirals or periodic rotations, so the constants are exact rather than merely bounded. Several known constants are recovered (Nesterov's 2/3, TMM's 1) and some improved; for HNAG++ the squared-distance coefficient 4√2/3 improves the global coefficient √2 of its authors. The finite-κ threshold of Theorem 8.1 is exact and clean. Our own checks agree with the paper on every point we tested: Polyak's rate 1/2 and TMM's 2/3 on the valley, TMM's factorization of χ<sub>μ</sub> and χ<sub>L</sub>, the identity (9), and the Figure 3 claim that strict passage for (y, τ) = (1, 1/4) starts at K = 8.</p>
+      <p>The limits are mostly of scope. Almost all constants are asymptotic: o(κ<sup>−1/2</sup>) errors are not quantified, so the theorems do not say how large κ must be before, for example, Nesterov's worst case really is 1 − (2/3)κ<sup>−1/2</sup>. The exceptions are TMM's exact rate and the thresholds of Section 8. The rates are worst cases over the entire class, achieved by carefully built functions whose dimension can grow as the target precision improves; they say nothing about typical problems, and the paper does not claim they do. Some cases remain open: the arithmetic gap at the corner, whether accelerated methods with three or more steps of memory must have a nonnegative symbol at every frequency, the size of the worst-case dimension, and periodic or time-varying methods.</p>
+      <p>The paper states that all results have formal proofs in the Lean proof assistant, with a public repository; we did not inspect it. It also states that the authors used AI tools to assist with exposition, formal proof verification and literature checks, and that they verified the statements and take responsibility for them. It is a fresh preprint and has not been refereed.</p>
+      <div class="aside"><span class="label">A connection, ours</span>Machine learning optimizers such as quasi-hyperbolic momentum are members of 𝓜 (Remark 4.4 gives the dictionary τ = (1 − ν)β/(1 − β)). The paper's Corollary 6.6(iii) implies that a fixed weight ν &lt; 1 with β → 1 cannot accelerate even on quadratics, which is a precise version of the folklore that these optimizers behave like plain gradient descent unless tuned in a very particular way. The paper states the corollary; the folklore reading is ours.</div>
+      <p class="short"><b>In short:</b> exact, certified and formalized for two-step methods as κ → ∞; asymptotic and worst-case by design, with a few precisely stated gaps.</p>
+    </section>
+
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <div class="refs">
+        <p>Pasechnyuk-Vilensky and Takáč, <a href="https://arxiv.org/abs/2611.13584" target="_blank" rel="noopener">Exact (Non-)Accelerations of Heavy-Ball Discretizations</a> (2026). The paper; the <a href="https://arxiv.org/html/2611.13584v1" target="_blank" rel="noopener">HTML version</a> is the one read for this chapter.</p>
+        <p class="note">Background the paper builds on, not opened from here and listed without links: Polyak, "Some methods of speeding up the convergence of iteration methods" (1964); Nesterov, <i>Lectures on Convex Optimization</i> (2018); Lessard, Recht and Packard, "Analysis and design of optimization algorithms via integral quadratic constraints" (SIAM J. Optim., 2016); Van Scoy, Freeman and Lynch, "The fastest known globally convergent first-order method for minimizing strongly convex functions" (2018); Goujaud, Taylor and Dieuleveut, "Provable non-accelerations of the heavy-ball method" (Math. Program., 2025); Drori and Taylor, "On the oracle complexity of smooth strongly convex minimization" (J. Complexity, 2022).</p>
+      </div>
+    </section>
+  </article>
+
+  <footer>
+    <p>Built from a full read of arXiv 2611.13584v1. Equation, lemma and theorem numbers match the paper. All three animations run real computations: the three methods on the κ = 9 quadratic, the phase lead Θ<sub>0</sub>(ω)/ω from the paper's formula with resonant K found by direct evaluation, and the two methods on a piecewise quadratic. The gradient-descent background, the derivation of χ<sub>λ</sub>, the slow-flow heuristic, Polyak's slow data, the κ = 9 and κ = 25 tunings, the piecewise example and the numerical check of Nesterov's quadratic rate at κ = 9 are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-13584',date:'2026-11-11',title:'Exact (Non-)Accelerations of Heavy-Ball Discretizations',authors:'Pasechnyuk-Vilensky, Takáč',field:'math.OC',tags:['momentum','convex optimization','gradient methods'],mins:40,
+     dek:'Heavy ball, Nesterov and triple momentum can share one limiting oscillator yet differ completely on general convex functions. The exact worst-case speed is min(θ/3, c<sub>Q</sub>), and any method that evaluates its gradient less than half a step ahead can be trapped in a cycle.'},
     {id:'2611-11345',date:'2026-11-10',title:"Extremal Graphs for Alon's Graph Coupon-Collector Conjecture",authors:'Deng, Wang',field:'math.CO',tags:['coupon collector','graph theory','probability'],mins:35,
      dek:'Pick a random vertex, cover one of its uncovered neighbors, repeat: Alon guessed that disjoint cliques make this slowest, but three squares already outlast four triangles. Vertices that share all their neighbors stretch the tail of the finishing time, so four-cycles and K<sub>d,d</sub> are the true extremes.'},
     {id:'2611-08869',date:'2026-11-09',title:'As Easy as Rank One: Optimal Algorithms for Matroid Secretary and Single-Sample Matroid Prophet',authors:'Abdi, Banihashem, Hajiaghayi, Huang, Mittal, Singla',field:'cs.DS',tags:['secretary problem','matroids','probability'],mins:35,
@@ -1502,6 +1854,104 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
       el('text',{x:X1-4,y:Y0-24,class:'lab',fill:'var(--cool)',style:'text-anchor:end'}).textContent='4K₃: '+fr.B.toFixed(3);
     });
   })();
+
+  // ================= 2611.13584: three methods on the kappa = 9 valley =================
+  (function(){
+    const root=document.getElementById('pValley');if(!root)return;const P=Player(root);
+    const LAM=[1,9],X0=[3,0.8],N=12;
+    const M=[{k:'gd',name:'gradient descent',h:0.2,b:0,t:0,col:'var(--muted)'},
+             {k:'hb',name:'heavy ball',h:0.25,b:0.25,t:0,col:'var(--accent)'},
+             {k:'tmm',name:'TMM',h:5/27,b:1/3,t:0.2,col:'var(--cool)'}];
+    M.forEach(m=>{const xs=[X0.slice(),X0.slice()];for(let k=0;k<N;k++){const a=xs[xs.length-2],x=xs[xs.length-1];
+      xs.push([0,1].map(i=>{const q=x[i]+m.t*(x[i]-a[i]);return x[i]+m.b*(x[i]-a[i])-m.h*LAM[i]*q}))}
+      m.xs=xs.slice(1);m.d=m.xs.map(p=>Math.hypot(p[0],p[1]))});
+    const fmt=v=>v<0.001?v.toExponential(1).replace('e-','e−'):v.toFixed(3);
+    const F=[];
+    for(let k=0;k<=N;k++){
+      let c;
+      if(k===0)c=`All three start at (3, 0.8), at rest, distance ${fmt(M[0].d[0])} from the minimum. The valley is nine times steeper vertically than horizontally.`;
+      else if(k===1)c=`One step. Gradient descent multiplies the two coordinates by 0.8 and −0.8, so it jumps across the valley. Heavy ball and TMM have no momentum yet, so their first step is a plain gradient step with their own step size. Distances: ${M.map(m=>m.name+' '+fmt(m.d[k])).join(', ')}.`;
+      else if(k<5)c=`Step ${k}. Momentum now carries heavy ball and TMM along the flat direction instead of bouncing. Distances: ${M.map(m=>m.name+' '+fmt(m.d[k])).join(', ')}.`;
+      else if(k<N)c=`Step ${k}. Gradient descent shrinks by exactly 0.8 per step. Heavy ball's coordinates follow (A + Bk)(±1/2)<sup>k</sup>, and TMM's slowest mode is (2/3)<sup>k</sup>. Distances: ${M.map(m=>m.name+' '+fmt(m.d[k])).join(', ')}.`;
+      else c=`After ${N} steps: gradient descent ${fmt(M[0].d[k])}, TMM ${fmt(M[2].d[k])}, heavy ball ${fmt(M[1].d[k])}. On a quadratic, Polyak's heavy ball is the fastest member of the family (Theorem 2.7), and TMM pays for its extrapolation τ = 1/5.`;
+      F.push({k,t:k?`Step ${k}`:'The start',c});
+    }
+    F.delay=3000;
+    const sx=x=>170+x*48,sy=y=>78-y*48;
+    P.load(F,(fr,el)=>{
+      [7.38,3,1,0.25].forEach(cv=>{const a=Math.sqrt(2*cv),b=Math.sqrt(2*cv/9);el('ellipse',{cx:sx(0),cy:sy(0),rx:a*48,ry:b*48,fill:'none',stroke:'var(--line)','stroke-width':1})});
+      el('circle',{cx:sx(0),cy:sy(0),r:2.5,fill:'var(--fg)'});
+      M.forEach(m=>{const pts=m.xs.slice(0,fr.k+1);
+        el('polyline',{points:pts.map(p=>sx(p[0])+','+sy(p[1])).join(' '),fill:'none',stroke:m.col,'stroke-width':1.4,opacity:.8});
+        const p=pts[pts.length-1];el('circle',{cx:sx(p[0]),cy:sy(p[1]),r:4.5,fill:m.col})});
+      const B0=238,H=78,lg=d=>Math.max(0,Math.min(1,(Math.log10(Math.max(d,1e-6))+6)/6.6));
+      el('line',{x1:20,y1:B0,x2:320,y2:B0,stroke:'var(--line)','stroke-width':1});
+      M.forEach((m,j)=>{const hgt=lg(m.d[fr.k])*H,x=60+j*90;el('rect',{x:x,y:B0-hgt,width:44,height:Math.max(hgt,1),rx:3,fill:m.col});
+        el('text',{x:x+22,y:B0-hgt-4,class:'lab'}).textContent=fmt(m.d[fr.k])});
+      el('text',{x:24,y:B0-H-2,class:'lab',style:'text-anchor:start'}).textContent='distance (log scale)';
+    });
+  })();
+
+  // ================= 2611.13584: phase lead against the half-step line =================
+  (function(){
+    const root=document.getElementById('pPhase');if(!root)return;const P=Player(root);
+    function Th(w,y,t){const xi=1-Math.cos(w),re=y-(2-y*t)*xi,im=y*t*Math.sin(w);if(Math.hypot(re,im)<1e-12)return null;return Math.atan2(im,re)}
+    const T=[{y:1,t:0,name:'heavy ball, y = 1, τ = 0'},{y:1,t:0.25,name:'y = 1, τ = 1/4'},{y:1,t:0.5,name:'y = 1, τ = 1/2'},{y:1,t:1,name:'standard Nesterov, y = 1, τ = 1'},{y:2,t:0.5,name:'TMM, y = 2, τ = 1/2'}];
+    const F=T.map(tu=>{const res=[];for(let K=3;K<=40;K++){const th=Th(2*Math.PI/K,tu.y,tu.t);if(th!==null&&th<Math.PI/K-1e-9)res.push(K)}
+      const low=tu.t;let c;
+      if(!res.length)c=`The lead starts at τ = ${low} at low frequency and never passes strictly below the half-step line at any ω = 2π/K, K = 3 to 40. ${tu.t===0.5&&tu.y===2?'TMM sits exactly on the line at every frequency in (0, π): it is tight everywhere at once (Remark 5.7).':tu.t===1?'Nesterov leads by exactly one full step at every frequency (Remark 5.7), double what is needed.':'With τ = 1/2 and y(1 + 2τ) = 2 &lt; 4, the curve rises above the line, so the lag-one symbol is positive (Proposition 6.1(b)).'}`;
+      else{const lo=res[0],hi=res[res.length-1],contig=res.length===hi-lo+1;
+        c=`The lead starts at τ = ${low} at low frequency, below the half-step line. It passes strictly below the line at ω = 2π/K for ${contig?'every K from '+lo+' to '+hi:'K = '+res.join(', ')} (K up to 40 checked here; Theorem 5.5(b) guarantees every larger K as well). Each such K is a period at which a rotating trajectory need not decay (Proposition 4.10).${tu.t===0.25?' This matches the paper\'s Figure 3: strict passage starts at K = 8, ω = π/4.':''}${tu.t===0?' Heavy ball has no lead at all below ω = π/3, so every K ≥ 7 is resonant.':''}`}
+      return{tu,res,t:tu.name,c}});
+    F.delay=5200;
+    const X=w=>36+w/Math.PI*290,Y=r=>196-r/2.2*176;
+    P.load(F,(fr,el)=>{
+      el('line',{x1:36,y1:Y(0),x2:326,y2:Y(0),stroke:'var(--line)','stroke-width':1});el('line',{x1:36,y1:Y(0),x2:36,y2:Y(2.2),stroke:'var(--line)','stroke-width':1});
+      [0,0.5,1,1.5,2].forEach(r=>{el('text',{x:28,y:Y(r)+3,class:'lab',style:'text-anchor:end'}).textContent=r});
+      [['0',0],['π/4',Math.PI/4],['π/2',Math.PI/2],['3π/4',3*Math.PI/4],['π',Math.PI]].forEach(([s,w])=>{el('text',{x:X(w),y:Y(0)+14,class:'lab'}).textContent=s});
+      el('line',{x1:36,y1:Y(0.5),x2:326,y2:Y(0.5),stroke:'var(--muted)','stroke-width':1.2,'stroke-dasharray':'5 4'});
+      let d='',pen=false;for(let i=1;i<=400;i++){const w=Math.PI*i/400,th=Th(w,fr.tu.y,fr.tu.t);if(th===null){pen=false;continue}
+        const r=Math.max(-0.05,Math.min(2.2,th/w));d+=(pen?'L':'M')+X(w).toFixed(1)+' '+Y(r).toFixed(1)+' ';pen=true;}
+      el('path',{d,fill:'none',stroke:'var(--accent)','stroke-width':2});
+      for(let K=3;K<=40;K++){const w=2*Math.PI/K;el('circle',{cx:X(w),cy:Y(0.5),r:fr.res.includes(K)?3.2:2,fill:fr.res.includes(K)?'var(--bad)':'var(--muted)'});}
+      el('text',{x:181,y:224,class:'lab'}).textContent='frequency ω (dots at ω = 2π/K)';
+      el('text',{x:44,y:Y(2.2)+4,class:'lab',style:'text-anchor:start'}).textContent='lead Θ₀(ω)/ω, steps';
+    });
+  })();
+
+  // ================= 2611.13584: heavy ball 3-cycle vs TMM (our example) =================
+  (function(){
+    const root=document.getElementById('pCycle');if(!root)return;const P=Player(root);
+    const g=x=>x<1?25*x:x<2?x+24:25*x-24;
+    const f=x=>x<1?12.5*x*x:x<2?12.5+(x*x-1)/2+24*(x-1):38+12.5*(x*x-4)-24*(x-2);
+    const r=0.8,K=25,SC={hb:{b:4/9,t:0,h:1/9,name:'Heavy ball'},tmm:{b:K*r**3/(K-1),t:r**3/((K-1)*(1-r)**2*(1+r)),h:(K*(1-r)**2*(1+r))/K,name:'TMM'}};
+    const N=15,fx=v=>(v>=0?'':'−')+Math.abs(v).toFixed(3);
+    function load(key){const m=SC[key],xs=[3.3,3.3];for(let k=0;k<N;k++){const a=xs[xs.length-2],x=xs[xs.length-1],q=x+m.t*(x-a);xs.push(x+m.b*(x-a)-m.h*g(q))}
+      const it=xs.slice(1),F=[];
+      for(let k=0;k<=N;k++){let c;
+        if(k===0)c=key==='hb'?`Start at x₀ = 3.3, at rest. Heavy ball uses Polyak's tuning for κ = 25: β = 4/9, h = 1/9. On any quadratic in 𝓕<sub>1,25</sub> it would shrink the error by 2/3 per step.`:`Start at x₀ = 3.3, at rest. TMM at κ = 25 uses hL = 1.8, β = 8/15 and τ = 8/27, so its gradient is measured about 0.3 steps ahead. Its guaranteed rate on every function in the class is 0.8 per step (Corollary 7.1).`;
+        else if(key==='hb'&&k<9)c=`Step ${k}: x = ${fx(it[k])}. The iterate keeps visiting three regions: the steep left branch, the steep right branch beyond x = 2, and the bottom of the bowl. The kink in the slope at x = 1 and x = 2 is what a quadratic does not have.`;
+        else if(key==='hb')c=`Step ${k}: x = ${fx(it[k])}. The pattern has locked into a 3-cycle through about −1.802, 2.116 and 0.647. The error stops shrinking even though the function is smooth and strongly convex, which is the kind of periodic orbit Theorem 6.2 predicts for heavy ball at large κ.`;
+        else if(k<N)c=`Step ${k}: x = ${fx(it[k])}. The iterate alternates sides of the minimum but each swing is smaller; the ratio of successive errors settles near −0.8.`;
+        else c=`Step ${k}: x = ${fx(it[k])}, down from 3.3 by a factor of about ${Math.round(3.3/Math.abs(it[k]))}. Looking a fraction of a step ahead was enough here, and Corollary 7.1 guarantees the rate 0.8 on every function in the class.`;
+        F.push({k,it,t:k?`Step ${k}`:'The start',c})}
+      F.delay=2600;
+      const X=v=>170+v*44,Y=v=>196-Math.sqrt(v)*15.5;
+      P.load(F,(fr,el)=>{
+        let d='';for(let i=0;i<=200;i++){const v=-3.4+7*i/200;d+=(i?'L':'M')+X(v).toFixed(1)+' '+Y(f(v)).toFixed(1)+' '}
+        el('path',{d,fill:'none',stroke:'var(--line)','stroke-width':2});
+        el('line',{x1:X(-3.4),y1:Y(0),x2:X(3.6),y2:Y(0),stroke:'var(--line)','stroke-width':1});
+        [1,2].forEach(v=>{el('line',{x1:X(v),y1:Y(0),x2:X(v),y2:Y(0)+5,stroke:'var(--muted)','stroke-width':1});el('text',{x:X(v),y:Y(0)+16,class:'lab'}).textContent='x = '+v});
+        el('text',{x:X(0),y:Y(0)+16,class:'lab'}).textContent='0';
+        for(let j=Math.max(0,fr.k-6);j<fr.k;j++){const v=fr.it[j];el('circle',{cx:X(v),cy:Y(f(v)),r:4,fill:'none',stroke:'var(--muted)','stroke-width':1.2,opacity:.4+.1*(j-fr.k+6)})}
+        const v=fr.it[fr.k];el('circle',{cx:X(v),cy:Y(f(v)),r:6,fill:'var(--accent)'});
+        el('text',{x:170,y:224,class:'lab'}).textContent=`${m.name} · step ${fr.k} · x = ${fx(v)}`;
+        el('text',{x:12,y:16,class:'lab',style:'text-anchor:start'}).textContent='f(x), square-root scale';
+      });}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen)}));
+    load('hb');
+  })();
+
 
   route();
 })();
