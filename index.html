@@ -1545,10 +1545,383 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.13584v1. Equation, lemma and theorem numbers match the paper. All three animations run real computations: the three methods on the κ = 9 quadratic, the phase lead Θ<sub>0</sub>(ω)/ω from the paper's formula with resonant K found by direct evaluation, and the two methods on a piecewise quadratic. The gradient-descent background, the derivation of χ<sub>λ</sub>, the slow-flow heuristic, Polyak's slow data, the κ = 9 and κ = 25 tunings, the piecewise example and the numerical check of Nesterov's quadratic rate at κ = 9 are ours.</p>
   </footer>
 </div>
+<div class="wrap" id="view-p-2611-13533" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Thu, Nov 12</span></div>
+  <div class="paperhead">
+    <h1>Entropy Maximization for Cube Projections</h1>
+    <p class="meta">Zhekai Pang · posted Nov 10, 2026 · math.PR · <a href="https://arxiv.org/abs/2611.13533" target="_blank" rel="noopener">arXiv 2611.13533</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">Shine a light through a cube onto a line and the shadow of a uniformly random point is a weighted sum of independent uniform numbers; this paper proves that, in every dimension n ≥ 150, the shadow is most spread out, in the sense of Shannon's differential entropy, exactly when all the weights have the same size. The question was posed by Eskenazis, Nayar and Tkocz, and the proof has two halves of very different flavor. The first is a clean averaging argument that reduces the whole theorem to one sign: the third derivative of the logarithm of a single density must be negative. The second proves that sign with a trick from statistics called exponential tilting, which moves every point to the center of a reweighted distribution, followed by careful Fourier estimates in which a Gaussian approximation is made rigorous with explicit constants. The constants are what force the restriction n ≥ 150.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>why every projection Σ a<sub>i</sub>U<sub>i</sub> with Σ a<sub>i</sub><sup>2</sup> = 1 has the same variance 1/3, and what differential entropy measures beyond the variance;</li>
+        <li>why the Gaussian has the most entropy for a given variance, and the one-line inequality behind it, which the paper reuses;</li>
+        <li>the "Robin Hood" step that replaces two weights by their root mean square, and why it raises the expectation of any even function whose third derivative is positive on the right;</li>
+        <li>how repeating that step drives every weight to 1/√n, and why the theorem then reduces to the sign condition (log q<sub>n</sub>)‴ ≤ 0;</li>
+        <li>exponential tilting: how reweighting a uniform variable by e<sup>tu</sup> moves any point of the support to the mean, so a sign at every point becomes a sign at the origin;</li>
+        <li>how the derivatives of a density at 0 are integrals of its characteristic function, why the skewness E[Y<sup>3</sup>] must be kept as a factor, and where the number 150 comes from.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>U, U<sub>i</sub></dt><dd>independent random variables, each uniform on [−1, 1], with density 1/2 there</dd>
+        <dt>a = (a<sub>1</sub>, …, a<sub>n</sub>)</dt><dd>a unit vector of weights, Σ a<sub>i</sub><sup>2</sup> = 1; the projection is X = Σ a<sub>i</sub>U<sub>i</sub></dd>
+        <dt>h(X)</dt><dd>differential entropy, −∫ f log f, where f is the density of X; log is the natural logarithm</dd>
+        <dt>p<sub>n</sub>, q<sub>n</sub></dt><dd>the densities of U<sub>1</sub> + ⋯ + U<sub>n</sub> and of the equal-weight projection n<sup>−1/2</sup>(U<sub>1</sub> + ⋯ + U<sub>n</sub>)</dd>
+        <dt>V</dt><dd>V = −log q<sub>n</sub>, so that E[V(X)] is a cross-entropy</dd>
+        <dt>K(t)</dt><dd>the cumulant generating function of U, K(t) = log E[e<sup>tU</sup>] = log(sinh t / t)</dd>
+        <dt>U<sub>t</sub>, Y</dt><dd>the tilted uniform, with density ½e<sup>tu − K(t)</sup> on [−1, 1], and its standardized version Y = (U<sub>t</sub> − E[U<sub>t</sub>])/√Var(U<sub>t</sub>)</dd>
+        <dt>W, w</dt><dd>W = n<sup>−1/2</sup>(Y<sub>1</sub> + ⋯ + Y<sub>n</sub>) for independent copies of Y, and its density w</dd>
+        <dt>ρ(u), r<sub>n</sub>(u)</dt><dd>the modulus of the characteristic function of W, and its bound (1 + u<sup>2</sup>/n)<sup>−(n−1)/2</sup></dd>
+        <dt>S<sub>n</sub>(u)</dt><dd>the rescaled sine expectation √n E[sin(uW)]/|E[Y<sup>3</sup>]|</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Two running examples</span>
+      <ul>
+        <li><b>Two coins.</b> The projection X = aU<sub>1</sub> + bU<sub>2</sub> with a<sup>2</sup> + b<sup>2</sup> = 1 and a ≥ b ≥ 0, at three settings: (1, 0), (0.8, 0.6) and (1/√2, 1/√2). The densities are a box, a trapezoid and a triangle, every quantity in the chapter can be computed by hand, and the entropies come out as 0.6931, 0.8450 and 0.8466.</li>
+        <li><b>Four coins.</b> The weights a = (3, 2, 1, 1)/√15, so the squared weights are (0.6, 0.2667, 0.0667, 0.0667). This is the starting point for the averaging process of Section 4, which reaches the equal weights (1/2, 1/2, 1/2, 1/2) in six steps.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Cube shadows">
+      <span class="num">1 · PROJECTIONS OF A CUBE</span>
+      <h2>What is a cube projection?</h2>
+      <p>Pick a point uniformly at random from the cube [−1, 1]<sup>n</sup>. Its coordinates are independent and each is uniform on [−1, 1]. Now choose a direction, a unit vector a, and record only the component of the point along that direction. That number is the shadow of the random point on the line through a, and the question of the paper is which direction makes the shadow most random.</p>
+      <div class="def"><span class="label">Definition · cube projection</span>
+        <p>For a ∈ ℝ<sup>n</sup> with Σ a<sub>i</sub><sup>2</sup> = 1, the one-dimensional projection of the uniform distribution on the cube in direction a is the law of the random variable X = Σ<sub>i</sub> a<sub>i</sub>U<sub>i</sub>, where U<sub>1</sub>, …, U<sub>n</sub> are independent and uniform on [−1, 1].</p>
+        <p>In words: a weighted sum of independent uniform numbers, with weights whose squares add to one.</p>
+      </div>
+      <p>The normalization makes all directions comparable in the crudest sense. A uniform variable on [−1, 1] has mean 0 and variance ∫<sub>−1</sub><sup>1</sup> u<sup>2</sup>/2 du = 1/3, and variances of independent variables add, so</p>
+      <div class="math" data-tex="\operatorname{Var}\Bigl(\sum_{i=1}^n a_iU_i\Bigr)=\sum_{i=1}^n a_i^2\operatorname{Var}(U_i)=\frac13\sum_{i=1}^n a_i^2=\frac13."></div>
+      <p class="eqn">Section 1</p>
+      <p>Every shadow has variance 1/3, whatever the direction. The shapes still differ a great deal, and the two-coin example shows how. With a = (1, 0) the shadow is U<sub>1</sub> itself, a flat box of height 1/2 on [−1, 1]. With a = (1/√2, 1/√2) it is a triangle on [−√2, √2] with peak 1/√2, because the sum of two independent uniforms piles up in the middle. In between, with a = (0.8, 0.6), the density is a trapezoid: flat at height 1/(2a) = 0.625 on [−0.2, 0.2] and falling linearly to zero at ±1.4.</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why is the density of aU<sub>1</sub> + bU<sub>2</sub> a trapezoid?</span></summary><div class="pfbody">
+        <p>The paper writes this density as Eq. 3. Condition on U<sub>2</sub>: given bU<sub>2</sub> = y, the sum is uniform on [y − a, y + a] with density 1/(2a). Averaging over y, which is uniform on [−b, b], the density at x is 1/(2a) times the probability that |x − bU<sub>2</sub>| ≤ a. For 0 ≤ x ≤ a − b this probability is 1, for a − b &lt; x &lt; a + b it is (a + b − x)/(2b), and beyond a + b it is 0. Multiplying by 1/(2a) gives</p>
+        <div class="math" data-tex="f_1(x)=\begin{cases}\dfrac{1}{2a}, & 0\le x\le a-b,\\[4pt] \dfrac{a+b-x}{4ab}, & a-b<x<a+b,\\[4pt] 0, & x\ge a+b,\end{cases}"></div>
+        <p>and the density is even. When a = b the flat part disappears and the trapezoid becomes the triangle (2c − x)/(4c<sup>2</sup>) with c = a.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>A different measure of size already has a famous answer. The value of the density at 0 is, up to the factor 2<sup>−n</sup>, the area of the slice of the cube through its center perpendicular to a. Ball's cube slicing theorem, cited by the paper, says this is largest at a = (1, 1, 0, …, 0)/√2, with two nonzero coordinates. So "largest central slice" picks a very unbalanced direction. Entropy is a different functional, and the conjecture is that it prefers the most balanced one.</p>
+      <p class="short"><b>In short:</b> a cube projection is X = Σ a<sub>i</sub>U<sub>i</sub> with Σ a<sub>i</sub><sup>2</sup> = 1; all have variance 1/3, and the two-coin example gives a box, a trapezoid and a triangle.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Entropy">
+      <span class="num">2 · DIFFERENTIAL ENTROPY</span>
+      <h2>How do we measure spread beyond the variance?</h2>
+      <p>Variance cannot tell the shadows apart, so a finer measure is needed. Shannon's differential entropy measures how evenly a density spreads its mass: roughly, e<sup>h</sup> is the length of an interval on which a uniform variable would be equally unpredictable.</p>
+      <div class="def"><span class="label">Definition · differential entropy</span>
+        <div class="math" data-tex="h(X) = -\int_{-\infty}^{\infty} f(x)\log f(x)\,\mathrm{d}x = \mathbb{E}\bigl[-\log f(X)\bigr]."></div>
+        <p class="eqn">Theorem 1.1</p>
+        <p>In words: the average of −log f over the distribution itself. Places where the density is small contribute large values of −log f, so a density that spreads its mass thinly over a wide range has large entropy.</p>
+      </div>
+      <p>For the box of height 1/2 on [−1, 1], −log f = log 2 everywhere, so h = log 2 ≈ 0.6931. For a uniform variable on an interval of length ℓ the same calculation gives log ℓ, which is the sense in which e<sup>h</sup> is an effective width. The triangle and the trapezoid need a short integration, and the result for the whole two-coin family fits on one line.</p>
+      <div class="fact"><span class="label">Fact · two coins, our computation</span><p>For a ≥ b ≥ 0, the projection aU<sub>1</sub> + bU<sub>2</sub> has entropy log(2a) + b/(2a). At (1, 0) this is log 2 ≈ 0.6931; at (0.8, 0.6) it is log 1.6 + 0.375 ≈ 0.8450; at (1/√2, 1/√2) it is log √2 + 1/2 ≈ 0.8466.</p></div>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Where does log(2a) + b/(2a) come from, and why is it largest at a = b?</span></summary><div class="pfbody">
+        <p>This derivation is ours; the paper does not treat n = 2 separately. Write p = 1/(2a) for the plateau height. The plateau has total width 2(a − b) and contributes −2(a − b)p log p. Each of the two ramps has width 2b and runs linearly from p down to 0; substituting f for x, its contribution is (2b/p)∫<sub>0</sub><sup>p</sup>(−f log f) df = 2b(p/4 − (p/2)log p). Adding,</p>
+        <div class="math" data-tex="h = -\log p\,\bigl(2(a-b)p+2bp\bigr) + bp = -\log p\cdot 2ap + bp = \log(2a)+\frac{b}{2a},"></div>
+        <p>using 2ap = 1. On the unit circle put a = cos φ and b = sin φ with 0 ≤ φ ≤ π/4. Then h(φ) = log(2 cos φ) + (tan φ)/2, and</p>
+        <div class="math" data-tex="h'(\varphi) = -\tan\varphi + \tfrac12\sec^2\varphi = \tfrac12\bigl(1-\tan\varphi\bigr)^2\ \ge 0 ."></div>
+        <p>So the entropy rises all the way from φ = 0 to φ = π/4, where a = b. For two coins the conjecture is therefore true, by a calculation the paper's method does not need.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>There is a ceiling that every shadow must respect. Among all densities with a given variance σ<sup>2</sup>, the Gaussian has the most entropy, namely ½ log(2πeσ<sup>2</sup>). For σ<sup>2</sup> = 1/3 that ceiling is ½ log(2πe/3) ≈ 0.8696. The triangle at 0.8466 is already close to it, and the equal-weight four-coin shadow, at 0.8667 by our numerical computation, is closer still.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can nothing beat the Gaussian, and what inequality does that use?</span></summary><div class="pfbody">
+        <p>This is standard background, and the same inequality is the last step of the paper's Proposition 2.2. For u ≥ 0, u log u − u + 1 ≥ 0, with equality only at u = 1 (the left side is convex in u and has a minimum of 0 at u = 1). Let f and g be densities with g positive. Put u = f/g, multiply by g and integrate. The terms −f + g integrate to −1 + 1 = 0, so</p>
+        <div class="math" data-tex="0\le\int f\log\frac{f}{g} = -h(f) + \int f\,(-\log g)."></div>
+        <p>That is, h(f) ≤ E<sub>f</sub>[−log g] for any density g, with equality only when f = g. Take g Gaussian with variance σ<sup>2</sup>: −log g(x) = ½ log(2πσ<sup>2</sup>) + x<sup>2</sup>/(2σ<sup>2</sup>), and its average under any f with variance σ<sup>2</sup> is ½ log(2πσ<sup>2</sup>) + ½ = ½ log(2πeσ<sup>2</sup>).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The central limit theorem suggests why balance should help: a sum with many comparable terms looks more Gaussian than a sum dominated by one term, and the Gaussian is the entropy champion. That heuristic is ours, and it is only a heuristic, because for a fixed n there is no monotone path from "unbalanced" to "Gaussian" that obviously raises entropy. The paper notes two related facts in the literature: the entropy of the equal-weight sum n<sup>−1/2</sup>(U<sub>1</sub> + ⋯ + U<sub>n</sub>) is nondecreasing in n (Artstein, Ball, Barthe and Naor), and it converges to the Gaussian value (Barron). The paper's question is about a fixed n.</p>
+      <div class="fact"><span class="label">Fact · Theorem 1.1</span><p>Let n ≥ 150. For every a ∈ ℝ<sup>n</sup> with Σ a<sub>i</sub><sup>2</sup> = 1,</p>
+        <div class="math" data-tex="h\Bigl(\sum_{i=1}^n a_iU_i\Bigr)\ \le\ h\Bigl(\frac{1}{\sqrt n}\sum_{i=1}^n U_i\Bigr),"></div>
+        <p>with equality if and only if |a<sub>i</sub>| = 1/√n for every i.</p></div>
+      <p>The same statement was already known for other summands. Eskenazis, Nayar and Tkocz proved it for Gaussian scale mixtures, and Bartczak, Nayar and Zwara for nonnegative weights on Gamma(α) summands when nα ≥ 1. The earlier Fourier criterion of Malliaris does not directly apply to the uniform case, because it assumes a positive Fourier transform and the characteristic function of U, sin t / t, changes sign.</p>
+      <p class="short"><b>In short:</b> entropy h = E[−log f] separates shadows of equal variance; for two coins it equals log(2a) + b/(2a), which peaks at a = b, and the theorem says equal weights win for every n ≥ 150.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Robin Hood step">
+      <span class="num">3 · THE ROBIN HOOD STEP</span>
+      <h2>What happens when two weights are made equal?</h2>
+      <p>The natural strategy is to balance the weights a little at a time. Take the two weights a<sub>1</sub> ≥ a<sub>2</sub> and replace both by their root mean square c = √((a<sub>1</sub><sup>2</sup> + a<sub>2</sub><sup>2</sup>)/2), which keeps Σ a<sub>i</sub><sup>2</sup> = 1. Taking from the rich weight and giving to the poor one is why we call it a Robin Hood step; the idea goes back to Latała and Oleszkiewicz, whose averaging argument the paper adapts. The step does not obviously raise entropy, so the paper shows instead that it raises the expectation of a well-chosen function V.</p>
+      <div class="fact"><span class="label">Fact · Lemma 2.1</span><p>Let V be even and three times continuously differentiable on (−R, R) with V‴(x) ≥ 0 for 0 &lt; x &lt; R. Let Y be independent of U<sub>1</sub>, U<sub>2</sub>, and either Y = 0 or Y has an even unimodal density. If a ≥ b ≥ 0, c = √((a<sup>2</sup> + b<sup>2</sup>)/2), and |Y| ≤ L with 2c + L &lt; R, then</p>
+        <div class="math" data-tex="\mathbb{E}\bigl[V(aU_1+bU_2+Y)\bigr]\ \le\ \mathbb{E}\bigl[V(cU_1+cU_2+Y)\bigr]."></div></div>
+      <p>In words: smoothing out two weights can only increase the average of V, as long as V is symmetric and its third derivative is positive on the right. The rest of the sum, Y, is carried along unchanged. The proof is worth seeing because each step is elementary, and it has three moves.</p>
+      <p><b>First move: absorb Y.</b> Let g(x) = E[V(x + Y)]. Then the two expectations are E[g(aU<sub>1</sub> + bU<sub>2</sub>)] and E[g(cU<sub>1</sub> + cU<sub>2</sub>)], so it is enough to compare g against two densities. The function g inherits the key property: it is even, and g‴ ≥ 0 on [0, 2c].</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does averaging V against Y keep the third derivative nonnegative?</span></summary><div class="pfbody">
+        <p>Let q be the even unimodal density of Y. Differentiating under the expectation and substituting u = x + y, then splitting at 0 and using that V‴ is odd and q is even,</p>
+        <div class="math" data-tex="g'''(x)=\int_{-R}^{R}V'''(u)\,q(u-x)\,\mathrm{d}u=\int_0^R V'''(u)\bigl[q(u-x)-q(u+x)\bigr]\,\mathrm{d}u\ \ge 0 ."></div>
+        <p>For x, u ≥ 0, |u − x| ≤ u + x, and q is nonincreasing in |·|, so the bracket is nonnegative, and the hypothesis V‴(u) ≥ 0 for u &gt; 0 does the rest.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p><b>Second move: change variable to x<sup>2</sup>.</b> Define ψ(s) = g(√s). Because g is even with g′(0) = 0 and g″ is nondecreasing on [0, 2c], the paper shows xg″(x) − g′(x) ≥ 0 (Eq. 1), and then</p>
+      <div class="math" data-tex="\psi''(t)=\frac{\sqrt t\,g''(\sqrt t)-g'(\sqrt t)}{4t^{3/2}}\ \ge 0 ."></div>
+      <p class="eqn">Lemma 2.1, after Eq. 1</p>
+      <p>So g(x) = ψ(x<sup>2</sup>) is a convex function of x<sup>2</sup>. This is the only thing the rest of the argument uses about V.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is xg″(x) − g′(x) nonnegative?</span></summary><div class="pfbody">
+        <p>Since g′(0) = 0, g′(x) = ∫<sub>0</sub><sup>x</sup> g″(v) dv, and xg″(x) = ∫<sub>0</sub><sup>x</sup> g″(x) dv. Subtracting, xg″(x) − g′(x) = ∫<sub>0</sub><sup>x</sup>[g″(x) − g″(v)] dv, and the integrand is nonnegative because g″ is nondecreasing (g‴ ≥ 0). The formula for ψ″ is the chain rule applied twice to g(√t).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p><b>Third move: compare the two densities.</b> Let f<sub>1</sub> be the density of aU<sub>1</sub> + bU<sub>2</sub> (the trapezoid) and f<sub>2</sub> that of c(U<sub>1</sub> + U<sub>2</sub>) (the triangle). Both live on [−2c, 2c], both have total mass 1/2 on the right half-line, and both have the same second moment there, because the variances agree:</p>
+      <div class="math" data-tex="\int_0^{2c}(f_2-f_1)(x)\,\mathrm{d}x=\int_0^{2c}x^2(f_2-f_1)(x)\,\mathrm{d}x=0."></div>
+      <p class="eqn">Eq. 2</p>
+      <p>Moreover f<sub>2</sub> − f<sub>1</sub> changes sign exactly twice on (0, 2c), with pattern +, −, +: the triangle is taller in the middle and reaches further out, and the trapezoid is fatter in between. Call the sign changes r<sub>1</sub> &lt; r<sub>2</sub>. Let ℓ be the straight line, in the variable s = x<sup>2</sup>, that agrees with ψ at s = r<sub>1</sub><sup>2</sup> and s = r<sub>2</sub><sup>2</sup>. Convexity puts ψ below ℓ between the two points and above it outside, which is exactly where f<sub>2</sub> − f<sub>1</sub> is negative and positive. So (ψ(x<sup>2</sup>) − ℓ(x<sup>2</sup>))(f<sub>2</sub> − f<sub>1</sub>)(x) ≥ 0 everywhere, and since ℓ(x<sup>2</sup>) is a constant plus a multiple of x<sup>2</sup>, Eq. 2 makes it integrate to zero against f<sub>2</sub> − f<sub>1</sub>. Therefore</p>
+      <div class="math" data-tex="\int_0^{2c} g(x)\,(f_2-f_1)(x)\,\mathrm{d}x=\int_0^{2c}\bigl[\psi(x^2)-\ell(x^2)\bigr](f_2-f_1)(x)\,\mathrm{d}x\ \ge 0."></div>
+      <p class="eqn">Eq. 4</p>
+      <p>Doubling for the left half-line gives E[g(cU<sub>1</sub> + cU<sub>2</sub>)] − E[g(aU<sub>1</sub> + bU<sub>2</sub>)] ≥ 0, which is the lemma.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why exactly two sign changes, in the order +, −, +?</span></summary><div class="pfbody">
+        <p>From c &lt; a and c<sup>2</sup> &gt; ab (both follow from a &gt; b and the definition of c), Eq. 3 shows that f<sub>2</sub> − f<sub>1</sub> starts positive at x = 0 (f<sub>2</sub>(0) = 1/(2c) &gt; 1/(2a) = f<sub>1</sub>(0)), strictly decreases on [0, a − b] (f<sub>1</sub> is flat and f<sub>2</sub> falls), strictly increases on [a − b, a + b] (f<sub>1</sub> falls with slope 1/(4ab), faster than f<sub>2</sub>'s 1/(4c<sup>2</sup>)), and is nonnegative on [a + b, 2c] where f<sub>1</sub> = 0. Because it integrates to zero, it must be negative somewhere. A function that goes down and then up crosses zero at most twice, and here it must cross twice.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>On the two-coin example with (a, b) = (0.8, 0.6) everything can be checked. Here c = √0.5 ≈ 0.7071, so the triangle lives on [0, 1.4142] and the trapezoid on [0, 1.4]. At the origin, f<sub>2</sub>(0) = 0.7071 &gt; f<sub>1</sub>(0) = 0.625. At x = 0.2, the end of the plateau, f<sub>2</sub> − f<sub>1</sub> ≈ −0.0179. At x = 1.4 the trapezoid is gone and f<sub>2</sub> ≈ 0.0071 &gt; 0. The two sign changes are at r<sub>1</sub> ≈ 0.1642 and r<sub>2</sub> ≈ 1.0589 (our numerical root-finding). Both halves have second moment (a<sup>2</sup> + b<sup>2</sup>)/6 = 1/6, as the paper computes. And with V = −log, the conclusion of this section is visible in the entropies already found: 0.8450 for the trapezoid and 0.8466 for the triangle.</p>
+      <p class="short"><b>In short:</b> replacing a<sub>1</sub>, a<sub>2</sub> by their root mean square raises E[V] for every even V with V‴ ≥ 0 on the right, because such V is convex in x<sup>2</sup> and the two densities differ in a +, −, + pattern with equal mass and second moment.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Reduction">
+      <span class="num">4 · FROM ROBIN HOOD TO ONE SIGN</span>
+      <h2>How does one step become the whole theorem?</h2>
+      <p>Lemma 2.1 compares two weights at a time. To reach the theorem the paper needs three more ingredients: a choice of V, a way to repeat the step until all weights are equal, and a way to turn expectations of V back into entropies. The choice is V = −log q<sub>n</sub>, the negative log-density of the equal-weight projection itself.</p>
+      <div class="fact"><span class="label">Fact · Proposition 2.2</span><p>Let n ≥ 150. If</p>
+        <div class="math" data-tex="(\log q_n)'''(x)\ \le\ 0\qquad\text{for every } x\in(0,\sqrt n),"></div>
+        <p class="eqn">Eq. 5</p>
+        <p>then the entropy inequality of Theorem 1.1 holds, with equality only when |a<sub>i</sub>| = 1/√n for all i.</p></div>
+      <p>In words: if the log-density of the balanced shadow has a negative third derivative on the right, the theorem follows. This criterion was observed by Bartczak, Nayar and Zwara; the paper supplies a complete proof of the reduction. With V = −log q<sub>n</sub>, Eq. 5 says V‴ ≥ 0, which is exactly the hypothesis of the Robin Hood lemma. The rest of the sum is Y = Σ<sub>i≥3</sub> a<sub>i</sub>U<sub>i</sub>, and the paper checks that adding uniforms one at a time keeps a density even and unimodal, so the lemma applies. (A technical detail: q<sub>n</sub> vanishes at ±√n, so the paper first works with V(ρx) for ρ &lt; 1 and lets ρ increase to 1 at the end by monotone convergence.)</p>
+
+      <p>The repetition is a simple averaging scheme. At every step, take a largest and a smallest weight and replace both by their root mean square. In terms of the squared weights s<sub>i</sub> = a<sub>i</sub><sup>2</sup>, the largest x and the smallest y are both replaced by (x + y)/2, and the total stays 1. The paper measures progress by the sum of squared deviations from the target 1/n, which drops by exactly ½(x − y)<sup>2</sup>:</p>
+      <div class="math" data-tex="\Bigl(x-\frac1n\Bigr)^2+\Bigl(y-\frac1n\Bigr)^2-2\Bigl(\frac{x+y}{2}-\frac1n\Bigr)^2=\frac12(x-y)^2 ."></div>
+      <p class="eqn">Proposition 2.2, averaging step</p>
+      <p>Every s<sub>i</sub> lies between y and x, so the total deviation is at most n(x − y)<sup>2</sup>, and each step removes at least a fraction 1/(2n) of it:</p>
+      <div class="math" data-tex="\sum_{i=1}^n\Bigl[(a_i^{(k)})^2-\frac1n\Bigr]^2\ \le\ \Bigl(1-\frac1{2n}\Bigr)^k\sum_{i=1}^n\Bigl(a_i^2-\frac1n\Bigr)^2\ \longrightarrow\ 0 ."></div>
+      <p class="eqn">Proposition 2.2</p>
+      <p>On the four-coin example the squared weights are (0.6, 0.2667, 0.0667, 0.0667), and the deviation from 1/4 is 0.1225 + 0.0003 + 0.0336 + 0.0336 = 0.19. The first step averages x = 0.6 and y = 0.0667 into 0.3333 each, removing ½(0.5333)<sup>2</sup> = 0.1422 and leaving 0.0478, well under the guaranteed factor 1 − 1/8 = 0.875. The animation below runs the scheme to the end.</p>
+
+      <p>The last ingredient converts the inequality for E[V] into one for entropy. Iterating Lemma 2.1 and passing to the limit gives, for the starting weights a,</p>
+      <div class="math" data-tex="h\Bigl(\sum a_iU_i\Bigr)\ \le\ \mathbb{E}\Bigl[V\Bigl(\sum a_iU_i\Bigr)\Bigr]\ \le\ \mathbb{E}\Bigl[V\Bigl(\frac{1}{\sqrt n}\sum U_i\Bigr)\Bigr]=h\Bigl(\frac{1}{\sqrt n}\sum U_i\Bigr)."></div>
+      <p class="eqn">Eqs. 9 and 8</p>
+      <p>The right inequality is the averaging. The left one is the Gaussian-ceiling inequality from Section 2, h(f) ≤ E<sub>f</sub>[−log g], used with g = q<sub>n</sub> instead of a Gaussian. The final equality holds because E[−log q<sub>n</sub>] under q<sub>n</sub> itself is its entropy. Equality in the first step forces f = q<sub>n</sub>, and the paper then uses the supports, [−Σa<sub>i</sub>, Σa<sub>i</sub>] against [−√n, √n], together with the equality case of Cauchy–Schwarz to conclude a<sub>i</sub> = 1/√n.</p>
+
+      <div class="player" id="pRobin">
+        <div class="ptitle"><span class="label">Animation · Robin Hood on four coins</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Squared weights being averaged and the density of the projection changing"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>current shadow density</span><span><i class="sw" style="background:var(--muted)"></i>equal-weight density q₄</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The animation computes each density by repeated convolution on a grid, and the entropy h and the cross-entropy E[V] = E[−log q<sub>4</sub>(X)] by numerical integration. Two things are worth watching. The cross-entropy rises at every step and always sits above the entropy, as the chain of inequalities requires. And all of this is for n = 4, which the theorem does not cover; the run illustrates the mechanism but proves nothing about n = 4. These four-coin numbers are ours.</p>
+      <div class="fact"><span class="label">Fact · the reduction</span><p>After Section 2 of the paper, the entire theorem rests on one property of one function: the log-density of n<sup>−1/2</sup>(U<sub>1</sub> + ⋯ + U<sub>n</sub>) has a nonpositive third derivative on (0, √n). The paper proves the strict inequality for every n ≥ 150.</p></div>
+      <p>This is a delicate property. For a Gaussian, log g(x) = −x<sup>2</sup>/2 + const, whose third derivative is identically zero. So Eq. 5 says that q<sub>n</sub>, which is very close to Gaussian for large n, deviates from it with a definite sign at third order, at every point of (0, √n) including the far tail. A Gaussian approximation alone cannot decide a sign whose Gaussian value is zero; the correction term has to be controlled.</p>
+      <p class="short"><b>In short:</b> repeatedly averaging the largest and smallest squared weights converges to equal weights, the Robin Hood lemma makes E[−log q<sub>n</sub>] rise along the way, and Gibbs' inequality turns that into entropy, so everything reduces to (log q<sub>n</sub>)‴ ≤ 0.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Tilting">
+      <span class="num">5 · EXPONENTIAL TILTING</span>
+      <h2>How can a sign at every point be checked at one point?</h2>
+      <p>The condition must hold at every x in (0, √n), and near the edge of the support the density q<sub>n</sub> is tiny and far from Gaussian. The paper's way around this is exponential tilting, a tool from large deviations and saddlepoint approximation: reweight the uniform distribution so that the point of interest becomes the mean, where the central limit theorem works best. After rescaling (Eq. 10, (log q<sub>n</sub>)‴(x) = n<sup>3/2</sup>(log p<sub>n</sub>)‴(√n x)), it suffices to prove (log p<sub>n</sub>)‴(x) &lt; 0 for 0 &lt; x &lt; n, where p<sub>n</sub> is the density of the unnormalized sum U<sub>1</sub> + ⋯ + U<sub>n</sub>.</p>
+      <div class="def"><span class="label">Definition · cumulant function and tilted uniform</span>
+        <div class="math" data-tex="K(t)=\log\mathbb{E}\bigl[e^{tU}\bigr]=\log\Bigl[\frac12\int_{-1}^{1}e^{tu}\,\mathrm{d}u\Bigr]=\log\frac{\sinh t}{t}."></div>
+        <p class="eqn">Eq. 11</p>
+        <p>For t ∈ ℝ, the tilted uniform U<sub>t</sub> has density ½ e<sup>tu − K(t)</sup> on [−1, 1]. In words: multiply the flat density by e<sup>tu</sup>, which favors the right end when t &gt; 0, and divide by the constant that restores total mass 1. At t = 0 nothing changes.</p>
+      </div>
+      <p>The function K packages every moment of the tilted variable. Integrating against the tilted density gives E[e<sup>sU<sub>t</sub></sup>] = exp[K(t + s) − K(t)] (Eq. 12), and differentiating at s = 0 gives E[U<sub>t</sub>] = K′(t) and Var(U<sub>t</sub>) = K″(t) &gt; 0. Explicitly,</p>
+      <div class="math" data-tex="\mathbb{E}[U_t]=\coth t-\frac1t,\qquad \lim_{t\downarrow 0}\mathbb{E}[U_t]=0,\qquad \lim_{t\to\infty}\mathbb{E}[U_t]=1 ."></div>
+      <p class="eqn">Eq. 17</p>
+      <p>Since the mean increases strictly from 0 to 1, every target x ∈ (0, n) equals nE[U<sub>t</sub>] for exactly one t &gt; 0. At t = 1, for example, E[U<sub>1</sub>] = coth 1 − 1 ≈ 0.3130 and Var(U<sub>1</sub>) = 1 − 1/sinh<sup>2</sup>1 ≈ 0.2759, so t = 1 handles the point x ≈ 0.3130n (our arithmetic).</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why is E[e<sup>sU<sub>t</sub></sup>] = exp[K(t + s) − K(t)]?</span></summary><div class="pfbody">
+        <p>Integrate e<sup>su</sup> against the tilted density: ½e<sup>−K(t)</sup>∫<sub>−1</sub><sup>1</sup>e<sup>(t+s)u</sup> du. The integral is 2E[e<sup>(t+s)U</sup>] = 2e<sup>K(t+s)</sup>, so the result is e<sup>K(t+s) − K(t)</sup>. Expanding in s, the coefficient of s is K′(t), which is the mean, and log E[e<sup>s(U<sub>t</sub> − K′(t))</sup>] = K″(t)s<sup>2</sup>/2 + K‴(t)s<sup>3</sup>/6 + ⋯, so K″ is the variance and K‴ the third central moment.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Now standardize: Y = (U<sub>t</sub> − E[U<sub>t</sub>])/√Var(U<sub>t</sub>), so E[Y] = 0, E[Y<sup>2</sup>] = 1 and E[Y<sup>3</sup>] = K‴(t)/K″(t)<sup>3/2</sup>. Take n independent copies and let w be the density of W = n<sup>−1/2</sup>(Y<sub>1</sub> + ⋯ + Y<sub>n</sub>). The tilt of a sum is the sum of the tilts, which the paper proves by induction on the number of summands: the sum of n independent copies of U<sub>t</sub> has density e<sup>tx − nK(t)</sup>p<sub>n</sub>(x). Comparing with the density of nE[U<sub>t</sub>] + √(nVar(U<sub>t</sub>)) W gives, for −n &lt; x &lt; n,</p>
+      <div class="math" data-tex="p_n(x)=\frac{\exp\bigl[nK(t)-tx\bigr]}{\sqrt{n\operatorname{Var}(U_t)}}\;w\!\left(\frac{x-n\mathbb{E}[U_t]}{\sqrt{n\operatorname{Var}(U_t)}}\right)."></div>
+      <p class="eqn">Eq. 15</p>
+      <p>Take logarithms. The factor e<sup>nK(t) − tx</sup> contributes nK(t) − tx, which is linear in x, so it disappears after two derivatives. Differentiating three times and evaluating at the mean x = nE[U<sub>t</sub>] leaves</p>
+      <div class="math" data-tex="(\log p_n)'''\bigl(n\mathbb{E}[U_t]\bigr)=\frac{(\log w)'''(0)}{\bigl[n\operatorname{Var}(U_t)\bigr]^{3/2}} ."></div>
+      <p class="eqn">Eq. 16</p>
+      <p>This is the point of tilting. The sign of (log p<sub>n</sub>)‴ at any x ∈ (0, n) equals the sign of (log w)‴ at 0, for the standardized sum built from the matching t. The condition at every point has become a condition at the center, for a one-parameter family of distributions.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the tilted sum's density e<sup>tx − nK(t)</sup>p<sub>n</sub>(x)?</span></summary><div class="pfbody">
+        <p>For one summand this is the definition, since p<sub>1</sub> = ½ on [−1, 1]. Suppose the sum of j − 1 tilted copies has density e<sup>tu − (j−1)K(t)</sup>p<sub>j−1</sub>(u). Given that this sum equals u, adding one more copy gives density ½e<sup>t(x−u) − K(t)</sup> at x for |x − u| ≤ 1. Averaging over u, the exponentials combine to e<sup>tx − jK(t)</sup>, which does not depend on u, and what remains is ½∫<sub>x−1</sub><sup>x+1</sup>p<sub>j−1</sub>(u) du = p<sub>j</sub>(x) by Eq. 13.</p>
+        <p class="qed">∎</p>
+      </div></details>
+
+      <div class="player" id="pTilt">
+        <div class="ptitle"><span class="label">Animation · tilting the four-coin sum</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Density of a sum of four uniforms and its exponential tilt for several values of t"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--muted)"></i>p₄, the untilted sum</span><span><i class="sw" style="background:var(--accent)"></i>tilted sum e<sup>tx−4K(t)</sup>p₄(x)</span><span><i class="sw" style="background:var(--cool)"></i>one tilted summand</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The animation uses n = 4 so that p<sub>4</sub> can be drawn exactly (it is a piecewise cubic, the Irwin–Hall density rescaled to [−4, 4]). For each t it multiplies p<sub>4</sub> by e<sup>tx − 4K(t)</sup>, checks that the result still has total mass 1, and marks its mean 4E[U<sub>t</sub>]. The small inset shows one tilted summand on [−1, 1]. As t grows, the tilted sum slides toward the right edge and narrows, and its skewness E[Y<sup>3</sup>] grows more negative.</p>
+
+      <p>To decide the sign of (log w)‴(0), the paper separates the third derivative from the lower ones:</p>
+      <div class="math" data-tex="(\log w)'''(0)=\frac{w'''(0)}{w(0)}+\frac{w'(0)}{w(0)}\left[-\frac{3w''(0)}{w(0)}+\frac{2w'(0)^2}{w(0)^2}\right]."></div>
+      <p class="eqn">Eq. 18</p>
+      <p>For a standard Gaussian the bracket equals 3, since w′(0) = 0 and w″(0)/w(0) = −1. The paper also explains the right comparison constant with a formal Edgeworth argument: the first correction to the Gaussian is proportional to (x<sup>3</sup> − 3x)e<sup>−x<sup>2</sup>/2</sup>, whose first and third derivatives at 0 are −3 and 15, suggesting w‴(0) ≈ −5w′(0). Any constant strictly between 3 and 5 can then separate the terms, and the paper chooses 7/2. It remains to prove, for every t &gt; 0,</p>
+      <div class="math" data-tex="w'(0)>0,\qquad -\frac{3w''(0)}{w(0)}+\frac{2w'(0)^2}{w(0)^2}<\frac72,\qquad w'''(0)+\frac72\,w'(0)<0 ."></div>
+      <p class="eqn">Section 3</p>
+      <p>Substituting into Eq. 18 then gives (log w)‴(0) &lt; [w‴(0) + (7/2)w′(0)]/w(0) &lt; 0.</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why do −3 and 15 appear?</span></summary><div class="pfbody">
+        <p>The check is ours. Expand (x<sup>3</sup> − 3x)e<sup>−x<sup>2</sup>/2</sup> = (x<sup>3</sup> − 3x)(1 − x<sup>2</sup>/2 + ⋯) = −3x + (5/2)x<sup>3</sup> + ⋯. The first derivative at 0 is the coefficient of x, −3, and the third derivative is 3! times the coefficient of x<sup>3</sup>, which is 15. The ratio is −5, and the Gaussian part contributes 0 to both odd derivatives, so to leading order w‴(0)/w′(0) ≈ −5.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> tilting by e<sup>tu</sup> moves any point x ∈ (0, n) to the mean of a reweighted sum, so (log p<sub>n</sub>)‴(x) has the sign of (log w)‴(0); Eq. 18 and the constant 7/2 split that sign into three estimates on w(0), w′(0), w″(0) and w‴(0).</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Fourier side">
+      <span class="num">6 · DENSITY DERIVATIVES FROM SINES AND COSINES</span>
+      <h2>How do we get our hands on w and its derivatives?</h2>
+      <p>The density w has no simple formula, but its characteristic function does, because W is a normalized sum of independent copies of Y. Fourier inversion turns the four numbers w(0), w′(0), w″(0), w‴(0) into integrals of E[cos(uW)] and E[sin(uW)].</p>
+      <div class="def"><span class="label">Definition · characteristic function</span>
+        <p>The characteristic function of W is E[e<sup>iuW</sup>] = E[cos(uW)] + iE[sin(uW)], and its modulus is ρ(u) = √(E[cos(uW)]<sup>2</sup> + E[sin(uW)]<sup>2</sup>) (Eq. 25). In words: the average of a point spinning around the unit circle at speed u. If W were symmetric, the sine part would vanish; the sine part measures asymmetry.</p>
+      </div>
+      <p>For sums the characteristic function multiplies. The paper writes this out with trigonometric identities (Eq. 26) so that everything stays real. Inverting and differentiating under the integral, which the paper justifies with an explicit integrable bound, gives</p>
+      <div class="math" data-tex="\begin{aligned} w(0)&=\frac1\pi\int_0^\infty\mathbb{E}[\cos(uW)]\,\mathrm{d}u, & w'(0)&=\frac1\pi\int_0^\infty u\,\mathbb{E}[\sin(uW)]\,\mathrm{d}u,\\ w''(0)&=-\frac1\pi\int_0^\infty u^2\,\mathbb{E}[\cos(uW)]\,\mathrm{d}u, & w'''(0)&=-\frac1\pi\int_0^\infty u^3\,\mathbb{E}[\sin(uW)]\,\mathrm{d}u.\end{aligned}"></div>
+      <p class="eqn">Eq. 28</p>
+      <p>The two odd derivatives, which decide the sign, both come from the sine expectation. That is the quantity the rest of the paper estimates.</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Where do these four formulas come from?</span></summary><div class="pfbody">
+        <p>Fourier inversion gives w(x) = (1/2π)∫ e<sup>−iux</sup>E[e<sup>iuW</sup>] du = (1/2π)∫ E[cos(u(W − x))] du, after taking real parts. Expanding cos(u(W − x)) = cos(ux)cos(uW) + sin(ux)sin(uW) and folding the even integrand onto u ≥ 0,</p>
+        <div class="math" data-tex="w(x)=\frac1\pi\int_0^\infty\cos(ux)\,\mathbb{E}[\cos(uW)]+\sin(ux)\,\mathbb{E}[\sin(uW)]\,\mathrm{d}u."></div>
+        <p>Each x-derivative brings down a factor u and swaps cos and sin with signs; at x = 0, sin(0) = 0 and cos(0) = 1 leave only the terms shown. The paper bounds each differentiated integrand by u<sup>j</sup>ρ(u), which is integrable for j ≤ 3, so dominated convergence allows the differentiation.</p>
+        <p class="qed">∎</p>
+      </div></details>
+
+      <p><b>Decay.</b> For a single tilted summand the paper computes E[cos(sU<sub>t</sub>)] and E[sin(sU<sub>t</sub>)] in closed form (Eqs. 22 and 23) and proves</p>
+      <div class="math" data-tex="\mathbb{E}[\cos(vY)]^2+\mathbb{E}[\sin(vY)]^2\ \le\ \frac{1}{1+v^2}"></div>
+      <p class="eqn">Eq. 20 · Lemma 4.2</p>
+      <p>for every t and v, using a scalar inequality sin<sup>2</sup>s ≤ s<sup>2</sup>/(1 + s<sup>2</sup>/3) from Abi-Khuzam and the variance bound Var(U<sub>t</sub>) ≤ 1/3. Multiplying n factors at v = u/√n gives ρ(u) ≤ (1 + u<sup>2</sup>/n)<sup>−n/2</sup> ≤ r<sub>n</sub>(u) = (1 + u<sup>2</sup>/n)<sup>−(n−1)/2</sup> (Eq. 27). For large n, r<sub>n</sub>(u) behaves like e<sup>−u<sup>2</sup>/2</sup> near the origin but decays only like a power for large u, which is enough to make every integral in Eq. 28 finite once n is large. At t = 0 the summand is Y = √3U, its characteristic function is sin s/s with s = √3v, and Eq. 20 reduces to the scalar inequality (sin s/s)<sup>2</sup> ≤ 1/(1 + s<sup>2</sup>/3) itself; this remark is ours.</p>
+
+      <p><b>Keeping the skewness.</b> As t → 0 the tilted variable becomes symmetric, so E[Y<sup>3</sup>], w′(0) and w‴(0) all tend to 0. A bound on E[sin(uW)] that does not carry a factor E[Y<sup>3</sup>] would swamp the quantity being measured. The paper's key device is a one-sign-change lemma.</p>
+      <div class="fact"><span class="label">Fact · Lemma 4.3</span><p>Let ξ have density f, mean 0 and E|ξ|<sup>3</sup> &lt; ∞, and suppose that for some b ≥ 0, f(y) − f(−y) is nonnegative for 0 &lt; y &lt; b and nonpositive for y &gt; b. Then E[ξ<sup>3</sup>] ≤ 0 and</p>
+        <div class="math" data-tex="\bigl|\mathbb{E}[\sin(v\xi)]\bigr|\ \le\ \frac16\,\bigl|\mathbb{E}[\xi^3]\bigr|\,|v|^3\qquad\text{for every real } v,"></div>
+        <p class="eqn">Eq. 29</p>
+        <p>strictly when f is not even and v ≠ 0.</p></div>
+      <p>In words: if the density leans right near the center and left in the tail, then the sine expectation is controlled by the third moment alone. The tilted Y satisfies the hypothesis. Its density is increasing on its support, which runs from −(1 + E[U<sub>t</sub>])/√Var to (1 − E[U<sub>t</sub>])/√Var, so f(y) &gt; f(−y) up to the right endpoint and f(y) = 0 beyond it (Eq. 32).</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does one sign change control every odd convex function?</span></summary><div class="pfbody">
+        <p>Let h be odd and convex on [0, ∞). Since E[ξ] = 0, subtracting any multiple of y from h does not change E[h(ξ)]. Subtract the line through (0, 0) and (b, h(b)). Convexity with h(0) = 0 makes h(y)/y nondecreasing, so h(y) − yh(b)/b is ≤ 0 on (0, b) and ≥ 0 beyond b, the opposite signs to f(y) − f(−y). By oddness,</p>
+        <div class="math" data-tex="\mathbb{E}[h(\xi)]=\int_0^\infty\Bigl(h(y)-\frac{h(b)}{b}\,y\Bigr)\bigl[f(y)-f(-y)\bigr]\,\mathrm{d}y\ \le\ 0 ."></div>
+        <p class="eqn">Eq. 30</p>
+        <p>Apply it to h<sub>±</sub>(y) = v<sup>3</sup>y<sup>3</sup>/6 ± sin(vy), which are strictly convex on y &gt; 0 because h<sub>±</sub>″(y) = v<sup>2</sup>[vy ∓ sin(vy)] &gt; 0. The two results combine into (v<sup>3</sup>/6)E[ξ<sup>3</sup>] + |E[sin(vξ)]| &lt; 0, which gives both claims.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The same comparison with φ(x) = x<sup>5</sup>/120 − x<sup>3</sup>/6 − sin x gives a lower bound (Lemma 4.5): E[sin(vY)] ≥ (1/6)|E[Y<sup>3</sup>]|v<sup>3</sup>(1 − 11v<sup>2</sup>/10). Here 11/10 comes from the moment bounds collected in Lemma 4.1,</p>
+      <div class="math" data-tex="0<\operatorname{Var}(U_t)\le\frac13,\qquad -2\le\mathbb{E}[Y^3]<0,\qquad 0<\frac{\mathbb{E}[Y^5]}{\mathbb{E}[Y^3]}<22 ."></div>
+      <p class="eqn">Eq. 19 · Lemma 4.1</p>
+      <p>since 22/120 = 11/60 = (1/6)(11/10). The bound −2 ≤ E[Y<sup>3</sup>] comes from a result of Bubeck and Eldan on log-concave densities, and the ratio bound 22 from an explicit power series in Appendix A whose coefficients are all positive (Eq. 54). In our numerical check, E[Y<sup>3</sup>] is about −0.34, −0.68, −1.27, −1.89 and −2.00 at t = 0.5, 1, 2, 4 and 8, approaching −2, the skewness of a reflected exponential variable, as the tilt piles the mass against the right end.</p>
+
+      <p><b>The Gaussian prediction.</b> The paper rescales the sine expectation by its natural size, S<sub>n</sub>(u) = √n E[sin(uW)]/|E[Y<sup>3</sup>]| (Eq. 33). The central limit heuristic predicts S<sub>n</sub>(u) ≈ (u<sup>3</sup>/6)e<sup>−u<sup>2</sup>/2</sup>, and Lemma 4.6 turns that into rigorous bounds valid for |u| ≤ √n/2:</p>
+      <div class="math" data-tex="\mathbb{E}[\cos(uW)]\ \ge\ e^{-u^2/2}\Bigl(1-\frac{u^4}{7n}\Bigr)-\frac{u^6}{12n}\,r_n(u),"></div>
+      <p class="eqn">Eq. 34</p>
+      <div class="math" data-tex="S_n(u)\ \ge\ \frac{u^3}{6}\,e^{-u^2/2}\Bigl(1-\frac{11u^2}{10n}-\frac{u^4}{7n}\Bigr)-\frac{u^9}{216n}\,r_n(u)."></div>
+      <p class="eqn">Eq. 35</p>
+      <p>The proof writes E[cos(uY/√n)] + iE[sin(uY/√n)] in polar form, so that the n-fold product has modulus ρ(u) and angle θ(u), bounds ρ from below by exp(−u<sup>2</sup>/2 − u<sup>4</sup>/(7n)) and from above by r<sub>n</sub> (Eq. 38), and bounds the angle by 4|E[Y<sup>3</sup>]|u<sup>3</sup>/(21√n) (Eq. 39) using Lemma 4.3. Every error term carries a factor 1/n.</p>
+
+      <div class="player" id="pSine">
+        <div class="ptitle"><span class="label">Animation · the sine integral, computed</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Rescaled sine expectation S_n(u) against its Gaussian prediction"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>S<sub>n</sub>(u), exact</span><span><i class="sw" style="background:var(--muted)"></i>Gaussian prediction (u³/6)e<sup>−u²/2</sup></span><span><i class="sw" style="background:var(--cool)"></i>u = √14/2, where the weight u(u² − 7/2) changes sign</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The animation evaluates the exact characteristic function of W from Eqs. 11 and 12, φ<sub>U<sub>t</sub></sub>(s) = (t/sinh t)·sinh(t + is)/(t + is), raised to the n-th power after centering and scaling, and plots S<sub>n</sub> against the Gaussian prediction. It then integrates Eq. 28 numerically to obtain w(0), w′(0), w″(0) and w‴(0) and reports (log w)‴(0). These computations are ours, and they were cross-checked against the exact Irwin–Hall density at n = 10 through Eq. 15. The paper proves bounds; the animation shows the actual values the bounds are protecting.</p>
+      <p class="short"><b>In short:</b> Fourier inversion makes w′(0) and w‴(0) integrals of E[sin(uW)]; the one-sign-change lemma bounds that by the skewness, and Lemma 4.6 pins it near (|E[Y<sup>3</sup>]|/√n)(u<sup>3</sup>/6)e<sup>−u<sup>2</sup>/2</sup> with errors of order 1/n.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Where 150 comes from">
+      <span class="num">7 · CLOSING THE ESTIMATES</span>
+      <h2>Where does the number 150 come from?</h2>
+      <p>With the bounds of Lemma 4.6 in hand, the three estimates of Section 3 become integrals that can be computed or bounded explicitly. The integrals split at u = √n/2: inside, the Gaussian-plus-error bounds apply; outside, everything is bounded crudely by r<sub>n</sub>. The tail pieces are controlled by the moment integrals</p>
+      <div class="math" data-tex="M_{2k}(n)=\frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty}u^{2k}\Bigl(1+\frac{u^2}{n}\Bigr)^{-\frac{n-1}{2}}\mathrm{d}u,\qquad M_{2k}(n)=\frac{(2k-1)n}{n-2k-2}\,M_{2k-2}(n)."></div>
+      <p class="eqn">Eqs. 42 and 57</p>
+      <p>The recursion comes from one integration by parts, and M<sub>0</sub>(n) ≤ (2n − 3)/(2(n − 3)) from a polar-coordinates trick (Eq. 56). For a Gaussian the same integrals would be 1, 1, 3, 15, …; for n ≥ 150 Lemma B.1 gives M<sub>2</sub> &lt; 21/20, M<sub>4</sub> &lt; 5, M<sub>6</sub> &lt; 24, M<sub>10</sub> &lt; 1500 and M<sub>12</sub> &lt; 16000 (Eq. 55).</p>
+      <div class="fact"><span class="label">Fact · Proposition 4.7</span><p>For every n ≥ 150 and t &gt; 0,</p>
+        <div class="math" data-tex="w(0)>\frac{19}{20\sqrt{2\pi}},\qquad -w''(0)<\frac{21}{20\sqrt{2\pi}},\qquad 0<w'(0)<\frac{|\mathbb{E}[Y^3]|}{\sqrt{2\pi n}},"></div>
+        <p class="eqn">Eq. 43</p>
+        <p>and −3w″(0)/w(0) + 2w′(0)<sup>2</sup>/w(0)<sup>2</sup> &lt; 7/2 (Eq. 44).</p></div>
+      <p>The numbers are Gaussian values with room to spare: for the standard normal, w(0) = −w″(0) = 1/√(2π). The bracket bound follows by arithmetic: −w″/w &lt; 21/19 and w′/w &lt; 20|E[Y<sup>3</sup>]|/(19√n), with |E[Y<sup>3</sup>]| ≤ 2, give 63/19 + (8/n)(20/19)<sup>2</sup>, which is about 3.375 at n = 150 (our arithmetic), below 3.5. The positivity of w′(0) comes from the lower bound √(2πn)w′(0)/|E[Y<sup>3</sup>]| &gt; 1/2 − 21/(4n) − 1500/(216n) − 1/(2n), about 0.415 at n = 150 against the paper's stated 2/5.</p>
+      <div class="fact"><span class="label">Fact · Proposition 4.8</span><p>For every n ≥ 150 and t &gt; 0, w‴(0) + (7/2)w′(0) &lt; 0 (Eq. 47).</p></div>
+      <p>The proof rewrites the combination with Eq. 28 as one weighted integral of S<sub>n</sub>,</p>
+      <div class="math" data-tex="-\frac{\sqrt{2\pi n}}{|\mathbb{E}[Y^3]|}\Bigl[w'''(0)+\frac72w'(0)\Bigr]=\sqrt{\frac2\pi}\int_0^\infty u\Bigl(u^2-\frac72\Bigr)S_n(u)\,\mathrm{d}u ,"></div>
+      <p class="eqn">Eq. 48</p>
+      <p>and replaces S<sub>n</sub> by its Gaussian prediction plus an error. The Gaussian part is exact: (1/6)·15 − (7/12)·3 = 3/4, from the Gaussian moments ∫u<sup>6</sup>e<sup>−u<sup>2</sup>/2</sup>/√(2π) = 15 and ∫u<sup>4</sup>e<sup>−u<sup>2</sup>/2</sup>/√(2π) = 3 (Eq. 49). The error is split at u = √14/2, where the weight changes sign, and at u = √n/2. The three pieces are bounded below by −1/20, −80/n (Eq. 50) and −1/10, so</p>
+      <div class="math" data-tex="\sqrt{\frac2\pi}\int_0^\infty u\Bigl(u^2-\frac72\Bigr)S_n(u)\,\mathrm{d}u\ >\ \frac34-\frac1{20}-\frac{80}{n}-\frac1{10}\ >\ 0 ."></div>
+      <p class="eqn">Eq. 51</p>
+      <p>Here is where the dimension enters most visibly. The right side is 0.6 − 80/n, positive only when n &gt; 133.3. At n = 150 it is about 0.067. Several other steps (the moment bounds, the tail estimates, the 2/5 and 19/20 bounds) also use n ≥ 150, so 150 is the threshold at which every explicit constant in the chain closes at once. The observation that Eq. 51 alone would allow n ≥ 134 is our arithmetic and does not by itself extend the theorem, because the other estimates were only checked for n ≥ 150.</p>
+      <p>Assembling: by Eq. 43, w(0) &gt; 0 and w′(0) &gt; 0; by Eq. 44 and Proposition 4.8, Eq. 18 gives (log w)‴(0) &lt; 0 for every t &gt; 0; by Eq. 16 this is (log p<sub>n</sub>)‴ &lt; 0 at every point of (0, n); by Eq. 10, (log q<sub>n</sub>)‴ &lt; 0 on (0, √n); and Proposition 2.2 delivers the entropy inequality and its equality case.</p>
+      <p class="short"><b>In short:</b> the Gaussian contributes exactly 3/4 to the decisive integral, the errors cost at most 1/20 + 80/n + 1/10, and making every such constant close simultaneously is what requires n ≥ 150.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Results">
+      <span class="num">8 · RESULTS</span>
+      <h2>What the paper proves, in numbers</h2>
+      <p>Every row is a statement of the paper, with its numbering. The last rows are our own computations, labeled as such.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Statement</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Main theorem, n ≥ 150</td><td>h(Σa<sub>i</sub>U<sub>i</sub>) ≤ h(n<sup>−1/2</sup>ΣU<sub>i</sub>), equality iff all |a<sub>i</sub>| = 1/√n (Thm 1.1)</td></tr>
+          <tr><td>Robin Hood step</td><td>E[V] rises when two weights become their root mean square, for even V with V‴ ≥ 0 on the right (Lemma 2.1)</td></tr>
+          <tr><td>Reduction</td><td>(log q<sub>n</sub>)‴ ≤ 0 on (0, √n) implies the theorem (Prop 2.2)</td></tr>
+          <tr><td>Averaging speed</td><td>deviation shrinks by a factor ≤ 1 − 1/(2n) per step (Prop 2.2)</td></tr>
+          <tr><td>Tilting identity</td><td>(log p<sub>n</sub>)‴(nE[U<sub>t</sub>]) = (log w)‴(0)/[nVar(U<sub>t</sub>)]<sup>3/2</sup> (Eq. 16)</td></tr>
+          <tr><td>Moments of the tilt</td><td class="n">Var(U<sub>t</sub>) ≤ 1/3, −2 ≤ E[Y<sup>3</sup>] &lt; 0, E[Y<sup>5</sup>]/E[Y<sup>3</sup>] &lt; 22 (Lemma 4.1)</td></tr>
+          <tr><td>Characteristic function decay</td><td class="n">ρ(u) ≤ (1 + u<sup>2</sup>/n)<sup>−(n−1)/2</sup> (Eq. 27)</td></tr>
+          <tr><td>Density bounds, n ≥ 150</td><td class="n">√(2π)w(0) &gt; 19/20, −√(2π)w″(0) &lt; 21/20 (Prop 4.7)</td></tr>
+          <tr><td>Skewness factor</td><td class="n">2/5 &lt; √(2πn)w′(0)/|E[Y<sup>3</sup>]| &lt; 1 (Prop 4.7)</td></tr>
+          <tr><td>Decisive integral</td><td class="n">&gt; 3/4 − 1/20 − 80/n − 1/10 &gt; 0 (Eq. 51)</td></tr>
+          <tr><td>Two coins (ours)</td><td class="n">h = log(2a) + b/(2a): 0.6931, 0.8450, 0.8466</td></tr>
+          <tr><td>n = 150 numerics (ours)</td><td class="n">w‴(0)/w′(0) ≈ −4.96 to −4.97 at t = 0.5, 2, 8; (log w)‴(0) ≈ −0.028, −0.103, −0.162</td></tr>
+        </tbody>
+      </table></div>
+      <p class="short"><b>In short:</b> one reduction to a third-derivative sign, one tilting identity, and one weighted sine integral with Gaussian value 3/4 settle the conjecture for n ≥ 150.</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · Assessment">
+      <span class="num">9 · ASSESSMENT</span>
+      <h2>What is shown, and what isn't</h2>
+      <p>What is shown is a complete, self-contained proof of the Eskenazis–Nayar–Tkocz conjecture for cube projections in every dimension n ≥ 150, including the equality case. All constants are explicit and every inequality in the chain is proved in the text or its appendices. The reduction in Section 2 makes the Bartczak–Nayar–Zwara criterion rigorous, including the boundary issues at ±√n. The analytic core is a careful, quantitative central limit argument that keeps the skewness as a factor, which is necessary because the quantity being signed tends to zero as the tilt vanishes. Our independent checks agree with the paper where we tested them: the trapezoid sign pattern and second moments at (0.8, 0.6), the values of E[U<sub>t</sub>] and Var(U<sub>t</sub>), the arithmetic of Eqs. 43, 44 and 51 at n = 150, and the heuristic ratio w‴(0)/w′(0) ≈ −5, which our n = 150 computation puts at about −4.96.</p>
+      <p>What is not shown is the conjecture for 3 ≤ n ≤ 149. The paper states its result only for n ≥ 150 and does not discuss small dimensions or say whether the derivative condition (5) holds there. For n = 2 the conjecture follows from our closed form in Section 2, but that is not in the paper. Whether the method can be pushed lower is a question of sharpening constants: Eq. 51 alone would close at n = 134, but the other estimates were stated only for n ≥ 150, and by the paper's count of continuous derivatives (p<sub>n</sub> has n − 2 of them) the condition only makes sense for n ≥ 5. The result is also specific to uniform summands: the tilting computations use the explicit form of K(t) = log(sinh t/t) and the one-sign-change structure of the tilted uniform.</p>
+      <p>The paper is a single-author preprint posted on November 10, 2026, and has not yet been refereed.</p>
+      <div class="aside"><span class="label">A connection, ours</span>Exponential tilting is the same reweighting that underlies the Esscher transform in actuarial science and the change of measure used to price options or to simulate rare events by importance sampling: multiply a density by e<sup>tx</sup>, renormalize with the cumulant function, and a rare region becomes typical. Here it is used not to compute a probability but to transfer a sign from the edge of the support to its center.</div>
+      <p class="short"><b>In short:</b> a complete and fully explicit proof for n ≥ 150; dimensions 3 to 149 remain open in the paper, and the method is tailored to uniform summands.</p>
+    </section>
+
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <div class="refs">
+        <p>Pang, <a href="https://arxiv.org/abs/2611.13533" target="_blank" rel="noopener">Entropy maximization for cube projections</a> (2026). The paper; the <a href="https://arxiv.org/html/2611.13533v1" target="_blank" rel="noopener">HTML version</a> is the one read for this chapter.</p>
+        <p>Eskenazis, Nayar and Tkocz, <a href="https://arxiv.org/abs/1611.04921" target="_blank" rel="noopener">Gaussian mixtures: entropy and geometric inequalities</a> (Ann. Probab., 2018). The source of the conjecture (their Question 9) and of the corresponding theorem for Gaussian mixtures; only the abstract page was opened for this chapter.</p>
+        <p class="note">Background the paper builds on, not opened from here and listed without links: Latała and Oleszkiewicz, "A note on sums of independent uniformly distributed random variables" (Colloq. Math., 1995); Bartczak, Nayar and Zwara, "Sharp variance–entropy comparison for nonnegative Gaussian quadratic forms" (IEEE Trans. Inform. Theory, 2021); Ball, "Cube slicing in ℝ<sup>n</sup>" (Proc. AMS, 1986); Artstein, Ball, Barthe and Naor, "Solution of Shannon's problem on the monotonicity of entropy" (J. AMS, 2004); Daniels, "Saddlepoint approximations in statistics" (Ann. Math. Statist., 1954).</p>
+      </div>
+    </section>
+  </article>
+
+  <footer>
+    <p>Built from a full read of arXiv 2611.13533v1. Equation, lemma and proposition numbers match the paper. All three animations run real computations: the averaging scheme on four coins with densities by numerical convolution and entropies by numerical integration, the exact tilted Irwin–Hall density for n = 4, and the exact characteristic function of the standardized tilted sum with numerical Fourier integrals. The two-coin entropy formula and its monotonicity proof, the four-coin numbers, the derivation of the −3 and 15, the n = 134 remark, all numerical values of E[Y<sup>3</sup>] and of w and its derivatives, and the Esscher connection are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-13533',date:'2026-11-12',title:'Entropy Maximization for Cube Projections',authors:'Pang',field:'math.PR',tags:['entropy','probability','Fourier analysis'],mins:40,
+     dek:'A random point in a cube, projected onto a line, gives a weighted sum of uniform numbers, and for every dimension n ≥ 150 its entropy is largest exactly when all weights are equal. An averaging trick reduces the conjecture to the sign of one third derivative, and exponential tilting plus explicit Fourier estimates prove that sign.'},
     {id:'2611-13584',date:'2026-11-11',title:'Exact (Non-)Accelerations of Heavy-Ball Discretizations',authors:'Pasechnyuk-Vilensky, Takáč',field:'math.OC',tags:['momentum','convex optimization','gradient methods'],mins:40,
      dek:'Heavy ball, Nesterov and triple momentum can share one limiting oscillator yet differ completely on general convex functions. The exact worst-case speed is min(θ/3, c<sub>Q</sub>), and any method that evaluates its gradient less than half a step ahead can be trapped in a cycle.'},
     {id:'2611-11345',date:'2026-11-10',title:"Extremal Graphs for Alon's Graph Coupon-Collector Conjecture",authors:'Deng, Wang',field:'math.CO',tags:['coupon collector','graph theory','probability'],mins:35,
@@ -1952,6 +2325,124 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     load('hb');
   })();
 
+
+  // ================= 2611.13533: shared helpers =================
+  const CP={K:t=>t===0?0:Math.log(Math.sinh(t)/t),
+    tilt(t){const m=1/Math.tanh(t)-1/t,v=1/(t*t)-1/Math.sinh(t)**2,K3=-2/t**3+2*Math.cosh(t)/Math.sinh(t)**3;return{m,v,s:Math.sqrt(v),EY3:K3/v**1.5}},
+    pn(n,x){if(Math.abs(x)>=n)return 0;const y=(x+n)/2;let s=0,f=1;for(let k=1;k<n;k++)f*=k;let C=1;for(let k=0;k<=n&&k<y;k++){s+=(k%2?-1:1)*C*Math.pow(y-k,n-1);C=C*(n-k)/(k+1)}return s/f/2},
+    fx:(x,d)=>x.toFixed(d).replace('-','−')};
+
+  // ================= 2611.13533: Robin Hood on four coins =================
+  (function(){
+    const root=document.getElementById('pRobin');if(!root)return;const P=Player(root);
+    const N=20000,LX=2,dx=2*LX/N,xs=i=>-LX+(i+0.5)*dx;
+    function dens(a){let f=new Float64Array(N);const w0=a[0];for(let i=0;i<N;i++)f[i]=Math.abs(xs(i))<=w0?1/(2*w0):0;
+      for(const w of a.slice(1)){const F=new Float64Array(N+1);for(let i=0;i<N;i++)F[i+1]=F[i]+f[i]*dx;
+        const Fx=x=>{const t=(x+LX)/dx;if(t<=0)return 0;if(t>=N)return F[N];const i=Math.floor(t);return F[i]+(t-i)*f[i]*dx};
+        const g=new Float64Array(N);for(let i=0;i<N;i++){const x=xs(i);g[i]=(Fx(x+w)-Fx(x-w))/(2*w)}f=g}
+      return f}
+    const q=dens([.5,.5,.5,.5]);
+    let s=[9,4,1,1].map(v=>v/15);const F=[];
+    for(let k=0;k<7;k++){const a=s.map(Math.sqrt).slice().sort((x,y)=>y-x),f=dens(a);let h=0,ce=0;
+      for(let i=0;i<N;i++)if(f[i]>0&&q[i]>0){h-=f[i]*Math.log(f[i])*dx;ce-=f[i]*Math.log(q[i])*dx}
+      const dev=s.reduce((t,v)=>t+(v-0.25)**2,0);let imax=0,imin=0;s.forEach((v,i)=>{if(v>s[imax])imax=i;if(v<s[imin])imin=i});
+      const done=s[imax]-s[imin]<1e-9;F.push({s:s.slice(),f,h,ce,dev,imax,imin,done,k});
+      if(!done){const m=(s[imax]+s[imin])/2;s[imax]=m;s[imin]=m}}
+    F.forEach((fr,j)=>{const fx=CP.fx,sv=fr.s.map(v=>fx(v,4)).join(', ');
+      const prev=j?F[j-1]:null;
+      fr.t=j===0?'Start':fr.done?'Balanced':'Step '+j;
+      let c=j===0?`Squared weights (${sv}). Deviation from 1/4: ${fx(fr.dev,4)}. The shadow has entropy h = ${fx(fr.h,4)} and cross-entropy E[−log q₄(X)] = ${fx(fr.ce,4)}. The ringed bars are the largest and smallest, to be averaged next.`
+        :`Averaged ${fx(prev.s[prev.imax],4)} and ${fx(prev.s[prev.imin],4)} into ${fx((prev.s[prev.imax]+prev.s[prev.imin])/2,4)}. Deviation ${fx(prev.dev,4)} → ${fx(fr.dev,4)}, a drop of exactly ½(x − y)² = ${fx(0.5*(prev.s[prev.imax]-prev.s[prev.imin])**2,4)}. Now h = ${fx(fr.h,4)} ≤ E[V] = ${fx(fr.ce,4)}.`;
+      if(fr.done)c+=` All four weights equal 1/2, the shadow is q₄ itself, and h = E[V], the equality case of Gibbs' inequality. The Gaussian ceiling is 0.8696.`;
+      fr.c=c});
+    F.delay=5200;
+    P.load(F,(fr,el)=>{
+      // bars
+      const bx=i=>64+i*62,BY=100,SC=120;
+      el('line',{x1:40,y1:BY,x2:300,y2:BY,stroke:'var(--line)','stroke-width':1});
+      el('line',{x1:40,y1:BY-0.25*SC,x2:300,y2:BY-0.25*SC,stroke:'var(--muted)','stroke-width':1,'stroke-dasharray':'4 4'});
+      el('text',{x:304,y:BY-0.25*SC+3,class:'lab',style:'text-anchor:start'}).textContent='1/4';
+      fr.s.forEach((v,i)=>{const hgt=v*SC,mark=!fr.done&&(i===fr.imax||i===fr.imin);
+        el('rect',{x:bx(i)-16,y:BY-hgt,width:32,height:Math.max(hgt,1),rx:3,fill:'var(--cool)',stroke:mark?'var(--accent)':'none','stroke-width':mark?2.5:0});
+        el('text',{x:bx(i),y:BY+13,class:'lab'}).textContent=v.toFixed(3);});
+      el('text',{x:20,y:BY-0.25*SC+3,class:'lab',style:'text-anchor:start'}).textContent='aᵢ²';
+      // density
+      const X=x=>30+(x+2)/4*280,BASE=228,YS=180;
+      el('line',{x1:30,y1:BASE,x2:310,y2:BASE,stroke:'var(--line)','stroke-width':1});
+      [-2,-1,0,1,2].forEach(x=>{el('text',{x:X(x),y:BASE+13,class:'lab'}).textContent=x});
+      let dq='',df='';for(let i=0;i<N;i+=100){const x=xs(i);dq+=(i?'L':'M')+X(x).toFixed(1)+' '+(BASE-q[i]*YS).toFixed(1)+' ';df+=(i?'L':'M')+X(x).toFixed(1)+' '+(BASE-fr.f[i]*YS).toFixed(1)+' '}
+      el('path',{d:dq,fill:'none',stroke:'var(--muted)','stroke-width':1.5,'stroke-dasharray':'5 3'});
+      el('path',{d:df,fill:'none',stroke:'var(--accent)','stroke-width':2.2});
+      el('text',{x:170,y:12,class:'lab'}).textContent='h = '+CP.fx(fr.h,4)+'   E[V] = '+CP.fx(fr.ce,4);
+    });
+  })();
+
+  // ================= 2611.13533: tilting the four-coin sum =================
+  (function(){
+    const root=document.getElementById('pTilt');if(!root)return;const P=Player(root);const n=4;
+    const TS=[0,0.5,1,2,4,8];
+    const F=TS.map(t=>{const K=CP.K(t);const T=t?CP.tilt(t):{m:0,v:1/3,EY3:0};
+      let mass=0,mean=0;const M=4000,d=2*n/M;for(let i=0;i<M;i++){const x=-n+(i+0.5)*d,g=Math.exp(t*x-n*K)*CP.pn(n,x);mass+=g*d;mean+=x*g*d}
+      const fx=CP.fx;
+      const c=t===0?`At t = 0 nothing is reweighted: the accent curve is p₄ itself, centered at 0 with variance 4/3. The inset shows one summand, flat at height 1/2. Its third moment E[Y³] is 0 by symmetry.`
+        :`t = ${t}: K(t) = log(sinh t / t) = ${fx(K,4)}. One summand now has mean E[Uₜ] = coth t − 1/t = ${fx(T.m,4)} and variance ${fx(T.v,4)}. The tilted sum has numerical mass ${fx(mass,4)} and mean ${fx(mean,4)} = 4E[Uₜ], so it is centered at x = ${fx(4*T.m,3)}. Skewness E[Y³] = ${fx(T.EY3,4)}.${t===8?' Every point of (0, 4) is reached this way, and the skewness approaches −2.':''}`;
+      return{t,K,T,mass,mean,c,tt:'t = '+t}});
+    F.forEach(f=>f.t_=f.t);F.forEach(f=>{f.title=f.tt});
+    const FR=F.map(f=>({t:f.tt,c:f.c,d:f}));FR.delay=5200;
+    P.load(FR,(fr,el)=>{const D=fr.d,t=D.t_;
+      const X=x=>24+(x+4)/8*296,BASE=214;
+      let mx=0;const pts=[];for(let i=0;i<=400;i++){const x=-4+8*i/400,p=CP.pn(n,x),g=Math.exp(t*x-n*D.K)*p;pts.push([x,p,g]);mx=Math.max(mx,p,g)}
+      const YS=120/mx;
+      el('line',{x1:24,y1:BASE,x2:320,y2:BASE,stroke:'var(--line)','stroke-width':1});
+      [-4,-2,0,2,4].forEach(x=>{el('text',{x:X(x),y:BASE+13,class:'lab'}).textContent=x});
+      let dp='',dg='';pts.forEach(([x,p,g],i)=>{dp+=(i?'L':'M')+X(x).toFixed(1)+' '+(BASE-p*YS).toFixed(1)+' ';dg+=(i?'L':'M')+X(x).toFixed(1)+' '+(BASE-g*YS).toFixed(1)+' '});
+      el('path',{d:dp,fill:'none',stroke:'var(--muted)','stroke-width':1.5,'stroke-dasharray':'5 3'});
+      el('path',{d:dg,fill:'none',stroke:'var(--accent)','stroke-width':2.2});
+      const mu=4*D.T.m;el('line',{x1:X(mu),y1:BASE,x2:X(mu),y2:BASE-128,stroke:'var(--accent)','stroke-width':1,'stroke-dasharray':'3 3'});
+      el('text',{x:X(mu),y:BASE-132,class:'lab'}).textContent='mean '+mu.toFixed(2);
+      el('text',{x:320,y:BASE+28,class:'lab',style:'text-anchor:end'}).textContent='vertical scale fitted to each frame';
+      // inset: one summand on [-1,1]
+      const ix=30,iy=14,iw=100,ih=46;el('rect',{x:ix-6,y:iy-6,width:iw+12,height:ih+22,rx:6,fill:'var(--raise)',stroke:'var(--line)'});
+      const top=0.5*Math.exp(Math.abs(t)-D.K);let di='';for(let i=0;i<=60;i++){const u=-1+2*i/60,v=0.5*Math.exp(t*u-D.K);di+=(i?'L':'M')+(ix+(u+1)/2*iw).toFixed(1)+' '+(iy+ih-v/top*ih*0.9).toFixed(1)+' '}
+      el('path',{d:di+`L${ix+iw} ${iy+ih} L${ix} ${iy+ih} Z`,fill:'var(--cool)',opacity:.35,stroke:'var(--cool)','stroke-width':1.5});
+      el('text',{x:ix+iw/2,y:iy+ih+12,class:'lab'}).textContent='one summand Uₜ';
+    });
+  })();
+
+  // ================= 2611.13533: the sine integral =================
+  (function(){
+    const root=document.getElementById('pSine');if(!root)return;const P=Player(root);
+    function logphiY(vv,t,T){const s=vv/T.s,re=Math.sinh(t)*Math.cos(s),im=Math.cosh(t)*Math.sin(s),d=t*t+s*s,k=t/Math.sinh(t);
+      const r2=(re*t+im*s)/d*k,i2=(im*t-re*s)/d*k;return[Math.log(Math.hypot(r2,i2)),Math.atan2(i2,r2)-vv*T.m/T.s]}
+    function phiW(u,t,n,T){const[lr,li]=logphiY(u/Math.sqrt(n),t,T);const R=Math.exp(n*lr);return[R*Math.cos(n*li),R*Math.sin(n*li)]}
+    function run(n,t){const T=CP.tilt(t);let w0=0,w1=0,w2=0,w3=0;const du=0.002,U=60;
+      for(let u=du/2;u<U;u+=du){const[c,s]=phiW(u,t,n,T);w0+=c;w1+=u*s;w2-=u*u*c;w3-=u**3*s}
+      const k=du/Math.PI;w0*=k;w1*=k;w2*=k;w3*=k;
+      const S=[];for(let i=0;i<=240;i++){const u=6*i/240;S.push([u,Math.sqrt(n)/Math.abs(T.EY3)*phiW(u,t,n,T)[1]])}
+      const lw=w3/w0+w1/w0*(-3*w2/w0+2*(w1/w0)**2);return{n,t,T,w0,w1,w2,w3,S,lw}}
+    const CASES=[[150,0.5],[150,2],[150,8],[10,2]];
+    const F=CASES.map(([n,t])=>{const R=run(n,t),fx=CP.fx,b0=19/20/Math.sqrt(2*Math.PI),b1=Math.abs(R.T.EY3)/Math.sqrt(2*Math.PI*n);
+      let c=`n = ${n}, t = ${t}, E[Y³] = ${fx(R.T.EY3,3)}. From Eq. 28: w(0) = ${fx(R.w0,4)} (Prop. 4.7 promises more than ${fx(b0,4)} for n ≥ 150), w′(0) = ${fx(R.w1,4)} (below the bound ${fx(b1,4)}), w‴(0) = ${fx(R.w3,4)}. Ratio w‴/w′ = ${fx(R.w3/R.w1,2)}, so w‴ + 3.5w′ = ${fx(R.w3+3.5*R.w1,4)} &lt; 0 and (log w)‴(0) = ${fx(R.lw,4)}.`;
+      if(n===10)c+=` The theorem does not cover n = 10, and the curve is visibly off the Gaussian prediction, yet the computed sign is still negative here (our computation, which proves nothing for n = 10).`;
+      else if(t===0.5)c+=' The exact curve sits almost on the prediction, and the ratio is close to the heuristic −5.';
+      return{t:`n = ${n}, t = ${t}`,c,R}});
+    F.delay=6500;
+    P.load(F,(fr,el)=>{const R=fr.R;const X=u=>34+u/6*290,Y=v=>170-v/0.26*140,BASE=Y(0);
+      el('line',{x1:34,y1:BASE,x2:324,y2:BASE,stroke:'var(--line)','stroke-width':1});
+      el('line',{x1:34,y1:Y(-0.06),x2:34,y2:Y(0.26),stroke:'var(--line)','stroke-width':1});
+      [0,1,2,3,4,5,6].forEach(u=>{el('text',{x:X(u),y:BASE+13,class:'lab'}).textContent=u});
+      [0,0.1,0.2].forEach(v=>{el('text',{x:28,y:Y(v)+3,class:'lab',style:'text-anchor:end'}).textContent=v});
+      const us=Math.sqrt(14)/2;el('line',{x1:X(us),y1:Y(-0.06),x2:X(us),y2:Y(0.26),stroke:'var(--cool)','stroke-width':1.2,'stroke-dasharray':'4 3'});
+      el('text',{x:X(us)-4,y:Y(0.245),class:'lab',style:'text-anchor:end'}).textContent='weight < 0';
+      el('text',{x:X(us)+4,y:Y(0.245),class:'lab',style:'text-anchor:start'}).textContent='weight > 0';
+      let dg='',ds='';for(let i=0;i<=240;i++){const u=6*i/240,g=u**3/6*Math.exp(-u*u/2);dg+=(i?'L':'M')+X(u).toFixed(1)+' '+Y(g).toFixed(1)+' ';
+        const v=Math.max(-0.06,Math.min(0.26,R.S[i][1]));ds+=(i?'L':'M')+X(u).toFixed(1)+' '+Y(v).toFixed(1)+' '}
+      el('path',{d:dg,fill:'none',stroke:'var(--muted)','stroke-width':1.5,'stroke-dasharray':'5 3'});
+      el('path',{d:ds,fill:'none',stroke:'var(--accent)','stroke-width':2.2});
+      el('text',{x:180,y:BASE+28,class:'lab'}).textContent='u';
+      el('text',{x:324,y:Y(0.2),class:'lab',style:'text-anchor:end'}).textContent='(log w)‴(0) = '+CP.fx(R.lw,3);
+    });
+  })();
 
   route();
 })();
