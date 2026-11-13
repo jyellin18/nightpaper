@@ -1916,10 +1916,432 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.13533v1. Equation, lemma and proposition numbers match the paper. All three animations run real computations: the averaging scheme on four coins with densities by numerical convolution and entropies by numerical integration, the exact tilted Irwin–Hall density for n = 4, and the exact characteristic function of the standardized tilted sum with numerical Fourier integrals. The two-coin entropy formula and its monotonicity proof, the four-coin numbers, the derivation of the −3 and 15, the n = 134 remark, all numerical values of E[Y<sup>3</sup>] and of w and its derivatives, and the Esscher connection are ours.</p>
   </footer>
 </div>
+<div class="wrap" id="view-p-2611-16398" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Fri, Nov 13</span></div>
+  <div class="paperhead">
+    <h1>Loss of the Quadratic Speedup in Grover Search under Local and Coherent Noise</h1>
+    <p class="meta">Imama Tul Birrah Khan, Muhammad Faryad · posted Nov 12, 2026 · quant-ph · <a href="https://arxiv.org/abs/2611.16398" target="_blank" rel="noopener">arXiv 2611.16398</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">Grover's algorithm finds one marked item among N in about √N steps by turning a state vector through a small angle again and again, and this paper works out, in closed form, exactly how noise takes that rotation apart. The answer comes in three shapes. Noise that scrambles the whole register leaves the rotation untouched but shrinks the part of the state that is rotating, by a fixed factor per gate layer. Noise on individual qubits knocks amplitude out of the two-dimensional plane where the search happens, and a short geometric fact says that whatever leaves the plane is frozen there for good. Coherent errors in the rotation angle keep the state pure but blur where it points, by an amount that grows linearly with depth. All three lead to the same rule of thumb: the total error accumulated over the √N-deep circuit must stay of order one, which for errors on single qubits means a per-qubit error rate below about 1/(n√N), where n is the number of qubits.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>why Grover's oracle and diffusion step are two reflections, why two reflections make a rotation by 2α with sin α = 1/√N, and where the π√N/4 iteration count comes from;</li>
+        <li>what a density matrix is, how a noise channel acts on one, and how bit flips, phase flips and depolarizing noise differ;</li>
+        <li>why a depolarizing channel on the whole register commutes with every gate, and how that gives the exact success probability P<sub>r</sub>(p<sub>g</sub>) of Eq. 30;</li>
+        <li>why the best stopping point moves earlier under noise, and how the expected query cost goes from √N to about 2p<sub>g</sub>N;</li>
+        <li>why the Grover operator is just −1 off the search plane, and why that makes a phase flip most harmful early and a bit flip most harmful late;</li>
+        <li>how the in-plane part of the state obeys Bloch-type equations with leakage and dephasing rates, and where the noise budget p ≲ 1/(c n√N) comes from;</li>
+        <li>how bounded angle errors widen into a band of possible success probabilities that grows linearly with depth.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>n, N</dt><dd>the number of qubits and the database size, N = 2<sup>n</sup></dd>
+        <dt>|x⟩</dt><dd>a computational basis state, x a string of n bits; these N states are orthonormal</dd>
+        <dt>|w⟩, |w<sup>⊥</sup>⟩</dt><dd>the marked state, and the normalized equal superposition of the N − 1 unmarked states</dd>
+        <dt>|s⟩</dt><dd>the equal superposition of all N states, produced by a layer of Hadamard gates</dd>
+        <dt>α</dt><dd>the angle between |s⟩ and |w<sup>⊥</sup>⟩, with sin α = 1/√N</dd>
+        <dt>U<sub>f</sub>, V, G</dt><dd>the oracle, the diffusion operator, and one Grover iteration G = VU<sub>f</sub></dd>
+        <dt>r, r<sub>0</sub>, r*</dt><dd>a number of iterations; the noiseless best count; the best count under noise</dd>
+        <dt>ρ</dt><dd>a density matrix, the description of a possibly noisy quantum state</dd>
+        <dt>X, Y, Z</dt><dd>the Pauli operators: bit flip, combined flip, phase flip</dd>
+        <dt>p, p<sub>g</sub></dt><dd>error probability per qubit and gate layer; the probability that a global channel depolarizes the whole register in one layer</dd>
+        <dt>Π</dt><dd>the projector onto the Grover plane spanned by |w<sup>⊥</sup>⟩ and |w⟩</dd>
+        <dt>A, B, C</dt><dd>the entries of the in-plane density matrix: unmarked weight, marked weight (the success probability), coherence</dd>
+        <dt>γ<sub>A</sub>, γ<sub>B</sub>, γ<sub>C</sub></dt><dd>decay rates per iteration of A, B and C under local noise</dd>
+        <dt>δ, Δ</dt><dd>the largest angle errors of the oracle and of the diffusion step (Section 9)</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Two running examples</span>
+      <ul>
+        <li><b>Two qubits, N = 4.</b> Here sin α = 1/2, so α = 30°, and a single Grover iteration lands exactly on the marked item. Every matrix is 4 × 4 or smaller, so each claim in the chapter can be checked by hand.</li>
+        <li><b>Four qubits, N = 16.</b> This is the paper's own example in Section IV. Here α = arcsin(1/4) ≈ 0.2527 rad ≈ 14.5°, the best count is r<sub>0</sub> = 3, and three iterations overshoot the target by about 0.2 rad, leaving a noiseless success probability of 0.9613. Three of the four animations run on this register.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · The search problem">
+      <span class="num">1 · SEARCHING WITHOUT STRUCTURE</span>
+      <h2>What problem does Grover's algorithm solve, and how is it set up?</h2>
+      <p>Suppose a function f on n-bit strings returns 1 on exactly one string w and 0 everywhere else, and the only way to learn anything about f is to evaluate it. A classical computer has no choice but to try strings one by one, so on average it needs about N/2 evaluations to find w. Grover's algorithm needs about (π/4)√N. For a million items that is roughly 785 queries instead of 500,000, and the paper notes that no quantum algorithm can do better. The point of the paper is to ask how much of this square-root advantage survives when the hardware is noisy.</p>
+      <p>The quantum computer holds a register of n qubits. Its state is a unit vector in an N-dimensional complex vector space, written in the basis of the N bit strings: |ψ⟩ = Σ<sub>x</sub> c<sub>x</sub>|x⟩ with Σ|c<sub>x</sub>|<sup>2</sup> = 1. Measuring the register returns the string x with probability |c<sub>x</sub>|<sup>2</sup>. Inner products ⟨φ|ψ⟩ = Σ<sub>x</sub> conj(b<sub>x</sub>)c<sub>x</sub> work as for ordinary vectors, and an outer product |φ⟩⟨φ| is the matrix that projects onto |φ⟩. Gates are unitary matrices, which preserve lengths and angles.</p>
+      <p>The algorithm starts in |0⟩<sup>⊗n</sup>, the all-zeros string (Eq. 1), and a layer of Hadamard gates turns this into the equal superposition</p>
+      <div class="math" data-tex="|s\rangle = H^{\otimes n}|0\rangle^{\otimes n} = \frac{1}{\sqrt N}\sum_{x=0}^{N-1}|x\rangle ."></div>
+      <p class="eqn">Eq. 2</p>
+      <p>Measuring |s⟩ right away would give w with probability 1/N, no better than a random guess. The rest of the algorithm is a sequence of r identical Grover iterations, each of which queries f once and moves probability toward w.</p>
+      <div class="def"><span class="label">Definition · the search plane</span>
+        <p>Let |w⟩ be the marked basis state and |w<sup>⊥</sup>⟩ = (N − 1)<sup>−1/2</sup> Σ<sub>x≠w</sub> |x⟩ the normalized superposition of all unmarked states. The Grover plane is the two-dimensional subspace spanned by these two orthonormal vectors. In it,</p>
+        <div class="math" data-tex="|s\rangle=\cos\alpha\,|w^{\perp}\rangle+\sin\alpha\,|w\rangle,\qquad \sin\alpha=\frac{1}{\sqrt N}."></div>
+        <p class="eqn">Eq. 3</p>
+        <p>In words: the starting state is a unit vector lying almost along the "unmarked" axis, tilted toward the "marked" axis by a small angle α. The whole noiseless algorithm happens inside this plane.</p>
+      </div>
+      <p>For the two-qubit example, |w⟩ = |00⟩ and |w<sup>⊥</sup>⟩ = (|01⟩ + |10⟩ + |11⟩)/√3. The overlap ⟨w|s⟩ is 1/2, so sin α = 1/2 and α = 30°. For four qubits, sin α = 1/4 and α ≈ 0.2527 rad. For large N the angle is small, α ≈ 1/√N.</p>
+      <p class="short"><b>In short:</b> the register's state is a unit vector; the equal superposition |s⟩ sits at the small angle α = arcsin(1/√N) from the unmarked direction, inside a plane that contains the answer.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Two reflections">
+      <span class="num">2 · TWO REFLECTIONS MAKE A ROTATION</span>
+      <h2>How does each iteration move the state toward the answer?</h2>
+      <p>The oracle is how the algorithm asks f a question. Instead of writing f(x) into a separate bit, it writes the answer into a sign: U<sub>f</sub>|x⟩ = (−1)<sup>f(x)</sup>|x⟩ (Eq. 5). Only the marked state changes, and because the basis projectors sum to the identity, the oracle has a compact form.</p>
+      <div class="math" data-tex="U_f = I - 2\,|w\rangle\langle w| ."></div>
+      <p class="eqn">Eq. 7</p>
+      <p>This is a reflection. It leaves every vector orthogonal to |w⟩ alone and reverses the component along |w⟩. In the Grover plane it flips the state across the |w<sup>⊥</sup>⟩ axis, sending an angle θ to −θ.</p>
+      <p>The second ingredient is the diffusion operator V = H<sup>⊗n</sup>U<sub>0</sub>H<sup>⊗n</sup>, where U<sub>0</sub> = 2|0⟩⟨0| − I reflects about the all-zeros state (Eqs. 9 and 10). Since the Hadamard layer sends |0⟩<sup>⊗n</sup> to |s⟩, conjugating by it turns a reflection about |0⟩ into a reflection about |s⟩.</p>
+      <div class="math" data-tex="V = 2\,|s\rangle\langle s| - I ."></div>
+      <p class="eqn">Eq. 11</p>
+      <p>In terms of amplitudes, V replaces each c<sub>x</sub> by 2m − c<sub>x</sub>, where m is the mean amplitude, so it is often described as inversion about the mean. After the oracle has made the marked amplitude negative, it sits far below the mean, and inverting about the mean lifts it far above.</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why is 2|s⟩⟨s| − I the same as inversion about the mean?</span></summary><div class="pfbody">
+        <p>For any state Σc<sub>x</sub>|x⟩, the inner product ⟨s|ψ⟩ is Σc<sub>x</sub>/√N = √N m, where m is the mean amplitude. So 2|s⟩⟨s|ψ⟩ = 2√N m · (1/√N)Σ|x⟩ = Σ 2m|x⟩. Subtracting |ψ⟩ leaves Σ(2m − c<sub>x</sub>)|x⟩. Each amplitude is reflected through the value m.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Fact · one iteration is a rotation by 2α</span><p>The Grover iteration G = VU<sub>f</sub> maps the plane to itself and rotates it by the angle 2α toward |w⟩. After r iterations,</p>
+        <div class="math" data-tex="|\psi_r\rangle = G^r|s\rangle=\cos[(2r+1)\alpha]\,|w^{\perp}\rangle+\sin[(2r+1)\alpha]\,|w\rangle,\qquad P^{(0)}_r=\sin^2[(2r+1)\alpha]."></div>
+        <p class="eqn">Eqs. 14 and 15</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does a reflection followed by another reflection give a rotation by twice the angle between their axes?</span></summary><div class="pfbody">
+        <p>The paper's argument is geometric. Start at angle θ from |w<sup>⊥</sup>⟩. The oracle reflects across the |w<sup>⊥</sup>⟩ axis, to −θ. The diffusion step reflects across the line through |s⟩, which sits at angle α; reflecting an angle φ across a line at angle α gives 2α − φ. So −θ goes to 2α + θ. Each iteration adds 2α, and starting from θ = α gives (2r + 1)α after r rounds.</p>
+        <p>In the basis {|w<sup>⊥</sup>⟩, |w⟩} the paper writes V explicitly as cos 2α on the diagonal and sin 2α off it (Eq. 12). In the density-matrix language of the paper, one iteration takes ρ<sub>2</sub> = |s⟩⟨s| to a matrix with sin<sup>2</sup>3α on |w⟩⟨w|, cos<sup>2</sup>3α on |w<sup>⊥</sup>⟩⟨w<sup>⊥</sup>|, and (sin 6α)/2 on the off-diagonal entries (Eq. 13), which is |ψ<sub>1</sub>⟩⟨ψ<sub>1</sub>| at angle 3α.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The success probability peaks when (2r + 1)α is closest to π/2. For large N, with α ≈ 1/√N, this gives the familiar count</p>
+      <div class="math" data-tex="r_0\approx\frac{\pi}{4}\sqrt N-\frac12 ."></div>
+      <p class="eqn">Eq. 16</p>
+      <p>Both running examples make this concrete. For N = 4, one iteration takes the angle from 30° to 90°, exactly onto |w⟩, and the success probability is sin<sup>2</sup>90° = 1. In amplitudes: the four amplitudes start at 1/2 each, the oracle makes the marked one −1/2, the mean becomes 1/4, and inversion about the mean sends −1/2 to 1 and each 1/2 to 0. For N = 16 the angle after r = 1, 2, 3 is 3α, 5α, 7α, with success probabilities 0.4727, 0.9084 and 0.9613. Since 7α ≈ 1.769 exceeds π/2 by about 0.198 rad, the third iteration slightly overshoots, which the paper notes will matter in Section 9. A fourth iteration would carry the state further past the target, down to 0.5817.</p>
+      <p>The animation runs the full 16-dimensional state vector through four iterations. The left panel shows the 16 amplitudes; the right panel shows the same state as an arrow in the Grover plane. Watch the oracle flip the arrow below the axis and the diffusion step swing it back above, each round ending 2α higher than the last.</p>
+      <div class="player" id="pGrRot">
+        <div class="ptitle"><span class="label">Animation · Grover on 16 items</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Amplitudes of a 16-item Grover search and the state as an arrow in the Grover plane"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>marked amplitude</span><span><i class="sw" style="background:var(--cool)"></i>unmarked amplitudes</span><span><i class="sw" style="background:var(--muted)"></i>mean, |s⟩ direction</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The animation multiplies the 16-entry vector by U<sub>f</sub> and V directly; the angle shown is computed from the amplitudes, not assumed. Its numbers agree with Eq. 15 to every digit shown.</p>
+      <p class="short"><b>In short:</b> the oracle reflects across the unmarked axis, the diffusion step reflects across |s⟩, and together they rotate the state by 2α, so about (π/4)√N iterations reach the answer.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Noise channels">
+      <span class="num">3 · DENSITY MATRICES AND NOISE</span>
+      <h2>How do we describe a state that has been hit by random errors?</h2>
+      <p>A state vector describes a register we know perfectly. Once errors strike at random, the register is in state |ψ<sub>1</sub>⟩ with some probability and |ψ<sub>2</sub>⟩ with another, and the right description is a weighted average of projectors. This is the density matrix, and the paper uses it from its first equation on.</p>
+      <div class="def"><span class="label">Definition · density matrix</span>
+        <p>If the register is in state |ψ<sub>i</sub>⟩ with probability q<sub>i</sub>, its density matrix is ρ = Σ<sub>i</sub> q<sub>i</sub>|ψ<sub>i</sub>⟩⟨ψ<sub>i</sub>|. The probability of measuring x is the diagonal entry ⟨x|ρ|x⟩, and a gate U acts as ρ ↦ UρU<sup>†</sup>.</p>
+        <p>In words: a matrix whose diagonal holds the measurement probabilities (the populations) and whose off-diagonal entries (the coherences) record how much the components can still interfere.</p>
+      </div>
+      <p>For a pure state such as |s⟩ every coherence is as large as it can be. At the other extreme sits the maximally mixed state I/N, whose diagonal is uniform and whose coherences are all zero: it is the state of a register about which nothing is known, and measuring it gives a uniformly random string. Interference, the engine of Grover's algorithm, lives in the off-diagonal entries. Noise eats them.</p>
+      <p>On one qubit, any error between two gates can be expanded in the Pauli operators X (the bit flip, swapping |0⟩ and |1⟩), Z (the phase flip, negating |1⟩) and Y = iXZ (both at once). The general Pauli channel applies each with some probability.</p>
+      <div class="math" data-tex="\mathcal E(\rho)=(1-p)\,\rho+p_x\,X\rho X+p_y\,Y\rho Y+p_z\,Z\rho Z,\qquad p=p_x+p_y+p_z ."></div>
+      <p class="eqn">Eq. 17</p>
+      <p>Three cases are standard. The bit-flip channel has (p<sub>x</sub>, p<sub>y</sub>, p<sub>z</sub>) = (p, 0, 0), the phase-flip channel (0, 0, p), and the depolarizing channel (p/3, p/3, p/3), which is the same as replacing the qubit by I/2 with probability 4p/3. The paper always compares channels at the same total error probability p, so that differences come from the kind of error and not its frequency.</p>
+      <p>A one-qubit example shows how differently X and Z treat the same state. Take |+⟩ = (|0⟩ + |1⟩)/√2, whose density matrix has all four entries equal to 1/2. A bit flip maps |+⟩ to itself, so the bit-flip channel leaves this state alone. A phase flip maps it to |−⟩ = (|0⟩ − |1⟩)/√2, so the phase-flip channel keeps the diagonal at 1/2 but multiplies the off-diagonal entries by 1 − 2p. Which error hurts depends on which state it hits. This simple observation, scaled up to n qubits, is the heart of Section 6.</p>
+      <p>The paper places a noise channel on every qubit after every gate layer: once after the initial Hadamard layer and, inside each iteration, after the oracle, after the first Hadamard layer of the diffusion step, and after U<sub>0</sub>. A circuit with r iterations therefore has 3r + 1 noise layers and n(3r + 1) chances for an error. This models both gate errors and idle decoherence.</p>
+      <p class="short"><b>In short:</b> a density matrix stores populations on its diagonal and interference in its coherences; a Pauli channel applies X, Y or Z at random, and the paper puts one on every qubit after every gate layer, 3r + 1 layers in all.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Global depolarizing">
+      <span class="num">4 · AN EXACTLY SOLVABLE CASE</span>
+      <h2>What happens if the whole register is depolarized at once?</h2>
+      <p>Independent channels on n qubits push the state out of the Grover plane, and no exact solution for all N is available. So the paper first solves a cleaner reference model, in which each noise layer acts on the register as a whole.</p>
+      <div class="def"><span class="label">Definition · global depolarizing channel</span>
+        <div class="math" data-tex="\mathcal E_{\mathrm g}(\rho)=(1-p_{\mathrm g})\,\rho+\frac{p_{\mathrm g}}{N}\,I ."></div>
+        <p class="eqn">Eq. 18</p>
+        <p>In words: during each gate layer, with probability p<sub>g</sub> the register forgets everything and becomes uniformly random; otherwise nothing happens.</p>
+      </div>
+      <p>The key property is that the identity matrix does not care which gate acts on it: UIU<sup>†</sup> = I for every unitary U. So</p>
+      <div class="math" data-tex="\mathcal E_{\mathrm g}(U\rho U^{\dagger})=U\,\mathcal E_{\mathrm g}(\rho)\,U^{\dagger}."></div>
+      <p class="eqn">Eq. 19</p>
+      <p>The channel commutes with every gate, and that makes everything solvable. All 3r + 1 channels can be slid to the end of the circuit. Each multiplies whatever coherent part remains by 1 − p<sub>g</sub> and moves the lost weight into I/N.</p>
+      <div class="fact"><span class="label">Fact · Eq. 29 and Eq. 30</span><p>After r noisy iterations the state is the noiseless Grover state with a geometrically decaying weight, plus a uniform remainder, and the success probability is</p>
+        <div class="math" data-tex="P_r(p_{\mathrm g})=(1-p_{\mathrm g})^{3r+1}\sin^2[(2r+1)\alpha]+\frac{1-(1-p_{\mathrm g})^{3r+1}}{N}."></div>
+        <p class="eqn">Eq. 30</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">How do the four channels of one iteration collapse into one factor?</span></summary><div class="pfbody">
+        <p>The paper traces one iteration slice by slice (Eqs. 20 to 28). After the initial Hadamard layer and the first channel, the state is (1 − p<sub>g</sub>)|s⟩⟨s| + (p<sub>g</sub>/N)I. The oracle acts on the first term and leaves the second alone, by Eq. 19. The next channel gives (1 − p<sub>g</sub>)<sup>2</sup>U<sub>f</sub>|s⟩⟨s|U<sub>f</sub> + [1 − (1 − p<sub>g</sub>)<sup>2</sup>]I/N, because a channel applied to aρ + (1 − a)I/N gives (1 − p<sub>g</sub>)aρ + [1 − (1 − p<sub>g</sub>)a]I/N: the uniform part stays uniform and the weights still sum to one. Repeating through the Hadamard layer, U<sub>0</sub> and the last Hadamard layer gives</p>
+        <div class="math" data-tex="\rho_f'=(1-p_{\mathrm g})^4\,G\rho_2G^{\dagger}+\frac{1-(1-p_{\mathrm g})^4}{N}\,I ."></div>
+        <p class="eqn">Eq. 28</p>
+        <p>That is four factors: the one after the initial Hadamard layer and the three inside the iteration. Every later iteration contributes three more, for 3r + 1 in total (Eq. 29). The |w⟩ population of |ψ<sub>r</sub>⟩⟨ψ<sub>r</sub>| is sin<sup>2</sup>[(2r + 1)α], and that of I/N is 1/N, which gives Eq. 30.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Equation 30 is a damped oscillation in r. The oscillation is the ordinary Grover rotation with the same period; the damping factor (1 − p<sub>g</sub>)<sup>3r+1</sup> is the probability that the register has survived every channel. Noise does not slow the rotation. It drains the rotating part.</p>
+      <p>The two-qubit example can be done by hand. With r = 1 and p<sub>g</sub> = 0.1, the weight is 0.9<sup>4</sup> = 0.6561, the noiseless success probability is 1, and the floor contributes (1 − 0.6561)/4 ≈ 0.0860, so P<sub>1</sub> ≈ 0.7421 (our arithmetic). For four qubits with p<sub>g</sub> = 0.02, Eq. 30 gives 0.4408, 0.7969 and 0.7969 at r = 1, 2, 3, against 0.4727, 0.9084 and 0.9613 without noise: at this noise level two iterations are already as good as three.</p>
+      <p>The animation below simulates the full 16 × 16 density matrix of the four-qubit register, applying the global channel after every gate layer exactly as in the paper's circuit, and plots the success probability after each iteration. The simulation does not use Eq. 30; it confirms it.</p>
+      <div class="player" id="pGrDep">
+        <div class="ptitle"><span class="label">Animation · damped Grover oscillation</span><div class="scen"><button class="chip" data-scen="0" aria-pressed="false">p<sub>g</sub> = 0</button><button class="chip" data-scen="0.02" aria-pressed="true">p<sub>g</sub> = 0.02</button><button class="chip" data-scen="0.05" aria-pressed="false">p<sub>g</sub> = 0.05</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Success probability against number of iterations for a noisy 16-item search"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>noisy P<sub>r</sub> (density-matrix simulation)</span><span><i class="sw" style="background:var(--line)"></i>noiseless</span><span><i class="sw" style="background:var(--cool)"></i>weight (1 − p<sub>g</sub>)<sup>3r+1</sup></span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>For every setting the simulated values agree with Eq. 30 to at least four decimal places (our check). The oscillation keeps its period; only its height shrinks, toward the floor at 1/16.</p>
+      <p class="short"><b>In short:</b> a global depolarizing channel commutes with every gate, so the noisy state is the noiseless one with weight (1 − p<sub>g</sub>)<sup>3r+1</sup> plus a uniform remainder, which gives the exact damped oscillation of Eq. 30.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · When to stop">
+      <span class="num">5 · WHEN TO STOP, AND WHAT IT COSTS</span>
+      <h2>How does noise change the best number of iterations and the cost of the search?</h2>
+      <p>Once the success probability is known exactly, the practical questions are how high it can get, when to stop, and how many oracle queries a search costs on average. The answers depend on N and p<sub>g</sub> mainly through the product p<sub>g</sub>√N, which measures the noise accumulated over a full-length circuit.</p>
+      <p>For weak noise, stopping at the noiseless optimum costs about 3r<sub>0</sub> ≈ (3π/4)√N layers' worth of survival probability.</p>
+      <div class="math" data-tex="P_{r_0}(p_{\mathrm g})\approx(1-p_{\mathrm g})^{3r_0+1}\approx e^{-3\pi p_{\mathrm g}\sqrt N/4},\qquad p_{\mathrm g}\sqrt N\ll1 ."></div>
+      <p class="eqn">Eq. 31</p>
+      <p>A database four times larger needs twice as many iterations, so for the same loss it tolerates only half the noise per gate layer.</p>
+      <p>The best stopping point moves earlier, because each extra iteration gains a little rotation but costs three more channels. Setting dP<sub>r</sub>/dr = 0 in Eq. 30, with λ = 1 − p<sub>g</sub>, gives a balance between the two (Eq. 32): the gain 2α sin[2(2r + 1)α] on the left and the loss 3 ln(1/λ){sin<sup>2</sup>[(2r + 1)α] − 1/N} on the right. Solving near the noiseless optimum gives the shift.</p>
+      <div class="math" data-tex="r^*\approx r_0-\frac{3p_{\mathrm g}(N-1)}{8},\qquad p_{\mathrm g}\sqrt N\ll1 ."></div>
+      <p class="eqn">Eq. 33</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Where does 3p<sub>g</sub>(N − 1)/8 come from?</span></summary><div class="pfbody">
+        <p>The paper writes (2r + 1)α = π/2 − ε with ε small and uses ln(1/λ) ≈ p<sub>g</sub> and α<sup>2</sup> ≈ 1/N. The details below are our filling-in of that step. The left side of Eq. 32 becomes 2α sin(π − 2ε) ≈ 4αε. The right side becomes 3p<sub>g</sub>(cos<sup>2</sup>ε − 1/N) ≈ 3p<sub>g</sub>(N − 1)/N. Setting them equal, ε ≈ 3p<sub>g</sub>(N − 1)/(4αN). Since ε = 2α(r<sub>0</sub> − r) when r<sub>0</sub> is the exact noiseless optimum, r<sub>0</sub> − r* ≈ 3p<sub>g</sub>(N − 1)/(8α<sup>2</sup>N) ≈ 3p<sub>g</sub>(N − 1)/8.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The shift grows like p<sub>g</sub>N, faster than r<sub>0</sub> itself, so once p<sub>g</sub>√N is of order one it is no longer a small correction. When p<sub>g</sub>√N ≫ 1 (with p<sub>g</sub> still small), the coherent part dies long before the rotation gets anywhere, sin[(2r + 1)α] ≈ (2r + 1)α, and maximizing λ<sup>3r+1</sup>(2r + 1)<sup>2</sup> gives</p>
+      <div class="math" data-tex="r^*\approx\frac{2}{3p_{\mathrm g}}-\frac12,\qquad P_{r^*}\approx\frac{16}{9e^2}\,\frac{1}{p_{\mathrm g}^2N},\qquad p_{\mathrm g}\sqrt N\gg1 ."></div>
+      <p class="eqn">Eq. 34</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why does the best count stop depending on N?</span></summary><div class="pfbody">
+        <p>This calculation is ours, filling in the paper's one-line statement. Write λ<sup>3r+1</sup> ≈ e<sup>−p<sub>g</sub>(3r+1)</sup> and set the derivative of −p<sub>g</sub>(3r + 1) + 2 ln(2r + 1) to zero: 3p<sub>g</sub> = 4/(2r + 1), so 2r + 1 = 4/(3p<sub>g</sub>), which is Eq. 34's r*. At that point 3r + 1 = (3/2)(2r + 1) − 1/2 ≈ 2/p<sub>g</sub>, so the weight is about e<sup>−2</sup>, and the success probability is e<sup>−2</sup>(2r + 1)<sup>2</sup>α<sup>2</sup> ≈ e<sup>−2</sup> · 16/(9p<sub>g</sub><sup>2</sup>) · 1/N. Nothing about N enters r*: the register simply cannot survive more than about 2/p<sub>g</sub> layers.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The cost of a search is the next question. A run with r iterations makes r queries and succeeds with probability P<sub>r</sub>. Repeating until a check confirms the answer takes 1/P<sub>r</sub> runs on average, so the expected number of queries is</p>
+      <div class="math" data-tex="Q(r)=\frac{r}{P_r},\qquad Q^*=\min_{1\le r\le \pi/(4\alpha)}Q(r)."></div>
+      <p class="eqn">Eq. 35</p>
+      <p>Its noiseless value Q<sub>0</sub> is slightly below r<sub>0</sub>, because stopping a bit before the peak and repeating occasionally is cheaper than always running to the peak. For weak noise Q*/Q<sub>0</sub> ≈ exp(3πp<sub>g</sub>√N/4), so the overhead depends only on p<sub>g</sub>√N. For strong noise, minimizing Eq. 35 directly gives</p>
+      <div class="math" data-tex="Q^*\approx\frac{3e}{4}\,p_{\mathrm g}N\approx2\,p_{\mathrm g}N,\qquad p_{\mathrm g}\sqrt N\gg1 ."></div>
+      <p class="eqn">Eq. 36</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Where does the constant 3e/4 come from?</span></summary><div class="pfbody">
+        <p>Our filling-in. In the strong-noise regime, P<sub>r</sub> ≈ e<sup>−3p<sub>g</sub>r</sup>(2r)<sup>2</sup>/N for large r, so Q(r) ≈ N e<sup>3p<sub>g</sub>r</sup>/(4r). The function e<sup>3p<sub>g</sub>r</sup>/r is smallest where 3p<sub>g</sub> = 1/r, that is r = 1/(3p<sub>g</sub>), and there Q ≈ N · e · 3p<sub>g</sub>/4. Minimizing Q directly picks a count about half of the r* that maximizes P, because a cheap run that succeeds less often can still win on average.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Fact · the speedup has a horizon</span><p>Under global depolarizing noise the query cost follows the √N law while p<sub>g</sub>√N is small, and becomes linear in N, about 2p<sub>g</sub>N, once p<sub>g</sub>√N is large. The bend in the paper's Fig. 4 sits where p<sub>g</sub>√N reaches about one half, so the largest useful register is about n<sub>max</sub> ≈ 2 log<sub>2</sub>(1/p<sub>g</sub>).</p></div>
+      <p>The linear regime is not a failure of the analysis but a known limit: the paper notes that lower bounds by Vrana, Reeb, Reitzner and Wolf and by Rosmanis show that any search against an oracle that depolarizes with fixed probability needs of order pN queries. Eq. 36 says Grover's algorithm, stopped at the right time and repeated, attains that bound with a small constant, keeping only a factor of about 4p<sub>g</sub> over a classical scan of half the database.</p>
+      <p>As a check on all of this, we evaluated Eq. 30 numerically at n = 16 and n = 20 (our computation). At n = 16 and p<sub>g</sub> = 0.0005, so p<sub>g</sub>√N = 0.128, the best count is 188, where Eq. 33 predicts 188.3. At n = 20 and p<sub>g</sub> = 0.01, so p<sub>g</sub>√N ≈ 10, the best count is 65 against 66.2 from Eq. 34, and the least expected cost is about 21,070 queries against 21,380 from Eq. 36. On the four-qubit register the regimes are too close together for the formulas to apply, and the noiseless cost there is lowest at r = 1, about 2.1 queries, which is a small-N effect.</p>
+      <p class="short"><b>In short:</b> noise pulls the best stopping point earlier by about 3p<sub>g</sub>N/8 and lowers the peak to about e<sup>−3πp<sub>g</sub>√N/4</sup>; once p<sub>g</sub>√N ≫ 1 the cost becomes about 2p<sub>g</sub>N, linear like classical search.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · One local error">
+      <span class="num">6 · LOCAL NOISE: WHAT ONE ERROR DOES</span>
+      <h2>Why are some errors more harmful than others, and when?</h2>
+      <p>Real errors strike individual qubits, not the whole register. Such errors do not commute with the gates, and they push the state out of the Grover plane. The paper's key observation is that the Grover operator treats everything outside the plane in the simplest possible way.</p>
+      <div class="fact"><span class="label">Fact · amplitude outside the plane is frozen</span>
+        <div class="math" data-tex="G|\chi\rangle=-|\chi\rangle\qquad\text{for every }|\chi\rangle\perp|w^{\perp}\rangle,|w\rangle ."></div>
+        <p class="eqn">Eq. 37</p>
+        <p>In words: on the orthogonal complement of the search plane, an ideal Grover iteration only flips the sign. It never amplifies such amplitude and never brings it back into the plane.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is G just −1 off the plane?</span></summary><div class="pfbody">
+        <p>Let |χ⟩ be orthogonal to both |w⟩ and |w<sup>⊥</sup>⟩. Since |s⟩ lies in their span, |χ⟩ is also orthogonal to |s⟩. Then U<sub>f</sub>|χ⟩ = |χ⟩ − 2|w⟩⟨w|χ⟩ = |χ⟩, and V|χ⟩ = 2|s⟩⟨s|χ⟩ − |χ⟩ = −|χ⟩. So G|χ⟩ = VU<sub>f</sub>|χ⟩ = −|χ⟩.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Since only the in-plane part of the state can ever reach |w⟩, the effect of a single Pauli error is decided by its in-plane part. Taking w = 0⋯0 without loss of generality and writing Π for the projector onto the plane, the paper computes, for a Pauli on any qubit k,</p>
+      <div class="math" data-tex="\begin{aligned}\Pi Z_k\Pi&=|w\rangle\langle w|-\tfrac{1}{N-1}\,|w^{\perp}\rangle\langle w^{\perp}|,\\ \Pi X_k\Pi&=\tfrac{N-2}{N-1}\,|w^{\perp}\rangle\langle w^{\perp}|+\tfrac{1}{\sqrt{N-1}}\bigl(|w\rangle\langle w^{\perp}|+|w^{\perp}\rangle\langle w|\bigr),\\ \Pi Y_k\Pi&=\tfrac{i}{\sqrt{N-1}}\bigl(|w^{\perp}\rangle\langle w|-|w\rangle\langle w^{\perp}|\bigr).\end{aligned}"></div>
+      <p class="eqn">Eq. 38</p>
+      <details class="pf"><summary><span class="tagd">check</span><span class="q">Do these formulas hold for two qubits?</span></summary><div class="pfbody">
+        <p>Our check, with N = 4, w = 00 and an error on the first qubit. The phase flip Z<sub>1</sub> leaves |00⟩ alone and sends |w<sup>⊥</sup>⟩ = (|01⟩ + |10⟩ + |11⟩)/√3 to (|01⟩ − |10⟩ − |11⟩)/√3, whose overlap with |w<sup>⊥</sup>⟩ is (1 − 1 − 1)/3 = −1/3 = −1/(N − 1). The bit flip X<sub>1</sub> sends |00⟩ to |10⟩, whose overlap with |w<sup>⊥</sup>⟩ is 1/√3 = 1/√(N − 1), and sends |w<sup>⊥</sup>⟩ to (|11⟩ + |00⟩ + |01⟩)/√3, with overlap 2/3 = (N − 2)/(N − 1) with |w<sup>⊥</sup>⟩ and 1/√3 with |w⟩. All four entries match Eq. 38.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For a large database, drop the terms of order 1/√N and the picture becomes stark. A phase flip keeps the marked component, since Z<sub>k</sub>|w⟩ = ±|w⟩, but scrambles the signs of the unmarked component and throws it almost entirely out of the plane. A bit flip does the opposite: flipping one bit of an unmarked string almost always gives another unmarked string, so the unmarked component stays, while X<sub>k</sub>|w⟩ is an unmarked basis state and leaves. A Y error throws out both. Either way the coherence between |w<sup>⊥</sup>⟩ and |w⟩ is gone.</p>
+      <p>Now combine this with the rotation. Suppose one error strikes when the in-plane state is at angle θ, and the remaining iterations would have carried it to π/2. After a phase flip only sin θ|w⟩ is left, at angle π/2, and the remaining rotation carries it on to π − θ. After a bit flip only cos θ|w<sup>⊥</sup>⟩ is left, at angle 0, carried to π/2 − θ. The success probabilities are</p>
+      <div class="math" data-tex="P^{(Z)}\approx\sin^2\theta\,\sin^2(\pi-\theta)=\sin^4\theta,\qquad P^{(X)}\approx\cos^2\theta\,\cos^2\theta=\cos^4\theta ,"></div>
+      <p class="eqn">Eqs. 39 and 40</p>
+      <p>and P<sup>(Y)</sup> ≈ 1/N. The two basic errors are dangerous at opposite times. A phase flip is worst early, when almost all the amplitude is unmarked: one phase flip right after the initial Hadamard layer leaves a success probability of order 1/N. A bit flip is worst late, when the amplitude has gathered on |w⟩, and a bit flip at the very start costs nothing at all, because X<sub>k</sub>|s⟩ = |s⟩. A Y error is fatal at any time.</p>
+      <div class="fact"><span class="label">Fact · average cost of one error</span><p>Averaging over a full search, with θ sweeping uniformly from 0 to π/2, a phase flip or a bit flip costs a fraction</p>
+        <div class="math" data-tex="c_X=c_Z=\bigl\langle 1-\sin^4\theta\bigr\rangle=\frac58"></div>
+        <p class="eqn">Eq. 41</p>
+        <p>of the success probability, and a Y error costs c<sub>Y</sub> = 1. The paper notes that 5/8 agrees with Azuma's earlier perturbative result for phase errors.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why is the average of sin⁴θ equal to 3/8?</span></summary><div class="pfbody">
+        <p>Our filling-in. Using sin<sup>2</sup>θ = (1 − cos 2θ)/2, sin<sup>4</sup>θ = (1 − 2cos 2θ + cos<sup>2</sup>2θ)/4 = 3/8 − (cos 2θ)/2 + (cos 4θ)/8. Over 0 ≤ θ ≤ π/2 the cosines average to zero, leaving 3/8. The same holds for cos<sup>4</sup>θ, which is why c<sub>X</sub> = c<sub>Z</sub>.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The animation tests these predictions on an eight-qubit register, N = 256, where r<sub>0</sub> = 12. For each error time j from 0 to 12 it runs the full 256-entry state vector, inserts a single Pauli error on one qubit just before the oracle of iteration j + 1 (when the state sits at θ = (2j + 1)α), finishes the remaining iterations, and records the final success probability. Choose Z, X or Y.</p>
+      <div class="player" id="pGrErr">
+        <div class="ptitle"><span class="label">Animation · one error, 256 items</span><div class="scen"><button class="chip" data-scen="Z" aria-pressed="true">phase flip Z</button><button class="chip" data-scen="X" aria-pressed="false">bit flip X</button><button class="chip" data-scen="Y" aria-pressed="false">Y</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Final success probability against the time of a single error"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>exact simulation</span><span><i class="sw" style="background:var(--muted)"></i>prediction, Eqs. 39 and 40</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>Two things in the simulation (ours) are worth noting. The weight left in the plane right after the error is exactly the weight left in the plane at the end, to every printed digit, which is Eq. 37 at work. And the exact curves follow sin<sup>4</sup>θ and cos<sup>4</sup>θ closely at N = 256, with the remaining gap coming from the 1/√N terms dropped from Eq. 38. On the four-qubit register the gap is large: a bit flip at the very start costs nothing, as the paper says, while cos<sup>4</sup>α predicts 0.879. Averaged over the 13 error times, the exact loss is 0.60 for both X and Z, near the continuous average 5/8.</p>
+      <p>One more twist concerns where the error sits. Since HXH = Z and HZH = X, an error between the two Hadamard layers of the diffusion step acts on the register like the conjugate error outside them. Of the three noise layers per iteration, one sees an error as it is and two see it conjugated. Physical bit-flip noise therefore produces one bit-flip-like and two phase-flip-like events per iteration, and phase-flip noise the reverse.</p>
+      <p class="short"><b>In short:</b> G = −1 off the plane, so whatever an error knocks out is lost; a phase flip keeps only the marked part (P ≈ sin<sup>4</sup>θ, worst early), a bit flip keeps only the unmarked part (P ≈ cos<sup>4</sup>θ, worst late), and each costs 5/8 of the success probability on average.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · The plane as a qubit">
+      <span class="num">7 · THE GROVER PLANE AS A NOISY QUBIT</span>
+      <h2>What happens when many errors accumulate?</h2>
+      <p>One error at a time is instructive, but a real circuit sees errors everywhere. Because frozen amplitude stays out, it can be discarded, and the search is fully described by the 2 × 2 block of the density matrix that lives in the plane.</p>
+      <div class="def"><span class="label">Definition · in-plane state</span>
+        <div class="math" data-tex="\rho_\Pi=\Pi\rho\,\Pi=\begin{pmatrix}A&C\\ C&B\end{pmatrix}\quad\text{in the basis }\{|w^{\perp}\rangle,|w\rangle\}."></div>
+        <p class="eqn">Eq. 42</p>
+        <p>In words: B is the success probability, A is the unmarked weight still available for amplification, and C is the coherence that the rotation converts from one into the other. Unlike a true density matrix, A + B can fall below 1, because weight leaks out of the plane.</p>
+      </div>
+      <p>Two approximations close the description: frozen amplitude can return only if a later error undoes an earlier one on the same qubit, which the paper estimates at a fraction of order 1/n of two-error events and neglects, and the 1/√N terms of Eq. 38 are dropped. Within these, each noise layer simply multiplies A, B and C by survival probabilities. The unmarked weight A survives a layer if no qubit gets a Z or Y, probability (1 − p<sub>z</sub> − p<sub>y</sub>)<sup>n</sup>. The marked weight B survives if no qubit gets an X or Y, probability (1 − p<sub>x</sub> − p<sub>y</sub>)<sup>n</sup>. The coherence C survives only if no qubit gets any error, probability (1 − p)<sup>n</sup>. A layer seen through the Hadamard conjugation swaps p<sub>x</sub> and p<sub>z</sub>.</p>
+      <div class="fact"><span class="label">Fact · decay rates per iteration</span>
+        <div class="math" data-tex="\gamma_A=n\,(p_z+2p_x+3p_y),\qquad\gamma_B=n\,(p_x+2p_z+3p_y),\qquad\gamma_C=3n\,(p_x+p_y+p_z)=3np ."></div>
+        <p class="eqn">Eq. 43</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">How do three layers add up to these rates?</span></summary><div class="pfbody">
+        <p>For small p, (1 − q)<sup>n</sup> ≈ 1 − nq, so the per-layer loss rates are n(p<sub>z</sub> + p<sub>y</sub>) for A, n(p<sub>x</sub> + p<sub>y</sub>) for B and np for C. One layer per iteration sees the channel as it is; the other two see p<sub>x</sub> and p<sub>z</sub> exchanged. Adding, A loses n(p<sub>z</sub> + p<sub>y</sub>) + 2n(p<sub>x</sub> + p<sub>y</sub>) = n(p<sub>z</sub> + 2p<sub>x</sub> + 3p<sub>y</sub>), B loses n(p<sub>x</sub> + 2p<sub>z</sub> + 3p<sub>y</sub>) by the same count, and C loses 3np, because the exchange does not change p.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For a large database α is small, so the iterations can be treated as continuous time t counted in iterations, with the rotation advancing the angle at the rate ω = 2α. A pure state at angle θ has A = cos<sup>2</sup>θ, B = sin<sup>2</sup>θ, C = sin θ cos θ, and differentiating with dθ/dt = ω gives Ȧ = −2ωC, Ḃ = 2ωC and Ċ = ω(A − B). Adding the decay terms gives the paper's Grover-plane equations.</p>
+      <div class="math" data-tex="\begin{aligned}\dot A&=-2\omega\,C-\gamma_A A,\\ \dot B&=\phantom{-}2\omega\,C-\gamma_B B,\\ \dot C&=\omega\,(A-B)-\gamma_C\,C,\end{aligned}\qquad\omega=2\alpha ."></div>
+      <p class="eqn">Eq. 44</p>
+      <p>The initial condition is A = cos<sup>2</sup>α, B = sin<sup>2</sup>α, C = sin α cos α. These are the Bloch equations of a two-level system driven at a constant rate, familiar from nuclear magnetic resonance, with separate decay rates for the two populations and the coherence. The Grover plane behaves like a qubit that the algorithm rotates while noise drains it at the rates γ<sub>A</sub>, γ<sub>B</sub> and dephases it at γ<sub>C</sub>. The global channel is the special case γ<sub>A</sub> = γ<sub>B</sub> = γ<sub>C</sub> = 3p<sub>g</sub>, for which Eq. 44 reproduces Eq. 30 in the continuum limit.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Channel</th><th>γ<sub>A</sub></th><th>γ<sub>B</sub></th><th>γ<sub>C</sub></th></tr></thead>
+        <tbody>
+          <tr><td>global depolarizing</td><td class="n">3p<sub>g</sub></td><td class="n">3p<sub>g</sub></td><td class="n">3p<sub>g</sub></td></tr>
+          <tr><td>bit flip</td><td class="n">2np</td><td class="n">np</td><td class="n">3np</td></tr>
+          <tr><td>phase flip</td><td class="n">np</td><td class="n">2np</td><td class="n">3np</td></tr>
+          <tr><td>depolarizing</td><td class="n">2np</td><td class="n">2np</td><td class="n">3np</td></tr>
+          <tr><td>amplitude damping</td><td class="n">(n/4)γ</td><td class="n">(n/2 + h)γ</td><td class="n">(3n/4 + h/2)γ</td></tr>
+        </tbody>
+      </table></div>
+      <p class="eqn">Table 1</p>
+      <p>Local noise differs from the global channel in one respect: it destroys coherence faster than it drains weight, since γ<sub>C</sub> exceeds both population rates, because an error on one qubit removes one component of the state from the plane but not the other. Amplitude damping, the relaxation of |1⟩ to |0⟩, is not a Pauli channel, but the paper handles it the same way to first order. Because it singles out |0⟩, its rates depend on h, the number of ones in the marked item's label, and the marked weight always decays faster than the unmarked weight; the worst case is a label of all ones.</p>
+      <p class="short"><b>In short:</b> keeping only the in-plane 2 × 2 block turns the noisy search into a rotated, leaking, dephasing qubit, Eq. 44, with rates read off by counting which errors remove which component.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Noise budget">
+      <span class="num">8 · SOLUTIONS AND THE NOISE BUDGET</span>
+      <h2>How much local noise can a search of a given size tolerate?</h2>
+      <p>Equation 44 is a linear system with constant coefficients, so its solution is a sum of exponentials. The structure shows up in the total weight S = A + B and the difference D = A − B. With γ̄ = (γ<sub>A</sub> + γ<sub>B</sub>)/2, δ = (γ<sub>A</sub> − γ<sub>B</sub>)/2 and κ = (γ<sub>C</sub> − γ̄)/2, the paper rewrites Eq. 44 as</p>
+      <div class="math" data-tex="\dot S=-\bar\gamma\,S-\delta\,D,\qquad\dot D=-\bar\gamma\,D-\delta\,S-4\omega C,\qquad\dot C=\omega D-(\bar\gamma+2\kappa)\,C ."></div>
+      <p class="eqn">Eq. 45</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">How does Eq. 44 turn into Eq. 45?</span></summary><div class="pfbody">
+        <p>Our check. The identity γ<sub>A</sub>A + γ<sub>B</sub>B = γ̄(A + B) + δ(A − B) holds by expanding the right side. Adding the first two lines of Eq. 44 cancels the 2ωC terms and gives Ṡ = −γ̄S − δD. Subtracting them gives Ḋ = −4ωC − (γ<sub>A</sub>A − γ<sub>B</sub>B), and γ<sub>A</sub>A − γ<sub>B</sub>B = γ̄D + δS. The last line is unchanged, with γ<sub>C</sub> = γ̄ + 2κ by definition of κ.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The weight S decays at the mean rate γ̄. The pair (D, C) is a damped oscillator that carries the Grover oscillation and decays at the rate γ̄ + κ, faster than the weight by the extra dephasing κ. The asymmetry δ couples the two. When the populations decay equally, δ = 0, everything separates and, writing γ for the common rate and assuming κ ≪ 2ω,</p>
+      <div class="math" data-tex="P_r\simeq\frac{e^{-\gamma r}}{2}\Bigl\{1-e^{-\kappa r}\Bigl[\cos2(2r+1)\alpha+\frac{\kappa}{4\alpha}\sin4\alpha r\Bigr]\Bigr\}."></div>
+      <p class="eqn">Eq. 46</p>
+      <p>The first term is half the weight left in the plane; the second is the Grover oscillation, decaying faster by e<sup>−κr</sup> and picking up a small phase lag. At κ = 0 it reduces to the continuum form of Eq. 30, since (1 − cos 2x)/2 = sin<sup>2</sup>x. This applies directly to depolarizing noise, with γ = 2np and κ = np/2. For bit-flip, phase-flip and amplitude-damping noise, δ ≠ 0 and the exponents come from a cubic (Eq. 47); the paper reports that the resulting corrections at the optimum are a few percent for bit and phase flips, with bit-flip noise slightly less damaging than phase-flip noise, and can reach several percent for amplitude damping.</p>
+      <p>At the noiseless optimum the cosine in Eq. 46 equals −1, and to first order in the rates</p>
+      <div class="math" data-tex="P_{r_0}\simeq\frac{e^{-\bar\gamma r_0}}{2}\bigl(1+e^{-\kappa r_0}\bigr)\approx\exp\Bigl[-\bigl(\bar\gamma+\tfrac{\kappa}{2}\bigr)\frac{\pi\sqrt N}{4}\Bigr]."></div>
+      <p class="eqn">Eq. 48</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why does the effective rate come out as γ̄ + κ/2, and what is it for each channel?</span></summary><div class="pfbody">
+        <p>The step is ours. For small κr<sub>0</sub>, (1 + e<sup>−κr<sub>0</sub></sup>)/2 ≈ 1 − κr<sub>0</sub>/2 ≈ e<sup>−κr<sub>0</sub>/2</sup>, and r<sub>0</sub> ≈ π√N/4. For depolarizing noise, γ̄ = 2np and κ = (3np − 2np)/2 = np/2, so γ̄ + κ/2 = 9np/4 = 3 · (3/4)np. For bit flips, γ̄ = 3np/2 and κ = (3np − 3np/2)/2 = 3np/4, so γ̄ + κ/2 = 15np/8 = 3 · (5/8)np, and phase flips give the same. These match the paper's statement after Eq. 48.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Fact · local noise is global noise times n</span><p>To first order, local noise of strength p per qubit acts like a global channel with p<sub>g</sub> = cnp, where c = 5/8 for bit or phase flips and c = 3/4 for depolarizing noise. These constants are exactly the average single-error costs of Section 6. The noise budget per qubit and gate layer is</p>
+        <div class="math" data-tex="p\lesssim\frac{1}{c\,n\sqrt N}."></div>
+        <p class="eqn">Eq. 49</p>
+      </div>
+      <p>The √N comes from the depth of the circuit and the extra n from the number of qubits that can each go wrong, so each added qubit costs a factor of about √2 from the longer circuit and a further (n + 1)/n from the extra qubit. For local depolarizing noise Eq. 49 has the form of the threshold 1/(√N log<sub>2</sub>N) found by Cohn and co-workers, since log<sub>2</sub>N = n; the paper's contribution is the constant, its explanation through single errors, and the extension to the other channels. The paper's Fig. 6 shows all channels falling parallel to 1/(n√N) beyond about six qubits, with depolarizing noise the least tolerable of the Pauli channels, bit and phase flips nearly equivalent, and amplitude damping tolerated at a several times higher rate.</p>
+      <p>To put numbers on Eq. 49 (our arithmetic, for local depolarizing noise with c = 3/4): a 10-qubit search, N = 1024, needs p below about 1/(0.75 · 10 · 32) ≈ 0.0042 per qubit and layer. A 20-qubit search, N ≈ 10<sup>6</sup>, needs p below about 6.5 × 10<sup>−5</sup>.</p>
+      <p class="short"><b>In short:</b> the in-plane equations give P<sub>r<sub>0</sub></sub> ≈ exp[−(γ̄ + κ/2)π√N/4], so local noise acts like a global channel of rate cnp, and the tolerable error per qubit falls as 1/(c n√N).</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · Coherent errors">
+      <span class="num">9 · COHERENT ROTATION ERRORS</span>
+      <h2>What if every gate is precise in kind but slightly off in angle?</h2>
+      <p>A second kind of error does not randomize the state at all. A miscalibrated oracle or diffusion step rotates the state by slightly the wrong amount, and such errors can have the same sign every time, so they add up. The paper models this as a worst case: the angle after each oracle may be off by at most δ, and the angle after each diffusion step by a further amount of at most Δ, with signs unspecified. The state then lies somewhere in an interval of angles.</p>
+      <p>Tracking the interval is bookkeeping. The center advances by 2α per iteration as before. Each oracle widens it by δ on each side and each diffusion step by Δ, so after the first iteration the angle lies in [3α − δ − Δ, 3α + δ + Δ] (Eq. 51), and in general</p>
+      <div class="math" data-tex="\theta^r_{\min}=(2r+1)\alpha-r(\delta+\Delta),\qquad\theta^r_{\max}=(2r+1)\alpha+r(\delta+\Delta),"></div>
+      <p class="eqn">Eqs. 56 and 57</p>
+      <p>so the width of the interval is</p>
+      <div class="math" data-tex="\theta^r_{\max}-\theta^r_{\min}=2r(\delta+\Delta)."></div>
+      <p class="eqn">Eq. 58</p>
+      <p>The uncertainty grows linearly in depth, and at r ≈ π√N/4 it is of order √N(δ + Δ), the same combination of noise and size as before. The probability of measuring an unmarked item at angle φ is cos<sup>2</sup>φ (Eq. 59), so the two extreme histories, every error under-rotating or every error over-rotating, give</p>
+      <div class="math" data-tex="P^{\min}_{\text{error}}=\cos^2\bigl[(2r+1)\alpha-r(\delta+\Delta)\bigr],\qquad P^{\max}_{\text{error}}=\cos^2\bigl[(2r+1)\alpha+r(\delta+\Delta)\bigr]."></div>
+      <p class="eqn">Eqs. 60 and 61</p>
+      <p>The paper adds two cautions. Since cos<sup>2</sup>φ is not monotonic, an interval that straddles π/2 reaches error zero even if neither end does, so the labels min and max refer to the ends, not the extremes. And when r<sub>0</sub> overshoots, a little under-rotation helps. At the noiseless optimum both ends give the same worst case,</p>
+      <div class="math" data-tex="P_{\mathrm{error}}\big|_{r_0}\approx\sin^2\bigl[r_0(\delta+\Delta)\bigr]\approx\Bigl[\frac{\pi}{4}\sqrt N\,(\delta+\Delta)\Bigr]^2 ."></div>
+      <p class="eqn">Eq. 62</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why does the error at r<sub>0</sub> become sin<sup>2</sup>[r<sub>0</sub>(δ + Δ)]?</span></summary><div class="pfbody">
+        <p>Our one-line filling-in. If (2r<sub>0</sub> + 1)α = π/2 exactly, then cos<sup>2</sup>(π/2 ∓ x) = sin<sup>2</sup>x with x = r<sub>0</sub>(δ + Δ), the same at both ends. For small x, sin<sup>2</sup>x ≈ x<sup>2</sup>, and r<sub>0</sub> ≈ π√N/4 gives the last form.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The worst-case loss is quadratic in √N(δ + Δ), milder than the exponential damping of depolarizing noise, but with the same scaling: the angle error per iteration must shrink as 1/√N. The paper notes that this matches Long and co-workers' result for systematic phase errors, and that errors with random signs spread only as √r, so the tolerable error then falls only as N<sup>−1/4</sup>, matching Shenvi, Brown and Whaley.</p>
+      <p>The animation reproduces the paper's Fig. 9: the four-qubit register with δ + Δ = 0.06 rad per iteration, for r = 0 to 10. On the left the interval of possible angles is drawn in the plane; on the right each bar is the exact range of cos<sup>2</sup>φ over that interval, with the noiseless error as a dot.</p>
+      <div class="player" id="pGrBand">
+        <div class="ptitle"><span class="label">Animation · the error band, 16 items</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Interval of possible angles and range of error probabilities for growing depth"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>range of error probability</span><span><i class="sw" style="background:var(--fg)"></i>noiseless error</span><span><i class="sw" style="background:var(--cool)"></i>possible angles</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The computed values match the paper's description of Fig. 9: at the first minimum, r = 3, the error stays below about 0.14 (0.136 in our computation), while at the second minimum, r = 9, it can lie anywhere from 0 to about 0.35 (0.346). For Fig. 8 the paper reports that the under-rotated end at r<sub>0</sub> = 3 reaches zero error at δ + Δ ≈ 0.066 rad; solving 7α − 3(δ + Δ) = π/2 gives 0.0660 (our arithmetic). Depolarizing noise shrinks the signal with depth; coherent noise makes it uncertain with depth. Both say: stop at the first optimum.</p>
+      <p class="short"><b>In short:</b> bounded angle errors widen the set of possible angles by 2(δ + Δ) per iteration, so the error band at r<sub>0</sub> has width about [(π/4)√N(δ + Δ)]<sup>2</sup>, and the tolerable angle error falls as 1/√N.</p>
+    </section>
+
+    <!-- 10 -->
+    <section data-sec="10 · Results">
+      <span class="num">10 · RESULTS</span>
+      <h2>What the paper derives, in numbers</h2>
+      <p>Every row is a result of the paper with its equation number, except the last rows, which are our own checks and are labeled.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Setting</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Noiseless</td><td class="n">P<sub>r</sub> = sin<sup>2</sup>[(2r + 1)α], r<sub>0</sub> ≈ (π/4)√N − 1/2 (Eqs. 15, 16)</td></tr>
+          <tr><td>Global depolarizing, exact</td><td class="n">weight (1 − p<sub>g</sub>)<sup>3r+1</sup> on the noiseless state (Eq. 30)</td></tr>
+          <tr><td>Weak global noise</td><td class="n">P<sub>r<sub>0</sub></sub> ≈ e<sup>−3πp<sub>g</sub>√N/4</sup>, r* ≈ r<sub>0</sub> − 3p<sub>g</sub>(N − 1)/8 (Eqs. 31, 33)</td></tr>
+          <tr><td>Strong global noise</td><td class="n">r* ≈ 2/(3p<sub>g</sub>) − 1/2, Q* ≈ (3e/4)p<sub>g</sub>N ≈ 2p<sub>g</sub>N (Eqs. 34, 36)</td></tr>
+          <tr><td>Useful size, global</td><td class="n">n<sub>max</sub> ≈ 2 log<sub>2</sub>(1/p<sub>g</sub>)</td></tr>
+          <tr><td>Off-plane action</td><td class="n">G|χ⟩ = −|χ⟩ (Eq. 37)</td></tr>
+          <tr><td>One error at angle θ</td><td class="n">Z: sin<sup>4</sup>θ; X: cos<sup>4</sup>θ; Y: ≈ 1/N (Eqs. 39, 40)</td></tr>
+          <tr><td>Average cost of one error</td><td class="n">c<sub>X</sub> = c<sub>Z</sub> = 5/8, c<sub>Y</sub> = 1 (Eq. 41)</td></tr>
+          <tr><td>Effective rate, bit/phase flip</td><td class="n">3 · (5/8)np</td></tr>
+          <tr><td>Effective rate, depolarizing</td><td class="n">3 · (3/4)np</td></tr>
+          <tr><td>Effective rate, amplitude damping</td><td class="n">(15/32)nγ + (1/2)hγ</td></tr>
+          <tr><td>Local noise budget</td><td class="n">p ≲ 1/(c n√N) (Eq. 49)</td></tr>
+          <tr><td>Coherent errors</td><td class="n">width 2r(δ + Δ); error at r<sub>0</sub> ≈ [(π/4)√N(δ + Δ)]<sup>2</sup> (Eqs. 58, 62)</td></tr>
+          <tr><td>N = 16, δ + Δ = 0.06</td><td class="n">r = 3: error ≲ 0.14; r = 9: 0 to ≈ 0.35 (Fig. 9)</td></tr>
+          <tr><td>Our checks, global</td><td class="n">density-matrix simulation = Eq. 30 at N = 16; r* = 188 vs 188.3 (n = 16); Q* ≈ 21,070 vs 21,380 (n = 20)</td></tr>
+          <tr><td>Our checks, one error</td><td class="n">N = 256: in-plane weight frozen exactly; mean loss 0.60 vs 5/8</td></tr>
+        </tbody>
+      </table></div>
+      <p class="short"><b>In short:</b> exact results for global depolarizing noise, a frozen-complement argument for single local errors, Bloch-type equations and a 1/(c n√N) budget for many local errors, and a linearly widening band for coherent errors.</p>
+    </section>
+
+    <!-- 11 -->
+    <section data-sec="11 · Assessment">
+      <span class="num">11 · ASSESSMENT</span>
+      <h2>What is shown, and what isn't</h2>
+      <p>What is shown exactly: the global depolarizing model is solved without approximation, and Eq. 30 is a true identity for the stated circuit (our 16 × 16 density-matrix simulation reproduces it to every digit we printed). The off-plane identity Eq. 37 and the in-plane Pauli matrices of Eq. 38 are exact for every N. The interval bookkeeping for bounded coherent errors, Eqs. 50 to 61, is exact under the stated worst-case model. The asymptotic formulas Eqs. 31, 33, 34 and 36 follow from Eq. 30 by standard expansions in clearly stated regimes, and our numerical checks at n = 16 and n = 20 agree with them.</p>
+      <p>What rests on approximations: everything about many local errors. The Grover-plane equations neglect amplitude returning to the plane (argued to be a fraction of order 1/n of two-error events), drop the 1/√N terms of Eq. 38, treat iterations as continuous time, and use first-order survival probabilities. So Eqs. 44 to 49 are leading-order statements for large N and small p, and the paper says as much. The single-error formulas Eqs. 39 and 40 are likewise large-N approximations; at N = 16 our simulation shows sizable deviations, though at N = 256 they are close. For bit-flip, phase-flip and amplitude-damping noise the paper describes the corrections from the population asymmetry δ as "a few percent" and "several percent" without tabulating them, and the amplitude-damping rates rest on a first-order argument given in prose. The noise budget in Fig. 6 comes from integrating Eq. 44, not from a simulation of the full n-qubit density matrix, so it inherits these approximations.</p>
+      <p>The model choices also matter. Noise follows every gate layer with the same strength, errors on different qubits and layers are independent, and the coherent-error analysis is worst case: it says how far the state can wander, not how far it typically does. Correlated and time-dependent noise are left to future work, as is error correction or mitigation. Much of the content is a unified, closed-form rederivation of scalings found before (Cohn et al., Long et al., Shenvi et al., Azuma); the new parts are the frozen-complement picture, the rates of Table 1 and the explicit constants. The paper is a two-author preprint posted on November 12, 2026, not yet refereed, and its acknowledgments state that an AI assistant was used to revise the text, check derivations and develop and extend analytical results.</p>
+      <div class="aside"><span class="label">A connection, ours</span>The same rotation picture powers amplitude amplification, the subroutine behind quantum speedups for Monte Carlo estimation (including option pricing proposals) and for some optimization heuristics. Any of these inherits the budget of this paper: the total noise over a √N-deep amplification circuit must stay of order one, which is one reason such speedups are usually discussed for error-corrected machines rather than today's devices.</div>
+      <p class="short"><b>In short:</b> the global-noise and coherent-error results are exact under their models; the local-noise budget is a careful leading-order estimate that recovers known thresholds and adds explicit constants.</p>
+    </section>
+
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <div class="refs">
+        <p>Khan and Faryad, <a href="https://arxiv.org/abs/2611.16398" target="_blank" rel="noopener">Loss of the quadratic speedup in Grover search under local and coherent noise</a> (2026). The paper; the <a href="https://arxiv.org/html/2611.16398v1" target="_blank" rel="noopener">HTML version</a> is the one read for this chapter.</p>
+        <p>Grover, <a href="https://arxiv.org/abs/quant-ph/9605043" target="_blank" rel="noopener">A fast quantum mechanical algorithm for database search</a> (STOC 1996). The original algorithm; only the abstract page was opened for this chapter.</p>
+        <p>Boyer, Brassard, Høyer and Tapp, <a href="https://arxiv.org/abs/quant-ph/9605034" target="_blank" rel="noopener">Tight bounds on quantum searching</a> (Fortschr. Phys., 1998). The closed-form success probability and the analysis of when to stop; only the abstract page was opened.</p>
+        <p>Rosmanis, <a href="https://arxiv.org/abs/2309.14944" target="_blank" rel="noopener">Quantum search with noisy oracle</a> (2023). The lower bound of order max(Np, √N) queries that Eq. 36 attains; only the abstract page was opened.</p>
+        <p class="note">Background the paper builds on, not opened from here and listed without links: Nielsen and Chuang, "Quantum Computation and Quantum Information" (Cambridge, 2010), for density matrices and Pauli channels; Azuma, "Decoherence in Grover's quantum algorithm: perturbative approach" (Phys. Rev. A, 2002); Cohn, Fonseca de Oliveira, Buksman and García López de Lacalle, "Grover's search with local and total depolarizing channel errors" (Int. J. Quantum Inf., 2016); Long, Li, Zhang and Tu, "Dominant gate imperfection in Grover's quantum search algorithm" (Phys. Rev. A, 2000); Shenvi, Brown and Whaley, "Effects of a random noisy oracle on search algorithm complexity" (Phys. Rev. A, 2003).</p>
+      </div>
+    </section>
+  </article>
+
+  <footer>
+    <p>Built from a full read of arXiv 2611.16398v1. Equation, table and figure numbers match the paper. All four animations run real computations: the 16-entry state vector multiplied by the oracle and diffusion matrices, the full 16 × 16 density matrix under the global depolarizing channel after every gate layer, the 256-entry state vector with a single Pauli error inserted at each possible time, and the exact range of cos<sup>2</sup>φ over the interval of Eqs. 56 and 57. The two-qubit checks of Eq. 38, the hand example P<sub>1</sub> ≈ 0.7421, the derivation details marked as ours, the numerical checks at n = 16, 20 and 256, the Eq. 49 examples, and the amplitude-amplification connection are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-16398',date:'2026-11-13',title:'Loss of the Quadratic Speedup in Grover Search under Local and Coherent Noise',authors:'Khan, Faryad',field:'quant-ph',tags:['Grover search','noise','error budgets'],mins:40,
+     dek:'Grover search turns a state through a small angle about √N times, and this paper shows in closed form how three kinds of noise undo it: global noise drains the rotating part, local errors knock amplitude out of the search plane where it stays frozen, and angle errors blur the result. All three give one budget: the total error over the circuit must stay of order one, so the error per qubit must fall like 1/(n√N).'},
     {id:'2611-13533',date:'2026-11-12',title:'Entropy Maximization for Cube Projections',authors:'Pang',field:'math.PR',tags:['entropy','probability','Fourier analysis'],mins:40,
      dek:'A random point in a cube, projected onto a line, gives a weighted sum of uniform numbers, and for every dimension n ≥ 150 its entropy is largest exactly when all weights are equal. An averaging trick reduces the conjecture to the sign of one third derivative, and exponential tilting plus explicit Fourier estimates prove that sign.'},
     {id:'2611-13584',date:'2026-11-11',title:'Exact (Non-)Accelerations of Heavy-Ball Discretizations',authors:'Pasechnyuk-Vilensky, Takáč',field:'math.OC',tags:['momentum','convex optimization','gradient methods'],mins:40,
@@ -2441,6 +2863,171 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
       el('path',{d:ds,fill:'none',stroke:'var(--accent)','stroke-width':2.2});
       el('text',{x:180,y:BASE+28,class:'lab'}).textContent='u';
       el('text',{x:324,y:Y(0.2),class:'lab',style:'text-anchor:end'}).textContent='(log w)‴(0) = '+CP.fx(R.lw,3);
+    });
+  })();
+
+
+  // ================= 2611.16398: Grover under noise =================
+  const GR=(function(){
+    const fx=(x,d)=>(x<0?'−':'')+Math.abs(x).toFixed(d);
+    const deg=x=>(x*180/Math.PI).toFixed(1)+'°';
+    // complex state vector [re, im]
+    const sv=n=>{const N=1<<n;return[new Float64Array(N).fill(1/Math.sqrt(N)),new Float64Array(N)]};
+    const oracle=v=>{v[0][0]*=-1;v[1][0]*=-1};
+    const diffuse=v=>{const N=v[0].length;for(const c of[0,1]){let m=0;for(let i=0;i<N;i++)m+=v[c][i];m/=N;for(let i=0;i<N;i++)v[c][i]=2*m-v[c][i]}};
+    function pauli(v,k,P){const b=1<<k,N=v[0].length;
+      if(P!=='Z')for(let i=0;i<N;i++)if(!(i&b))for(const c of[0,1]){const t=v[c][i];v[c][i]=v[c][i|b];v[c][i|b]=t}
+      if(P!=='X')for(let i=0;i<N;i++)if(i&b){v[0][i]*=-1;v[1][i]*=-1}
+      if(P==='Y')for(let i=0;i<N;i++){const r=v[0][i];v[0][i]=v[1][i];v[1][i]=-r}}// Y = -i Z X
+    const pw=v=>v[0][0]**2+v[1][0]**2;
+    function inPlane(v){const N=v[0].length;let r=0,m=0;for(let i=1;i<N;i++){r+=v[0][i];m+=v[1][i]}r/=Math.sqrt(N-1);m/=Math.sqrt(N-1);return pw(v)+r*r+m*m}
+    return{fx,deg,sv,oracle,diffuse,pauli,pw,inPlane};
+  })();
+
+  // ---- Animation 1: Grover rotation on 16 items ----
+  (function(){
+    const root=document.getElementById('pGrRot');if(!root)return;const P=Player(root);const n=4,N=16,a=Math.asin(1/4);
+    const v=GR.sv(n),F=[];const snap=()=>Array.from(v[0]);
+    const ang=amp=>Math.atan2(amp[0],amp.slice(1).reduce((s,x)=>s+x,0)/Math.sqrt(N-1));
+    let A=snap();F.push({amp:A,th:ang(A),t:'Start: equal superposition',c:`All 16 amplitudes equal 1/4, so the marked one is found with probability 1/16 = 0.0625. In the plane, |s⟩ sits at α = ${GR.deg(ang(A))} from the unmarked axis, since sin α = 1/4.`});
+    for(let r=1;r<=4;r++){
+      GR.oracle(v);A=snap();const mean=A.reduce((s,x)=>s+x,0)/N;
+      F.push({amp:A,th:ang(A),mean,t:`Iteration ${r}: oracle`,c:`The oracle flips the sign of the marked amplitude, now ${GR.fx(A[0],4)}. Nothing else changes. In the plane this is a reflection across the unmarked axis, to ${GR.deg(ang(A))}. The dashed line is the new mean amplitude, ${GR.fx(mean,4)}.`});
+      GR.diffuse(v);A=snap();const th=ang(A),p=A[0]**2;
+      F.push({amp:A,th,t:`Iteration ${r}: diffusion`,c:`Every amplitude is reflected through the mean ${GR.fx(mean,4)}: the marked one becomes ${GR.fx(A[0],4)} and each unmarked one ${GR.fx(A[1],4)}. In the plane this reflects across |s⟩, and the angle is now ${GR.deg(th)} = ${2*r+1}α. Success probability ${p.toFixed(4)}${r===3?', the best possible here: 7α overshoots 90° by about 0.2 rad.':r===4?'. The fourth iteration rotated past the target, so the probability fell.':'.'}`});
+    }
+    F.delay=4200;
+    P.load(F,(fr,el)=>{
+      const B0=130,S=100,X0=12,W=9,G=10;
+      el('line',{x1:8,y1:B0,x2:176,y2:B0,stroke:'var(--line)','stroke-width':1});
+      fr.amp.forEach((x,i)=>{const h=x*S;el('rect',{x:X0+i*G,y:h>=0?B0-h:B0,width:W-1,height:Math.max(Math.abs(h),1),rx:1.5,fill:i===0?'var(--accent)':'var(--cool)'})});
+      if(fr.mean!=null)el('line',{x1:8,y1:B0-fr.mean*S,x2:176,y2:B0-fr.mean*S,stroke:'var(--muted)','stroke-width':1.2,'stroke-dasharray':'4 3'});
+      el('text',{x:92,y:244,class:'lab'}).textContent='16 amplitudes · first = marked';
+      el('text',{x:16,y:B0-fr.amp[0]*S+(fr.amp[0]>=0?-5:12),class:'lab'}).textContent=GR.fx(fr.amp[0],2);
+      const cx=250,cy=125,R=68;
+      el('circle',{cx,cy,r:R,fill:'none',stroke:'var(--line)','stroke-width':1});
+      el('line',{x1:cx-R-6,y1:cy,x2:cx+R+6,y2:cy,stroke:'var(--line)','stroke-width':1});
+      el('line',{x1:cx,y1:cy+R+6,x2:cx,y2:cy-R-6,stroke:'var(--line)','stroke-width':1});
+      el('text',{x:cx+R-10,y:cy+14,class:'lab'}).textContent='|w⊥⟩';
+      el('text',{x:cx+18,y:cy-R-2,class:'lab'}).textContent='|w⟩';
+      el('line',{x1:cx,y1:cy,x2:cx+(R+6)*Math.cos(a),y2:cy-(R+6)*Math.sin(a),stroke:'var(--muted)','stroke-width':1,'stroke-dasharray':'3 3'});
+      el('text',{x:cx+R+2,y:cy-R*Math.sin(a)-10,class:'lab'}).textContent='|s⟩';
+      const ex=cx+R*Math.cos(fr.th),ey=cy-R*Math.sin(fr.th);
+      el('line',{x1:cx,y1:cy,x2:ex,y2:ey,stroke:'var(--accent)','stroke-width':2.5});
+      el('circle',{cx:ex,cy:ey,r:4,fill:'var(--accent)'});
+      el('text',{x:cx,y:226,class:'lab'}).textContent='θ = '+GR.deg(fr.th)+' · P = '+(Math.sin(fr.th)**2).toFixed(4);
+    });
+  })();
+
+  // ---- Animation 2: global depolarizing, 16x16 density matrix ----
+  (function(){
+    const root=document.getElementById('pGrDep');if(!root)return;const P=Player(root);const n=4,N=16,a=Math.asin(1/4),R=8;
+    function simulate(pg){
+      let rho=Array.from({length:N},()=>new Float64Array(N));rho[0][0]=1;
+      const Hm=Array.from({length:N},(_,i)=>Float64Array.from({length:N},(_,j)=>{let b=i&j,c=0;while(b){c+=b&1;b>>=1}return(c%2?-1:1)/Math.sqrt(N)}));
+      const mul=(A,B)=>{const C=Array.from({length:N},()=>new Float64Array(N));for(let i=0;i<N;i++)for(let k=0;k<N;k++){const x=A[i][k];if(x)for(let j=0;j<N;j++)C[i][j]+=x*B[k][j]}return C};
+      const conj=U=>{rho=mul(mul(U,rho),U)};
+      const diag=f=>Array.from({length:N},(_,i)=>{const r=new Float64Array(N);r[i]=f(i);return r});
+      const Uf=diag(i=>i===0?-1:1),U0=diag(i=>i===0?1:-1);
+      const E=()=>{for(let i=0;i<N;i++)for(let j=0;j<N;j++)rho[i][j]=(1-pg)*rho[i][j]+(i===j?pg/N:0)};
+      const out=[];conj(Hm);E();out.push(rho[0][0]);
+      for(let r=1;r<=R;r++){conj(Uf);E();conj(Hm);E();conj(U0);E();conj(Hm);out.push(rho[0][0])}
+      return out}
+    function load(pg){
+      const Pn=simulate(pg),P0=simulate(0);const F=[];
+      for(let r=0;r<=R;r++){const wgt=(1-pg)**(3*r+1),e30=wgt*Math.sin((2*r+1)*a)**2+(1-wgt)/N;
+        let c=r===0?`After the Hadamard layer and one noise layer the success probability is ${Pn[0].toFixed(4)}: the uniform state gives 1/16 whatever the noise does.`
+          :`After ${r} iteration${r>1?'s':''} (${3*r+1} noise layers) the simulated success probability is ${Pn[r].toFixed(4)}; Eq. 30 gives ${e30.toFixed(4)}. Noiseless: ${P0[r].toFixed(4)}. The coherent weight is (1 − p<sub>g</sub>)<sup>${3*r+1}</sup> = ${wgt.toFixed(4)}. Expected cost Q = r/P<sub>r</sub> = ${(r/Pn[r]).toFixed(2)} queries.`;
+        if(r===5)c+=' The rotation has passed the target and is coming back down.';
+        if(r===R)c+=pg>0?` The second peak, at r = 8, reaches only ${Pn[8].toFixed(4)} against ${P0[8].toFixed(4)} without noise: depth is expensive.`:' Without noise the second peak nearly matches the first.';
+        F.push({r,t:`r = ${r}`,c});}
+      F.delay=3800;
+      P.load(F,(fr,el)=>{const X=r=>40+r*34,Y=p=>200-p*175;
+        el('line',{x1:30,y1:Y(0),x2:330,y2:Y(0),stroke:'var(--line)','stroke-width':1});
+        el('line',{x1:30,y1:Y(0),x2:30,y2:Y(1),stroke:'var(--line)','stroke-width':1});
+        [0,0.5,1].forEach(p=>{el('text',{x:24,y:Y(p)+3,class:'lab',style:'text-anchor:end'}).textContent=p});
+        el('line',{x1:30,y1:Y(1/N),x2:330,y2:Y(1/N),stroke:'var(--muted)','stroke-width':1,'stroke-dasharray':'2 3'});
+        el('text',{x:34,y:Y(1/N)-4,class:'lab',style:'text-anchor:start'}).textContent='1/N';
+        let d='';for(let i=0;i<=80;i++){const r=i/10;d+=(i?'L':'M')+X(r).toFixed(1)+' '+Y((1-pg)**(3*r+1)).toFixed(1)}
+        el('path',{d,fill:'none',stroke:'var(--cool)','stroke-width':1.3,'stroke-dasharray':'5 3'});
+        for(let r=0;r<=R;r++){el('text',{x:X(r),y:Y(0)+14,class:'lab'}).textContent=r;
+          el('rect',{x:X(r)-11,y:Y(P0[r]),width:22,height:Y(0)-Y(P0[r]),rx:2,fill:'none',stroke:'var(--line)','stroke-width':1.2});
+          if(r<=fr.r){el('rect',{x:X(r)-8,y:Y(Pn[r]),width:16,height:Math.max(1,Y(0)-Y(Pn[r])),rx:2,fill:'var(--accent)',opacity:r===fr.r?1:.55});}
+          if(r===fr.r)el('text',{x:X(r),y:Y(Math.max(Pn[r],P0[r]))-5,class:'lab'}).textContent=Pn[r].toFixed(3);}
+        el('text',{x:180,y:236,class:'lab'}).textContent='iterations r · p_g = '+pg;
+      });
+    }
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(+b.dataset.scen)}));
+    load(0.02);
+  })();
+
+  // ---- Animation 3: one Pauli error on 256 items ----
+  (function(){
+    const root=document.getElementById('pGrErr');if(!root)return;const P=Player(root);const n=8,N=256,a=Math.asin(1/16),R0=12;
+    const pred=(E,th)=>E==='Z'?Math.sin(th)**4:E==='X'?Math.cos(th)**4:1/N;
+    function load(E){
+      const res=[];
+      for(let j=0;j<=R0;j++){const v=GR.sv(n);let wIn=0;
+        for(let t=0;t<=R0;t++){if(t===j){GR.pauli(v,0,E);wIn=GR.inPlane(v)}if(t<R0){GR.oracle(v);GR.diffuse(v)}}
+        res.push({j,th:(2*j+1)*a,wIn,wEnd:GR.inPlane(v),p:GR.pw(v)})}
+      const avg=res.reduce((s,x)=>s+1-x.p,0)/res.length;
+      const nm={Z:'phase flip',X:'bit flip',Y:'Y error'}[E];
+      const F=res.map(x=>{let c=`A ${nm} on one qubit when the state is at θ = ${GR.deg(x.th)}. Weight left in the plane right after the error: ${x.wIn.toFixed(4)}; at the end of the run: ${x.wEnd.toFixed(4)}, unchanged because G = −1 off the plane. Final success probability ${x.p.toFixed(4)}; the large-N prediction ${E==='Y'?'1/N':E==='Z'?'sin⁴θ':'cos⁴θ'} gives ${pred(E,x.th).toFixed(4)}.`;
+        if(x.j===0)c+=E==='Z'?' Almost all the amplitude was unmarked and has been thrown out: the search is ruined.':E==='X'?' The bit flip leaves |s⟩ unchanged, so it costs nothing.':' Both components leave the plane.';
+        if(x.j===R0&&E==='X')c+=' The amplitude had gathered on |w⟩, and the bit flip throws it out.';
+        if(x.j===R0&&E==='Z')c+=' At the end nearly everything is marked, and a phase flip leaves it in place.';
+        return{k:x.j,t:`Error before iteration ${x.j+1}`.replace('before iteration 13','after the last iteration'),c}});
+      F.push({k:R0,end:true,t:'Average over the run',c:`Averaged over the 13 error times, one ${nm} costs a fraction ${avg.toFixed(3)} of the success probability. The paper's continuous average is ${E==='Y'?'1':'5/8 = 0.625'} (Eq. 41).`});
+      F.delay=3400;
+      P.load(F,(fr,el)=>{const X=th=>40+th/(Math.PI/2)*280,Y=p=>195-p*170;
+        el('line',{x1:34,y1:Y(0),x2:330,y2:Y(0),stroke:'var(--line)','stroke-width':1});
+        el('line',{x1:34,y1:Y(0),x2:34,y2:Y(1),stroke:'var(--line)','stroke-width':1});
+        [0,0.5,1].forEach(p=>{el('text',{x:28,y:Y(p)+3,class:'lab',style:'text-anchor:end'}).textContent=p});
+        [0,30,60,90].forEach(dg=>{el('text',{x:X(dg*Math.PI/180),y:Y(0)+14,class:'lab'}).textContent=dg+'°'});
+        let d='';for(let i=0;i<=100;i++){const th=i/100*Math.PI/2*1.03;d+=(i?'L':'M')+X(th).toFixed(1)+' '+Y(pred(E,th)).toFixed(1)}
+        el('path',{d,fill:'none',stroke:'var(--muted)','stroke-width':1.5,'stroke-dasharray':'5 3'});
+        res.forEach(x=>{if(x.j<=fr.k){const cur=x.j===fr.k&&!fr.end;el('circle',{cx:X(x.th),cy:Y(x.p),r:cur?5.5:3.5,fill:'var(--accent)',opacity:cur||fr.end?1:.6})}});
+        if(!fr.end){const x=res[fr.k];el('line',{x1:X(x.th),y1:Y(0),x2:X(x.th),y2:Y(1),stroke:'var(--accent)','stroke-width':1,'stroke-dasharray':'2 3',opacity:.6});}
+        el('text',{x:182,y:232,class:'lab'}).textContent='angle θ of the state when the error strikes';
+      });
+    }
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen)}));
+    load('Z');
+  })();
+
+  // ---- Animation 4: coherent error band on 16 items ----
+  (function(){
+    const root=document.getElementById('pGrBand');if(!root)return;const P=Player(root);const a=Math.asin(1/4),e=0.06,RM=10;
+    const c2=x=>Math.cos(x)**2;
+    function band(r){const lo=(2*r+1)*a-r*e,hi=(2*r+1)*a+r*e;let mn=Math.min(c2(lo),c2(hi)),mx=Math.max(c2(lo),c2(hi));
+      for(let k=-2;k<=8;k++){const z=Math.PI/2+k*Math.PI;if(z>=lo&&z<=hi)mn=0;if(k*Math.PI>=lo&&k*Math.PI<=hi)mx=1}return{lo,hi,mn,mx,c0:c2((2*r+1)*a)}}
+    const B=Array.from({length:RM+1},(_,r)=>band(r));
+    const F=B.map((b,r)=>{let c=r===0?`Before any iteration the angle is exactly α, so the error probability is cos²α = ${b.c0.toFixed(4)}, with no spread.`
+      :`After ${r} iteration${r>1?'s':''} the angle lies anywhere in [${b.lo.toFixed(3)}, ${b.hi.toFixed(3)}] rad, a width of 2r(δ + Δ) = ${(2*r*e).toFixed(2)} (Eq. 58). The error probability can be anything from ${b.mn.toFixed(3)} to ${b.mx.toFixed(3)}; the noiseless value is ${b.c0.toFixed(4)}.`;
+      if(r===3)c+=' This is the first minimum: the interval contains π/2, so some error history hits the target exactly, but the worst stays near 0.14.';
+      if(r===9)c+=' The second minimum: the noiseless error is tiny, but the band now runs from 0 to about 0.35. A run stopped here may do far worse than the ideal curve suggests.';
+      return{r,t:`r = ${r}`,c}});
+    F.delay=4000;
+    P.load(F,(fr,el)=>{const b=B[fr.r];
+      const cx=70,cy=120,R=58;
+      el('circle',{cx,cy,r:R,fill:'none',stroke:'var(--line)','stroke-width':1});
+      el('line',{x1:cx-R-4,y1:cy,x2:cx+R+4,y2:cy,stroke:'var(--line)','stroke-width':1});
+      el('line',{x1:cx,y1:cy+R+4,x2:cx,y2:cy-R-4,stroke:'var(--line)','stroke-width':1});
+      el('text',{x:cx+R-6,y:cy+13,class:'lab'}).textContent='|w⊥⟩';el('text',{x:cx+14,y:cy-R-2,class:'lab'}).textContent='|w⟩';
+      const pt=t=>[cx+R*Math.cos(t),cy-R*Math.sin(t)];
+      if(b.hi-b.lo>1e-9){const [x1,y1]=pt(b.lo),[x2,y2]=pt(b.hi);el('path',{d:`M${cx} ${cy} L${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 ${b.hi-b.lo>Math.PI?1:0} 0 ${x2.toFixed(1)} ${y2.toFixed(1)} Z`,fill:'var(--cool)',opacity:.35,stroke:'var(--cool)','stroke-width':1});}
+      const [mx,my]=pt((2*fr.r+1)*a);el('line',{x1:cx,y1:cy,x2:mx,y2:my,stroke:'var(--fg)','stroke-width':1.6});
+      el('text',{x:cx,y:206,class:'lab'}).textContent='possible angles';
+      const X=r=>160+r*16.5,Y=p=>200-p*170;
+      el('line',{x1:150,y1:Y(0),x2:336,y2:Y(0),stroke:'var(--line)','stroke-width':1});
+      el('line',{x1:150,y1:Y(0),x2:150,y2:Y(1),stroke:'var(--line)','stroke-width':1});
+      [0,0.5,1].forEach(p=>{el('text',{x:146,y:Y(p)+3,class:'lab',style:'text-anchor:end'}).textContent=p});
+      let d='';for(let i=0;i<=200;i++){const r=i/200*RM;d+=(i?'L':'M')+X(r).toFixed(1)+' '+Y(c2((2*r+1)*a)).toFixed(1)}
+      el('path',{d,fill:'none',stroke:'var(--muted)','stroke-width':1,'stroke-dasharray':'2 3'});
+      B.forEach((q,r)=>{if(r%3===0)el('text',{x:X(r),y:Y(0)+13,class:'lab'}).textContent=r;
+        if(r<=fr.r){el('rect',{x:X(r)-4,y:Y(q.mx),width:8,height:Math.max(1.5,Y(q.mn)-Y(q.mx)),rx:2,fill:'var(--accent)',opacity:r===fr.r?1:.55});
+          el('circle',{cx:X(r),cy:Y(q.c0),r:2.6,fill:'var(--fg)'});}});
+      el('text',{x:243,y:236,class:'lab'}).textContent='error probability vs r';
     });
   })();
 
