@@ -2336,10 +2336,421 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.16398v1. Equation, table and figure numbers match the paper. All four animations run real computations: the 16-entry state vector multiplied by the oracle and diffusion matrices, the full 16 × 16 density matrix under the global depolarizing channel after every gate layer, the 256-entry state vector with a single Pauli error inserted at each possible time, and the exact range of cos<sup>2</sup>φ over the interval of Eqs. 56 and 57. The two-qubit checks of Eq. 38, the hand example P<sub>1</sub> ≈ 0.7421, the derivation details marked as ours, the numerical checks at n = 16, 20 and 256, the Eq. 49 examples, and the amplitude-amplification connection are ours.</p>
   </footer>
 </div>
+
+<!-- ================= PAPER: 2611.14906 ================= -->
+<div class="wrap" id="view-p-2611-14906" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Sat, Nov 14</span></div>
+  <div class="paperhead">
+    <h1>The Frustration Index of Fully Frustrated Hypercubes</h1>
+    <p class="meta">Lujia Wang · posted Nov 11, 2026 · math.CO · <a href="https://arxiv.org/abs/2611.14906" target="_blank" rel="noopener">arXiv 2611.14906</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">Color the edges of an n-dimensional cube red and blue so that every square face has an odd number of red edges, and ask how few red edges you can get away with: this paper finds the exact answer in infinitely many dimensions, pins it down to within a vanishing error in all of them, and settles dimension nine at 772. The question is three things at once. It is a puzzle about square-free subgraphs that Erdős asked about, it is the ground-state energy of a spin model that physicists have simulated since 1979, and it is an eigenvalue problem for a signed version of the cube's adjacency matrix, the same matrix that Hao Huang used to prove the Sensitivity Conjecture in 2019. The main idea is to solve the problem first on a tiny cube whose edges carry weights, where the answer is easy to see, and then to unfold that weighted cube into an ordinary one of higher dimension without losing anything. A parity argument shows that the unfolded answer cannot be beaten.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what a signed graph is, what switching does, and why the minimum number of red edges F<sub>n</sub> is the same for every fully frustrated coloring of the n-cube;</li>
+        <li>why the same number is the ground-state energy of a fully frustrated Ising model, the kind of energy function a quantum annealer minimizes;</li>
+        <li>how the signed adjacency matrix A<sub>n</sub> satisfies A<sub>n</sub><sup>2</sup> = nI, and how that turns the counting problem into the formula F<sub>n</sub> = (n − μ<sub>n</sub>)2<sup>n−2</sup> of Eq. 1.4;</li>
+        <li>how a parity argument on signed degrees gives the lower bound of Eq. 1.1, and exactly when it is met;</li>
+        <li>what a weighted cube is, and how the four-way and pair refinements of Lemma 2.1 unfold it into an ordinary cube while copying every local field;</li>
+        <li>why a weight vector can be unfolded precisely when its entries are integers whose squares sum to n and whose gcd is a power of two (Theorem 2.2);</li>
+        <li>how these pieces give F<sub>r²+1</sub> = (r² − r + 1)2<sup>r²−1</sup> for every r, the bound F<sub>n</sub> = (n − √n + O(n<sup>−1/2</sup>))2<sup>n−2</sup>, and F<sub>9</sub> = 772.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>Q<sub>n</sub></dt><dd>the n-dimensional cube: vertices are the 2<sup>n</sup> bit strings x = (x<sub>0</sub>, …, x<sub>n−1</sub>), edges join strings that differ in one bit; it has n2<sup>n−1</sup> edges</dd>
+        <dt>e<sub>i</sub>, x ⊕ e<sub>i</sub></dt><dd>the i-th coordinate vector, and the neighbor of x obtained by flipping bit i</dd>
+        <dt>|x|</dt><dd>the Hamming weight, the number of ones in x; its parity splits the vertices into two classes of equal size</dd>
+        <dt>signing</dt><dd>a choice of sign +1 (blue) or −1 (red) for every edge</dd>
+        <dt>F<sub>n</sub></dt><dd>the frustration index of the fully frustrated n-cube: the fewest red edges in a coloring where every square has an odd number of red edges</dd>
+        <dt>Γ<sub>i</sub>, A<sub>n</sub></dt><dd>the signed adjacency operator in direction i, and the signed adjacency matrix A<sub>n</sub> = Γ<sub>0</sub> + ⋯ + Γ<sub>n−1</sub></dd>
+        <dt>P<sub>d</sub></dt><dd>the parity operator, multiplying a function by (−1)<sup>|x|</sup></dd>
+        <dt>f</dt><dd>a Boolean function, here meaning a function from vertices to {−1, 1}; it describes a switching</dd>
+        <dt>h(x)</dt><dd>the local field: the signed degree of x after switching, h(x) = f(x)(A<sub>n</sub>f)(x)</dd>
+        <dt>⟨f, g⟩</dt><dd>the normalized inner product 2<sup>−d</sup>Σ<sub>x</sub> f(x)g(x), an average over vertices; ⟨B⟩<sub>f</sub> = ⟨f, Bf⟩</dd>
+        <dt>μ<sub>n</sub></dt><dd>the largest mean local field, max<sub>f</sub> ⟨A<sub>n</sub>⟩<sub>f</sub></dd>
+        <dt>w, Γ<sub>w</sub></dt><dd>a weight vector (w<sub>0</sub>, …, w<sub>d−1</sub>) and the weighted operator Γ<sub>w</sub> = Σ w<sub>i</sub>Γ<sub>i</sub>; ‖w‖<sub>2</sub><sup>2</sup> = Σ w<sub>i</sub><sup>2</sup></dd>
+        <dt>r</dt><dd>a positive integer, usually the target signed degree; the main family of dimensions is n = r<sup>2</sup> + 1</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>The ordinary cube Q<sub>3</sub>.</b> Eight vertices, twelve edges, six square faces. It is small enough to check every claim by hand, and the first animation searches all 256 of its switchings. Its answer is F<sub>3</sub> = 3.</li>
+        <li><b>The 4-cube Q<sub>4</sub> and its special switching u.</b> Sixteen vertices drawn as two copies of Q<sub>3</sub>. A single explicit ±1 labeling u of these vertices makes every vertex meet exactly one red edge, which gives F<sub>4</sub> = 8. The same u is the building block of the whole paper.</li>
+        <li><b>The weighted square (r, 1).</b> A single square with two edges of weight r and two of weight 1. For r = 2 it unfolds into Q<sub>5</sub> and gives F<sub>5</sub> = 24; for r = 3 it unfolds into Q<sub>10</sub> and gives F<sub>10</sub> = 1792. The third animation carries out both unfoldings vertex by vertex.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · The puzzle">
+      <span class="num">1 · RED AND BLUE SQUARES</span>
+      <h2>What exactly is being minimized, and where does the question come from?</h2>
+      <p>The n-cube Q<sub>n</sub> has the 2<sup>n</sup> bit strings of length n as vertices, with an edge between two strings when they differ in exactly one position. Each vertex has n neighbors, so there are n2<sup>n−1</sup> edges. A square, or 4-cycle, is what you get by fixing all but two coordinates and letting those two vary over 00, 10, 11, 01. Every square uses edges in exactly two directions.</p>
+      <p>Erdős asked whether every subgraph of Q<sub>n</sub> with no square has at most (1/2 + o(1))n2<sup>n−1</sup> edges, about half of all edges. The paper's starting point is a simple way to build large square-free subgraphs: color every edge red or blue so that each square has one or three red edges. Then neither color class contains a whole square, since a square entirely in blue would have zero red edges and one entirely in red would have four. If k edges are red, the blue edges form a square-free subgraph with n2<sup>n−1</sup> − k edges, and the goal becomes making k as small as possible.</p>
+      <div class="def"><span class="label">Definition · fully frustrated signing</span>
+        <p>A signing of a graph assigns each edge a sign, +1 or −1. The sign of a cycle is the product of the signs of its edges. A signing of Q<sub>n</sub> is fully frustrated when every square has sign −1.</p>
+        <p>In words: call the −1 edges red. A signing is fully frustrated exactly when every square face has an odd number of red edges.</p>
+      </div>
+      <p>The smallest case is a single square, Q<sub>2</sub>. It needs an odd number of red edges, and one is enough, so the minimum is 1. Already on Q<sub>3</sub> the six faces interact, since each edge lies on two of them. A red edge can serve two faces at once, so one might hope that three red edges suffice for six faces, and on Q<sub>3</sub> they do. Section 4 shows why fewer is impossible.</p>
+      <p class="short"><b>In short:</b> color the n-cube's edges so every square has an odd number of red edges; the fewest red edges possible is the number F<sub>n</sub> this paper studies, and the blue edges then form a large square-free subgraph.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Switching">
+      <span class="num">2 · SWITCHING AND THE FRUSTRATION INDEX</span>
+      <h2>Why is there one number F<sub>n</sub>, rather than one per coloring?</h2>
+      <p>There are many fully frustrated signings, and it is not obvious that they all have the same minimum. The tool that ties them together is switching. Switching at a vertex reverses the sign of every edge at that vertex. A cycle through the vertex uses exactly two of those edges, so its sign is multiplied by (−1)<sup>2</sup> = 1. Switching therefore never changes the sign of any cycle, and in particular it keeps a fully frustrated signing fully frustrated.</p>
+      <p>Switching at a set of vertices is conveniently described by a Boolean function f: vertices → {−1, 1}, switching at the vertices where f(x) = −1. An edge xy then has its sign multiplied by f(x)f(y), because it is reversed once for each endpoint that is switched.</p>
+      <div class="def"><span class="label">Definition · frustration index</span>
+        <p>The frustration index of a signed graph is the minimum number of edges meeting every negative cycle, or equivalently the minimum number of negative edges over all switchings of the signing.</p>
+        <p>In words: how few red edges you can reach by repeatedly flipping all the edges at chosen vertices.</p>
+      </div>
+      <div class="fact"><span class="label">Fact · all fully frustrated signings are equivalent</span><p>Because the squares generate the cycle space of Q<sub>n</sub>, any two fully frustrated signings of Q<sub>n</sub> differ only by switching. Their common frustration index is F<sub>n</sub>, the minimum possible number of red edges, and a fully frustrated signing with exactly F<sub>n</sub> red edges is called optimal.</p></div>
+      <details class="pf"><summary><span class="tagd">our sketch</span><span class="q">Why does "the squares generate the cycle space" imply that two such signings differ by switching?</span></summary><div class="pfbody">
+        <p>The paper states this in one sentence; the argument below is ours, written out for completeness. Take two fully frustrated signings σ and σ′ and multiply them edge by edge, τ = σσ′. Every square has sign (−1)(−1) = +1 under τ. Saying that the squares generate the cycle space means that every cycle can be built from squares by repeatedly taking symmetric differences of edge sets, and a sign that is +1 on each building block is +1 on the result, because edges used twice contribute a square factor. So τ is +1 on every cycle.</p>
+        <p>Now fix the vertex 0 and define f(x) as the product of τ along any path from 0 to x. Two paths to x form a closed walk, whose τ-sign is +1, so f is well defined. For an edge xy, the path to y can go through x, so f(y) = f(x)τ(xy), which says τ(xy) = f(x)f(y). Hence σ′ = στ is σ switched by f.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>To compute anything we need one concrete fully frustrated signing. The paper uses the canonical signing, in which the edge from x to x ⊕ e<sub>i</sub> has sign (−1) raised to x<sub>0</sub> + ⋯ + x<sub>i−1</sub>, the number of ones strictly before position i. Edges in direction 0 are always blue. On a square in directions i &lt; j, flipping bit i changes the sign of the direction-j edges, while flipping bit j leaves the sign of the direction-i edges alone. The two direction-j edges of the square therefore have opposite signs and the two direction-i edges have equal signs, so the square has sign −1. The canonical signing has (n − 1)2<sup>n−2</sup> red edges, since each direction other than 0 has half its 2<sup>n−1</sup> edges red.</p>
+      <p>On Q<sub>3</sub>, writing vertices as x<sub>0</sub>x<sub>1</sub>x<sub>2</sub>, the canonical signing has four red edges: 100–110 and 101–111 in direction 1, and 100–101 and 010–011 in direction 2. That matches (3 − 1)2<sup>1</sup> = 4. Switching at the vertex 100 reverses its three edges. Two of them were red and become blue, and the blue edge 000–100 becomes red, leaving three red edges. The animation below checks these counts and then tries all 2<sup>8</sup> = 256 switchings to confirm that three is the minimum.</p>
+      <div class="player" id="pFrQ3">
+        <div class="ptitle"><span class="label">Animation · switching the 3-cube</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="The 3-cube with red and blue edges, vertex signed degrees, and switching steps"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--bad)"></i>red edge, sign −1</span><span><i class="sw" style="background:var(--cool)"></i>blue edge, sign +1</span><span><i class="sw" style="background:var(--accent)"></i>switched vertex</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The number inside each vertex is its signed degree, the number of blue edges at that vertex minus the number of red ones. That number will turn out to be the right way to think about the whole problem.</p>
+      <div class="aside"><span class="label">The physics reading</span>
+        <p>Put a spin s<sub>x</sub> = ±1 on every vertex and give each edge a coupling J<sub>xy</sub> = σ<sub>xy</sub>/√n, where σ is the fully frustrated signing. The Ising energy H(s) = −Σ<sub>edges</sub> J<sub>xy</sub>s<sub>x</sub>s<sub>y</sub> rewards a blue edge whose spins agree and a red edge whose spins disagree. A spin configuration is the same thing as a switching f = s, and an edge is "unsatisfied" exactly when it is red after switching. No configuration satisfies every edge, because every square is negative, which is why physicists call the model fully frustrated. The paper records that the ground-state energy per vertex is −μ<sub>n</sub>/(2√n), with μ<sub>n</sub> defined in Section 3. This model was studied by Derrida, Pomeau, Toulouse and Vannimenus in 1979 and later by Marinari, Parisi and Ritort.</p>
+        <p>The following link is ours, not the paper's. Minimizing an Ising energy over ±1 spins is the problem quantum annealers and QUBO solvers are built for; the substitution s<sub>x</sub> = 1 − 2b<sub>x</sub> turns it into a quadratic function of 0/1 variables. The fully frustrated hypercube is therefore a natural hard benchmark whose exact optimum is now known in many dimensions.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">our derivation</span><span class="q">Where does −μ<sub>n</sub>/(2√n) come from?</span></summary><div class="pfbody">
+        <p>The sum Σ<sub>edges</sub> σ<sub>xy</sub>s<sub>x</sub>s<sub>y</sub> counts each edge once, while s<sup>T</sup>A<sub>n</sub>s counts each edge twice, once from each end. So H(s) = −s<sup>T</sup>A<sub>n</sub>s/(2√n). Dividing by the 2<sup>n</sup> vertices gives −⟨A<sub>n</sub>⟩<sub>s</sub>/(2√n), whose minimum over s is −μ<sub>n</sub>/(2√n).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> switching flips all edges at a vertex and never changes a cycle's sign; every fully frustrated signing of Q<sub>n</sub> is a switching of the canonical one, so F<sub>n</sub> is the fewest red edges reachable by switching, and it is also a ground-state energy.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Signed adjacency">
+      <span class="num">3 · THE SIGNED ADJACENCY MATRIX</span>
+      <h2>How does linear algebra turn red-edge counting into an eigenvalue problem?</h2>
+      <p>Counting red edges after a switching is a quadratic expression in the switching function f, and quadratic expressions are what matrices are for. The paper introduces one operator per direction.</p>
+      <div class="def"><span class="label">Definition · signed adjacency operators</span>
+        <div class="math" data-tex="(\Gamma_i f)(x)=(-1)^{\sum_{j<i}x_j}\,f(x\oplus e_i),\qquad (P_d f)(x)=(-1)^{|x|}f(x),\qquad A_n=\sum_{i=0}^{n-1}\Gamma_i ."></div>
+        <p>In words: the operator Γ<sub>i</sub> fetches the value of f at the neighbor across the direction-i edge and multiplies it by that edge's canonical sign. The parity operator P<sub>d</sub> negates f on odd-weight vertices. The signed adjacency matrix A<sub>n</sub> is the ordinary adjacency matrix of the cube with each entry multiplied by the sign of its edge.</p>
+      </div>
+      <p>Four algebraic facts carry the paper. Each Γ<sub>i</sub> is symmetric, and Γ<sub>i</sub><sup>2</sup> = I, because crossing the same edge twice multiplies by its sign twice. For i ≠ j, the operators anticommute, Γ<sub>i</sub>Γ<sub>j</sub> = −Γ<sub>j</sub>Γ<sub>i</sub>, because the two routes around an (i, j)-square have opposite sign products; this is full frustration written as algebra. Finally each Γ<sub>i</sub> anticommutes with the parity operator, since crossing any edge changes parity. Squaring the sum, the cross terms cancel in pairs and only the squares survive.</p>
+      <div class="math" data-tex="\Gamma_w^2=\|w\|_2^2\,I,\qquad \langle h,h\rangle=\langle f,\Gamma_w^2 f\rangle=\|w\|_2^2 ."></div>
+      <p class="eqn">Eq. 2.1</p>
+      <p>Eq. 2.1 is stated for weighted sums Γ<sub>w</sub> = Σw<sub>i</sub>Γ<sub>i</sub>, which Section 5 will need; with all weights equal to one it says A<sub>n</sub><sup>2</sup> = nI. A symmetric matrix whose square is nI has only the eigenvalues √n and −√n.</p>
+      <p>On the single square Q<sub>2</sub>, order the vertices as 00, 10, 01, 11 (writing x<sub>0</sub>x<sub>1</sub>). The only red canonical edge is 10–11, so</p>
+      <div class="math" data-tex="A_2=\begin{pmatrix}0&1&1&0\\1&0&0&-1\\1&0&0&1\\0&-1&1&0\end{pmatrix},\qquad A_2^2=\begin{pmatrix}2&0&0&0\\0&2&0&0\\0&0&2&0\\0&0&0&2\end{pmatrix}."></div>
+      <p>The off-diagonal entries of A<sub>2</sub><sup>2</sup> count the two length-2 walks between opposite corners, and they cancel precisely because one of the two walks crosses the red edge. Without the red edge they would add to 2, and the square of the ordinary adjacency matrix is not a multiple of the identity.</p>
+      <div class="aside"><span class="label">A connection worth knowing</span>
+        <p>Ordering vertices by their first coordinate, the paper writes A<sub>n</sub> in block form as A<sub>n−1</sub> on the diagonal, −A<sub>n−1</sub> in the other diagonal block, and identity matrices off the diagonal (Section 5 and Lemma 2.1). This is exactly the recursively defined matrix in Hao Huang's 2019 proof of the Sensitivity Conjecture, which used A<sub>n</sub><sup>2</sup> = nI and Cauchy interlacing to show that any 2<sup>n−1</sup> + 1 vertices of Q<sub>n</sub> induce a subgraph with a vertex of degree at least √n. The paper cites the related work of Mathews and of Laplante, Naserasr, Sunny and Wang; the identification with Huang's matrix is ours.</p>
+      </div>
+      <p>Now count red edges. After switching by f, the edge xy has sign f(x)σ<sub>xy</sub>f(y). The quadratic form f<sup>T</sup>A<sub>n</sub>f adds up these switched signs, counting each edge twice. If k edges are red, this sum is 2(n2<sup>n−1</sup> − 2k). The local field h(x) = f(x)(A<sub>n</sub>f)(x) is the signed degree of x after switching, and its average over the 2<sup>n</sup> vertices is ⟨A<sub>n</sub>⟩<sub>f</sub> = n − 4k/2<sup>n</sup>. Solving for k and maximizing over f gives the paper's dictionary.</p>
+      <div class="math" data-tex="\mu_n=\max_f 2^{-n}f^{\mathsf T}A_nf,\qquad F_n=(n-\mu_n)\,2^{n-2},\qquad \mu_n\le\sqrt n ."></div>
+      <p class="eqn">Eq. 1.4</p>
+      <p>In words: the frustration index F<sub>n</sub> is determined by the largest possible average signed degree μ<sub>n</sub>, and fewer red edges means a larger average. The last inequality is the Rayleigh bound, f<sup>T</sup>A<sub>n</sub>f ≤ √n · ‖f‖<sup>2</sup> = √n · 2<sup>n</sup>, since √n is the largest eigenvalue.</p>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Why does the Rayleigh bound hold for a symmetric matrix?</span></summary><div class="pfbody">
+        <p>This is a standard linear algebra fact, included as background. A real symmetric matrix has an orthonormal basis of eigenvectors v<sub>1</sub>, …, v<sub>m</sub> with eigenvalues λ<sub>1</sub>, …, λ<sub>m</sub>. Writing f = Σc<sub>j</sub>v<sub>j</sub>, we get f<sup>T</sup>Af = Σλ<sub>j</sub>c<sub>j</sub><sup>2</sup> ≤ λ<sub>max</sub>Σc<sub>j</sub><sup>2</sup> = λ<sub>max</sub>‖f‖<sup>2</sup>. Equality needs f to lie entirely in the top eigenspace. A Boolean f has ‖f‖<sup>2</sup> = 2<sup>n</sup>, and λ<sub>max</sub> = √n here.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Combining the two halves of Eq. 1.4 gives F<sub>n</sub> ≥ (n − √n)2<sup>n−2</sup>, the spectral lower bound. It is the same bound Bialostocki proved in 1983 by other means. On the running examples: the cube Q<sub>3</sub> has F<sub>3</sub> = 3, so μ<sub>3</sub> = 3 − 3 · 4/8 = 1.5, below √3 ≈ 1.732. On Q<sub>4</sub>, Section 6 exhibits an f with every signed degree equal to 2, so μ<sub>4</sub> = 2 = √4 and F<sub>4</sub> = (4 − 2) · 4 = 8: the spectral bound is met exactly.</p>
+      <p class="short"><b>In short:</b> the signed adjacency matrix satisfies A<sub>n</sub><sup>2</sup> = nI, the number of red edges after switching by f is (n − mean signed degree)2<sup>n−2</sup>, and therefore F<sub>n</sub> = (n − μ<sub>n</sub>)2<sup>n−2</sup> with μ<sub>n</sub> ≤ √n.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Parity bound">
+      <span class="num">4 · A PARITY BOUND</span>
+      <h2>Can the spectral bound be improved using the fact that degrees are integers?</h2>
+      <p>The spectral bound would be met only if every signed degree equaled √n exactly. When √n is not an integer that is impossible, and the paper squeezes extra information out of this. Three facts about the local field h of any switching hold simultaneously.</p>
+      <div class="fact"><span class="label">Fact · Lemma 3.1, integer local-field bound</span>
+        <p>For every Boolean f on Q<sub>n</sub>, with h(x) = f(x)(A<sub>n</sub>f)(x),</p>
+        <div class="math" data-tex="h(x)\equiv n \pmod 2,\qquad \langle h,\mathbf 1\rangle=\langle A_n\rangle_f,\qquad \langle h,h\rangle=n ."></div>
+        <p>Consequently, if r is a positive integer of parity opposite to n, then μ<sub>n</sub> ≤ (n + r<sup>2</sup> − 1)/(2r), which by Eq. 1.4 is</p>
+        <div class="math" data-tex="F_n\ \ge\ \Bigl(n-\frac{n+r^2-1}{2r}\Bigr)2^{n-2}."></div>
+        <p class="eqn">Eq. 1.1</p>
+        <p>Equality holds exactly when every local field is r − 1 or r + 1, and then the fraction of vertices with field r + 1 is [n − (r − 1)<sup>2</sup>]/(4r) in each parity class.</p>
+      </div>
+      <p>In words: a signed degree is a sum of n signs, so it has the parity of n. Its mean is the quantity we want to make large, and its mean square is pinned at n by Eq. 2.1. A distribution of integers with fixed mean square and a forbidden value r has its mean pushed down, and the best case is when every value sits right next to r.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How do the parity and the second moment combine into Eq. 1.1?</span></summary><div class="pfbody">
+        <p>Since h(x) and r have opposite parity, h(x) − r is odd, so (h(x) − r)<sup>2</sup> ≥ 1 at every vertex. Average over vertices and expand: 1 ≤ ⟨h, h⟩ − 2r⟨h, 1⟩ + r<sup>2</sup> = n − 2r⟨A<sub>n</sub>⟩<sub>f</sub> + r<sup>2</sup>. Rearranging gives ⟨A<sub>n</sub>⟩<sub>f</sub> ≤ (n + r<sup>2</sup> − 1)/(2r) for every f, hence for the maximum μ<sub>n</sub>.</p>
+        <p>Equality forces (h(x) − r)<sup>2</sup> = 1 everywhere. If a fraction α of vertices has field r + 1, the second moment gives n = (1 − α)(r − 1)<sup>2</sup> + α(r + 1)<sup>2</sup> = (r − 1)<sup>2</sup> + 4rα, which solves to the stated fraction. The two parity classes have the same size and the same total signed degree, because every edge contributes its sign once to each class; with only two possible values, the proportions must agree in both.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The best r is the integer of the right parity that minimizes (n + r<sup>2</sup> − 1)/(2r), which is near √(n − 1). The interesting case is n = r<sup>2</sup> + 1, where the bound on μ<sub>n</sub> becomes 2r<sup>2</sup>/(2r) = r, strictly below the spectral value √(r<sup>2</sup> + 1), and Eq. 1.1 reads F<sub>n</sub> ≥ (n − r)2<sup>n−2</sup> = (r<sup>2</sup> − r + 1)2<sup>r²−1</sup>. In this case the fraction of field r + 1 is exactly one half.</p>
+      <p>Check it on Q<sub>3</sub>. Here n = 3 is odd, so take r = 2: the bound gives μ<sub>3</sub> ≤ 6/4 = 1.5 and F<sub>3</sub> ≥ (3 − 1.5) · 2 = 3. The switching at 100 found in the animation reaches 3, so F<sub>3</sub> = 3, and the equality condition predicts what the animation shows: every signed degree is 1 or 3, and the fraction with degree 3 is (3 − 1)/8 = 1/4 in each parity class, one vertex out of four. The mean square is (2 · 9 + 6 · 1)/8 = 3 = n, as Lemma 3.1 requires. For Q<sub>5</sub> = Q<sub>2²+1</sub>, the bound is F<sub>5</sub> ≥ (5 − 2) · 8 = 24, and equality would need half the vertices at signed degree 3 and half at 1.</p>
+      <p>The bound has a long history. The paper attributes the averaging argument to Derrida et al., and notes that the earlier construction of Brass, Harborth and Nienborg, shown by Laplante et al. to give a fully frustrated signing in every dimension, attains it in dimension r<sup>2</sup> + 1 when r is a power of two or r = 3. The new theorem is that it is attained for every r.</p>
+      <p class="short"><b>In short:</b> signed degrees have the parity of n and mean square n, so they cannot all equal a value r of the other parity; this gives Eq. 1.1, which in dimension r<sup>2</sup> + 1 says F ≥ (r<sup>2</sup> − r + 1)2<sup>r²−1</sup>, with equality exactly when every signed degree is r ± 1.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Weighted cubes">
+      <span class="num">5 · WEIGHTED CUBES</span>
+      <h2>Where would a switching with every signed degree equal to r ± 1 come from?</h2>
+      <p>Proving the lower bound is tight means building, in every dimension r<sup>2</sup> + 1, a switching whose signed degrees are all r − 1 or r + 1. The paper's idea is to find this pattern first on a tiny graph where it is obvious, and then transport it.</p>
+      <p>Consider one square. Give its two horizontal edges sign + and weight r, and its two vertical edges opposite signs and weight 1. The weighted signed degree, the sum of incident signs counted with their weights, is r + 1 at the two vertices on the positive vertical edge and r − 1 at the two on the negative one. Those are exactly the two values Eq. 1.1 asks for on Q<sub>r²+1</sub>, and they occur half the time each. The question the paper asks is how to realize this on a cube where every edge has weight one.</p>
+      <div class="def"><span class="label">Definition · weighted cube and local field</span>
+        <p>For a weight vector w = (w<sub>0</sub>, …, w<sub>d−1</sub>), the weighted adjacency operator on Q<sub>d</sub> is Γ<sub>w</sub> = Σ<sub>i</sub> w<sub>i</sub>Γ<sub>i</sub>, so Γ<sub>(1,…,1)</sub> = A<sub>d</sub>. After switching by f, the local field and its mean are</p>
+        <div class="math" data-tex="h(x)=f(x)\,(\Gamma_w f)(x),\qquad \langle\Gamma_w\rangle_f=\langle f,\Gamma_w f\rangle=2^{-d}\sum_x h(x)."></div>
+        <p>In words: the local field is the weighted signed degree after switching, each direction-i edge counting w<sub>i</sub> instead of 1.</p>
+      </div>
+      <p>Eq. 2.1 still holds, so the mean square of the local field is ‖w‖<sub>2</sub><sup>2</sup>. For the square with weights (r, 1) and f the constant function 1, the canonical signing gives h(x) = r + (−1)<sup>x<sub>0</sub></sup>: direction 0 is always positive and contributes r, and direction 1 has sign (−1)<sup>x<sub>0</sub></sup>. For r = 2 the fields are 3, 3, 1, 1, with mean 2 and mean square (9 + 9 + 1 + 1)/4 = 5 = 2<sup>2</sup> + 1<sup>2</sup>.</p>
+      <p>This suggests the strategy. The mean square of the local field on a weighted cube is ‖w‖<sub>2</sub><sup>2</sup>, and on an ordinary cube it is the dimension n. So a weighted cube with ‖w‖<sub>2</sub><sup>2</sup> = n is a compressed picture of Q<sub>n</sub>, and the paper's lifting turns this picture into an actual switching of Q<sub>n</sub> with the same distribution of local fields. The weights (r, 1) have r<sup>2</sup> + 1 as their squared norm, which is how that dimension enters.</p>
+      <p class="short"><b>In short:</b> on a square with weights (r, 1), the all-ones switching already has local fields r ± 1 in equal numbers; the rest of the paper is about unfolding a weighted cube with ‖w‖<sub>2</sub><sup>2</sup> = n into Q<sub>n</sub> without changing its local fields.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · The eigenfunction u">
+      <span class="num">6 · ONE PERFECT SWITCHING OF Q<sub>4</sub></span>
+      <h2>How can a weight 2 be split into four weights 1?</h2>
+      <p>The simplest unfolding replaces one coordinate of weight 2b by four coordinates of weight b, so the squared norm is unchanged, (2b)<sup>2</sup> = 4b<sup>2</sup>. To make it work we need, on Q<sub>4</sub>, a switching that behaves like "weight 2 in a single direction": every vertex should have signed degree exactly 2. That is a Boolean eigenfunction of A<sub>4</sub> with eigenvalue 2, and the paper builds one from the 3-cube.</p>
+      <p>Let η be the indicator of the two vertices 000 and 111 of Q<sub>3</sub>, and put g = A<sub>3</sub>η. The vertices 000 and 111 are not adjacent, and every other vertex of Q<sub>3</sub> has exactly one neighbor among them. So g vanishes on {000, 111} and equals ±1 everywhere else, the sign of the unique edge leading into the set. It follows that both g + η and g − η are Boolean. Since A<sub>3</sub>g = A<sub>3</sub><sup>2</sup>η = 3η, direct multiplication gives</p>
+      <div class="math" data-tex="\begin{pmatrix}A_3&I\\ I&-A_3\end{pmatrix}\begin{pmatrix}g+\eta\\ g-\eta\end{pmatrix}=\begin{pmatrix}2g+2\eta\\ 2g-2\eta\end{pmatrix}=2\begin{pmatrix}g+\eta\\ g-\eta\end{pmatrix}."></div>
+      <p>When the first bit of Q<sub>4</sub> indexes the two blocks, the displayed matrix is A<sub>4</sub>: direction 0 contributes the identity blocks, and the other three directions have their canonical signs reversed in the block where x<sub>0</sub> = 1. So u = (g + η, g − η) is a Boolean function on Q<sub>4</sub> with A<sub>4</sub>u = 2u.</p>
+      <details class="pf"><summary><span class="tagd">check</span><span class="q">Where exactly does the first block row give 2(g + η)?</span></summary><div class="pfbody">
+        <p>The first block row computes A<sub>3</sub>(g + η) + (g − η) = A<sub>3</sub>g + A<sub>3</sub>η + g − η = 3η + g + g − η = 2g + 2η. The second computes (g + η) − A<sub>3</sub>(g − η) = g + η − A<sub>3</sub>g + A<sub>3</sub>η = g + η − 3η + g = 2g − 2η. Both rows agree with 2u.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Concretely, writing Q<sub>3</sub> vertices as x<sub>1</sub>x<sub>2</sub>x<sub>3</sub>, the values of g are 0 at 000 and 111, −1 at 101, and +1 at the other five vertices. So u equals −1 at exactly four vertices of Q<sub>4</sub>, namely x<sub>0</sub>x<sub>1</sub>x<sub>2</sub>x<sub>3</sub> = 1000, 0101, 1101 and 1111, and +1 elsewhere. Switching the canonical signing at those four vertices takes the red-edge count from 12 to 8, and every vertex ends up with exactly one red edge, so the red edges form a perfect matching. The animation builds u in these steps and verifies every signed degree.</p>
+      <div class="player" id="pFrU">
+        <div class="ptitle"><span class="label">Animation · building u on Q<sub>4</sub></span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Construction of the Boolean eigenfunction u on the 4-cube drawn as two 3-cubes"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--bad)"></i>red edge</span><span><i class="sw" style="background:var(--cool)"></i>blue edge</span><span><i class="sw" style="background:var(--accent)"></i>η = 1, or u = −1</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>With u in hand, the first refinement is a short formula. Let π(x) be the parity of |x| for x in Q<sub>4</sub>. For a function f of one bit, define (Tf)(x) = u(x)f(π(x)). On the one-bit cube with weight 2b, the constant function 1 and the function s ↦ (−1)<sup>s</sup> are eigenfunctions of Γ<sub>(2b)</sub> with eigenvalues 2b and −2b. Their images under T are u and P<sub>4</sub>u, and these are eigenfunctions of bA<sub>4</sub> with the same eigenvalues, because A<sub>4</sub>u = 2u and A<sub>4</sub>P<sub>4</sub> = −P<sub>4</sub>A<sub>4</sub>. So bA<sub>4</sub>T = TΓ<sub>(2b)</sub>: applying the weighted operator and then unfolding is the same as unfolding and then applying the ordinary one.</p>
+      <p>For the running example, take the square with weights (2, 1) and f = 1, whose fields are 3 at the two vertices with x<sub>0</sub> = 0 and 1 at the two with x<sub>0</sub> = 1. Unfolding the weight-2 coordinate into four bits gives a function on Q<sub>5</sub>, namely u applied to the first four bits. Every source field is copied to 2<sup>5−2</sup> = 8 vertices, so Q<sub>5</sub> gets 16 vertices of signed degree 3 and 16 of signed degree 1. The mean is 2, and Eq. 1.4 gives (5 − 2)2<sup>3</sup> = 24 red edges, meeting the bound of Section 4. Hence F<sub>5</sub> = 24.</p>
+      <p class="short"><b>In short:</b> from the two antipodal corners of Q<sub>3</sub> the paper builds a ±1 function u on Q<sub>4</sub> with A<sub>4</sub>u = 2u; it gives F<sub>4</sub> = 8 directly, and the map Tf = u · f(parity) unfolds a weight 2b into four weights b while copying every local field.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Lifting theorem">
+      <span class="num">7 · THE LIFTING THEOREM</span>
+      <h2>Which weighted cubes can be unfolded into ordinary cubes?</h2>
+      <p>The four-way refinement only handles even weights. For the weights (3, 1) needed in dimension 10, the paper uses a second replacement, and then shows that the two together unfold exactly the weight vectors one could hope for.</p>
+      <div class="def"><span class="label">Definition · the two refinements, Lemma 2.1</span>
+        <div class="math" data-tex="2b\longmapsto(b,b,b,b),\qquad (a,b)\longmapsto\Bigl(\tfrac{a+b}{2},\tfrac{a+b}{2},\tfrac{a-b}{2},\tfrac{a-b}{2}\Bigr),"></div>
+        <p>with b &gt; 0 in the first case and a &gt; b &gt; 0 in the second. Both preserve the squared norm. For each there is a linear isometry T from functions on the old cube to functions on the new one that sends Boolean functions to Boolean functions and satisfies Γ<sub>w′</sub>T = TΓ<sub>w</sub> and P<sub>d′</sub>T = TP<sub>d</sub>. In particular ⟨Γ<sub>w′</sub>⟩<sub>Tf</sub> = ⟨Γ<sub>w</sub>⟩<sub>f</sub>.</p>
+        <p>In words: either replacement can be carried out on any switching, giving a switching of a bigger cube with the same mean local field, and the parity condition makes it safe to do this to one block of coordinates inside a larger cube.</p>
+      </div>
+      <p>The squared norms match because 2((a + b)/2)<sup>2</sup> + 2((a − b)/2)<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup>. For the pair refinement the paper reuses u. Split the four directions of Q<sub>4</sub> into two pairs, L = Γ<sub>0</sub> + Γ<sub>1</sub> and R = Γ<sub>2</sub> + Γ<sub>3</sub>, and set v = (L − I)u. Then L<sup>2</sup> = R<sup>2</sup> = 2I and RL = −LR, and together with (L + R)u = 2u these give</p>
+      <div class="math" data-tex="Lu=u+v,\qquad Ru=u-v,\qquad Lv=u-v,\qquad Rv=-u-v,"></div>
+      <p>so the refined operator Γ<sub>w′</sub> = ((a + b)/2)L + ((a − b)/2)R acts by Γ<sub>w′</sub>u = au + bv and Γ<sub>w′</sub>v = bu − av. Those are the same formulas by which Γ<sub>(a,b)</sub> acts on the two-bit functions 1 and χ(s, t) = (−1)<sup>s</sup>. The map T then sends 1 to u and χ to v: at each vertex x of Q<sub>4</sub> it reads off a source vertex (s(x), t(x)) of the square, with (−1)<sup>s(x)</sup> = u(x)v(x) and t(x) = s(x) ⊕ π(x), and sets (Tf)(x) = u(x)f(s(x), t(x)).</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is v Boolean, so that T sends ±1 functions to ±1 functions?</span></summary><div class="pfbody">
+        <p>At each vertex x the four numbers u(x)(Γ<sub>i</sub>u)(x) are signs whose sum is u(x)(A<sub>4</sub>u)(x) = 2. So exactly one of them is negative. The sum of the first two is therefore 0 or 2, and u(x)v(x) = u(x)(Lu)(x) − 1 is −1 or 1. Since u is Boolean, so is v.</p>
+        <p>To check one of the four relations: Lv = L(L − I)u = 2u − Lu = u − v. And Rv = R(L − I)u = −LRu − Ru = −L(u − v) − (u − v) = −u − v, using Ru = (L + R)u − Lu = 2u − (u + v) = u − v.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is every such map automatically an isometry that copies each vertex the same number of times?</span></summary><div class="pfbody">
+        <p>Both maps have the form (Tf)(x) = ε(x)f(φ(x)) with ε(x) = ±1. Grouping target vertices by their source φ(x) shows that T*T is diagonal, with entry ρ(y) = 2<sup>d−d′</sup>|φ<sup>−1</sup>(y)| at the source vertex y. The symmetry of both weighted operators and the intertwining identity give Γ<sub>w</sub>T*T = T*Γ<sub>w′</sub>T = T*TΓ<sub>w</sub>. Reading off the entry at an edge yz gives Γ<sub>w</sub>(y, z)ρ(z) = ρ(y)Γ<sub>w</sub>(y, z), and since the weights are positive, ρ(y) = ρ(z). The cube is connected, so ρ is constant; it averages to one because the preimages partition the target cube. So T*T = I and every source vertex has exactly 2<sup>d′−d</sup> preimages.</p>
+        <p>To refine coordinates in the middle of a longer weight vector, the paper first moves them to the front with signed swaps (Sf)(x) = (−1)<sup>x<sub>i</sub>x<sub>i+1</sub></sup>f(τx), which exchange two adjacent weights, and then uses Γ<sub>w</sub> = Γ<sub>α</sub> ⊗ I + P<sub>k</sub> ⊗ Γ<sub>β</sub> for a block α of length k followed by the rest β. The parity identity P<sub>k′</sub>T = TP<sub>k</sub> is what lets T ⊗ I intertwine the second term.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Repeating the refinements gives the central result. Call a linear map T from functions on Q<sub>d</sub> to functions on Q<sub>n</sub> a lifting of w if it preserves Boolean functions and A<sub>n</sub>T = TΓ<sub>w</sub>.</p>
+      <div class="fact"><span class="label">Fact · Theorem 2.2, Boolean lifting</span>
+        <p>A weight vector w with positive real entries admits a lifting to Q<sub>n</sub> if and only if its entries are integers and</p>
+        <div class="math" data-tex="\|w\|_2^2=n,\qquad \gcd(w_0,\ldots,w_{d-1})=2^k\ \text{ for some integer }k\ge0 ."></div>
+        <p>Every lifting is an isometry. If the local field of a Boolean f takes a given value at m vertices of Q<sub>d</sub>, the local field of Tf takes that value at 2<sup>n−d</sup>m vertices of Q<sub>n</sub>. In particular ⟨A<sub>n</sub>⟩<sub>Tf</sub> = ⟨Γ<sub>w</sub>⟩<sub>f</sub>.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why do the refinements always reach all-ones weights when the conditions hold?</span></summary><div class="pfbody">
+        <p>Whenever a weight is even, say 2b, replace it by four copies of b. If all weights are odd and two differ, a &gt; b, apply the pair refinement; the half-sum and half-difference of two odd numbers are integers. The weights stay positive integers with squared norm n.</p>
+        <p>Both refinements preserve the common odd divisors. An odd number divides 2b exactly when it divides b. If it divides a and b it divides (a ± b)/2, since 2 is invertible modulo an odd number, and conversely a and b are the sum and difference of the new weights. So the greatest common odd divisor stays 1.</p>
+        <p>Each step increases the number of weights, which can never exceed n because the weights are positive integers whose squares sum to n. So the process stops, and it can only stop when all weights equal the same odd value. That value has no odd divisor larger than 1, so it is 1, and there are exactly n of them.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why are the integer and gcd conditions necessary?</span></summary><div class="pfbody">
+        <p>Take any lifting T. In one row of its matrix, flipping the sign of one input changes the output by twice the corresponding entry; both outputs are ±1, so each entry is 0 or ±1. Choosing the input signs to match the nonzero entries shows their absolute values sum to 1. So each row has a single nonzero entry, and (Tf)(x) = ε(x)f(φ(x)). The entries of A<sub>n</sub>T are integers, while row x of TΓ<sub>w</sub> contains the weights w<sub>0</sub>, …, w<sub>d−1</sub> at the neighbors of φ(x); hence the weights are integers. Squaring the intertwining identity and using Eq. 2.1 gives nT = ‖w‖<sub>2</sub><sup>2</sup>T, so n = ‖w‖<sub>2</sub><sup>2</sup>.</p>
+        <p>For the gcd, the paper proves that every Boolean s on Q<sub>n</sub> and every coordinate j satisfy</p>
+        <div class="math" data-tex="(\Gamma_j s)^{\mathsf T}A_n s=2^n ."></div>
+        <p class="eqn">Eq. 2.2</p>
+        <p>The reason is that Γ<sub>j</sub>A<sub>n</sub> = I + Σ<sub>i≠j</sub>Γ<sub>j</sub>Γ<sub>i</sub>, and each Γ<sub>j</sub>Γ<sub>i</sub> with i ≠ j is skew-symmetric, so its quadratic form vanishes; what remains is s<sup>T</sup>s = 2<sup>n</sup>. If an odd prime p divided every weight, then s = T1 would satisfy A<sub>n</sub>s = TΓ<sub>w</sub>1 ≡ 0 modulo p at every vertex, making the left side of Eq. 2.2 divisible by p. But 2<sup>n</sup> is not.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The gcd condition has teeth. The single weight w = (3) has squared norm 9, and the constant function on its one edge has local field 3 at both ends. If it could be lifted, Q<sub>9</sub> would have a switching with every signed degree 3 and F<sub>9</sub> = (9 − 3)2<sup>7</sup> = 768. The odd common divisor 3 forbids it, and Section 10 shows that F<sub>9</sub> is in fact 772. This reading of w = (3) as the obstruction is ours; the paper makes the corresponding argument directly in Proposition 5.4.</p>
+      <p>The animation runs the refinement procedure from the proof on the weighted square (r, 1). At every step it rebuilds the switching on the new, larger cube, recomputes every local field from scratch with the canonical signs, and counts how often each value occurs. At the end it counts red edges one by one.</p>
+      <div class="player" id="pFrLift">
+        <div class="ptitle"><span class="label">Animation · unfolding the weighted square</span><span class="scen"><button class="chip" data-r="2" aria-pressed="false">r = 2</button><button class="chip" data-r="3" aria-pressed="true">r = 3</button><button class="chip" data-r="4" aria-pressed="false">r = 4</button></span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Weight vector bars and a histogram of local fields at each refinement step"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--deep)"></i>weights</span><span><i class="sw" style="background:var(--accent)"></i>field r + 1</span><span><i class="sw" style="background:var(--cool)"></i>field r − 1</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>For r = 3 the procedure first applies the pair refinement to (3, 1), giving (2, 2, 1, 1), and then splits each 2 into four 1s, ending with ten coordinates of weight 1. The two field values 4 and 2 each occupy exactly 512 of the 1024 vertices, as Theorem 2.2 promises.</p>
+      <p class="short"><b>In short:</b> two refinements, 2b → (b, b, b, b) and (a, b) → ((a+b)/2, (a+b)/2, (a−b)/2, (a−b)/2), each carry switchings along with their local fields; together they unfold a weight vector into Q<sub>n</sub> exactly when its entries are integers with squared norm n and power-of-two gcd.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Exact values">
+      <span class="num">8 · EXACT VALUES</span>
+      <h2>What does the lifting theorem give in dimension r<sup>2</sup> + 1 and nearby?</h2>
+      <p>All the work has been done, and the main theorem now takes a few lines.</p>
+      <div class="fact"><span class="label">Fact · Theorem 1.1</span>
+        <p>For every positive integer r,</p>
+        <div class="math" data-tex="F_{r^2+1}=(r^2-r+1)\,2^{r^2-1}."></div>
+        <p class="eqn">Eq. 1.2</p>
+        <p>If 4 divides r and p ∈ {±1, ±2, ±3}, then</p>
+        <div class="math" data-tex="F_n=\Bigl(n-r-\frac p4\Bigr)2^{n-2},\qquad n=r^2+1+\frac{pr}{2}."></div>
+        <p class="eqn">Eq. 1.3</p>
+        <p>In both cases equality holds in Eq. 1.1.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How do Sections 4 to 7 combine to prove Eq. 1.2?</span></summary><div class="pfbody">
+        <p>Put n = r<sup>2</sup> + 1. On the square with weights (r, 1), the constant function has local field r + (−1)<sup>x<sub>0</sub></sup>. The weights are coprime and their squares sum to n, so Theorem 2.2 lifts this function to Q<sub>n</sub> with the same two field values r ± 1. Since n and r have opposite parity, Lemma 3.1 says this is optimal, and F<sub>n</sub> = (n − r)2<sup>n−2</sup>.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For the six neighboring dimensions the paper starts instead from a weighted cube whose local field is constant. Lemma 3.2 supplies two of them: the weight vectors (2, 2, 2, 1, 1, 1, 1) and (3, 1, 1, 1, 1, 1, 1, 1), whose squares both sum to 16 and which both carry a Boolean eigenfunction with eigenvalue 4. The first comes from u by doubling all four weights and splitting one of the 2s. The second repeats the construction of u with the length-seven Hamming code in place of {000, 111}: the code is a set C of vertices of Q<sub>7</sub> such that no two are adjacent and every vertex outside C has exactly one neighbor in C, so g = A<sub>7</sub>η is again 0 on C and ±1 off it, and the block matrix with A<sub>7</sub>, 3I, 3I, −A<sub>7</sub> sends (g + η, g − η) to four times itself.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does changing one weight by 1 reach the dimensions r<sup>2</sup> + 1 + pr/2?</span></summary><div class="pfbody">
+        <p>Let 4 | r, put k = r/4 and n = r<sup>2</sup> + rp/2 + 1, which is odd, so Lemma 3.1 bounds μ<sub>n</sub> ≤ (n + r<sup>2</sup> − 1)/(2r) = r + p/4. Choose a vector w from Lemma 3.2 with an entry w<sub>j</sub> = |p| and its eigenfunction f with eigenvalue 4. Scaling the weights by k makes the local field 4k = r and the squared norm 16k<sup>2</sup> = r<sup>2</sup>. Now change kw<sub>j</sub> to kw<sub>j</sub> + ε with ε the sign of p. Its square changes by 2kp + 1, so the new squared norm is r<sup>2</sup> + 2kp + 1 = n, and the new local field is r + εf(x)(Γ<sub>j</sub>f)(x), which is r ± 1 at every vertex.</p>
+        <p>An unchanged weight k survives, and k is coprime to kw<sub>j</sub> + ε, so the gcd is 1. The only zero weight arises for r = 4 and p = −1, that is n = 15, where the paper restricts f to the face x<sub>j</sub> = 0 and drops that direction. Theorem 2.2 lifts the function to Q<sub>n</sub> with local fields in {r − 1, r + 1}, and Lemma 3.1 gives μ<sub>n</sub> = r + p/4.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>With r = 4 these give F<sub>n</sub> in every odd dimension from 11 to 23, as the paper notes. Evaluating Eqs. 1.2 and 1.3 ourselves: F<sub>11</sub> = 3968, F<sub>13</sub> = 19456, F<sub>15</sub> = 92160, F<sub>17</sub> = 425984, F<sub>19</sub> = 1933312, F<sub>21</sub> = 8650752 and F<sub>23</sub> = 38273024. The animation's r = 4 run reproduces F<sub>17</sub> = 425984 by counting red edges on all 131072 vertices of Q<sub>17</sub>. In the dimensions of Eq. 1.3 the proportions of the two signed degrees are 1/2 + p/8 and 1/2 − p/8.</p>
+      <p>The construction also has freedom, which the paper uses to answer a question of Reza Naserasr about which Boolean functions arise from optimal signings. In an optimal signing of Q<sub>r²+1</sub>, g = h − r is a balanced ±1 function. Proposition 3.3 shows that for odd r ≥ 3 the lift can be chosen so that every coordinate has influence 1/2 on g, meaning half the edges in each direction join vertices of different signed degree, and g has sensitivity n/2 at every odd-weight vertex. The proof identifies g with Ambainis's four-bit function, which is −1 exactly when its four input bits are in nondecreasing or nonincreasing order. Corollary 3.4 strengthens this for r = 2<sup>k</sup> ± 1 ≥ 3: every vertex then has n/2 neighbors of each signed degree.</p>
+      <p class="short"><b>In short:</b> lifting the square (r, 1) gives a switching of Q<sub>r²+1</sub> with all signed degrees r ± 1, so the parity bound is tight and F<sub>r²+1</sub> = (r<sup>2</sup> − r + 1)2<sup>r²−1</sup>; nudging one weight of two 16-norm cubes covers six more dimensions around each r<sup>2</sup> + 1 with 4 | r.</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · Every dimension">
+      <span class="num">9 · EVERY DIMENSION</span>
+      <h2>How close to the spectral bound can one get when n is not of the special form?</h2>
+      <p>Between consecutive values r<sup>2</sup> + 1 there are about 2r dimensions not covered by Theorem 1.1. The paper first shows that μ<sub>n</sub> can only grow with n.</p>
+      <div class="math" data-tex="\mu_{d+1}\ge\mu_d ."></div>
+      <p class="eqn">Eq. 4.1</p>
+      <p>Take two copies of an optimal fully frustrated signing of Q<sub>d</sub>, and join each vertex x to its copy by an edge of sign (−1)<sup>|x|</sup>. A new square uses two joining edges at adjacent vertices, which have opposite signs, and two copies of one old edge, which have equal signs, so it is negative. Half the joining edges are positive, so they add nothing to the mean local field, which stays μ<sub>d</sub>. Theorem 1.1 gives μ<sub>r²+1</sub> = r, and monotonicity then gives μ<sub>n</sub> ≥ ⌊√(n − 1)⌋, so √n − μ<sub>n</sub> is bounded. The paper sharpens this.</p>
+      <div class="fact"><span class="label">Fact · Theorem 1.2</span>
+        <p>There is an absolute constant C such that for every n ≥ 1,</p>
+        <div class="math" data-tex="(n-\sqrt n)\,2^{n-2}\ \le\ F_n\ \le\ \Bigl(n-\sqrt n+\frac{C}{\sqrt n}\Bigr)2^{n-2}."></div>
+        <p>The order of the error is best possible: Theorem 1.1 gives √(r<sup>2</sup> + 1) − μ<sub>r²+1</sub> = 1/(√(r<sup>2</sup> + 1) + r), which is of order 1/√n.</p>
+      </div>
+      <p>In words: the spectral lower bound is off by at most C/√n in the coefficient of 2<sup>n−2</sup>, and nothing better than order 1/√n is possible in general. The uniform upper bound of Laplante et al. had coefficient n − (2√2/3)√n + O(n<sup>−1/2</sup>), so the paper improves the constant in front of √n from 2√2/3 ≈ 0.943 to 1.</p>
+      <details class="pf"><summary><span class="tagd">proof idea</span><span class="q">How does varying one weight close the gap between r<sup>2</sup> + 1 and n?</span></summary><div class="pfbody">
+        <p>Let r = 2q be the largest even integer with r<sup>2</sup> + 1 ≤ n and Δ = n − r<sup>2</sup> − 1 ≤ 8q + 3. If Δ &lt; 80, monotonicity and Eq. 1.2 already give √n − μ<sub>n</sub> ≤ √n − r ≤ 40/r. Otherwise, the paper lifts the square (r, 1) only partway, splitting r into four copies of q and using the refinements (Lemma 4.1) to manufacture a coordinate j of a chosen weight a = ⌊(Δ − 64)/16⌋. Increasing that weight by 8 adds 16a + 64 to the squared norm, which lands within 15 of n, and adds 8⟨Γ<sub>j</sub>⟩<sub>f</sub> to the mean local field.</p>
+        <p>The estimate of that increase uses Eq. 2.1 twice. First, ‖(Γ<sub>w</sub> − rI)f‖<sup>2</sup> = (r<sup>2</sup> + 1) − 2r<sup>2</sup> + r<sup>2</sup> = 1. Second, since Γ<sub>j</sub>Γ<sub>i</sub> is skew-symmetric for i ≠ j, ⟨Γ<sub>j</sub>f, Γ<sub>w</sub>f⟩ = w<sub>j</sub> = a. Cauchy–Schwarz then gives |a − r⟨Γ<sub>j</sub>⟩<sub>f</sub>| ≤ 1, so the mean rises by at least 8(a − 1)/r. Combining with √n − r ≤ (8a + 40)/r gives √n − μ<sub>n</sub> ≤ 48/r, and r ≥ √n − 2 finishes the proof after enlarging C for small n.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Taking the positive edges of an optimal signing gives a subgraph whose complement, the red edges, is also square-free, since every square has edges of both signs. This returns to Erdős's question.</p>
+      <div class="fact"><span class="label">Fact · Corollary 1.3</span>
+        <p>For every n ≥ 1 there is a subgraph G of Q<sub>n</sub> such that both G and its edge complement are C<sub>4</sub>-free and |E(G)| ≥ (n + √n − C/√n)2<sup>n−2</sup>. In the dimensions of Eqs. 1.2 and 1.3 the construction gives ex(Q<sub>r²+1</sub>, C<sub>4</sub>) ≥ (r<sup>2</sup> + r + 1)2<sup>r²−1</sup> and ex(Q<sub>n</sub>, C<sub>4</sub>) ≥ (n + r + p/4)2<sup>n−2</sup>.</p>
+      </div>
+      <p>Bialostocki proved that in any red-blue coloring of Q<sub>n</sub> with no monochromatic square, each color class has at most (n + √n)2<sup>n−2</sup> edges, so Corollary 1.3 determines the largest such color class B<sub>n</sub> up to O(n<sup>−1/2</sup>) in the coefficient. In the concluding remarks the paper also proves (Proposition 6.1) that in the dimensions of Theorem 1.1, B<sub>n</sub> = n2<sup>n−1</sup> − F<sub>n</sub> exactly, and every maximizing coloring has no square with two opposite edges of each color.</p>
+      <p>For physics, the ground-state energy per vertex −μ<sub>n</sub>/(2√n) of Section 2 tends to −1/2, as Parisi and Potters conjectured, and Theorem 1.2 gives the rate: the error is O(1/n).</p>
+      <p class="short"><b>In short:</b> μ<sub>n</sub> never decreases in n, and by fine-tuning one weight in a partial lift of (r, 1) the paper shows F<sub>n</sub> = (n − √n + O(n<sup>−1/2</sup>))2<sup>n−2</sup> in every dimension, which also gives square-free subgraphs whose complements are square-free with about (n + √n)2<sup>n−2</sup> edges.</p>
+    </section>
+
+    <!-- 10 -->
+    <section data-sec="10 · Dimension nine">
+      <span class="num">10 · DIMENSION NINE</span>
+      <h2>When n is a perfect square, why does the spectral bound sometimes fail, and by how much?</h2>
+      <p>When n = r<sup>2</sup>, a constant signed degree r passes both tests of Lemma 3.1: it has the parity of n and mean square n. So the parity bound gives nothing beyond the spectral bound (n − r)2<sup>n−2</sup>, and the question is whether that bound is attained. For Q<sub>4</sub> it is, by the switching u. For Q<sub>9</sub> the spectral bound is 6 · 2<sup>7</sup> = 768. Marinari, Parisi and Ritort reported an energy corresponding to 772 red edges, an explicit switching with 772 is available, and the paper proves nothing smaller exists.</p>
+      <p>The tool is the residual of a switching, which measures its distance from the ideal. Suppose s gives (n − r)2<sup>n−2</sup> + δ red edges and set q = (A<sub>n</sub>s − rs)/2. At a vertex with local field h(x), q<sub>x</sub> = s(x)(h(x) − r)/2. Since h(x) ≡ r modulo 2, q has integer entries, and A<sub>n</sub><sup>2</sup> = r<sup>2</sup>I gives A<sub>n</sub>q = −rq. So q is an integer vector in the −r eigenspace. Its length records the excess δ.</p>
+      <div class="math" data-tex="\|q\|_2^2=\tfrac14\sum_x\bigl(h(x)-r\bigr)^2=\tfrac14\Bigl(2^{n+1}r^2-2r\sum_x h(x)\Bigr)=2r\delta ."></div>
+      <p class="eqn">Eq. 5.1</p>
+      <p>The middle step uses Σh(x)<sup>2</sup> = 2<sup>n</sup>r<sup>2</sup> from Lemma 3.1 and Σh(x) = r2<sup>n</sup> − 4δ from counting edges. For Q<sub>9</sub>, with r = 3, ruling out 768, 769, 770 and 771 red edges means ruling out residuals of squared length 0, 6, 12 and 18. A zero residual would mean A<sub>9</sub>s = 3s, which Eq. 2.2 forbids because 3 does not divide 2<sup>9</sup>.</p>
+      <div class="fact"><span class="label">Fact · Lemma 5.3</span><p>Let n = r<sup>2</sup> with r ≥ 3. Every nonzero integral vector q with A<sub>n</sub>q = −rq satisfies ‖q‖<sub>2</sub><sup>2</sup> ≥ 2r<sup>2</sup>, with equality precisely when q = ±(A<sub>n</sub> − rI)e<sub>z</sub> for some vertex z.</p></div>
+      <p>In words: the shortest integer vectors in the bottom eigenspace are the "stars", with −r at one vertex and ±1 at its n neighbors, of squared length r<sup>2</sup> + n = 2r<sup>2</sup>. For Q<sub>9</sub> that length is 18, so 769 and 770 are excluded at once, and 771 requires the residual to be a star.</p>
+      <details class="pf"><summary><span class="tagd">proof outline</span><span class="q">Why can't a shorter integer eigenvector exist?</span></summary><div class="pfbody">
+        <p>Split q = (u, v) by the first coordinate, putting the half of smaller squared length k first; the block form of A<sub>n</sub> gives v = −ru − Cu with C = ±A<sub>n−1</sub>, and expanding yields ‖q‖<sup>2</sup> = 2r(rk + u<sup>T</sup>Cu) = 2ra with a a positive integer and k ≤ ra (Eq. 5.2). Lemma 5.1 bounds the restriction of A<sub>d</sub> to any t vertices: its operator norm is at most √(t − 1), because in its square the length-2 walks between distinct vertices cancel in pairs when both middle vertices are present. That gives a ≥ k(r − √(k − 1)) (Eq. 5.3), which exceeds r for 2 ≤ k ≤ n − 2.</p>
+        <p>If ‖q‖<sup>2</sup> ≤ 2r<sup>2</sup>, then a ≤ r, so k is 1, n − 1 or n. The case k = 1 gives exactly a star. In the other two cases Eq. 5.4 forces at least r(k − 1)/2 negative edges inside the support of u after switching, but negative edges there form a bipartite graph with no 4-cycle, and Lemma 5.2 caps such a graph on t vertices at t(1 + √(2t − 3))/4 edges. The two requirements contradict each other for r ≥ 3.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Fact · Proposition 5.4 and Theorem 1.4</span>
+        <p>Equality in the spectral bound F<sub>n</sub> ≥ (n − √n)2<sup>n−2</sup> holds if and only if n is a power of four. If r ≥ 3 is not a power of two,</p>
+        <div class="math" data-tex="F_{r^2}\ \ge\ (r^2-r)\,2^{r^2-2}+\begin{cases} r+1, & r\ \text{odd},\\ r+2, & r\ \text{even}.\end{cases}"></div>
+        <p class="eqn">Eq. 5.5</p>
+        <p>With r = 3 this gives F<sub>9</sub> ≥ 6 · 2<sup>7</sup> + 4 = 772, and the explicit switching gives equality: F<sub>9</sub> = 772.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can't the residual be a star?</span></summary><div class="pfbody">
+        <p>For the first claim: equality forces a Boolean s with A<sub>n</sub>s = √n s, so √n = r is an integer; then Eq. 2.2 gives 2<sup>n</sup> = r(Γ<sub>i</sub>s)<sup>T</sup>s, so r divides 2<sup>n</sup> and is a power of two. Conversely, for r a power of two, Theorem 2.2 lifts the constant function on the one-edge cube of weight r.</p>
+        <p>For Eq. 5.5, Eq. 5.1 and Lemma 5.3 give 2rδ ≥ 2r<sup>2</sup>, so δ ≥ r. If δ = r, the residual is a star, (A<sub>n</sub> − rI)s = 2ε(A<sub>n</sub> − rI)e<sub>z</sub>, so s′ = s − 2εe<sub>z</sub> satisfies A<sub>n</sub>s′ = rs′ and differs from a ±1 vector only at z. Because A<sub>n</sub>P<sub>n</sub> = −P<sub>n</sub>A<sub>n</sub>, the vector P<sub>n</sub>s′ lies in the −r eigenspace and is orthogonal to s′, which says the squared entries of s′ sum to the same value on the two parity classes. Both classes have 2<sup>n−1</sup> vertices, so the entry at z must also have square 1, and s′ is a Boolean eigenvector with eigenvalue r. That contradicts the first claim. So δ ≥ r + 1. For even r, every switching of Q<sub>r²</sub> has an even number of red edges, which pushes δ to r + 2.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Two consequences are worth stating. The largest edge set of Q<sub>9</sub> meeting every square in an odd number of edges has 9 · 2<sup>8</sup> − 772 = 1532 edges, which answers a question of Minamoto, who asked whether 1536 were possible. And Parisi and Potters' conjecture that the ground-state energy equals −1/2 whenever n is a square holds only for powers of four, since the energy is −1/2 exactly when the spectral bound is attained. The next open square dimension is 25, for which the paper records, without proof, 167 772 180 ≤ F<sub>25</sub> ≤ 168 230 912.</p>
+      <p class="short"><b>In short:</b> in square dimensions the excess over the spectral bound is the squared length of an integer eigenvector divided by 2r; the shortest ones are stars, a star cannot come from a switching unless r is a power of two, and so F<sub>9</sub> = 768 + 4 = 772.</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>The numbers</h2>
+      <p>The paper's results, as stated in its theorems. All values are exact unless marked as bounds.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Dimension</th><th>Result</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>n = r² + 1, any r ≥ 1</td><td class="n">F = (r² − r + 1)2^(r²−1)</td><td>Thm 1.1, Eq. 1.2</td></tr>
+          <tr><td>n = r² + 1 + pr/2, 4 | r, p ∈ {±1, ±2, ±3}</td><td class="n">F = (n − r − p/4)2^(n−2)</td><td>Thm 1.1, Eq. 1.3</td></tr>
+          <tr><td>every n ≥ 1</td><td class="n">(n − √n)2^(n−2) ≤ F ≤ (n − √n + C/√n)2^(n−2)</td><td>Thm 1.2</td></tr>
+          <tr><td>n a power of 4</td><td class="n">F = (n − √n)2^(n−2), only these n</td><td>Prop 5.4</td></tr>
+          <tr><td>n = r², r ≥ 3 not a power of 2</td><td class="n">F ≥ (r² − r)2^(r²−2) + r + 1 (odd r), + r + 2 (even r)</td><td>Prop 5.4, Eq. 5.5</td></tr>
+          <tr><td>n = 9</td><td class="n">F = 772 (spectral bound 768)</td><td>Thm 1.4</td></tr>
+          <tr><td>n = 9</td><td class="n">largest odd-square edge set: 1532</td><td>Section 1</td></tr>
+          <tr><td>n = 25</td><td class="n">167 772 180 ≤ F ≤ 168 230 912</td><td>Section 6, no proof given</td></tr>
+          <tr><td>every n ≥ 1</td><td class="n">ex(Q_n, C₄) ≥ (n + √n − C/√n)2^(n−2)</td><td>Cor 1.3</td></tr>
+          <tr><td>constant C</td><td class="n">C ≥ 2 − √2; some C &lt; 1 works</td><td>Section 6</td></tr>
+        </tbody>
+      </table></div>
+      <p>The small values below were computed by us, not taken from the paper: the first three by checking every switching, the last two by running the lift in the third animation and counting red edges directly. They agree with the formulas above.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>n</th><th>F<sub>n</sub></th><th>μ<sub>n</sub></th><th>How</th></tr></thead>
+        <tbody>
+          <tr><td class="n">2</td><td class="n">1</td><td class="n">1</td><td>all 16 switchings; Eq. 1.2 with r = 1</td></tr>
+          <tr><td class="n">3</td><td class="n">3</td><td class="n">1.5</td><td>all 256 switchings; meets Eq. 1.1 with r = 2</td></tr>
+          <tr><td class="n">4</td><td class="n">8</td><td class="n">2</td><td>all 65536 switchings; the switching u</td></tr>
+          <tr><td class="n">5</td><td class="n">24</td><td class="n">2</td><td>lift of (2, 1); Eq. 1.2 with r = 2</td></tr>
+          <tr><td class="n">10</td><td class="n">1792</td><td class="n">3</td><td>lift of (3, 1); Eq. 1.2 with r = 3</td></tr>
+          <tr><td class="n">17</td><td class="n">425984</td><td class="n">4</td><td>lift of (4, 1); Eq. 1.2 with r = 4</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved in the paper.</b> Theorems 1.1 and 1.2, Corollary 1.3, Proposition 5.4 and the lower bound F<sub>9</sub> ≥ 772 come with complete proofs, and the proofs are short and checkable. The lifting theorem is an if-and-only-if, so it also explains why the method cannot directly reach some dimensions. The constructions are explicit: every optimal signing in Theorem 1.1 is given by a sequence of refinements, which the animation above carries out for r = 2, 3 and 4 and which match Eq. 1.2 exactly.</p>
+      <p><b>Relied on from outside.</b> The upper bound F<sub>9</sub> ≤ 772 is not constructed in the paper. It rests on an explicit switching with 772 red edges posted as an edge list (reference [2], credited to "Bil812") and on the energy reported by Marinari, Parisi and Ritort. The matching lower bound is the paper's contribution. A reader who wants to verify the equality has to check that edge list.</p>
+      <p><b>Stated without proof.</b> The bounds 167 772 180 ≤ F<sub>25</sub> ≤ 168 230 912 are recorded without proof, with only a description of where they come from. The claim that some constant C &lt; 1 is admissible in Theorem 1.2 is also asserted, with the remark that it follows from refining the estimates and checking small dimensions; the proof given yields an unspecified constant (48/r for large n before small cases are absorbed).</p>
+      <p><b>Open.</b> The exact value of F<sub>n</sub> outside the families of Theorem 1.1 and outside powers of four, starting with n = 25; whether C = 2 − √2, the value forced by μ<sub>2</sub> = 1, suffices; and Erdős's original question, which is about all square-free subgraphs, not only those whose complement is also square-free. Corollary 1.3 gives a lower bound for it but does not resolve it.</p>
+      <p><b>Process.</b> The author states that OpenAI Codex was used to explore proof strategies, check arguments, run computations, search the literature and help draft the manuscript, and that the author reviewed the material and takes responsibility for it. Every proof we followed for this chapter checked out, and our independent computations agree with every formula we could test.</p>
+    </section>
+
+    <!-- further -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>Lujia Wang, <a href="https://arxiv.org/abs/2611.14906" target="_blank" rel="noopener">The frustration index of fully frustrated hypercubes</a>, arXiv:2611.14906 (2026). The paper itself; the HTML version follows the same numbering as this chapter.</p>
+        <p>Hao Huang, <a href="https://arxiv.org/abs/1907.00847" target="_blank" rel="noopener">Induced subgraphs of hypercubes and a proof of the Sensitivity Conjecture</a>, arXiv:1907.00847 (2019). Six pages; Lemma 2.2 defines the same signed matrix A<sub>n</sub> by the block recursion and shows its eigenvalues are ±√n. A good place to see A<sub>n</sub><sup>2</sup> = nI used for something else entirely.</p>
+        <p>M. Minamoto, <a href="https://arxiv.org/abs/2603.29127" target="_blank" rel="noopener">C4-free subgraphs of the hypercubes Q6, Q7, and Q8: odd squares, fully frustrated models, and computational structure</a>, arXiv:2603.29127 (2026). The computational study whose question about 1536 edges in Q<sub>9</sub> this paper answers.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.14906v1. Equation, lemma and theorem numbers match the paper. All three animations run real computations: the 3-cube's switchings, including a search over all 256 of them; the construction of u from η and g and the signed degree of every vertex of Q<sub>4</sub>; and the refinement procedure of Theorem 2.2, which rebuilds the switching and recomputes every local field on cubes up to 131072 vertices. The cycle-space sketch, the Ising energy derivation, the QUBO and Huang connections, the reading of w = (3) as the obstruction in dimension nine, the evaluated values of Eq. 1.3 for r = 4, and the small-value table are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-14906',date:'2026-11-14',title:'The Frustration Index of Fully Frustrated Hypercubes',authors:'Wang',field:'math.CO',tags:['signed graphs','hypercube','Ising model'],mins:45,
+     dek:'Color the edges of an n-cube so every square has an odd number of red edges: the fewest red edges possible is now known exactly in every dimension r²+1, to within O(n<sup>−1/2</sup>) in every dimension, and is 772 in dimension nine. The proof solves the problem on a tiny cube with weighted edges and unfolds it into an ordinary cube without changing a single local field.'},
     {id:'2611-16398',date:'2026-11-13',title:'Loss of the Quadratic Speedup in Grover Search under Local and Coherent Noise',authors:'Khan, Faryad',field:'quant-ph',tags:['Grover search','noise','error budgets'],mins:40,
      dek:'Grover search turns a state through a small angle about √N times, and this paper shows in closed form how three kinds of noise undo it: global noise drains the rotating part, local errors knock amplitude out of the search plane where it stays frozen, and angle errors blur the result. All three give one budget: the total error over the circuit must stay of order one, so the error per qubit must fall like 1/(n√N).'},
     {id:'2611-13533',date:'2026-11-12',title:'Entropy Maximization for Cube Projections',authors:'Pang',field:'math.PR',tags:['entropy','probability','Fourier analysis'],mins:40,
@@ -3029,6 +3440,152 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
           el('circle',{cx:X(r),cy:Y(q.c0),r:2.6,fill:'var(--fg)'});}});
       el('text',{x:243,y:236,class:'lab'}).textContent='error probability vs r';
     });
+  })();
+
+
+  // ================= 2611.14906: fully frustrated hypercubes =================
+  const FR=(function(){
+    const pc=x=>{let c=0;while(x){x&=x-1;c++}return c};
+    const sg=(x,i)=>(pc(x&((1<<i)-1))&1)?-1:1; // canonical sign of the edge x -- x^e_i
+    function gam(w,f){const d=w.length,N=1<<d,o=new Float64Array(N);for(let x=0;x<N;x++){let s=0;for(let i=0;i<d;i++)s+=w[i]*sg(x,i)*f[x^(1<<i)];o[x]=s}return o}
+    function field(w,f){const g=gam(w,f),o=new Float64Array(f.length);for(let x=0;x<f.length;x++)o[x]=f[x]*g[x];return o}
+    // eta, g on Q3 (bit 0 of y is x1), u on Q4 (bit 0 is x0, block index)
+    const eta=y=>(y===0||y===7)?1:0;
+    const g3=[];for(let y=0;y<8;y++){let s=0;for(let i=0;i<3;i++)s+=sg(y,i)*eta(y^(1<<i));g3.push(s)}
+    const u=[];for(let x=0;x<16;x++){const y=x>>1;u.push((x&1)?g3[y]-eta(y):g3[y]+eta(y))}
+    const v=u.map((_,x)=>sg(x,0)*u[x^1]+sg(x,1)*u[x^2]-u[x]);
+    function sswap(f,i){const N=f.length,o=new Int8Array(N);for(let x=0;x<N;x++){const a=(x>>i)&1,b=(x>>(i+1))&1;const y=(x&~(3<<i))|(b<<i)|(a<<(i+1));o[x]=(a&b?-1:1)*f[y]}return o}
+    function toFront(w,f,j){w=w.slice();for(let i=j-1;i>=0;i--){f=sswap(f,i);const t=w[i];w[i]=w[i+1];w[i+1]=t}return[w,f]}
+    function fourWay(w,f,j){[w,f]=toFront(w,f,j);const b=w[0]/2,N=1<<(w.length+3),o=new Int8Array(N);
+      for(let x=0;x<N;x++){const y=x&15,z=x>>4;o[x]=u[y]*f[(pc(y)&1)|(z<<1)]}return[[b,b,b,b,...w.slice(1)],o]}
+    function pair(w,f,j,k){[w,f]=toFront(w,f,j);if(k<j)k++;[w,f]=toFront(w,f,k);[w,f]=toFront(w,f,1);
+      const a=w[0],b=w[1],N=1<<(w.length+2),o=new Int8Array(N);
+      for(let x=0;x<N;x++){const y=x&15,z=x>>4;const s=(u[y]*v[y]<0)?1:0,t=s^(pc(y)&1);o[x]=u[y]*f[s|(t<<1)|(z<<2)]}
+      return[[(a+b)/2,(a+b)/2,(a-b)/2,(a-b)/2,...w.slice(2)],o]}
+    function stats(w,f){const h=field(w,f),m=new Map();let sum=0,sq=0;for(let x=0;x<h.length;x++){m.set(h[x],(m.get(h[x])||0)+1);sum+=h[x];sq+=h[x]*h[x]}
+      return{w:w.slice(),d:w.length,hist:[...m.entries()].sort((a,b)=>b[0]-a[0]),mean:sum/h.length,msq:sq/h.length,h}}
+    function liftRun(r){let w=[r,1],f=Int8Array.from([1,1,1,1]);const steps=[{kind:'start',...stats(w,f)}];
+      for(;;){const e=w.findIndex(x=>x%2===0);let kind,from;
+        if(e>=0){from=[w[e]];[w,f]=fourWay(w,f,e);kind='four'}
+        else{const mx=Math.max(...w),mn=Math.min(...w);if(mx===mn)break;from=[mx,mn];[w,f]=pair(w,f,w.indexOf(mx),w.indexOf(mn));kind='pair'}
+        steps.push({kind,from,...stats(w,f)});}
+      const L=steps[steps.length-1],n=L.d,N=1<<n;let red=0,evenHi=0,oddHi=0;
+      for(let x=0;x<N;x++){for(let i=0;i<n;i++){const y=x^(1<<i);if(y>x&&sg(x,i)*f[x]*f[y]<0)red++}if(L.h[x]===r+1){if(pc(x)&1)oddHi++;else evenHi++}}
+      L.red=red;L.evenHi=evenHi;L.oddHi=oddHi;steps.forEach(s=>delete s.h);return steps}
+    return{pc,sg,eta,g3,u,v,liftRun};
+  })();
+
+  // ---- Animation 1: switching the 3-cube ----
+  (function(){
+    const root=document.getElementById('pFrQ3');if(!root)return;const P=Player(root);
+    const pos=x=>[55+150*(x&1)+75*((x>>2)&1),210-120*((x>>1)&1)-50*((x>>2)&1)];
+    const str=x=>`${x&1}${(x>>1)&1}${(x>>2)&1}`;
+    const edges=[];for(let x=0;x<8;x++)for(let i=0;i<3;i++){const y=x^(1<<i);if(y>x)edges.push([x,y,i])}
+    const faces=[];for(let i=0;i<3;i++)for(let j=i+1;j<3;j++){const k=3-i-j;for(const b of[0,1]){const base=b<<k;faces.push({vs:[base,base|(1<<i),base|(1<<i)|(1<<j),base|(1<<j)],dirs:[i,j]})}}
+    const sgn=(S,x,y,i)=>FR.sg(Math.min(x,y),i)*(S.has(x)?-1:1)*(S.has(y)?-1:1);
+    function info(S){const red=edges.filter(([x,y,i])=>sgn(S,x,y,i)<0);const deg=[];for(let x=0;x<8;x++){let s=0;for(let i=0;i<3;i++)s+=sgn(S,x,x^(1<<i),i);deg.push(s)}
+      const fc=faces.map(F=>{let c=0;for(let a=0;a<4;a++){const x=F.vs[a],y=F.vs[(a+1)%4];const i=Math.log2(x^y);if(sgn(S,x,y,i)<0)c++}return c});
+      return{red,deg,fc}}
+    // exhaustive search over all 256 switchings
+    const dist={};let best=99,nb=0;for(let m=0;m<256;m++){const S=new Set();for(let x=0;x<8;x++)if((m>>x)&1)S.add(x);const k=info(S).red.length;dist[k]=(dist[k]||0)+1;if(k<best){best=k;nb=0}if(k===best)nb++}
+    const I0=info(new Set()),Ia=info(new Set([0])),Ib=info(new Set([1]));
+    const lst=I=>I.red.map(([x,y])=>str(x)+'–'+str(y)).join(', ');
+    const hi3=I=>I.deg.map((d,x)=>d===3?str(x):null).filter(Boolean);
+    const msq=I=>I.deg.reduce((s,d)=>s+d*d,0)/8,mean=I=>I.deg.reduce((s,d)=>s+d,0)/8;
+    const F=[
+      {S:new Set(),t:'The canonical signing',c:`Edge x → x ⊕ e<sub>i</sub> gets the sign (−1) to the power x<sub>0</sub> + ⋯ + x<sub>i−1</sub>. Direction 0 (left to right) is all blue. ${I0.red.length} edges are red: ${lst(I0)}, matching (n − 1)2<sup>n−2</sup> = 4. Each vertex shows its signed degree, blue minus red.`},
+      {S:new Set(),faces:true,t:'Every face is negative',c:`The number at the middle of each face counts its red edges: ${I0.fc.join(', ')}. All six are odd, so every square has sign −1 and the signing is fully frustrated.`},
+      {S:new Set([0]),t:'Switch at 000',c:`Switching reverses the three edges at 000. All three were blue, so the red count rises to ${Ia.red.length}. The vertex 000 now has signed degree ${Ia.deg[0]<0?'−'+(-Ia.deg[0]):Ia.deg[0]}.`},
+      {S:new Set([0]),faces:true,t:'Faces are still negative',c:`Each face through 000 had two of its edges reversed, so its red count changed by an even number: ${Ia.fc.join(', ')}. Switching never changes the sign of a cycle.`},
+      {S:new Set(),t:'Switch at 000 again',c:`Switching twice at the same vertex undoes it, and we are back to ${I0.red.length} red edges.`},
+      {S:new Set([1]),t:'Switch at 100',c:`At 100 two of the three edges were red. Switching makes them blue and turns 000–100 red, leaving ${Ib.red.length}: ${lst(Ib)}. The signed degrees are now all 1 or 3.`},
+      {S:new Set([1]),faces:true,t:'Still fully frustrated',c:`Face counts: ${Ib.fc.join(', ')}. Every face still has one red edge, and each red edge serves two faces, so three red edges cover all six.`},
+      {S:new Set([1]),t:'Nothing beats 3',c:`Trying all 256 switchings, the red counts are ${Object.keys(dist).map(Number).sort((a,b)=>a-b).map(k=>k+' (×'+dist[k]+')').join(', ')}. The minimum is ${best}, reached by ${nb} switchings. This matches Eq. 1.1 with r = 2: the mean signed degree is ${mean(Ib)}, the mean square is ${msq(Ib)} = n, and degree 3 occurs at ${hi3(Ib).join(' and ')}, one vertex in each parity class.`}
+    ];
+    F.delay=5200;
+    P.load(F,(fr,el)=>{const I=info(fr.S);
+      edges.forEach(([x,y,i])=>{const [a,b]=pos(x),[c,d]=pos(y),neg=sgn(fr.S,x,y,i)<0;
+        el('line',{x1:a,y1:b,x2:c,y2:d,stroke:neg?'var(--bad)':'var(--cool)','stroke-width':neg?4:2,opacity:neg?1:.75})});
+      if(fr.faces)faces.forEach((Fc,k)=>{let cx=0,cy=0;Fc.vs.forEach(x=>{const [a,b]=pos(x);cx+=a/4;cy+=b/4});
+        el('text',{x:cx,y:cy+4,class:'msg',fill:'var(--accent)'}).textContent=I.fc[k]});
+      for(let x=0;x<8;x++){const [a,b]=pos(x),sw=fr.S.has(x);
+        el('circle',{cx:a,cy:b,r:14,fill:sw?'var(--accent)':'var(--raise)',stroke:sw?'var(--accent)':'var(--line)','stroke-width':2});
+        el('text',{x:a,y:b+4,class:'msg',fill:sw?'var(--accent-ink)':'var(--fg)'}).textContent=I.deg[x]<0?'−'+(-I.deg[x]):I.deg[x];
+        el('text',{x:a,y:((x>>1)&1)?b-20:b+27,class:'lab'}).textContent=str(x);}
+      el('text',{x:330,y:244,class:'lab',style:'text-anchor:end'}).textContent=I.red.length+' red edges';
+    });
+  })();
+
+  // ---- Animation 2: building u on Q4 ----
+  (function(){
+    const root=document.getElementById('pFrU');if(!root)return;const P=Player(root);
+    const pos=(ox,y)=>[ox+80*(y&1)+42*((y>>2)&1),195-95*((y>>1)&1)-42*((y>>2)&1)];
+    const s3=y=>`${y&1}${(y>>1)&1}${(y>>2)&1}`;
+    const e3=[];for(let y=0;y<8;y++)for(let i=0;i<3;i++){const z=y^(1<<i);if(z>y)e3.push([y,z,i])}
+    // checks
+    const A3g=[];for(let y=0;y<8;y++){let s=0;for(let i=0;i<3;i++)s+=FR.sg(y,i)*FR.g3[y^(1<<i)];A3g.push(s)}
+    const A4u=[];for(let x=0;x<16;x++){let s=0;for(let i=0;i<4;i++)s+=FR.sg(x,i)*FR.u[x^(1<<i)];A4u.push(s)}
+    const sw4=(x,i)=>FR.sg(x,i)*FR.u[x]*FR.u[x^(1<<i)];
+    let red0=0,red1=0;const redAt=new Array(16).fill(0);
+    for(let x=0;x<16;x++)for(let i=0;i<4;i++){const y=x^(1<<i);if(y>x){if(FR.sg(x,i)<0)red0++;if(sw4(x,i)<0){red1++;redAt[x]++;redAt[y]++}}}
+    const deg=[];for(let x=0;x<16;x++)deg.push(FR.u[x]*A4u[x]);
+    const minus=[];for(let x=0;x<16;x++)if(FR.u[x]<0)minus.push(`${x&1}${s3(x>>1)}`);
+    const gList=[...Array(8).keys()].map(y=>s3(y)+': '+(FR.g3[y]<0?'−1':FR.g3[y])).join(', ');
+    const F=[
+      {k:'eta',t:'Start on Q₃ with η',c:`Here Q<sub>3</sub> has coordinates x<sub>1</sub>x<sub>2</sub>x<sub>3</sub> and its own canonical signs. Let η be 1 on the two corners 000 and 111 and 0 elsewhere. The corners are not adjacent, and every other vertex is adjacent to exactly one of them.`},
+      {k:'g',t:'Compute g = A₃η',c:`Each vertex adds up η over its neighbors, with edge signs. The corners get 0, and every other vertex gets the sign of its one edge into the set: ${gList}. Applying A<sub>3</sub> again gives (${A3g.join(', ')}), which is 3η, as A<sub>3</sub><sup>2</sup> = 3I requires.`},
+      {k:'u',t:'Form u = (g + η, g − η)',c:`Q<sub>4</sub> is two copies of Q<sub>3</sub>: x<sub>0</sub> = 0 on the left, x<sub>0</sub> = 1 on the right, joined by the direction-0 edges, which are blue. On the right the canonical signs of the other directions are reversed. The left copy gets g + η and the right copy g − η; every value is ±1. The canonical signing has ${red0} red edges. Highlighted: u = −1 at ${minus.join(', ')}.`},
+      {k:'sw',t:'Switch by u',c:`Switching at the four highlighted vertices leaves ${red1} red edges, and every vertex meets exactly ${Math.min(...redAt)===Math.max(...redAt)?Math.max(...redAt):'?'} of them: a perfect matching. Every signed degree is ${Math.min(...deg)===Math.max(...deg)?deg[0]:'?'}, so A<sub>4</sub>u = 2u. The mean is 2 = √4, the spectral bound is met, and F<sub>4</sub> = (4 − 2) · 4 = 8.`}
+    ];
+    F.delay=6000;
+    P.load(F,(fr,el)=>{
+      if(fr.k==='eta'||fr.k==='g'){const ox=110;
+        e3.forEach(([y,z,i])=>{const [a,b]=pos(ox,y),[c,d]=pos(ox,z),neg=FR.sg(y,i)<0;el('line',{x1:a,y1:b,x2:c,y2:d,stroke:neg?'var(--bad)':'var(--cool)','stroke-width':neg?3.5:2,opacity:neg?1:.75})});
+        for(let y=0;y<8;y++){const [a,b]=pos(ox,y),on=FR.eta(y)===1;
+          el('circle',{cx:a,cy:b,r:14,fill:on?'var(--accent)':'var(--raise)',stroke:on?'var(--accent)':'var(--line)','stroke-width':2});
+          el('text',{x:a,y:b+4,class:'msg',fill:on?'var(--accent-ink)':'var(--fg)'}).textContent=fr.k==='eta'?FR.eta(y):(FR.g3[y]<0?'−1':FR.g3[y]);
+          el('text',{x:a,y:((y>>1)&1)?b-20:b+27,class:'lab'}).textContent=s3(y);}
+        el('text',{x:170,y:244,class:'lab'}).textContent=fr.k==='eta'?'values of η':'values of g = A₃η';
+        return;}
+      const OX=[22,190],P4=x=>pos(OX[x&1],x>>1),sw=fr.k==='sw';
+      for(let x=0;x<16;x++)for(let i=0;i<4;i++){const y=x^(1<<i);if(y<x)continue;const s=sw?sw4(x,i):FR.sg(x,i),neg=s<0;const [a,b]=P4(x),[c,d]=P4(y);
+        el('line',{x1:a,y1:b,x2:c,y2:d,stroke:neg?'var(--bad)':'var(--cool)','stroke-width':neg?3.5:1.5,opacity:neg?1:(i===0?.3:.7)})}
+      for(let x=0;x<16;x++){const [a,b]=P4(x),m=FR.u[x]<0;
+        el('circle',{cx:a,cy:b,r:11,fill:m?'var(--accent)':'var(--raise)',stroke:m?'var(--accent)':'var(--line)','stroke-width':2});
+        el('text',{x:a,y:b+4,class:'msg',fill:m?'var(--accent-ink)':'var(--fg)'}).textContent=sw?deg[x]:(FR.u[x]<0?'−1':'1');}
+      el('text',{x:83,y:18,class:'lab'}).textContent='x₀ = 0: g + η';el('text',{x:251,y:18,class:'lab'}).textContent='x₀ = 1: g − η';
+      el('text',{x:170,y:244,class:'lab'}).textContent=sw?`after switching: ${red1} red edges, signed degrees shown`:`canonical signing: ${red0} red edges, values of u shown`;
+    });
+  })();
+
+  // ---- Animation 3: unfolding the weighted square (r,1) ----
+  (function(){
+    const root=document.getElementById('pFrLift');if(!root)return;const P=Player(root);const cache={};
+    const fmt=x=>x.toLocaleString('en-US');
+    function load(r){const S=cache[r]||(cache[r]=FR.liftRun(r)),n=r*r+1,L=S[S.length-1];
+      const F=S.map((s,k)=>{const cnt=s.hist.map(([v,c])=>`field ${v} at ${fmt(c)} vertices`).join(' and ');let t,c;
+        if(s.kind==='start'){t=`The square (${r}, 1)`;c=`Two coordinates, weights ${r} and 1, ‖w‖² = ${r*r} + 1 = ${n}. With f = 1 the local field is ${r} + (−1)<sup>x<sub>0</sub></sup>: ${cnt}. Mean ${s.mean}, mean square ${s.msq} = ‖w‖², as Eq. 2.1 says.`}
+        else if(s.kind==='pair'){t=`Pair refinement (${s.from[0]}, ${s.from[1]})`;c=`All weights are odd and two differ, so (${s.from[0]}, ${s.from[1]}) becomes (${(s.from[0]+s.from[1])/2}, ${(s.from[0]+s.from[1])/2}, ${(s.from[0]-s.from[1])/2}, ${(s.from[0]-s.from[1])/2}). The switching is rebuilt on Q<sub>${s.d}</sub> and every field recomputed: ${cnt}. Each count grew by the factor 2<sup>${s.d-S[k-1].d}</sup>; mean still ${s.mean}, mean square ${s.msq}.`}
+        else{t=`Four-way refinement of ${s.from[0]}`;c=`A weight ${s.from[0]} becomes four weights ${s.from[0]/2}, using u. Now ${s.d} coordinates and ${fmt(2**s.d)} vertices. Recomputed fields: ${cnt}. Same two values, same proportions, mean ${s.mean}.`}
+        if(k===S.length-1){t+=' · done';c+=` All ${n} weights are 1, so this is an ordinary switching of Q<sub>${n}</sub>. Counting edges one by one: ${fmt(L.red)} of ${fmt(n*2**(n-1))} are red. Eq. 1.2 predicts (r² − r + 1)2<sup>r²−1</sup> = ${fmt((r*r-r+1)*2**(r*r-1))}. Field ${r+1} occurs at ${fmt(L.evenHi)} even and ${fmt(L.oddHi)} odd vertices, half of each parity class.`}
+        return{...s,t,c}});
+      F.delay=5600;
+      P.load(F,(fr,el)=>{
+        const d=fr.d,bw=Math.min(30,300/d),gap=bw*.18,x0=170-d*bw/2,base=105,sc=72/r;
+        el('text',{x:10,y:16,class:'lab',style:'text-anchor:start'}).textContent=`weights · d = ${d} · ‖w‖² = ${fr.w.reduce((s,x)=>s+x*x,0)}`;
+        fr.w.forEach((w,i)=>{const h=w*sc;el('rect',{x:x0+i*bw+gap/2,y:base-h,width:bw-gap,height:h,rx:2,fill:'var(--deep)'});
+          if(d<=12||w>1)el('text',{x:x0+i*bw+bw/2,y:base-h-4,class:'lab'}).textContent=w;});
+        el('line',{x1:10,y1:base,x2:330,y2:base,stroke:'var(--line)','stroke-width':1});
+        el('text',{x:10,y:132,class:'lab',style:'text-anchor:start'}).textContent=`local fields on ${fmt(2**d)} vertices · mean ${fr.mean}`;
+        const tot=2**d,HB=225,HH=70;
+        fr.hist.forEach(([v,c],j)=>{const x=100+j*110,h=c/tot*HH*1.6;
+          el('rect',{x:x,y:HB-h,width:60,height:h,rx:3,fill:v===r+1?'var(--accent)':'var(--cool)'});
+          el('text',{x:x+30,y:HB-h-5,class:'lab'}).textContent=fmt(c);
+          el('text',{x:x+30,y:HB+13,class:'lab'}).textContent='field '+v;});
+        el('line',{x1:60,y1:HB,x2:300,y2:HB,stroke:'var(--line)','stroke-width':1});
+      });}
+    root.querySelectorAll('[data-r]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-r]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(+b.dataset.r)}));
+    load(3);
   })();
 
   route();
