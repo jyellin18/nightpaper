@@ -2745,10 +2745,420 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.14906v1. Equation, lemma and theorem numbers match the paper. All three animations run real computations: the 3-cube's switchings, including a search over all 256 of them; the construction of u from η and g and the signed degree of every vertex of Q<sub>4</sub>; and the refinement procedure of Theorem 2.2, which rebuilds the switching and recomputes every local field on cubes up to 131072 vertices. The cycle-space sketch, the Ising energy derivation, the QUBO and Huang connections, the reading of w = (3) as the obstruction in dimension nine, the evaluated values of Eq. 1.3 for r = 4, and the small-value table are ours.</p>
   </footer>
 </div>
+<div class="wrap" id="view-p-2611-15549" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Sun, Nov 15</span></div>
+  <div class="paperhead">
+    <h1>Controlling Avalanche Sizes in the Abelian Sandpile Model</h1>
+    <p class="meta">Maike C. de Jongh, Antal A. Járai, Richard J. Boucherie, M.N.M. van Lieshout · posted Nov 11, 2026 · math.OC · <a href="https://arxiv.org/abs/2611.15549" target="_blank" rel="noopener">arXiv 2611.15549</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">If you may pay a fixed price β to pick one grain of sand off a pile before each new grain lands, the best long-run strategy on a line of sites is to sweep a central stretch clean and leave the rest alone, and that stretch grows by exactly one site on each side every time β drops below the next triangular number k(k + 1)/2. The pile is the Abelian sandpile, the standard toy model of systems that build up stress slowly and release it in sudden cascades, like earthquakes, forest fires or crashes. The paper turns "should I intervene?" into a Markov decision process, a probability model with a controller in it, and solves it with one idea used over and over: every grain carries a price, equal to the number of future topplings it will cause on average, and that price is an expected hitting time of a random walk. On the graphs the paper solves, once the prices are known, the optimal policy can be read off by comparing prices with β.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>how the sandpile works: grains land at random, a site with as many grains as neighbors topples, and an avalanche is the cascade that follows;</li>
+        <li>why the graph Laplacian Δ describes toppling, and why its inverse, the Green's function G, tells you how big avalanches are on average (Eqs. 9 to 11);</li>
+        <li>what a Markov decision process is, and what the gain and bias of a policy measure (Eqs. 4 to 8);</li>
+        <li>why never intervening is optimal exactly when β is at least the largest grain price φ(a) (Theorem 3.3, Eq. 13);</li>
+        <li>what a local intervention policy and a topple-free set are, and how the controlled pile reduces to an uncontrolled pile on a smaller, contracted graph (Theorems 3.4 to 3.8);</li>
+        <li>how grain conservation and random walks give the long-run cost of such a policy in closed form (Theorem 3.9, Eq. 20), and how a price function certifies optimality (Theorem 3.10);</li>
+        <li>the complete answer on a line, β<sub>k</sub> = k(k + 1)/2 (Theorem 4.5), and the answers for the complete graph and the star.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>V, s</dt><dd>the ordinary vertices (sites) of the graph, and one extra vertex s, the sink, where grains disappear</dd>
+        <dt>deg(x)</dt><dd>the number of edges at x, counting edges to the sink; b<sub>xy</sub> is the number of edges between x and y</dd>
+        <dt>η(x)</dt><dd>the height at x: the number of grains sitting there; η is a configuration</dd>
+        <dt>Ω</dt><dd>the stable configurations, those with η(x) &lt; deg(x) at every site</dd>
+        <dt>α<sub>x</sub>η, η°</dt><dd>η with one grain added at x, and the stable configuration obtained from η by toppling</dd>
+        <dt>n<sub>y</sub>(η, x), n(η, x)</dt><dd>how often y topples after adding at x, and the avalanche size Σ<sub>y</sub> n<sub>y</sub>(η, x)</dd>
+        <dt>N(η)</dt><dd>the size of the next avalanche from η, with the grain landing at a uniformly random site</dd>
+        <dt>Δ, G</dt><dd>the graph Laplacian restricted to V, and its inverse G = Δ<sup>−1</sup>, the Green's function</dd>
+        <dt>φ(x)</dt><dd>Σ<sub>y</sub> G(x, y), the expected time for a random walk from x to reach the sink; we will call it the price of a grain at x</dd>
+        <dt>β</dt><dd>the cost of removing one grain</dd>
+        <dt>a, η<sup>a</sup></dt><dd>an action (a site to remove a grain from, or 0 for doing nothing) and the configuration after the action</dd>
+        <dt>π, d</dt><dd>a stationary deterministic policy and its decision rule: d(η) is the action taken in configuration η</dd>
+        <dt>g<sup>π</sup>, h<sup>π</sup></dt><dd>the gain (long-run average cost per grain added) and bias (accumulated excess cost) of π</dd>
+        <dt>W, π<sub>W</sub></dt><dd>an intervention set, and a policy that removes a grain from W whenever W has one</dd>
+        <dt>p<sub>W</sub>(x)</dt><dd>the probability that a simple random walk from x hits W before the sink</dd>
+        <dt>G̃<sub>W</sub>, φ<sub>W</sub></dt><dd>the contracted graph, where W is merged into the sink, and its grain prices</dd>
+        <dt>L, P<sub>3</sub></dt><dd>the length of a path of sites 1, …, L with both ends joined to the sink; P<sub>3</sub> is the case L = 3</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>The path P<sub>3</sub>.</b> Three sites in a row, 1 – 2 – 3, with sites 1 and 3 each joined to the sink. Every site has degree 2, so a stable site holds 0 or 1 grain, and there are only eight stable configurations, written as strings η(1)η(2)η(3) from 000 to 111. Most claims in the chapter are checked on it, and the second animation searches all 864 of its policies by brute force.</li>
+        <li><b>The star with two leaves.</b> A center z joined to the sink and to two leaves, each leaf joined only to z. It shows how a site with a high price can be irrelevant because it can never hold a grain.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · The sandpile">
+      <span class="num">1 · GRAINS, TOPPLINGS, AVALANCHES</span>
+      <h2>What is the system being controlled?</h2>
+      <p>The Abelian sandpile was introduced by Bak, Tang and Wiesenfeld in 1987 and given its mathematical form by Dhar in 1990. It was designed as the simplest system that organizes itself into a critical state, a state in which a single small push can set off a cascade of any size, without anyone tuning a parameter to get there. Physicists call this self-organized criticality, and the paper lists earthquakes, forest fires, fluctuations in financial markets and evolution among the phenomena it has been associated with. The paper's question is practical: if cascades are costly, can removing a little material at the right places, at a price, make them smaller on average?</p>
+      <p>The setting is a finite graph with an extra vertex s called the sink. Each ordinary vertex, or site, holds a pile of indistinguishable grains. The height η(x) is the number of grains at site x, and the degree deg(x) is the number of edges at x, including edges to the sink.</p>
+      <div class="def"><span class="label">Definition · stability and toppling</span>
+        <p>A site x is stable in η if η(x) &lt; deg(x), and a configuration is stable if every site is. A site is critical if η(x) = deg(x) − 1. An unstable site topples: it loses deg(x) grains and sends one along each of its edges. Grains sent to the sink disappear.</p>
+        <p>In words: a site can hold at most one grain fewer than it has neighbors. When it gets one more, it tips over and gives one grain to every neighbor, and the edge of the graph is where grains fall off.</p>
+      </div>
+      <p>Time runs in steps. At each step a site x is chosen uniformly at random and one grain is added there; this is the operator α<sub>x</sub>. If some site becomes unstable it topples, which may make neighbors unstable, and so on until everything is stable again. The paper calls this relaxation and writes η° for the stable result. The total number of topplings in one relaxation is the avalanche size, the quantity everyone wants to keep small.</p>
+      <p>Toppling is linear algebra. Let Δ be the graph Laplacian restricted to the ordinary sites, the matrix with Δ<sub>xx</sub> = deg(x) and Δ<sub>xy</sub> = −b<sub>xy</sub> for x ≠ y, where b<sub>xy</sub> counts the edges between x and y. Treating η as a row vector, toppling x subtracts row x of Δ:</p>
+      <div class="math" data-tex="\eta \;\longrightarrow\; \eta - \Delta_{x,\cdot}."></div>
+      <p>The diagonal entry removes deg(x) grains from x, and the off-diagonal entries add one grain to each neighbor. Grains sent to the sink simply do not appear, because the sink has no row or column. On P<sub>3</sub>, where every site has degree 2,</p>
+      <div class="math" data-tex="\Delta=\begin{pmatrix}2&-1&0\\-1&2&-1\\0&-1&2\end{pmatrix}."></div>
+      <div class="fact"><span class="label">Fact · the Abelian property (Dhar)</span><p>Starting from a stable η and adding a grain at x, the number of times each site y topples, n<sub>y</sub>(η, x), does not depend on the order in which unstable sites are toppled. So the stable result (α<sub>x</sub>η)° and the avalanche size n(η, x) = Σ<sub>y</sub> n<sub>y</sub>(η, x) are well defined, and (α<sub>x</sub>η)° = α<sub>x</sub>η − Σ<sub>z</sub> n<sub>z</sub>(η, x)Δ<sub>z,·</sub>.</p></div>
+      <p>The name "Abelian" refers to this order-independence: adding grains and relaxing commute, just as numbers in an Abelian group can be added in any order. It is what makes the model solvable, and the paper uses it in nearly every proof.</p>
+      <p>Here is an avalanche on P<sub>3</sub>, worked by hand and then animated below. Start from 111, every site critical, and add a grain at site 2. Site 2 now has 2 grains and topples, giving one each to sites 1 and 3, which now have 2 each. Site 1 topples, sending one grain into the sink and one back to site 2. Site 3 does the same. Site 2 has 2 again and topples a second time, leaving 101. The toppling counts are n = (1, 2, 1), so the avalanche size is 4, and the Abelian property's formula checks out: (1, 1, 1) + (0, 1, 0) − (1, 2, 1)Δ = (1, 2, 1) − (0, 2, 0) = (1, 0, 1).</p>
+      <div class="player" id="pSdAval">
+        <div class="ptitle"><span class="label">Animation · one avalanche on P₃</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Three sites in a row between two sinks, with grains stacked on each site, toppling step by step"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>grain</span><span><i class="sw" style="background:var(--bad)"></i>unstable site</span><span><i class="sw" style="background:var(--cool)"></i>sink</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>Because the new grain lands at a random site, the size of the next avalanche from η is a random variable, written N(η), with P(N(η) = k) equal to the fraction of sites x with n(η, x) = k. From 111 on P<sub>3</sub>, adding at site 1 or site 3 gives an avalanche of size 3 and adding at site 2 gives size 4, so E[N(111)] = (3 + 4 + 3)/3 = 10/3. The last frame of the animation computes E[N(η)] for all eight stable configurations.</p>
+      <p class="short"><b>In short:</b> grains land at random sites; a site with deg(x) grains topples and sends one grain along each edge; toppling x subtracts row x of the Laplacian Δ; the order of topplings does not matter, and the avalanche size is the total number of topplings.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · The long run">
+      <span class="num">2 · THE UNCONTROLLED PILE IN THE LONG RUN</span>
+      <h2>How large is an avalanche on average if nobody intervenes?</h2>
+      <p>Before asking whether intervention helps, one needs the baseline. Adding a grain at a random site and relaxing defines a Markov chain on the stable configurations: the next configuration depends only on the current one and the random site. Its transition probabilities are Eq. 2,</p>
+      <div class="math" data-tex="p(\eta,\eta')=\frac{1}{|V|}\sum_{x\in V}\mathbf{1}\big[(\alpha_x\eta)^\circ=\eta'\big]."></div>
+      <p class="eqn">Eq. 2</p>
+      <p>A short reminder about Markov chains, since everything below depends on it. A set of states is closed if the chain can never leave it, and a recurrent class is a closed set in which every state can reach every other. A stationary distribution μ is a probability distribution that one step of the chain leaves unchanged. Long-run averages of anything the chain does are averages against a stationary distribution on the recurrent class the chain ends up in.</p>
+      <p>The paper uses Dhar's result that the sandpile chain has exactly one recurrent class and that its stationary distribution is uniform on that class. On P<sub>3</sub> the recurrent class is {011, 101, 110, 111}, the configurations with at most one empty site. The paper quotes this description for every path from Redig's lecture notes; on P<sub>3</sub> it can be checked by hand: from each of these four configurations, all three possible additions lead back into the set, and from any stable configuration, adding grains at empty sites reaches 111. The animation's last frame averages E[N] over these four configurations and gets (4/3 + 2/3 + 4/3 + 10/3)/4 = 5/3.</p>
+      <div class="aside"><span class="label">A standard fact the paper uses implicitly</span>
+        <p>This remark is ours. The number of recurrent configurations of a sandpile always equals det Δ, which by Kirchhoff's matrix-tree theorem is the number of spanning trees of the graph with the sink included. For P<sub>3</sub>, det Δ = 4, matching the four recurrent configurations above. The paper's discussion section mentions these spanning trees as a possible route to understanding topple-freeness.</p>
+      </div>
+      <p>The paper's formula for the average avalanche size goes through the inverse of the Laplacian. Since every site has a path to the sink, Δ is invertible, and its inverse G = Δ<sup>−1</sup> is called the Green's function. Define, as Eq. 9,</p>
+      <div class="math" data-tex="\phi(x)=\sum_{y\in V}G(x,y)."></div>
+      <p class="eqn">Eq. 9</p>
+      <p>In words, φ = G<b>1</b>, the vector that solves Δφ = <b>1</b>. That equation, written out at a site u, says deg(u)φ(u) − Σ<sub>v</sub> b<sub>uv</sub>φ(v) = 1, and it is the property every proof below leans on. The function also has a probabilistic meaning. Run a random walk in continuous time that jumps along each edge at rate 1, so it leaves x after an exponential time with mean 1/deg(x) and then moves to a uniformly random neighbor. Then Eq. 10 says</p>
+      <div class="math" data-tex="\phi(x)=\mathbb{E}_x[\tau_s],"></div>
+      <p class="eqn">Eq. 10</p>
+      <p>the expected time for that walk to reach the sink from x.</p>
+      <details class="pf"><summary><span class="tagd">our derivation</span><span class="q">Why does the expected hitting time satisfy Δφ = 1?</span></summary><div class="pfbody">
+        <p>The paper cites Durrett's textbook for Eq. 10; the one-step argument below is the standard one, written out by us. Let T(x) be the expected time to reach the sink from x, with T(s) = 0. From x, the walk waits on average 1/deg(x), then moves to a neighbor v with probability b<sub>xv</sub>/deg(x) (or to the sink with probability b<sub>xs</sub>/deg(x)). So</p>
+        <div class="math" data-tex="T(x)=\frac{1}{\deg(x)}+\sum_{v\in V}\frac{b_{xv}}{\deg(x)}\,T(v)."></div>
+        <p>Multiplying by deg(x) gives deg(x)T(x) − Σ<sub>v</sub> b<sub>xv</sub>T(v) = 1, which is (ΔT)(x) = 1. Since Δ is invertible, T = Δ<sup>−1</sup><b>1</b> = φ.</p>
+        <p>On P<sub>3</sub>, by symmetry T(1) = T(3). The equations read T(1) = 1/2 + T(2)/2 (half the time the walk falls into the sink) and T(2) = 1/2 + T(1). Substituting, T(1) = 3/4 + T(1)/2, so T(1) = 3/2 and T(2) = 2.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For a path of L sites the paper uses the known Green's function, Eq. 44, G(x, y) = x(L + 1 − y)/(L + 1) for x ≤ y, and sums it to get Eq. 45,</p>
+      <div class="math" data-tex="\phi(x)=\frac{x(L+1-x)}{2},\qquad x=1,\dots,L."></div>
+      <p class="eqn">Eq. 45</p>
+      <p>a downward parabola, largest in the middle. On P<sub>3</sub> the prices are φ = (3/2, 2, 3/2), matching the hitting times just computed. Now the main formula for the baseline.</p>
+      <div class="fact"><span class="label">Fact · Theorem 3.1, gain of never intervening</span>
+        <p>Without intervention, the long-run average avalanche size is the same from every starting configuration and equals the average price,</p>
+        <div class="math" data-tex="g^{\pi_\emptyset}=\frac{1}{|V|}\sum_{x\in V}\phi(x)."></div>
+        <p class="eqn">Eq. 11</p>
+        <p>Moreover the bias, defined in Section 3, is h(η) = Σ<sub>x</sub> (η(x) − deg(x) + 1)φ(x) + C (Eq. 12).</p>
+      </div>
+      <p>On P<sub>3</sub>, Eq. 11 gives (3/2 + 2 + 3/2)/3 = 5/3, the same number as the direct average over the recurrent class. For a general path, Corollary 4.1 evaluates it as (L + 1)(L + 2)/12, which is 5/3 at L = 3.</p>
+      <details class="pf"><summary><span class="tagd">proof idea</span><span class="q">Why should the average avalanche equal the average of φ?</span></summary><div class="pfbody">
+        <p>The heart of the paper's proof is one identity. Weight each grain at site y by φ(y) and add up: H(η) = Σ<sub>y</sub> η(y)φ(y). Adding a grain at x and relaxing changes η by <b>1</b><sub>x</sub> − Σ<sub>z</sub> n<sub>z</sub>Δ<sub>z,·</sub>, so</p>
+        <div class="math" data-tex="H\big((\alpha_x\eta)^\circ\big)-H(\eta)=\phi(x)-\sum_{z}n_z(\eta,x)\sum_y\Delta_{zy}\phi(y)=\phi(x)-n(\eta,x),"></div>
+        <p>because Σ<sub>y</sub> Δ<sub>zy</sub>φ(y) = (Δφ)(z) = 1. Each new grain adds φ(x) to the total price, and each toppling removes exactly 1. This is the line in the proof of Theorem 3.1 that turns into Eq. 12.</p>
+        <p>The rest is the following reading, which is ours. Summing over T steps, the total number of topplings equals Σ<sub>t</sub> φ(x<sub>t</sub>) minus the change in H. Since H is bounded on stable configurations, dividing by T and letting T grow leaves the average of φ(x) over uniformly random sites. So φ(x) really is the price of a grain at x: the number of topplings it will eventually cause, on average. The paper notes (Remark 3.2) that Eq. 11 also follows from Dhar's formula for expected toppling numbers.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The animation below runs the uncontrolled pile on P<sub>3</sub> and keeps this ledger step by step: the price added, the topplings, and the running total. Its last frame runs 20 000 steps and compares the average avalanche size with 5/3.</p>
+      <div class="player" id="pSdPot">
+        <div class="ptitle"><span class="label">Animation · the price ledger</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="The pile on three sites evolving under random additions, with a ledger of prices and topplings"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>grain</span><span><i class="sw" style="background:var(--ok)"></i>landing site</span><span><i class="sw" style="background:var(--deep)"></i>running average</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p class="short"><b>In short:</b> the uncontrolled pile settles into a uniform distribution on its recurrent configurations; φ = Δ<sup>−1</sup><b>1</b> is the expected time for a random walk to reach the sink, it is also the average number of topplings a grain will cause, and the average avalanche is the average of φ (Eq. 11), 5/3 on P<sub>3</sub>.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Adding control">
+      <span class="num">3 · A CONTROLLER AND ITS COSTS</span>
+      <h2>How do you make "is intervening worth it?" into a precise optimization problem?</h2>
+      <p>Removing grains always makes the next avalanche smaller or equal, but it costs something, and a grain removed now changes every future step. Comparing strategies fairly needs a framework that adds up costs over an unending future. That framework is the Markov decision process, or MDP, the mathematical core of optimal control and of reinforcement learning.</p>
+      <div class="def"><span class="label">Definition · the sandpile MDP</span>
+        <p>The states are the stable configurations Ω. Before each grain is added, the controller picks an action a from A(η) = V<sup>+</sup>(η) ∪ {0}: a site that currently holds a grain, or 0 for no intervention. Action a gives the post-decision configuration η<sup>a</sup>, equal to η with one grain removed at a (or unchanged if a = 0); then a grain lands at a uniformly random site and the pile relaxes. The cost of the step is Eq. 3,</p>
+        <div class="math" data-tex="c(\eta,a)=\mathbb{E}\big[N(\eta^a)\big]+\beta\,\mathbf{1}[a\neq 0]."></div>
+        <p class="eqn">Eq. 3</p>
+        <p>In words: you pay β whenever you remove a grain, and you pay one unit for every toppling in the avalanche that follows.</p>
+      </div>
+      <p>A stationary deterministic policy π = d<sup>∞</sup> chooses its action by a fixed rule d(η) that looks only at the current configuration. The paper restricts to these, citing Puterman's textbook: because there are finitely many states and actions, some stationary deterministic policy is optimal among all policies, including randomized ones and ones that remember the past. On P<sub>3</sub> the number of such policies is the product of the number of available actions over the eight states, 1 · 2<sup>3</sup> · 3<sup>3</sup> · 4 = 864.</p>
+      <p>The yardstick is the long-run average cost per grain added, called the gain, Eq. 4:</p>
+      <div class="math" data-tex="g^\pi(\eta)=\lim_{T\to\infty}\frac{1}{T}\,\mathbb{E}^\pi_\eta\Big[\sum_{t=1}^T c_d(\eta_t)\Big]."></div>
+      <p class="eqn">Eq. 4</p>
+      <p>The gain may depend on the starting configuration, because a controlled chain can have several recurrent classes. The paper writes it as Eq. 5, a weighted average of the stationary average costs of the recurrent classes R<sub>i</sub>, weighted by the probability δ<sub>i</sub>(η) of ending up in each:</p>
+      <div class="math" data-tex="g^\pi(\eta)=\sum_{i=1}^k\delta_i(\eta)\sum_{\eta'\in R_i}\mu_{\pi,i}(\eta')\,c_d(\eta')."></div>
+      <p class="eqn">Eq. 5</p>
+      <p>On P<sub>3</sub>, consider three policies. Never intervening has gain 5/3 for every β, as computed above. The policy that always removes the leftmost grain soon reaches configurations with exactly one grain, which it removes before every addition, so no site ever reaches 2 grains, nothing topples, and the gain is β. The policy that removes the grain at site 2 whenever there is one is the interesting middle case; Section 6 shows its gain is 1/3 + 2β/3.</p>
+      <p>The gain says nothing about where you start, and the bias, Eq. 6, fills that gap. It is the total amount by which costs exceed the average, accumulated forever:</p>
+      <div class="math" data-tex="h^\pi(\eta)=\lim_{T\to\infty}\mathbb{E}^\pi_\eta\Big[\sum_{t=1}^T\big(c_d(\eta_t)-g^\pi(\eta_t)\big)\Big]."></div>
+      <p class="eqn">Eq. 6</p>
+      <p>In words, h(η) − h(η′) is how much more it will cost in total to start from η instead of η′. Gain and bias are tied together by the policy evaluation equations, Eqs. 7a and 7b, in which P<sub>d</sub> is the transition matrix and c<sub>d</sub> the cost vector of the policy:</p>
+      <div class="math" data-tex="(I-P_d)\,g^\pi=0,\qquad c_d-g^\pi+(P_d-I)\,h^\pi=0."></div>
+      <p class="eqn">Eqs. 7a and 7b</p>
+      <p>The second equation reads, state by state: today's cost, minus the average, plus the expected change in bias over one step, is zero. It is a bookkeeping identity, and it determines the bias up to adding a constant on each recurrent class.</p>
+      <details class="pf"><summary><span class="tagd">our sketch</span><span class="q">Why does the bias satisfy Eq. 7b?</span></summary><div class="pfbody">
+        <p>This sketch is ours and assumes a single recurrent class, so that g is a constant. Split the sum in Eq. 6 into its first term and the rest. The first term is c<sub>d</sub>(η) − g. The rest is the same sum started one step later, from the random next state η<sub>2</sub>, whose expectation is Σ<sub>η′</sub> P<sub>d</sub>(η, η′)h(η′). So h(η) = c<sub>d</sub>(η) − g + (P<sub>d</sub>h)(η), which rearranges to Eq. 7b. Eq. 7a holds because a constant vector is unchanged by a transition matrix. The paper cites Puterman, Theorem 8.2.6, for the general multichain case.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Finally, optimality. A policy π* is average-cost optimal if g<sup>π*</sup>(η) ≤ g<sup>π</sup>(η) for every state η and every policy π. The paper states the optimality equations, Eqs. 8a and 8b, which say that a pair (g, h) is optimal when no single deviation from the policy, followed by business as usual, can lower "cost now plus expected bias next." In this paper the gains turn out to be constant, so Eq. 8a is automatic, and the working condition is Eq. 8b:</p>
+      <div class="math" data-tex="\min_{a\in A(\eta)}\Big\{c(\eta,a)-g+\sum_{\eta'}P(\eta'\mid\eta,a)\,h(\eta')-h(\eta)\Big\}=0."></div>
+      <p class="eqn">Eq. 8b (with g constant)</p>
+      <p class="short"><b>In short:</b> the controller removes at most one grain per step at price β and also pays for every toppling; policies are compared by their gain, the long-run average cost per grain (Eq. 4); the bias measures the head start or handicap of a starting configuration, and Eq. 8b checks that no one-step deviation helps.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Doing nothing">
+      <span class="num">4 · WHEN IS DOING NOTHING OPTIMAL?</span>
+      <h2>How expensive must intervention be before it is never worth it?</h2>
+      <p>The simplest policy deserves the first question. Removing a grain at site a costs β now. Section 2 says what it saves: the grain would have caused φ(a) topplings on average. The comparison should be β against φ(a), and the bias formula Eq. 12 makes this precise, since h(η) − h(η<sup>a</sup>) = φ(a): removing a grain at a lowers the total future cost by exactly its price.</p>
+      <div class="fact"><span class="label">Fact · Theorem 3.3</span>
+        <p>Never intervening is optimal if and only if</p>
+        <div class="math" data-tex="\beta\;\ge\;\max\{\phi(a):a\in V,\ \deg(a)\ge 2\}."></div>
+        <p class="eqn">Eq. 13</p>
+        <p>In words: doing nothing is best exactly when the removal fee is at least the largest price of a grain at any site that can hold one. Sites of degree 1 never hold a grain in a stable configuration, so they are left out.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is Eq. 13 sufficient?</span></summary><div class="pfbody">
+        <p>The gain of never intervening is the constant of Eq. 11, so the optimality equation 8a holds and every action is allowed in 8b. Because removing grain a and then doing nothing is the same as doing nothing from η<sup>a</sup>, c(η, a) = β<b>1</b>{a ≠ 0} + c(η<sup>a</sup>, 0), and the transition from η under a equals the transition from η<sup>a</sup> under 0. Using Eq. 7b for the never-intervene policy at η<sup>a</sup>, the quantity inside the minimum of Eq. 8b for action a equals β<b>1</b>{a ≠ 0} + h(η<sup>a</sup>) − h(η). So action 0 attains the minimum exactly when β ≥ h(η) − h(η<sup>a</sup>) for all feasible a. By Eq. 12, h(η) − h(η<sup>a</sup>) = φ(a), and a site a can hold a grain in some stable configuration precisely when deg(a) ≥ 2. This is Eq. 15, equivalent to Eq. 13.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is it necessary? If β is a bit below φ(a), why must some policy do strictly better?</span></summary><div class="pfbody">
+        <p>The paper writes the cost of any action in terms of the never-intervene bias, Eq. 16:</p>
+        <div class="math" data-tex="c(\eta,a)=g^{\pi_\emptyset}+h^{\pi_\emptyset}(\eta)-\sum_{\eta'}P(\eta'\mid\eta,a)\,h^{\pi_\emptyset}(\eta')+\big(\beta-\phi(a)\big)\mathbf{1}\{a\neq 0\}."></div>
+        <p class="eqn">Eq. 16</p>
+        <p>Suppose β &lt; φ(a) for a site a with deg(a) ≥ 2, and use the policy π<sub>a</sub> that removes a grain at a whenever there is one (Eq. 17). Any recurrent class of π<sub>a</sub> contains a configuration with a grain at a, because a grain landing on an empty a stays there. Average Eq. 16 against the stationary distribution of that class. The bias terms cancel, because the distribution is unchanged by a step, and what remains is g<sup>π<sub>a</sub></sup> = g<sup>π<sub>∅</sub></sup> + (β − φ(a)) · (stationary probability that a holds a grain). The last factor is positive and β − φ(a) is negative, so π<sub>a</sub> is strictly better.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>On P<sub>3</sub> the largest price is φ(2) = 2, so never intervening is optimal exactly when β ≥ 2. For a general path, Corollary 4.1 gives the threshold (L + 1)<sup>2</sup>/8 for odd L and L(L + 2)/8 for even L, the value of the parabola Eq. 45 at the center.</p>
+      <p>The star with n leaves shows why the restriction deg(a) ≥ 2 matters. Its center z has degree n + 1, and each leaf has degree 1. The paper computes the Green's function and gets Eq. 58: φ(z) = n + 1 and φ = n + 2 at every leaf. The leaves have the highest price, since a grain there must first reach the center, but a leaf can never hold a grain: one grain makes it topple. So the threshold is β ≥ n + 1, the price at the center (Corollary 4.11), and the never-intervene gain is (n + 1 + n(n + 2))/(n + 1) = n + 2 − 1/(n + 1), Eq. 59. For two leaves, the threshold is 3 and the gain is 11/3.</p>
+      <p>On the complete graph with every site also joined to the sink, Eq. 57 shows that φ = 1 at every site, so the threshold is β ≥ 1 (Corollary 4.7). Every toppling there sends one grain straight to the sink, so every grain causes on average exactly one toppling.</p>
+      <p class="short"><b>In short:</b> removing a grain at a saves φ(a) topplings on average; never intervening is optimal exactly when β is at least the largest price at a site that can hold a grain (Eq. 13): 2 on P<sub>3</sub>, n + 1 on the star, 1 on the complete graph.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Local policies">
+      <span class="num">5 · LOCAL INTERVENTION POLICIES</span>
+      <h2>If intervention is worth it, where should grains be removed, and what does the pile then look like?</h2>
+      <p>Below the threshold, Theorem 3.3 says some intervention helps, but there are astronomically many policies. The paper focuses on a natural family: pick a set of sites W and remove a grain from W whenever W has one.</p>
+      <div class="def"><span class="label">Definition 2.1 · local intervention policy</span>
+        <p>Given W ⊆ V, a policy π<sub>W</sub> is a local intervention policy with intervention set W if d<sub>W</sub>(η) is some site in W that holds a grain whenever such a site exists, and d<sub>W</sub>(η) = 0 otherwise.</p>
+        <p>In words: keep W as empty as you can, one grain per step. Which occupied site of W to pick is left open, so one W can correspond to several policies. The choice W = ∅ is never intervening, and W = V is "always intervene when there is anything to remove."</p>
+      </div>
+      <p>The key construction is the contracted graph G̃<sub>W</sub>, obtained by merging all of W into the sink. An edge from a site outside W to a site in W becomes an edge to the sink, and edges inside W ∪ {s} are discarded. The intuition is that a site kept empty acts almost like a sink: grains that wander into it are soon taken away. Let R̃<sub>W</sub> be the recurrent class of the ordinary sandpile on G̃<sub>W</sub>, and let φ<sub>W</sub> be its prices. For P<sub>3</sub> with W = {2}, the contracted graph is two separate sites, 1 and 3, each joined to the sink by two edges (its original sink edge and its edge to site 2). Each has degree 2 and holds 0 or 1 grains, every configuration of the pair is recurrent, and φ<sub>W</sub>(1) = φ<sub>W</sub>(3) = 1/2, which is Eq. 45 with L = 1.</p>
+      <div class="fact"><span class="label">Fact · Theorem 3.4</span><p>For any local intervention policy π<sub>W</sub>, the restriction to V \ W of every recurrent configuration of the controlled chain is a recurrent configuration of the uncontrolled sandpile on G̃<sub>W</sub>.</p></div>
+      <details class="pf"><summary><span class="tagd">proof idea</span><span class="q">Why does the outside of W behave like a sandpile on the contracted graph?</span></summary><div class="pfbody">
+        <p>One step of π<sub>W</sub>, seen only on V \ W, adds the new grain (if it lands outside W) and also adds whatever grains the sites of W send out when they topple, γ<sub>u</sub> grains at each u. By the Abelian property this is the same as adding all those grains on G̃<sub>W</sub> and relaxing there. The recurrent class of a sandpile is closed under adding grains and relaxing, so once the restriction is in R̃<sub>W</sub> it stays there. Conversely, if it is outside R̃<sub>W</sub>, a suitable finite sequence of additions outside W brings it in with positive probability, and it can never come back. So it was not recurrent.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The inclusion can be strict. The paper's counterexample has two sites, x joined to y and y joined to the sink. Site x has degree 1 and is always empty, so π<sub>x</sub> never acts, and the only recurrent configuration is (0, 1). On the contracted graph, y has two edges to the sink and both 0 and 1 are recurrent. So only {1} of {0, 1} is seen. The trouble is that x topples every time a grain lands on it, sending grains to y that the contracted model does not see.</p>
+      <p>That suggests the condition that makes the reduction exact: the sites of W should never topple.</p>
+      <div class="def"><span class="label">Definition 3.6 · topple-free</span>
+        <p>A set W is topple-free under a policy π if, under every stationary distribution of the chain induced by π, the probability that some site of W topples during a step is zero.</p>
+        <p>In words: once the controlled pile has settled into its long-run behavior, grains reach W only to be removed, never to set off topplings there.</p>
+      </div>
+      <div class="fact"><span class="label">Fact · Theorems 3.7 and 3.8</span><p>If W is topple-free under π<sub>W</sub>, then every recurrent class R of the controlled chain restricts onto all of R̃<sub>W</sub> (Eq. 19). If moreover W = {x} is a single site, then every stationary distribution of π<sub>x</sub>, viewed on V \ {x}, is the uniform distribution on R̃<sub>x</sub>.</p></div>
+      <p>Theorem 3.5 handles a single site without the topple-free assumption: there, the restricted distribution gives equal weight to the orbits of the operator B<sub>x</sub> that adds the grains a toppling of x would send to its neighbors and relaxes, which are the cosets of a cyclic subgroup of the sandpile group. When x never topples, B<sub>x</sub> is never applied, and the restricted distribution is fully uniform.</p>
+      <p>On P<sub>3</sub> with W = {2}: before each grain lands, site 2 is emptied, so after the grain lands it has at most one grain and cannot topple. The set {2} is topple-free. The paper's Theorem 4.2 with L = 3 and k = 1 says the recurrent class is every configuration except 000, seven in all. The second animation computes the stationary distribution: 1/4 on 010, 1/6 on each of 011, 101 and 110, and 1/12 on each of 001, 100 and 111. Grouping by the pair (η(1), η(3)) gives 1/4 + 0, 1/12 + 1/6, 1/12 + 1/6 and 1/6 + 1/12, each 1/4, which is the uniformity of Theorem 3.8.</p>
+      <p class="short"><b>In short:</b> a local policy keeps a set W as empty as it can; outside W the controlled pile is an ordinary sandpile on the graph with W merged into the sink (Theorem 3.4), exactly so when W never topples (Theorems 3.7 and 3.8), which is easy to check on P<sub>3</sub> with W = {2}.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Cost of a policy">
+      <span class="num">6 · THE COST OF A TOPPLE-FREE POLICY</span>
+      <h2>What does a local intervention policy cost in the long run?</h2>
+      <p>A policy's cost has two parts, avalanches and interventions, and topple-freeness makes both computable. The avalanche part comes straight from the contracted graph. The intervention part comes from a conservation law: grains can leave W only by being removed, so in the long run the removal rate equals the rate at which grains enter W.</p>
+      <p>The rate at which grains enter W is where random walks come in. If the grains are labeled and each toppling sends the deg(x) grains at x in a uniformly random arrangement, every grain performs a simple random walk, taking one step per toppling it takes part in. A grain added at x outside W therefore reaches W before falling into the sink with probability</p>
+      <div class="math" data-tex="p_W(x)=\mathbb{P}_x(\tau_W<\tau_s),"></div>
+      <p>the probability that a random walk from x hits W before the sink. The walks of different grains are correlated, but each grain's contribution to the long-run cost is additive, so the correlations do not matter. The paper credits this coupled random-walk picture to Dhar's 2006 review.</p>
+      <div class="fact"><span class="label">Fact · Theorem 3.9</span>
+        <p>If W is topple-free under π<sub>W</sub>, then for every starting configuration</p>
+        <div class="math" data-tex="g^{\pi_W}=\frac{|V|-|W|}{|V|}\,\widetilde g^{\pi_\emptyset}_W+\frac{1}{|V|}\Big(|W|+\sum_{x\in V\setminus W}p_W(x)\Big)\beta,"></div>
+        <p class="eqn">Eq. 20</p>
+        <p>where g̃<sub>W</sub> is the never-intervene gain on the contracted graph. The bias on each recurrent class is the contracted graph's bias plus β times Σ<sub>x∈W</sub> η(x) + Σ<sub>x∉W</sub> p<sub>W</sub>(x)η(x), up to a constant (Eq. 21).</p>
+        <p>In words: avalanches happen only when the grain lands outside W, and then they are avalanches of the contracted pile; interventions happen at the rate grains arrive in W, which is directly with probability |W|/|V| plus the chance a grain landing elsewhere wanders in.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does the conservation argument give the intervention rate?</span></summary><div class="pfbody">
+        <p>Let I<sub>T</sub> be the number of interventions in the first T steps, J<sub>T</sub> the number of grains that enter W, and Z<sub>t</sub> the number of grains in W at time t. Since W is topple-free, grains leave W only by removal, one per intervention, so Z<sub>T+1</sub> − Z<sub>1</sub> = J<sub>T</sub> − I<sub>T</sub>. Each Z<sub>t</sub> lies between 0 and Σ<sub>x∈W</sub>(deg(x) − 1), so I<sub>T</sub>/T and J<sub>T</sub>/T have the same limit. A new grain lands in W with probability |W|/|V|, and otherwise enters W with probability p<sub>W</sub>(x), which gives Eq. 28 for the intervention rate.</p>
+        <p>For the avalanche part, couple the controlled chain with a lazy uncontrolled chain on G̃<sub>W</sub> that does nothing whenever the grain lands in W, which happens with probability |W|/|V|. Because W never topples, the two chains agree outside W and have identical avalanches, which gives Eq. 24, (|V| − |W|)/|V| times g̃<sub>W</sub>.</p>
+        <p>The bias is then verified directly through Eq. 7b. The key fact is that p<sub>W</sub> is harmonic off W: p<sub>W</sub>(y) is the average of its values at the neighbors of y, with value 1 on W and 0 at the sink. So the weight function q<sub>W</sub> (1 on W, p<sub>W</sub> elsewhere) has (Δq<sub>W</sub>)(u) = 0 for u ∉ W, and topplings outside W do not change Σ η(x)q<sub>W</sub>(x). This gives Eqs. 31 to 34 and confirms Eq. 29.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>On P<sub>3</sub> with W = {2}, a random walk from site 1 steps to site 2 or to the sink with equal chances, so p<sub>W</sub>(1) = p<sub>W</sub>(3) = 1/2. The contracted graph is two copies of a one-site path, whose gain is (1 + 1)(1 + 2)/12 = 1/2. Eq. 20 gives</p>
+      <div class="math" data-tex="g^{\pi_{\{2\}}}=\frac{2}{3}\cdot\frac{1}{2}+\frac{1}{3}\Big(1+\frac12+\frac12\Big)\beta=\frac13+\frac{2}{3}\beta."></div>
+      <p>The second animation confirms both pieces from the stationary distribution: the expected avalanche cost averages to 1/3, and the stationary probability that site 2 holds a grain, which is the intervention rate, is 1/4 + 1/6 + 1/6 + 1/12 = 2/3.</p>
+      <p>On the star, W = {z} is topple-free: after the center is emptied it has at most n − 1 grains, and each step adds exactly one grain to it (directly, or through a leaf that topples once), so it never reaches n + 1. Every leaf walks to the center with probability 1, so p<sub>z</sub> = 1, and on the contracted graph each addition at a leaf causes exactly one toppling, so g̃<sub>z</sub> = 1. Eq. 20 gives Eq. 61, g = n/(n + 1) + β, which is 2/3 + β with two leaves. Since leaves never hold grains, this policy is the same as always intervening.</p>
+      <p class="short"><b>In short:</b> for a topple-free set W, the long-run cost is the contracted pile's avalanche cost, scaled by the chance the grain lands outside W, plus β times the rate at which grains reach W, computed from hitting probabilities p<sub>W</sub>(x) (Eq. 20); on P<sub>3</sub> with W = {2} it is 1/3 + 2β/3.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Certificates">
+      <span class="num">7 · CERTIFYING OPTIMALITY</span>
+      <h2>Knowing what a local policy costs, how do you prove that nothing else is cheaper?</h2>
+      <p>Comparing a policy with every alternative one by one is hopeless; P<sub>3</sub> already has 864 policies, and the count grows exponentially. The paper instead extends the price idea of Section 2: give each grain a price that already includes the expected intervention fees it will cost, and check that no single deviation can beat the prices.</p>
+      <p>The price of a grain at x, when following π<sub>W</sub>, is</p>
+      <div class="math" data-tex="q_W(x)=\begin{cases}\beta,& x\in W,\\ \phi_W(x)+p_W(x)\,\beta,& x\in V\setminus W.\end{cases}"></div>
+      <p>A grain in W will be removed at cost β. A grain outside W will cause φ<sub>W</sub>(x) topplings on average in the contracted pile and will reach W, and be removed, with probability p<sub>W</sub>(x). The total price of a configuration is H<sub>W</sub>(η) = Σ<sub>y</sub> η(y)q<sub>W</sub>(y), Eq. 35, which agrees with the bias of π<sub>W</sub> up to a constant on each recurrent class.</p>
+      <div class="fact"><span class="label">Fact · Theorem 3.10</span>
+        <p>Let W be topple-free under π<sub>W</sub>, and define</p>
+        <div class="math" data-tex="\underline\beta_W=\max_{\substack{a\in V\setminus W\\ \deg(a)\ge2}}\frac{\phi_W(a)}{1-p_W(a)},\qquad \overline\beta_W=\min_{u\in W:\,F_W(u)>0}\frac{1+\sum_{v\in V\setminus W}b_{uv}\,\phi_W(v)}{F_W(u)},"></div>
+        <p>where F<sub>W</sub>(u) = b<sub>us</sub> + Σ<sub>v∉W</sub> b<sub>uv</sub>(1 − p<sub>W</sub>(v)). If the lower bound is at most the upper bound, then π<sub>W</sub> is optimal for every β in between.</p>
+        <p>In words: β must be high enough that removing grains outside W is not worth it, and low enough that letting a site of W fill up and topple is not worth it.</p>
+      </div>
+      <p>Each bound has a plain meaning; the reading below is ours, the algebra is in the proof. Removing a grain at a outside W costs β and saves its price φ<sub>W</sub>(a) + p<sub>W</sub>(a)β, so it does not pay when β(1 − p<sub>W</sub>(a)) ≥ φ<sub>W</sub>(a): that is the lower bound. The upper bound asks whether letting a site u ∈ W topple could be cheaper than removing its grains. A toppling costs 1, plus φ<sub>W</sub>(v) further topplings for each grain sent to an outside neighbor v. What it saves is the removal fee β for every grain that then leaves the system without coming back to W: on average F<sub>W</sub>(u) of them, counting the b<sub>us</sub> grains sent straight into the sink and, for each outside neighbor v, the chance 1 − p<sub>W</sub>(v) of reaching the sink before W. A toppling at u is never a bargain when F<sub>W</sub>(u)β ≤ 1 + Σ b<sub>uv</sub>φ<sub>W</sub>(v).</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How do the two inequalities turn into optimality against every policy?</span></summary><div class="pfbody">
+        <p>The paper first shows that on recurrent configurations of π<sub>W</sub>, c<sub>d<sub>W</sub></sub>(η) = g<sup>π<sub>W</sub></sup> + H<sub>W</sub>(η) − (P<sub>d<sub>W</sub></sub>H<sub>W</sub>)(η), Eq. 41. This uses (Δφ<sub>W</sub>)(u) = 1 and (Δp<sub>W</sub>)(u) = 0 off W, so (Δq<sub>W</sub>)(u) = 1 there: each toppling outside W lowers the total price by exactly 1, as in Section 2.</p>
+        <p>For an arbitrary policy and action a, the same computation gives Eq. 42:</p>
+        <div class="math" data-tex="n(\eta^a,x)+\beta\mathbf 1\{a\neq0\}=q_W(x)-\big[H_W((\alpha_x\eta^a)^\circ)-H_W(\eta)\big]+\beta\mathbf 1\{a\neq0\}-q_W(a)+\sum_{u\in W}n_u(\eta^a,x)\big[1-(\Delta q_W)(u)\big]."></div>
+        <p class="eqn">Eq. 42</p>
+        <p>The last two terms are what a deviation can gain or lose. The term β<b>1</b>{a ≠ 0} − q<sub>W</sub>(a) is 0 for actions in W or no action, and β(1 − p<sub>W</sub>(a)) − φ<sub>W</sub>(a) for a ∉ W, which is nonnegative when β ≥ the lower bound. A direct computation gives 1 − (Δq<sub>W</sub>)(u) = 1 + Σ b<sub>uv</sub>φ<sub>W</sub>(v) − βF<sub>W</sub>(u) for u ∈ W, nonnegative when β ≤ the upper bound. Dropping both terms and averaging over the landing site gives c<sub>d</sub>(η) ≥ g<sup>π<sub>W</sub></sup> + H<sub>W</sub>(η) − (P<sub>d</sub>H<sub>W</sub>)(η), Eq. 43, for every policy. Summing over T steps telescopes the H<sub>W</sub> terms; since H<sub>W</sub> is bounded, dividing by T gives g<sup>π</sup>(η) ≥ g<sup>π<sub>W</sub></sup> for every π and every η.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The proof is a potential-function argument of the kind used throughout optimization: find a function whose one-step change bounds the cost from below for every possible move, then telescope. Here the potential is the total price of the grains on the pile.</p>
+      <p>On P<sub>3</sub> with W = {2}: the lower bound is φ<sub>W</sub>(1)/(1 − p<sub>W</sub>(1)) = (1/2)/(1/2) = 1. For the upper bound, site 2 has no sink edge and two outside neighbors with p<sub>W</sub> = 1/2, so F<sub>W</sub>(2) = 2 · 1/2 = 1, and the numerator is 1 + 1/2 + 1/2 = 2. So π<sub>{2}</sub> is optimal for β ∈ [1, 2]. With W = V, there are no outside sites and the lower bound is 0, while F<sub>V</sub>(u) = b<sub>us</sub>, which is 1 at sites 1 and 3 and 0 at site 2, giving the upper bound 1. So always intervening is optimal for β ∈ [0, 1]. With W = ∅, the lower bound is the largest φ, which is 2, and there is no upper bound. The three intervals fit together exactly.</p>
+      <p>On the star with W = {z}, the lower bound is 0 because no outside site can hold a grain, and the upper bound is (1 + n · 1)/1 = n + 1, using b<sub>zs</sub> = 1, p<sub>z</sub> = 1 and φ<sub>z</sub> = 1 at the leaves (Corollary 4.14). On the complete graph with W = V, F<sub>V</sub>(u) = b<sub>us</sub> = 1, so always intervening is optimal for β ≤ 1 (Corollary 4.8). In both cases the interval meets the never-intervene threshold of Section 4, so the two simplest policies already cover every β (Corollaries 4.9 and 4.15).</p>
+      <p class="short"><b>In short:</b> give each grain a price that includes the intervention fees it will cost; π<sub>W</sub> is optimal when removing outside grains does not pay (lower bound) and letting W topple does not pay (upper bound); on P<sub>3</sub>, W = V, {2} and ∅ are optimal on [0, 1], [1, 2] and [2, ∞).</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · The path">
+      <span class="num">8 · THE PATH, SOLVED COMPLETELY</span>
+      <h2>On a line of L sites, which policy is optimal for each β?</h2>
+      <p>The tools are now in place, and the line is where they give a complete answer. The pattern seen on P<sub>3</sub> holds in general: the optimal sets are central intervals that grow as β falls, because φ is a parabola peaked in the middle.</p>
+      <p>For k = 0, 1, …, ⌊L/2⌋, let W<sub>k</sub> = {k + 1, …, L − k}, the sites at distance more than k from both ends, and let π<sub>k</sub> be a local policy with intervention set W<sub>k</sub>. Then W<sub>0</sub> is everything and W<sub>⌊L/2⌋</sub> is empty when L is even.</p>
+      <div class="fact"><span class="label">Fact · Theorem 4.2, the recurrent classes</span>
+        <p>For 1 ≤ k ≤ ⌊(L − 1)/2⌋, π<sub>k</sub> has a unique recurrent class R<sub>k</sub>: the 0/1 configurations with at most one empty site in each outer strip of k sites and at most one grain in the central strip, except the single configuration η̄<sub>k−1</sub> (Eq. 48), which has its k − 1 outermost sites on each side full and everything else empty.</p>
+      </div>
+      <p>For P<sub>3</sub> and k = 1 every condition is automatic, and the only excluded configuration is η̄<sub>0</sub> = 000, giving the seven configurations of Section 5. The excluded configuration cannot be reached because producing an empty site next to the central strip always pushes a grain into the strip (Case VII of the proof). For k = 0, Proposition 4.3 shows the single-grain configurations always form a recurrent class, that an always-intervene policy such as "remove the leftmost grain" has no other, and that always-intervene policies with extra recurrent classes are never optimal. The paper gives one, which prefers the boundary sites, with a second class of two-grain configurations.</p>
+      <p>Every W<sub>k</sub> is topple-free: in a recurrent configuration the central strip holds at most one grain, and that grain is removed before the next one lands. A random walk started inside an outer strip of length k, i sites away from the central strip, reaches the central strip before the sink with probability 1 − i/(k + 1), the gambler's ruin probability (Eq. 55). The contracted graph is two separate paths of length k. Theorem 3.9 then gives Eq. 53:</p>
+      <div class="math" data-tex="g^{\pi_k}=\frac{k(k+1)(k+2)}{6L}+\frac{L-k}{L}\,\beta."></div>
+      <p class="eqn">Eq. 53</p>
+      <details class="pf"><summary><span class="tagd">our check</span><span class="q">How do Eqs. 20, 46 and 55 combine into Eq. 53?</span></summary><div class="pfbody">
+        <p>This arithmetic is ours, following the paper's proof. Here |V| = L and |W<sub>k</sub>| = L − 2k. The contracted graph is two paths of length k, and a grain landing outside W<sub>k</sub> lands on each with probability 1/2, so its never-intervene gain is (k + 1)(k + 2)/12 by Eq. 46. The avalanche term of Eq. 20 is (2k/L) · (k + 1)(k + 2)/12 = k(k + 1)(k + 2)/(6L). For the intervention term, each strip contributes Σ<sub>i=1</sub><sup>k</sup> (1 − i/(k + 1)) = k − k/2 = k/2, so the two strips give k, and (|W<sub>k</sub>| + k)/L = (L − k)/L.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Fact · Theorem 4.5, the complete answer</span>
+        <p>Let K = ⌊(L − 1)/2⌋, β<sub>k</sub> = k(k + 1)/2 for k = 0, …, K, and β<sub>K+1</sub> = (L + 1)<sup>2</sup>/8 for odd L, L(L + 2)/8 for even L. Then, for each k = 0, …, K,</p>
+        <div class="math" data-tex="\pi_k\ \text{is optimal}\iff\beta\in[\beta_k,\beta_{k+1}],\qquad \pi_\emptyset\ \text{is optimal}\iff\beta\ge\beta_{K+1}."></div>
+        <p>In words: start with β large and lower it. At first, doing nothing is best. At β<sub>K+1</sub> it becomes worth clearing the center; at each triangular number β<sub>k</sub> = k(k + 1)/2 the cleared interval grows by one site at each end; below 1 it is best to remove a grain every step.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where do the triangular numbers come from, and why is each interval exact?</span></summary><div class="pfbody">
+        <p>Sufficiency is Theorem 3.10. The contracted graph is two paths of length k, so φ<sub>W<sub>k</sub></sub> at the site i sites away from the central strip is i(k + 1 − i)/2, and with Eq. 55,</p>
+        <div class="math" data-tex="\underline\beta_{W_k}=\max_{1\le i\le k}\frac{i(k+1-i)/2}{i/(k+1)}=\max_{1\le i\le k}\frac{(k+1-i)(k+1)}{2}=\frac{k(k+1)}{2}=\beta_k,"></div>
+        <p>attained at i = 1, the site next to the central strip. For the upper bound, only the two endpoints of W<sub>k</sub> have F &gt; 0; each has F = 1/(k + 1) and numerator 1 + k/2 = (k + 2)/2, giving β<sub>k+1</sub> = (k + 1)(k + 2)/2. When W<sub>K</sub> is the single center site of an odd path, F = 2/(K + 1) and the numerator is K + 1, giving (L + 1)<sup>2</sup>/8.</p>
+        <p>Necessity is a comparison of the gains in Eq. 53: g<sup>π<sub>k</sub></sup> − g<sup>π<sub>k−1</sub></sup> = (β<sub>k</sub> − β)/L, and g<sup>π<sub>K</sub></sup> − g<sup>π<sub>∅</sub></sup> = (L − K)(β − β<sub>K+1</sub>)/L. Outside its interval each policy is strictly beaten by a neighbor in the chain.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For L = 3 the thresholds are β<sub>0</sub> = 0, β<sub>1</sub> = 1 and β<sub>2</sub> = 2, and the three gains are β, 1/3 + 2β/3 and 5/3, crossing exactly at 1 and 2. The animation below checks this from scratch. For each policy it builds the 8 × 8 transition matrix, computes the long-run distribution numerically, and reads off the gain. For the chosen β it then does the same for all 864 policies and reports the smallest gain from every starting configuration.</p>
+      <div class="player" id="pSdPol">
+        <div class="ptitle"><span class="label">Animation · every policy on P₃</span><span class="scen"><button class="chip" data-b="0.5" aria-pressed="false">β = 0.5</button><button class="chip" data-b="1.5" aria-pressed="true">β = 1.5</button><button class="chip" data-b="2.5" aria-pressed="false">β = 2.5</button></span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="The eight configurations of the three-site path shaded by stationary probability, and the gains of three policies as functions of the removal cost"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>stationary probability</span><span><i class="sw" style="background:var(--cool)"></i>site 2 is cleared</span><span><i class="sw" style="background:var(--ok)"></i>optimal gain</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The thresholds for a longer path, evaluated by us from Theorem 4.5: for L = 7, K = 3, and the optimal policy is always intervening for β ≤ 1, clearing sites 2 to 6 for 1 ≤ β ≤ 3, sites 3 to 5 for 3 ≤ β ≤ 6, the center site 4 for 6 ≤ β ≤ 8, and nothing for β ≥ 8. The last threshold, 8 = φ(4) = 4 · 4/2, is the largest grain price, as Theorem 3.3 requires.</p>
+      <div class="aside"><span class="label">A reading of the result</span>
+        <p>This paragraph is ours. The rule has the shape of an optimal stopping or hedging rule in finance: pay a fixed fee to remove risk exactly where the expected future damage of keeping it exceeds the fee. On a path the expected damage of a grain grows toward the middle, like the parabola x(L + 1 − x)/2, so the zone where removal pays is a central interval, and it widens as the fee falls. The paper itself mentions financial markets and systemic risk only as motivation.</p>
+      </div>
+      <p class="short"><b>In short:</b> on a line the optimal intervention sets are central intervals W<sub>k</sub>, the cost of π<sub>k</sub> is Eq. 53, and π<sub>k</sub> is optimal exactly for β between the triangular numbers k(k + 1)/2 and (k + 1)(k + 2)/2, with never intervening optimal above the largest price.</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · Other graphs">
+      <span class="num">9 · OTHER GRAPHS AND THE LIMITS OF THE METHOD</span>
+      <h2>How far does the topple-free method reach beyond the line?</h2>
+      <p>Everything from Section 6 on assumes topple-freeness, so the question for any other graph is whether natural intervention sets have it.</p>
+      <p><b>The complete graph.</b> With n sites, each joined to all others and to the sink, Δ = (n + 1)I − J and G = (I + J)/(n + 1), so φ = 1 everywhere (Eq. 57). Always intervening has gain β, since in the long run the mass cannot grow and every toppling would lose a grain to the sink, so nothing topples. Together with Section 4, always intervening is optimal for β ≤ 1 and never intervening for β ≥ 1 (Corollary 4.9). Single-site sets behave differently: the authors checked by exhaustive search that every single site is topple-free when n ≤ 6, and Lemma 4.10 proves that for n ≥ 7 no single site is, by exhibiting a sequence of additions after which the policy cannot keep up and the site reaches height 2n − 7 ≥ n.</p>
+      <p><b>The star.</b> Never intervening is optimal for β ≥ n + 1 and always intervening for β ≤ n + 1 (Corollary 4.15), with gains n + 2 − 1/(n + 1) and n/(n + 1) + β, as computed in Sections 4 and 6.</p>
+      <p><b>The two-dimensional grid.</b> On an L × L grid with boundary edges to the sink, the Green's function has a sine series, Eq. 56. The never-intervene threshold is φ at the center (or the four central sites when L is even), Corollary 4.6, proved by writing the walk's two coordinates as independent one-dimensional walks and integrating the product of their survival probabilities. Beyond that, the paper reports that a numerical investigation found intervention sets on the grid that are not topple-free, so Theorems 3.9 and 3.10 do not apply in general and the optimal policies on the grid are not determined.</p>
+      <p class="short"><b>In short:</b> on the complete graph and the star, the two simplest policies cover every β with the switch at the largest price; topple-freeness can fail (single sites of the complete graph with n ≥ 7, intervention sets on the grid), and there the method stops.</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>The numbers</h2>
+      <p>The paper's results as stated in its theorems and corollaries. All are exact.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Graph</th><th>Result</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>any finite graph</td><td class="n">never-intervene gain = mean of φ</td><td>Thm 3.1, Eq. 11</td></tr>
+          <tr><td>any finite graph</td><td class="n">never intervene optimal ⇔ β ≥ max φ(a), deg(a) ≥ 2</td><td>Thm 3.3, Eq. 13</td></tr>
+          <tr><td>topple-free W</td><td class="n">gain given by Eq. 20; optimal for β in [β̲<sub>W</sub>, β̄<sub>W</sub>]</td><td>Thms 3.9, 3.10</td></tr>
+          <tr><td>path, L sites</td><td class="n">φ(x) = x(L + 1 − x)/2</td><td>Eq. 45</td></tr>
+          <tr><td>path, L sites</td><td class="n">never-intervene gain (L + 1)(L + 2)/12</td><td>Cor 4.1, Eq. 46</td></tr>
+          <tr><td>path, L sites</td><td class="n">g(π<sub>k</sub>) = k(k+1)(k+2)/(6L) + (L−k)β/L</td><td>Thm 4.4, Eq. 53</td></tr>
+          <tr><td>path, L sites</td><td class="n">π<sub>k</sub> optimal ⇔ β ∈ [k(k+1)/2, (k+1)(k+2)/2]</td><td>Thm 4.5</td></tr>
+          <tr><td>path, L sites</td><td class="n">never optimal ⇔ β ≥ (L+1)²/8 (odd), L(L+2)/8 (even)</td><td>Cor 4.1, Thm 4.5</td></tr>
+          <tr><td>L × L grid</td><td class="n">never optimal ⇔ β ≥ φ(center)</td><td>Cor 4.6</td></tr>
+          <tr><td>complete graph, n sites</td><td class="n">φ ≡ 1; always optimal for β ≤ 1, never for β ≥ 1</td><td>Cors 4.7 to 4.9</td></tr>
+          <tr><td>complete graph, n ≥ 7</td><td class="n">no single site is topple-free</td><td>Lemma 4.10</td></tr>
+          <tr><td>star, n leaves</td><td class="n">φ(z) = n + 1, φ(leaf) = n + 2</td><td>Eq. 58</td></tr>
+          <tr><td>star, n leaves</td><td class="n">gains n + 2 − 1/(n+1) (never), n/(n+1) + β (always)</td><td>Eqs. 59, 61</td></tr>
+          <tr><td>star, n leaves</td><td class="n">always optimal for β ≤ n + 1, never for β ≥ n + 1</td><td>Cor 4.15</td></tr>
+        </tbody>
+      </table></div>
+      <p>The values below for P<sub>3</sub> were computed by us, by building the chain and, in the last column, searching all 864 policies; they agree with the formulas above.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>β</th><th>always</th><th>clear site 2</th><th>never</th><th>best of 864</th></tr></thead>
+        <tbody>
+          <tr><td class="n">0.5</td><td class="n">0.5</td><td class="n">0.667</td><td class="n">1.667</td><td class="n">0.5</td></tr>
+          <tr><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">1.667</td><td class="n">1</td></tr>
+          <tr><td class="n">1.5</td><td class="n">1.5</td><td class="n">1.333</td><td class="n">1.667</td><td class="n">1.333</td></tr>
+          <tr><td class="n">2</td><td class="n">2</td><td class="n">1.667</td><td class="n">1.667</td><td class="n">1.667</td></tr>
+          <tr><td class="n">2.5</td><td class="n">2.5</td><td class="n">2</td><td class="n">1.667</td><td class="n">1.667</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved in the paper.</b> Theorems 3.1, 3.3, 3.4, 3.5, 3.7, 3.8, 3.9 and 3.10 hold on every finite graph and come with complete proofs; the characterizations on the path (Theorem 4.5), the complete graph (Corollary 4.9) and the star (Corollary 4.15) are if-and-only-if statements, also fully proved. The optimality claims are against every stationary deterministic policy, and through the cited MDP theory against every policy. Our brute-force check on P<sub>3</sub> agrees with Theorem 4.5 at every β we tried.</p>
+      <p><b>How the proofs are built.</b> The gain formula of Theorem 3.9 is first motivated by a coupled random-walk picture of the grains, credited to earlier work and described rather than proved in detail. The paper does not rely on that picture alone: the bias formula is checked directly against the policy evaluation equation, and the proof of Theorem 3.10 re-derives the gain from harmonic-function identities, so the final results do not depend on the heuristic.</p>
+      <p><b>Limits of the method.</b> Theorem 3.10 is only a sufficient condition and needs topple-freeness, which must be checked graph by graph. The paper shows it can fail (single sites of the complete graph with n ≥ 7) and reports, from a numerical investigation without details, that it fails for intervention sets on the two-dimensional grid. The optimal policies on the grid, the case closest to the physics motivation, are therefore open. The restriction to local intervention policies is a modeling choice; on the three graph classes solved, the paper proves these are optimal, but nothing is claimed elsewhere.</p>
+      <p><b>Modeling choices.</b> The cost is linear in the number of topplings and the criterion is the long-run average. The authors point out that a discounted criterion, which weighs the near future more, or costs that punish large avalanches more than proportionally, could give different optimal policies, and that controlling where grains land is a different mechanism altogether. The link to earthquakes or fires is qualitative, as the paper says itself.</p>
+      <p><b>Open.</b> Whether the nested, peaked structure of the line extends to grids and other graphs, with intervention sets growing around the maximizers of φ; a graph-theoretic test for topple-freeness, possibly through spanning trees; and approximate methods, such as reinforcement learning, guided by these exact results when no closed form exists.</p>
+    </section>
+
+    <!-- further -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>M. C. de Jongh, A. A. Járai, R. J. Boucherie, M. N. M. van Lieshout, <a href="https://arxiv.org/abs/2611.15549" target="_blank" rel="noopener">Controlling avalanche sizes in the Abelian sandpile model</a>, arXiv:2611.15549 (2026). The paper itself; the HTML version follows the numbering used in this chapter.</p>
+        <p>M. C. de Jongh, R. J. Boucherie, M. N. M. van Lieshout, <a href="https://arxiv.org/abs/2603.24459" target="_blank" rel="noopener">Optimal local interventions in the two-dimensional Abelian sandpile model</a>, arXiv:2603.24459 (2026). The predecessor, which studies the effect of one intervention on the very next avalanche rather than the long run, by computing the expected size of an avalanche started from a connected cluster of critical sites.</p>
+        <p>R. Meester, F. Redig, D. Znamenski, <a href="https://arxiv.org/abs/cond-mat/0301481" target="_blank" rel="noopener">The Abelian sandpile; a mathematical introduction</a>, arXiv:cond-mat/0301481. An introduction to the model for mathematicians. Redig is also the author of the lecture notes the paper cites for the recurrent class of the path.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.15549v1. Equation, theorem and lemma numbers match the paper. All three animations run real computations: the toppling sequence and expected avalanche sizes on P<sub>3</sub>; a seeded random run of the uncontrolled pile with the price ledger and a 20 000-step average; and, for each policy, the transition matrix and its long-run distribution, followed by an exhaustive search over all 864 policies. The hitting-time derivation of φ on P<sub>3</sub>, the bias sketch, the reading of φ as a price, the spanning-tree remark, the arithmetic behind Eq. 53, the L = 7 thresholds, the finance reading and the P<sub>3</sub> tables are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-15549',date:'2026-11-15',title:'Controlling Avalanche Sizes in the Abelian Sandpile Model',authors:'de Jongh, Járai, Boucherie, van Lieshout',field:'math.OC',tags:['Markov decision processes','sandpile model','random walks'],mins:40,
+     dek:'Pay β to remove a grain before each new one lands, and on a line the best long-run policy clears a central interval that widens by one site at each end whenever β falls below the next triangular number k(k + 1)/2. Every grain has a price, the expected time for a random walk to reach the sink, and comparing prices with β decides when to intervene.'},
     {id:'2611-14906',date:'2026-11-14',title:'The Frustration Index of Fully Frustrated Hypercubes',authors:'Wang',field:'math.CO',tags:['signed graphs','hypercube','Ising model'],mins:45,
      dek:'Color the edges of an n-cube so every square has an odd number of red edges: the fewest red edges possible is now known exactly in every dimension r²+1, to within O(n<sup>−1/2</sup>) in every dimension, and is 772 in dimension nine. The proof solves the problem on a tiny cube with weighted edges and unfolds it into an ordinary cube without changing a single local field.'},
     {id:'2611-16398',date:'2026-11-13',title:'Loss of the Quadratic Speedup in Grover Search under Local and Coherent Noise',authors:'Khan, Faryad',field:'quant-ph',tags:['Grover search','noise','error budgets'],mins:40,
@@ -3586,6 +3996,144 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
       });}
     root.querySelectorAll('[data-r]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-r]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(+b.dataset.r)}));
     load(3);
+  })();
+
+  // ================= sandpile control (2611-15549) =================
+  const SP=(function(){
+    const L=3,adj=[[1],[0,2],[1]],deg=[2,2,2],phi=[1.5,2,1.5];
+    function stab(eta){eta=eta.slice();const n=[0,0,0],log=[];for(;;){const i=eta.findIndex((h,j)=>h>=deg[j]);if(i<0)return{eta,n,log};
+      eta[i]-=deg[i];n[i]++;adj[i].forEach(j=>eta[j]++);const sunk=deg[i]-adj[i].length;log.push({i,eta:eta.slice(),sunk,n:n.slice()})}}
+    const S=[];for(let m=0;m<8;m++)S.push([(m>>2)&1,(m>>1)&1,m&1]);
+    const key=s=>s.join(''),idx={};S.forEach((s,i)=>idx[key(s)]=i);
+    const add=(e,x)=>{const f=e.slice();f[x]++;return stab(f)};
+    const EN=e=>{let t=0;for(let x=0;x<L;x++)t+=add(e,x).n.reduce((a,b)=>a+b,0);return t/L};
+    const acts=s=>[-1,...[0,1,2].filter(i=>s[i]>0)];
+    // post-decision data cache: for each state and action, expected avalanche and next-state distribution
+    const post={};S.forEach((s,i)=>acts(s).forEach(a=>{const e=s.slice();if(a>=0)e[a]--;const nx=Array(8).fill(0);
+      for(let x=0;x<L;x++)nx[idx[key(add(e,x).eta)]]+=1/L;post[i+':'+a]={en:EN(e),nx}}));
+    const mul=(A,B)=>A.map(r=>B[0].map((_,j)=>{let s=0;for(let k=0;k<8;k++)s+=r[k]*B[k][j];return s}));
+    function evalPol(dec,beta){const P=[],c=[];S.forEach((s,i)=>{const d=post[i+':'+dec[i]];P.push(d.nx.slice());c.push(d.en+(dec[i]>=0?beta:0))});
+      let Q=P.map((r,i)=>r.map((v,j)=>(v+(i===j?1:0))/2));for(let k=0;k<16;k++)Q=mul(Q,Q);
+      const g=Q.map(r=>r.reduce((t,v,j)=>t+v*c[j],0));const av=Q.map(r=>r.reduce((t,v,j)=>t+v*post[j+':'+dec[j]].en,0));
+      const rate=Q.map(r=>r.reduce((t,v,j)=>t+v*(dec[j]>=0?1:0),0));return{Q,g,av,rate}}
+    let pols=[[]];S.forEach(s=>{const nx=[];pols.forEach(p=>acts(s).forEach(a=>nx.push(p.concat([a]))));pols=nx});
+    const DEC={never:S.map(()=>-1),center:S.map(s=>s[1]>0?1:-1),left:S.map(s=>s.findIndex(h=>h>0))};
+    return{L,phi,stab,S,key,idx,add,EN,acts,evalPol,pols,DEC};
+  })();
+  const fr3=x=>{const k=Math.round(x*12);if(Math.abs(x*12-k)>1e-7)return (+x.toFixed(3)).toString().replace('-','−');
+    const gcd=(a,b)=>b?gcd(b,a%b):a,g=gcd(Math.abs(k),12)||12,num=k/g,den=12/g;return (num<0?'−':'')+Math.abs(num)+(den===1?'':'/'+den)};
+  function drawPile(el,h,o){o=o||{};const X=[100,170,240],base=o.base||150;
+    el('line',{x1:44,y1:base,x2:296,y2:base,class:'edge'});
+    [[22,'sink'],[318,'sink']].forEach(([x,t])=>{el('rect',{x:x-20,y:base-16,width:40,height:32,rx:6,fill:'none',stroke:'var(--cool)','stroke-width':2});
+      el('text',{x:x,y:base+4,class:'lab',fill:'var(--cool)'}).textContent=t});
+    X.forEach((x,i)=>{const hot=h[i]>=2,land=o.land===i;
+      el('circle',{cx:x,cy:base,r:15,fill:hot?'var(--bad)':(land?'var(--ok)':'var(--raise)'),stroke:hot?'var(--bad)':(land?'var(--ok)':'var(--line)'),'stroke-width':2});
+      el('text',{x:x,y:base+4,class:'msg',fill:hot||land?'var(--accent-ink)':'var(--fg)'}).textContent=i+1;
+      for(let g=0;g<h[i];g++)el('circle',{cx:x,cy:base-30-g*20,r:8,fill:'var(--accent)'});
+      if(o.n)el('text',{x:x,y:base+34,class:'lab'}).textContent='topples '+o.n[i];});
+    if(o.top!=null){const x=X[o.top];el('path',{d:`M${x-8} ${base-20} Q ${x-35} ${base-55} ${x-62} ${base-20}`,fill:'none',stroke:'var(--bad)','stroke-width':2});
+      el('path',{d:`M${x+8} ${base-20} Q ${x+35} ${base-55} ${x+62} ${base-20}`,fill:'none',stroke:'var(--bad)','stroke-width':2});}
+  }
+
+  // ---- Animation 1: one avalanche on P3 ----
+  (function(){
+    const root=document.getElementById('pSdAval');if(!root)return;const P=Player(root);
+    const start=[1,1,1],x=1,pre=start.slice();pre[x]++;const R=SP.stab(pre);
+    const s=h=>h.join('');let sunk=0;
+    const F=[{h:start,t:'Start at 111',c:'Every site has degree 2 and one grain, so every site is critical but stable. One more grain anywhere will start an avalanche.'},
+      {h:pre,land:x,t:'A grain lands on site 2',c:'Site 2 now holds 2 = deg(2) grains and is unstable. The heights are '+s(pre)+'.'}];
+    R.log.forEach((st,k)=>{sunk+=st.sunk;F.push({h:st.eta,top:st.i,n:st.n,t:`Site ${st.i+1} topples`,c:`Site ${st.i+1} loses 2 grains and sends one along each edge${st.sunk?', '+st.sunk+' of them into the sink':''}. Heights are now ${s(st.eta)}; grains lost to the sink so far: ${sunk}. Toppling counts so far: (${st.n.join(', ')}).`})});
+    const nT=R.n.reduce((a,b)=>a+b,0);
+    F.push({h:R.eta,n:R.n,t:'Stable again',c:`The pile has relaxed to ${s(R.eta)}. Toppling counts n = (${R.n.join(', ')}), avalanche size ${nT}. Check: (1, 1, 1) + (0, 1, 0) − nΔ, with nΔ = (${[0,1,2].map(j=>2*R.n[j]-(j>0?R.n[j-1]:0)-(j<2?R.n[j+1]:0)).join(', ')}), equals (${R.eta.join(', ')}). Of the 4 grains, ${sunk} fell into the sink.`});
+    const rec=SP.S.filter(e=>e.reduce((a,b)=>a+b,0)>=2),ens=rec.map(e=>SP.EN(e)),avg=ens.reduce((a,b)=>a+b,0)/rec.length;
+    F.push({table:true,t:'Expected avalanche from every state',c:`Averaging over the three landing sites gives E[N(η)] for each stable configuration (left). On the recurrent class {${rec.map(s).join(', ')}} the average is ${fr3(avg)}, and the average price (3/2 + 2 + 3/2)/3 is also ${fr3((1.5+2+1.5)/3)}, as Eq. 11 says.`});
+    F.delay=5200;
+    P.load(F,(f,el)=>{
+      if(f.table){el('text',{x:20,y:24,class:'lab',style:'text-anchor:start'}).textContent='configuration · E[N] · recurrent?';
+        SP.S.forEach((e,i)=>{const y=48+i*24,r=e.reduce((a,b)=>a+b,0)>=2;
+          el('text',{x:40,y,class:'msg',fill:r?'var(--accent)':'var(--muted)',style:'text-anchor:start'}).textContent=s(e);
+          el('text',{x:120,y,class:'msg',fill:'var(--fg)',style:'text-anchor:start'}).textContent=fr3(SP.EN(e));
+          el('text',{x:190,y,class:'lab',style:'text-anchor:start'}).textContent=r?'yes':'transient';});
+        el('text',{x:330,y:236,class:'msg',fill:'var(--accent)',style:'text-anchor:end'}).textContent='recurrent average '+fr3(avg);return}
+      drawPile(el,f.h,{land:f.land,top:f.top,n:f.n});
+      el('text',{x:170,y:232,class:'lab'}).textContent='heights '+f.h.join(' ');
+    });
+  })();
+
+  // ---- Animation 2: the price ledger ----
+  (function(){
+    const root=document.getElementById('pSdPot');if(!root)return;const P=Player(root);
+    let seed=20261115;const rnd=()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+    const H=e=>e.reduce((t,h,i)=>t+h*SP.phi[i],0);
+    let eta=[0,0,0],sumN=0,sumPhi=0;const F=[];const H0=H(eta);const hist=[];
+    F.push({h:eta,t:'Empty pile, empty ledger',c:'Each grain at site x is priced at φ(x): 3/2 at the ends and 2 in the middle. The total price H(η) = Σ η(x)φ(x) starts at 0. Grains will land at random sites; the ledger tracks price added and topplings paid.',hist:[]});
+    for(let t=1;t<=12;t++){const x=Math.floor(rnd()*3),R=SP.add(eta,x),n=R.n.reduce((a,b)=>a+b,0),dH=H(R.eta)-H(eta);
+      sumN+=n;sumPhi+=SP.phi[x];hist.push(sumN/t);
+      F.push({h:R.eta,land:x,t:`Step ${t}: grain at site ${x+1}`,c:`Avalanche size ${n}. Price added φ(${x+1}) = ${fr3(SP.phi[x])}; the total price went from ${fr3(H(eta))} to ${fr3(H(R.eta))}, a change of ${fr3(dH)}, which is φ(x) − n = ${fr3(SP.phi[x]-n)}. Running totals: ${sumN} toppling${sumN===1?'':'s'}, ${fr3(sumPhi)} price added; average avalanche ${(sumN/t).toFixed(3)}.`,hist:hist.slice()});
+      eta=R.eta;}
+    let e2=[0,0,0],tot=0,ph=0;const T=20000;const long=[];for(let t=1;t<=T;t++){const x=Math.floor(rnd()*3),R=SP.add(e2,x);tot+=R.n.reduce((a,b)=>a+b,0);ph+=SP.phi[x];e2=R.eta;if(t%1000===0)long.push(tot/t)}
+    const resid=ph-(H(e2)-H0)-tot;
+    F.push({h:e2,t:'20 000 steps',c:`A fresh run of ${T.toLocaleString('en-US')} steps: average avalanche ${(tot/T).toFixed(4)}, against 5/3 ≈ 1.6667 from Eq. 11. The ledger balances exactly: total price added (${ph.toLocaleString('en-US')}) minus the final price (${fr3(H(e2))}) minus the topplings (${tot.toLocaleString('en-US')}) leaves ${Math.abs(resid)<1e-6?'0':resid}.`,hist:long,long:true});
+    F.delay=4600;
+    P.load(F,(f,el)=>{drawPile(el,f.h,{land:f.land,base:110});
+      const x0=40,x1=320,y0=232,y1=172,ymax=3.5,Y=v=>y0-(v/ymax)*(y0-y1);
+      el('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'var(--line)'});
+      el('line',{x1:x0,y1:Y(5/3),x2:x1,y2:Y(5/3),stroke:'var(--muted)','stroke-dasharray':'4 3'});
+      el('text',{x:x0-4,y:Y(5/3)+3,class:'lab',style:'text-anchor:end'}).textContent='5/3';
+      const m=f.long?20:12;f.hist.forEach((v,i)=>{const cx=x0+(i+1)*(x1-x0)/(m+1);el('circle',{cx,cy:Y(Math.min(v,ymax)),r:3.5,fill:'var(--deep)'})});
+      el('text',{x:x1,y:y0+12,class:'lab',style:'text-anchor:end'}).textContent=f.long?'average after each 1000 steps':'running average avalanche';
+      el('text',{x:330,y:18,class:'lab',style:'text-anchor:end'}).textContent='total price H = '+fr3(H(f.h));
+    });
+  })();
+
+  // ---- Animation 3: every policy on P3 ----
+  (function(){
+    const root=document.getElementById('pSdPol');if(!root)return;const P=Player(root);
+    const s=e=>e.join('');
+    function grid(el,pi,dec,title){el('text',{x:10,y:16,class:'lab',style:'text-anchor:start'}).textContent=title;
+      SP.S.forEach((e,i)=>{const c=i%4,r=Math.floor(i/4),x=14+c*80,y=30+r*96,p=pi[i];
+        el('rect',{x,y,width:72,height:84,rx:8,fill:'var(--raise)',stroke:'var(--line)'});
+        el('rect',{x,y:y+84-84*Math.min(1,p*2.5),width:72,height:84*Math.min(1,p*2.5),rx:8,fill:'var(--accent)',opacity:.35});
+        el('text',{x:x+36,y:y+22,class:'msg',fill:'var(--fg)'}).textContent=s(e);
+        el('text',{x:x+36,y:y+44,class:'msg',fill:'var(--accent)'}).textContent=p>1e-9?fr3(p):'0';
+        const a=dec[i];el('text',{x:x+36,y:y+70,class:'lab',fill:a===1?'var(--cool)':'var(--muted)'}).textContent=a<0?'do nothing':'remove at '+(a+1);});
+    }
+    function load(beta){
+      const ev={};for(const k in SP.DEC)ev[k]=SP.evalPol(SP.DEC[k],beta);
+      const pi=k=>ev[k].Q[0];
+      const cen=ev.center,pc=pi('center');
+      const proj=[[0,0],[0,1],[1,0],[1,1]].map(([a,b])=>SP.S.reduce((t,e,i)=>t+(e[0]===a&&e[2]===b?pc[i]:0),0));
+      // exhaustive search
+      const all=SP.pols.map(p=>SP.evalPol(p,beta).g);const gmin=SP.S.map((_,i)=>Math.min(...all.map(g=>g[i])));
+      const nopt=all.filter(g=>g.every((v,i)=>Math.abs(v-gmin[i])<1e-9)).length;
+      const formula=Math.min(beta,1/3+2*beta/3,5/3);const flat=gmin.every(v=>Math.abs(v-gmin[0])<1e-9);
+      const who=beta<1?'always intervening':(beta<=2?'clearing site 2':'never intervening');
+      const F=[
+        {k:'grid',pol:'never',t:'Never intervene',c:`Started from 000 and run to its long-run distribution, the pile spends ${fr3(pi('never')[3])} of its time in each of 011, 101, 110 and 111, uniform on the recurrent class. Averaging E[N] gives the gain ${fr3(ev.never.g[0])} for every β.`},
+        {k:'grid',pol:'left',t:'Always remove the leftmost grain',c:`The chain ends up on the single-grain configurations, ${fr3(pi('left')[1])} each. A grain is removed every step (rate ${fr3(ev.left.rate[0])}), nothing ever topples (avalanche cost ${fr3(ev.left.av[0])}), and the gain is β = ${fr3(ev.left.g[0])}.`},
+        {k:'grid',pol:'center',t:'Clear site 2 whenever it has a grain',c:`Seven configurations are recurrent; only 000 is missing, as Theorem 4.2 says. The long-run avalanche cost is ${fr3(cen.av[0])}, the intervention rate is ${fr3(cen.rate[0])}, and the gain is ${fr3(cen.av[0])} + ${fr3(cen.rate[0])} · ${beta} = ${fr3(cen.g[0])}, matching Eq. 20.`},
+        {k:'grid',pol:'center',proj:true,t:'The ends look uncontrolled',c:`Group the seven by the pair (η(1), η(3)): the probabilities of 00, 01, 10 and 11 are ${proj.map(fr3).join(', ')}. Uniform, as Theorem 3.8 predicts for the topple-free site 2 on the contracted graph.`},
+        {k:'lines',t:'Gain against β',c:`The three gains are β, 1/3 + 2β/3 and 5/3. Their lower envelope switches at β = 1 and β = 2, the thresholds β<sub>1</sub> and β<sub>2</sub> of Theorem 4.5. At β = ${beta} the lowest of the three is ${fr3(formula)}, from ${who}.`},
+        {k:'all',t:`All 864 policies at β = ${beta}`,c:`Every policy's transition matrix was built and its long-run averages computed. The smallest gain from each of the eight starting states is ${flat?fr3(gmin[0])+' for all of them':gmin.map(fr3).join(', ')}, equal to the envelope value ${fr3(formula)}. ${nopt===1?'Exactly one policy attains':'In all, '+nopt+' policies attain'} it${nopt>1?'; they differ only in what they do in states the chain eventually leaves for good':''}.`}
+      ];
+      F.delay=6000;
+      P.load(F,(f,el)=>{
+        if(f.k==='grid'){grid(el,pi(f.pol),SP.DEC[f.pol],f.proj?'grouped by sites 1 and 3: '+proj.map(fr3).join(' · '):'long-run probability from 000');return}
+        const x0=46,x1=326,y0=212,y1=26,bx=b=>x0+b/3*(x1-x0),gy=g=>y0-g/3*(y0-y1);
+        el('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'var(--line)'});el('line',{x1:x0,y1:y0,x2:x0,y2:y1,stroke:'var(--line)'});
+        [0,1,2,3].forEach(b=>{el('text',{x:bx(b),y:y0+14,class:'lab'}).textContent=b;el('text',{x:x0-8,y:gy(b)+3,class:'lab',style:'text-anchor:end'}).textContent=b});
+        el('text',{x:x1,y:y0+28,class:'lab',style:'text-anchor:end'}).textContent='β';el('text',{x:x0+4,y:y1-8,class:'lab',style:'text-anchor:start'}).textContent='gain';
+        const lines=[[b=>b,'always','var(--muted)'],[b=>1/3+2*b/3,'clear 2','var(--cool)'],[()=>5/3,'never','var(--deep)']];
+        lines.forEach(([fn,lab,col])=>{el('line',{x1:bx(0),y1:gy(fn(0)),x2:bx(3),y2:gy(fn(3)),stroke:col,'stroke-width':2});el('text',{x:bx(3)-2,y:gy(fn(3))-6,class:'lab',fill:col,style:'text-anchor:end'}).textContent=lab});
+        let d='';for(let b=0;b<=3.0001;b+=0.05)d+=(d?'L':'M')+bx(b)+' '+gy(Math.min(b,1/3+2*b/3,5/3));
+        el('path',{d,fill:'none',stroke:'var(--ok)','stroke-width':4,opacity:.55});
+        [1,2].forEach(b=>el('line',{x1:bx(b),y1:y0,x2:bx(b),y2:gy(Math.min(b,1/3+2*b/3)),stroke:'var(--line)','stroke-dasharray':'3 3'}));
+        el('line',{x1:bx(beta),y1:y0,x2:bx(beta),y2:y1,stroke:'var(--accent)','stroke-width':1.5});
+        el('circle',{cx:bx(beta),cy:gy(formula),r:6,fill:f.k==='all'?'var(--ok)':'var(--accent)'});
+        if(f.k==='all')el('text',{x:bx(beta)+(beta>2?-10:10),y:gy(formula)-10,class:'msg',fill:'var(--ok)',style:beta>2?'text-anchor:end':'text-anchor:start'}).textContent='best of 864: '+fr3(gmin[0]);
+      });}
+    root.querySelectorAll('[data-b]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-b]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(+b.dataset.b)}));
+    load(1.5);
   })();
 
   route();
