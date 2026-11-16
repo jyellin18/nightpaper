@@ -3153,10 +3153,362 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.15549v1. Equation, theorem and lemma numbers match the paper. All three animations run real computations: the toppling sequence and expected avalanche sizes on P<sub>3</sub>; a seeded random run of the uncontrolled pile with the price ledger and a 20 000-step average; and, for each policy, the transition matrix and its long-run distribution, followed by an exhaustive search over all 864 policies. The hitting-time derivation of φ on P<sub>3</sub>, the bias sketch, the reading of φ as a price, the spanning-tree remark, the arithmetic behind Eq. 53, the L = 7 thresholds, the finance reading and the P<sub>3</sub> tables are ours.</p>
   </footer>
 </div>
+
+<div class="wrap" id="view-p-2611-17688" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Mon, Nov 16</span></div>
+  <div class="paperhead">
+    <h1>Exact Failure Probabilities for d-Choice Cuckoo Hashing</h1>
+    <p class="meta">Chenyang Zhang, Ling Ren · posted Nov 13, 2026 · cs.DS · <a href="https://arxiv.org/abs/2611.17688" target="_blank" rel="noopener">arXiv 2611.17688</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">When each of n items may sit in any one of d random slots of a table, and no two items may share a slot, the chance that no valid seating exists had only been computed exactly for d = 2; this paper computes it exactly for every n, table size M and d, in O(n² log n) time. Cuckoo hashing, the scheme behind this question, is used in key-value stores, network switches, approximate membership filters, page tables and cryptographic protocols, and in all of them a failed table is an expensive event whose probability designers want to know. The paper's route is short and surprising. It writes "this bipartite graph has no perfect matching" as an explicit polynomial in the missing edges, using a coefficient formula due to Gal Beniamini, sums that polynomial over all random outcomes in closed form, and then evaluates the resulting sum of exponentially many terms with a dynamic program that merges terms sharing a boundary. The chapter builds each of those steps on two tables small enough to check by hand.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what d-choice cuckoo hashing is, why a failure is exactly the absence of a matching that covers every item, and how Hall's theorem detects it;</li>
+        <li>why every yes/no function of a graph has a unique multilinear polynomial, and what that polynomial looks like for "no perfect matching" on a 2 × 2 grid (Eq. 1);</li>
+        <li>what a totally ordered graph and its representing sequence are, and how Beniamini's theorem gives the coefficients (Theorem 2.2, Eqs. 2 to 4);</li>
+        <li>how summing the polynomial over all outcomes turns into a sum over representing sequences, each term a product of binomial coefficients and powers (Eqs. 5 to 9);</li>
+        <li>why that sum factors block by block, and how a forward dynamic program over boundaries (ℓ, b) evaluates it with O(M<sup>4</sup>) operations (Eqs. 10 to 15);</li>
+        <li>how the same machinery handles draws with replacement and d separate tables (Eqs. 16 to 20), and what the stated running times are.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>n, M, d</dt><dd>the number of items, the number of slots, and the number of candidate slots per item, with 1 ≤ d &lt; n &lt; M</dd>
+        <dt>Γ(i)</dt><dd>the candidate set of item i: d distinct slots drawn uniformly at random</dd>
+        <dt>Q</dt><dd>the number of possible candidate sets, C(M, d) in the one-table model</dd>
+        <dt>ω, G<sub>ω</sub></dt><dd>an outcome (Γ(1), …, Γ(n)), and its candidate graph: items on the left, slots on the right, an edge for each candidate</dd>
+        <dt>N<sub>bad</sub>, p<sub>fail</sub></dt><dd>the number of outcomes with no valid placement, and the failure probability N<sub>bad</sub>/Q<sup>n</sup></dd>
+        <dt>x<sub>ij</sub></dt><dd>the missing-edge indicator: 1 if left vertex i and right vertex j are not joined, 0 if they are</dd>
+        <dt>BPM*<sub>M</sub>(x)</dt><dd>the polynomial that equals 1 when the graph has no perfect matching and 0 when it has one</dd>
+        <dt>H, a*<sub>H</sub></dt><dd>a bipartite graph indexing a monomial, and that monomial's coefficient</dd>
+        <dt>T<sub>H</sub>(i)</dt><dd>the neighborhood of left vertex i in H; for counting, the forbidden set of item i</dd>
+        <dt>(k, b), L</dt><dd>the representing sequence of a totally ordered graph: k<sub>i</sub> left vertices in the first i blocks, b<sub>i</sub> the degree in block i, L blocks</dd>
+        <dt>φ(a, b, r)</dt><dd>the blockwise factor of Beniamini's formula (Eq. 4)</dd>
+        <dt>z</dt><dd>M − n, the number of dummy items added to make the graph square</dd>
+        <dt>h(b)</dt><dd>the number of candidate sets that avoid a fixed forbidden set of size b</dd>
+        <dt>u<sub>i</sub>, ν(ℓ)</dt><dd>the number of real items in block i, and the number of real items among the first ℓ left vertices</dd>
+        <dt>τ, F[ℓ, b]</dt><dd>the multiplier of one block, and the dynamic-programming state: the total weight of prefixes ending at boundary (ℓ, b)</dd>
+        <dt>m, h<sub>m</sub>(b)</dt><dd>the table lengths (m<sub>1</sub>, …, m<sub>d</sub>) in the separate-table model, and its candidate count</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Table A: 3 items, 4 slots, d = 2.</b> Each item picks one of the C(4, 2) = 6 pairs of slots, so there are 6<sup>3</sup> = 216 equally likely outcomes. It is small enough that the whole failure count, the whole polynomial sum and the whole dynamic program fit in a paragraph each.</li>
+        <li><b>Table B: 4 items, 5 slots, d = 2.</b> Each item picks one of C(5, 2) = 10 pairs, for 10<sup>4</sup> = 10 000 outcomes. It is the smallest case where the paper's sum has a negative term and the dynamic program visibly merges two terms into one. Both animations run on it.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Hashing as matching">
+      <span class="num">1 · HASHING AS A MATCHING PROBLEM</span>
+      <h2>When exactly does a cuckoo hash table fail?</h2>
+      <p>A hash table stores items in an array of slots and uses a hash function to decide which slot an item belongs in, so that looking an item up means computing its hash and checking one place. The trouble is collisions: two items can hash to the same slot. Cuckoo hashing, introduced by Pagh and Rodler in 2004, handles collisions by giving each item a few alternatives. Each item has d candidate slots, chosen by d hash functions, and it must sit in one of them. A lookup therefore checks at most d slots, which is why the scheme is popular wherever worst-case lookup time matters. Insertion is where the name comes from: if all of a new item's candidates are occupied, it evicts one occupant, which moves to one of its own other candidates, possibly evicting someone else, the way a cuckoo chick pushes other eggs out of the nest.</p>
+      <p>Sometimes no rearrangement works. The paper asks for the exact probability of that event, under the standard idealization that the hash functions behave like truly random choices.</p>
+      <div class="def"><span class="label">Definition · the one-table model (Section 2.1)</span>
+        <p>There are n items and M slots, with 1 ≤ d &lt; n &lt; M. Each item i independently draws a candidate set Γ(i), a uniformly random d-element subset of the M slots, so it has Q = C(M, d) possible candidate sets. An outcome ω = (Γ(1), …, Γ(n)) lists all candidate sets, and the Q<sup>n</sup> outcomes are equally likely. The candidate graph G<sub>ω</sub> is the bipartite graph with items on one side, slots on the other, and an edge (i, j) for each j ∈ Γ(i). A placement is a matching of G<sub>ω</sub> that covers every item. The outcome fails if no placement exists, and</p>
+        <div class="math" data-tex="p_{\mathrm{fail}}(n,M,d)=\frac{N_{\mathrm{bad}}}{Q^{\,n}},"></div>
+        <p>where N<sub>bad</sub> is the number of failing outcomes.</p>
+        <p>In words: every item gets d random slots, a matching is a way to seat each item in one of its own slots with no slot used twice, and the table fails when no such seating exists. Because all outcomes are equally likely, the probability is a count divided by Q<sup>n</sup>, and the whole paper is about computing that count.</p>
+      </div>
+      <p>A matching is a set of edges no two of which share an endpoint. Insertion with evictions is a search for a matching: an eviction chain that ends at an empty slot is what graph theorists call an augmenting path, and it enlarges the matching by one edge. The question of failure is therefore a question about matchings in a random bipartite graph, and it does not depend on the order in which items arrive or on how the insertion algorithm searches. The tool that decides it is a classical theorem, which the paper does not need to state but which makes every hand count in this chapter possible.</p>
+      <div class="aside"><span class="label">Background · Hall's marriage theorem (not from the paper)</span>
+        <p>For a set S of items, write Γ(S) for the union of their candidate sets. A matching that covers every item exists if and only if |Γ(S)| ≥ |S| for every set S of items. In words: failure happens exactly when some group of items is crowded into fewer slots than there are items in the group.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">our sketch</span><span class="q">Why is Hall's condition enough, and not only necessary?</span></summary><div class="pfbody">
+        <p>Necessity is the pigeonhole principle: if some S has |Γ(S)| &lt; |S|, the items of S cannot all get different slots. For sufficiency, the standard argument is the one cuckoo insertion carries out. Suppose a matching covers some items and item i is still unplaced. Search outward from i: look at its candidate slots, then at the items sitting in them, then at their candidate slots, and so on. If the search ever reaches an empty slot, shifting every item along the path by one step places i and keeps everyone else placed. If it never does, let S be i together with every item reached. Every slot the search reached is occupied by an item of S other than i, and every candidate of an item in S was reached, so Γ(S) consists of |S| − 1 occupied slots. That violates Hall's condition. So when the condition holds, every unplaced item can be added, one at a time.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Table A shows the condition at work. A single item has 2 slots, and two items have at least 2 slots between them, so no set of one or two items can violate it. Three items violate it only if their union has 2 slots, which happens only when all three picked the same pair. There are 6 pairs, so N<sub>bad</sub> = 6 and p<sub>fail</sub> = 6/216 = 1/36, about 2.8%. Notice that a whole free slot can sit unused while the table fails.</p>
+      <p>Table B needs a little more care, because two kinds of crowding are possible: three items sharing one pair, or all four items fitting inside three slots. Counting both, without double counting the outcomes that do both, gives N<sub>bad</sub> = 910, so p<sub>fail</sub> = 910/10 000 = 0.091.</p>
+      <details class="pf"><summary><span class="tagd">our count</span><span class="q">Where does 910 come from on Table B?</span></summary><div class="pfbody">
+        <p>Sort the outcomes by the number of slots in the union of all four candidate sets. Hall's condition for the full set of four items fails when the union has at most 3 slots. If the union has exactly 2 slots, all four items picked the same pair: 10 outcomes. If the union is a particular 3-slot set T, every item picked one of the 3 pairs inside T, giving 3<sup>4</sup> = 81 outcomes, of which 3 have a 2-slot union; so 78 outcomes for each of the 10 choices of T. Together, 10 + 780 = 790 outcomes fail this way.</p>
+        <p>If the union has 4 or more slots, failure needs three items sharing one pair P, with the fourth item's pair disjoint from P (otherwise the union would have at most 3 slots). There are 10 choices of P, 4 choices of the odd item out, and C(3, 2) = 3 pairs disjoint from P: 120 outcomes. Sets of one or two items never violate the condition. Hence N<sub>bad</sub> = 790 + 120 = 910.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The animation below runs cuckoo insertion on Table B. Items arrive one at a time and take their lowest free candidate; when both candidates are full, a breadth-first search looks for an eviction chain ending at an empty slot. The first scenario needs a chain of three moves. The second fails, and the search itself hands over the crowded group that Hall's theorem says must exist. The third draws a fresh random outcome.</p>
+      <div class="player" id="pCkIns">
+        <div class="ptitle"><span class="label">Animation · cuckoo insertion on Table B</span><span class="scen"><button class="chip" data-scen="chain" aria-pressed="true">chain</button><button class="chip" data-scen="fail" aria-pressed="false">failure</button><button class="chip" data-scen="rand" aria-pressed="false">random</button></span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Four items on the left and five slots on the right, joined by candidate edges, with placements and eviction chains highlighted"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>placed</span><span><i class="sw" style="background:var(--ok)"></i>eviction chain</span><span><i class="sw" style="background:var(--bad)"></i>crowded group</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <div class="fact"><span class="label">Fact · what was known before (Section 1)</span>
+        <p>Earlier work established load thresholds for d-choice cuckoo hashing, the fraction n/M below which tables succeed with high probability as they grow, and proved upper bounds on the failure probability. The exact failure probability was known for d = 2 and, as the paper notes citing Kutzelnigg's thesis and Angel, Chen, Laine and Setty, had remained open for d ≥ 3. The paper computes p<sub>fail</sub>(n, M, d) exactly for every n, M and d in O(n<sup>2</sup> log n) time.</p>
+      </div>
+      <p class="short"><b>In short:</b> each item draws d random slots; the table fails exactly when the candidate graph has no matching covering every item; by Hall's theorem that means some group of items is crowded into fewer slots than its size; p<sub>fail</sub> is the number of failing outcomes over Q<sup>n</sup>, which is 1/36 on Table A and 910/10 000 on Table B.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · A polynomial">
+      <span class="num">2 · A POLYNOMIAL THAT DETECTS FAILURE</span>
+      <h2>How can a yes/no property of a graph be summed over all outcomes?</h2>
+      <p>Counting failures by listing outcomes takes Q<sup>n</sup> steps, which is hopeless beyond toy sizes. Hall's theorem does not help directly either, because it involves all 2<sup>n</sup> groups of items at once. The paper's idea is algebraic: if the indicator "this graph has no perfect matching" were a polynomial in variables describing the edges, then the sum over outcomes could be moved inside the polynomial, monomial by monomial, and each monomial might be easy to sum.</p>
+      <p>To use a statement about perfect matchings, the graph must be square, with the same number of vertices on both sides. Section 2.2 handles this by adding z = M − n dummy items that can be placed in any slot. The padded graph Ĝ<sub>ω</sub> has M vertices on each side, and it has a perfect matching if and only if G<sub>ω</sub> has a matching covering every real item: real items take their slots, and the dummies fill the slots left over. On Table A there is one dummy item; on Table B also one.</p>
+      <div class="def"><span class="label">Definition · missing-edge indicators and BPM* (Eq. 1)</span>
+        <p>Let G be a bipartite graph with M left and M right vertices. For a left vertex i and right vertex j, set x<sub>ij</sub> = 1 if the edge (i, j) is missing from G and x<sub>ij</sub> = 0 if it is present. Beniamini and Nisan studied the multilinear polynomial BPM*<sub>M</sub>(x), which equals 1 if G has no perfect matching and 0 otherwise, and showed it has integer coefficients:</p>
+        <div class="math" data-tex="\operatorname{BPM}^{*}_{M}(x)=\sum_{H\subseteq K_{M,M}}a^{*}_{H}\,x^{H},\qquad x^{H}=\prod_{(i,j)\in E(H)}x_{ij}."></div>
+        <p class="eqn">Eq. 1</p>
+        <p>In words: there is one monomial for every set H of possible edges, and x<sup>H</sup> = 1 exactly when every edge of H is missing from G. Weighting these monomials by the right integers a*<sub>H</sub> produces exactly the indicator of "no perfect matching".</p>
+      </div>
+      <p>Why should such a polynomial exist at all? Because the variables only take the values 0 and 1, any function of them can be written as a multilinear polynomial (no variable squared, since x<sup>2</sup> = x on {0, 1}), and in exactly one way.</p>
+      <details class="pf"><summary><span class="tagd">background</span><span class="q">Why is the multilinear polynomial of a 0/1 function unique, and what are its coefficients?</span></summary><div class="pfbody">
+        <p>This is a standard fact, written out by us. Identify a 0/1 vector with the set S of coordinates equal to 1. A multilinear polynomial Σ<sub>H</sub> a<sub>H</sub> x<sup>H</sup> evaluated at S gives Σ<sub>H ⊆ S</sub> a<sub>H</sub>, since x<sup>H</sup> = 1 exactly when H ⊆ S. So the polynomial represents f precisely when f(S) = Σ<sub>H ⊆ S</sub> a<sub>H</sub> for every S. Solving from the smallest sets upward determines each a<sub>H</sub> uniquely, and inclusion–exclusion (Möbius inversion) gives the closed form</p>
+        <div class="math" data-tex="a_H=\sum_{S\subseteq H}(-1)^{|H|-|S|}\,f(S)."></div>
+        <p>Applied to f = "no perfect matching" with S the set of missing edges, this defines the a*<sub>H</sub> in Eq. 1. It also shows why the coefficients are integers. What it does not give is a usable formula: the sum has 2<sup>|H|</sup> terms, each needing a matching test. Beniamini's theorem in the next section is the usable formula.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For M = 2 the polynomial can be found by hand. A 2 × 2 bipartite graph has a perfect matching exactly when the "straight" pair of edges (1, 1), (2, 2) is present or the "crossed" pair (1, 2), (2, 1) is present. So it has none exactly when at least one straight edge is missing and at least one crossed edge is missing. The indicator that at least one of two edges is missing is x + y − xy, so</p>
+      <div class="math" data-tex="\begin{aligned}\operatorname{BPM}^{*}_{2}&=(x_{11}+x_{22}-x_{11}x_{22})(x_{12}+x_{21}-x_{12}x_{21})\\&=x_{11}x_{12}+x_{11}x_{21}+x_{22}x_{12}+x_{22}x_{21}\\&\quad-x_{11}x_{12}x_{21}-x_{22}x_{12}x_{21}-x_{11}x_{22}x_{12}-x_{11}x_{22}x_{21}\\&\quad+x_{11}x_{12}x_{21}x_{22}.\end{aligned}"></div>
+      <p>This derivation is ours. It has 9 nonzero monomials out of 16, with coefficients +1, −1 and +1. The four quadratic terms correspond to a row or a column of the 2 × 2 grid being completely missing, and the monomial x<sub>11</sub>x<sub>22</sub>, the missing diagonal, does not appear at all, even though it uses two missing edges.</p>
+      <p>The choice of missing-edge variables, rather than present-edge variables, is what makes the method feasible. Beniamini and Nisan's abstract states the contrast: in present-edge variables the matching polynomial has full degree and nearly all of its 2<sup>M²</sup> possible monomials, while in the dual representation used here the number of monomials is only exponential in Θ(M log M). Most graphs H have coefficient zero, and the next section says exactly which ones survive.</p>
+      <p class="short"><b>In short:</b> padding with z = M − n dummy items turns "every item placed" into "perfect matching"; the no-perfect-matching indicator is a unique multilinear polynomial in the missing-edge indicators x<sub>ij</sub> (Eq. 1); for M = 2 it has 9 monomials, and in general far fewer than all 2<sup>M²</sup>.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Beniamini's formula">
+      <span class="num">3 · TOTALLY ORDERED GRAPHS</span>
+      <h2>Which monomials survive, and with what coefficients?</h2>
+      <p>In the M = 2 example the surviving monomials had a pattern: in each, the rows of missing edges were nested. For x<sub>11</sub>x<sub>12</sub>x<sub>21</sub>, row 1 is missing {1, 2} and row 2 is missing {1}, and {1} ⊆ {1, 2}. For the absent monomial x<sub>11</sub>x<sub>22</sub>, row 1 is missing {1} and row 2 is missing {2}, and neither contains the other. Beniamini's theorem says this pattern is the whole story.</p>
+      <div class="def"><span class="label">Definition 2.1 · totally ordered graphs and representing sequences</span>
+        <p>For a bipartite graph H, let T<sub>H</sub>(i) be the neighborhood of its i-th left vertex. H is totally ordered if these neighborhoods are totally ordered by inclusion: for all left vertices i and i′, either T<sub>H</sub>(i) ⊆ T<sub>H</sub>(i′) or T<sub>H</sub>(i′) ⊆ T<sub>H</sub>(i). List the distinct neighborhoods as T<sub>1</sub> ⊊ T<sub>2</sub> ⊊ ⋯ ⊊ T<sub>L</sub>; the left vertices with neighborhood T<sub>i</sub> form block i. Let b<sub>i</sub> = |T<sub>i</sub>| and let k<sub>i</sub> be the number of left vertices in blocks 1 through i, with k<sub>0</sub> = 0:</p>
+        <div class="math" data-tex="0\le b_1\lt b_2\lt\cdots\lt b_L\le M,\qquad 0=k_0\lt k_1\lt\cdots\lt k_L=M."></div>
+        <p class="eqn">Eq. 2</p>
+        <p>The pair (k, b) = (k<sub>i</sub>, b<sub>i</sub>)<sub>i ≤ L</sub> is the representing sequence of H.</p>
+        <p>In words: sort the left vertices by how many edges they have; H is totally ordered when each vertex's neighbors include all neighbors of every vertex below it, like a staircase. Block i then has k<sub>i</sub> − k<sub>i−1</sub> vertices, each joined to the same b<sub>i</sub> right vertices.</p>
+      </div>
+      <p>The paper's Figure 1 has M = 7 and representing sequence (2, 0), (4, 3), (7, 5): two left vertices with no neighbors, two with the same three neighbors, and three with the same five neighbors, the three-element set inside the five-element one. In the M = 2 example, the graph of x<sub>11</sub>x<sub>12</sub>x<sub>21</sub> has neighborhoods {1} and {1, 2}, so L = 2 with (k<sub>1</sub>, b<sub>1</sub>) = (1, 1) and (k<sub>2</sub>, b<sub>2</sub>) = (2, 2).</p>
+      <p>Throughout, the paper sets the binomial coefficient C(a, b) to 0 unless a and b are integers with 0 ≤ b ≤ a, and lets empty products and 0<sup>0</sup> equal 1. This convention silently switches off impossible terms everywhere below.</p>
+      <div class="fact"><span class="label">Fact · Theorem 2.2 (Beniamini)</span>
+        <p>If H ⊆ K<sub>M,M</sub> is not totally ordered, then a*<sub>H</sub> = 0. If H is totally ordered with representing sequence (2), then</p>
+        <div class="math" data-tex="a^{*}_{H}=\binom{M-k_{L-1}-1}{M-b_L}\prod_{i=1}^{L-1}\phi\big(b_{i+1}-k_{i-1},\;b_i-k_{i-1},\;k_i-k_{i-1}\big),"></div>
+        <p class="eqn">Eq. 3</p>
+        <p>where</p>
+        <div class="math" data-tex="\phi(a,b,r)=\begin{cases}\dbinom{a-1}{r}, & b\le 0,\\[8pt] -\dbinom{a-b-1}{r-b}\dbinom{r-1}{b-1}, & b\gt 0.\end{cases}"></div>
+        <p class="eqn">Eq. 4</p>
+      </div>
+      <p>The coefficient depends on H only through its representing sequence, so the paper writes it 𝔞(k, b). In words, Eq. 3 is one factor for the last block and one factor φ for each earlier block, and each factor looks only at the block's own size and degree and at the next block's degree, all measured relative to k<sub>i−1</sub>, the number of vertices below the block. That local structure is what Section 5 exploits. Graphs that differ only by relabeling vertices on either side have the same coefficient.</p>
+      <p>Here is Eq. 3 on the M = 2 monomials, a check that is ours. For x<sub>11</sub>x<sub>12</sub> (row 1 fully missing), the neighborhoods are ∅ and {1, 2}, so (k, b) = (1, 0), (2, 2), and a* = C(2 − 1 − 1, 2 − 2) · φ(2, 0, 1) = C(0, 0) · C(1, 1) = 1. For x<sub>11</sub>x<sub>21</sub> (column 1 missing) both rows have neighborhood {1}, one block with (k, b) = (2, 1), and a* = C(2 − 0 − 1, 2 − 1) = 1. For x<sub>11</sub>x<sub>12</sub>x<sub>21</sub>, a* = C(0, 0) · φ(2, 1, 1) = −C(0, 0) · C(0, 0) = −1. For the full graph, a* = C(1, 0) = 1. For the empty graph, a* = C(1, 2) = 0, as it must be, since a graph with no missing edges has a perfect matching. All nine agree with the expansion of Section 2.</p>
+      <div class="aside"><span class="label">Our check</span>
+        <p>The paper cites Theorem 2.2 from Beniamini's 2022 paper and does not reprove it. As a sanity check we computed every coefficient for M = 3 by the inclusion–exclusion formula, over all 2<sup>9</sup> = 512 graphs H, and compared with Eqs. 3 and 4: all 512 agree, and 121 of them are nonzero.</p>
+      </div>
+      <p class="short"><b>In short:</b> only graphs whose left neighborhoods are nested, the totally ordered ones, have nonzero coefficients; such a graph is described by its blocks (k, b) (Eq. 2), and its coefficient is a product of one factor per block (Eqs. 3 and 4).</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Summing outcomes">
+      <span class="num">4 · FROM THE POLYNOMIAL TO A COUNT</span>
+      <h2>What does each monomial contribute when summed over all outcomes?</h2>
+      <p>With the polynomial in hand, counting failures means adding BPM* over all Q<sup>n</sup> outcomes. Swapping the order of summation, Eq. 5 reads</p>
+      <div class="math" data-tex="N_{\mathrm{bad}}=\sum_{\omega}\operatorname{BPM}^{*}_{M}\big(x(\omega)\big)=\sum_{H\subseteq K_{M,M}}a^{*}_{H}\sum_{\omega}x^{H}(\omega),"></div>
+      <p class="eqn">Eq. 5</p>
+      <p>where x(ω) are the missing-edge indicators of the padded graph Ĝ<sub>ω</sub>. Two observations cut the sum down. First, by Theorem 2.2 only totally ordered H matter. Second, a dummy item is joined to every slot, so if H has an edge at a dummy item, that edge is never missing and x<sup>H</sup>(ω) = 0 for every outcome. So only totally ordered graphs in which every dummy item is isolated contribute.</p>
+      <p>Now fix such an H. The monomial x<sup>H</sup>(ω) is 1 exactly when every edge of H is missing, that is, when every item i avoids the slots T<sub>H</sub>(i). The paper calls T<sub>H</sub>(i) the forbidden set of item i. The number of candidate sets that avoid a forbidden set of size b is</p>
+      <div class="math" data-tex="h(b)=\binom{M-b}{d},"></div>
+      <p class="eqn">Eq. 6</p>
+      <p>since the d candidates must be chosen among the M − b allowed slots. Items choose independently, so the number of outcomes in which every item avoids its forbidden set is a product,</p>
+      <div class="math" data-tex="\sum_{\omega}x^{H}(\omega)=\prod_{i=1}^{n}h\big(|T_H(i)|\big),\qquad\text{so}\qquad N_{\mathrm{bad}}=\sum_{H}a^{*}_{H}\prod_{i=1}^{n}h\big(|T_H(i)|\big),"></div>
+      <p class="eqn">Eqs. 7 and 8</p>
+      <p>with H ranging over totally ordered graphs whose dummy items are isolated. Something remarkable has happened: the hard global question, does a matching exist, has become a sum of products of simple counts, each of which only asks how many ways one item can avoid a set of slots.</p>
+      <p>Many graphs H share a representing sequence and hence a term, so the next step groups them. Dummy items have degree 0, so they lie in the first block, which forces b<sub>1</sub> = 0 and k<sub>1</sub> ≥ z. Let u<sub>1</sub> = k<sub>1</sub> − z and u<sub>i</sub> = k<sub>i</sub> − k<sub>i−1</sub> for i ≥ 2; then u<sub>i</sub> is the number of real items in block i, and Σ<sub>i</sub> u<sub>i</sub> = n. Every item in block i has a forbidden set of size b<sub>i</sub>, so the term of H is 𝔞(k, b) Π<sub>i</sub> h(b<sub>i</sub>)<sup>u<sub>i</sub></sup>. Counting the graphs with a given representing sequence takes two choices: which real items go in which block, n!/Π<sub>i</sub> u<sub>i</sub>! ways, and which nested slot sets T<sub>1</sub> ⊊ ⋯ ⊊ T<sub>L</sub> to use, Π<sub>i</sub> C(M − b<sub>i</sub>, b<sub>i+1</sub> − b<sub>i</sub>) ways, since each set grows the previous one by b<sub>i+1</sub> − b<sub>i</sub> new slots chosen from the M − b<sub>i</sub> not yet used. Writing 𝒮<sub>L</sub>(n, M) for the representing sequences with L blocks, b<sub>1</sub> = 0 and k<sub>1</sub> ≥ z, this gives Eq. 9:</p>
+      <div class="math" data-tex="\begin{aligned}N_{\mathrm{bad}}(n,M,d)=\sum_{L=1}^{M}\;\sum_{(\mathbf{k},\mathbf{b})\in\mathcal{S}_L(n,M)}&\mathfrak{a}(\mathbf{k},\mathbf{b})\,\frac{n!}{\prod_{i=1}^{L}u_i!}\\&\times\prod_{i=1}^{L-1}\binom{M-b_i}{b_{i+1}-b_i}\prod_{i=1}^{L}h(b_i)^{u_i}.\end{aligned}"></div>
+      <p class="eqn">Eq. 9</p>
+      <p>On Table A (M = 4, n = 3, d = 2, z = 1) only one representing sequence gives a nonzero term: k = (1, 4), b = (0, 2), so the dummy forms block 1 alone and all three real items share a forbidden set of size 2. Its coefficient is 𝔞 = C(4 − 1 − 1, 4 − 2) · φ(2, 0, 1) = 1 · 1 = 1, the item factor is 3!/(0! 3!) = 1, the slot factor is C(4, 2) = 6, and h(2)<sup>3</sup> = C(2, 2)<sup>3</sup> = 1. So N<sub>bad</sub> = 6, as Hall's theorem gave. The reading is direct (ours): choose a pair of slots to forbid, 6 ways, and the three items must all avoid it, leaving each of them only the other pair.</p>
+      <p>Table B is more instructive. Enumerating all representing sequences with a short program of ours, exactly four give nonzero terms:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>k</th><th>b</th><th>u</th><th>𝔞</th><th>items</th><th>slots</th><th>Π h<sup>u</sup></th><th>term</th></tr></thead>
+        <tbody>
+          <tr><td class="n">(1, 5)</td><td class="n">(0, 2)</td><td class="n">(0, 4)</td><td class="n">1</td><td class="n">1</td><td class="n">10</td><td class="n">81</td><td class="n">810</td></tr>
+          <tr><td class="n">(1, 5)</td><td class="n">(0, 3)</td><td class="n">(0, 4)</td><td class="n">6</td><td class="n">1</td><td class="n">10</td><td class="n">1</td><td class="n">60</td></tr>
+          <tr><td class="n">(2, 5)</td><td class="n">(0, 3)</td><td class="n">(1, 3)</td><td class="n">1</td><td class="n">4</td><td class="n">10</td><td class="n">10</td><td class="n">400</td></tr>
+          <tr><td class="n">(1, 2, 5)</td><td class="n">(0, 2, 3)</td><td class="n">(0, 1, 3)</td><td class="n">−1</td><td class="n">4</td><td class="n">30</td><td class="n">3</td><td class="n">−360</td></tr>
+        </tbody>
+      </table></div>
+      <p>The total is 810 + 60 + 400 − 360 = 910, the number found with Hall's theorem. The negative term comes from φ with a positive middle argument: in the last row, the second block has φ(3 − 1, 2 − 1, 1) = φ(2, 1, 1) = −1. Individual terms overcount and undercount; only the total means anything, just as in inclusion–exclusion.</p>
+      <details class="pf"><summary><span class="tagd">our check</span><span class="q">How do these four terms add up to exactly 1 for a single failing outcome?</span></summary><div class="pfbody">
+        <p>Each outcome contributes BPM* = 1 or 0 to the total, so its weights across the four rows must add to 1 or 0. Take the outcome where all four items picked the same pair P. In row 1 the forbidden 2-set must avoid P, and the 3 slots outside P contain 3 such sets: weight 3. In row 2 the forbidden 3-set must be exactly the complement of P, with coefficient 6: weight 6. In row 3 any of the 4 items can be the unconstrained one and the others avoid the complement of P: weight 4. In row 4 one of 4 items forbids a 2-set inside the complement of P, which has 3 choices, with sign −1: weight −12. The total is 3 + 6 + 4 − 12 = 1.</p>
+        <p>Now take three items on P and the fourth on a pair disjoint from P, which fails by Hall. Rows 1 and 2 need all four items inside 3 slots, which is impossible: 0. Row 3 needs the unconstrained item to be the odd one: weight 1. Row 4 needs the odd item to avoid a 2-set inside the complement of P, but its own pair occupies two of those three slots: 0. Total 1 again.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The number of representing sequences grows exponentially with M, so evaluating Eq. 9 term by term is out of the question for realistic tables. That is the problem the next section solves.</p>
+      <p class="short"><b>In short:</b> summing Eq. 1 over outcomes turns each monomial into a product of counts h(b) = C(M − b, d) of ways to avoid a forbidden set (Eqs. 5 to 8); grouping graphs by representing sequence gives Eq. 9, a signed sum of products whose terms on Table B are 810, 60, 400 and −360.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Dynamic programming">
+      <span class="num">5 · THE FORWARD RECURRENCE</span>
+      <h2>How can exponentially many terms be added in polynomial time?</h2>
+      <p>The answer is the same trick that counts paths through a grid without listing them. To count monotone paths from one corner to another, one does not enumerate paths; one records, for each grid point, how many paths reach it, and gets each count by adding the counts of its predecessors. That works because a path's future does not care how it arrived. Section 3.2 of the paper shows that each term of Eq. 9 is a product of factors, one per block, and that each factor depends only on where its block starts and ends. Representing sequences then behave like paths, and the dynamic program records, for each boundary, the total weight of all sequences that reach it.</p>
+      <p>The coefficient 𝔞 already factors block by block, by Eq. 3. The slot factor C(M − b<sub>i</sub>, b<sub>i+1</sub> − b<sub>i</sub>) and the power h(b<sub>i</sub>)<sup>u<sub>i</sub></sup> belong to block i by definition. The multinomial coefficient also factors, by choosing the items of each block in turn among those not yet placed:</p>
+      <div class="math" data-tex="\frac{n!}{\prod_{i=1}^{L}u_i!}=\prod_{i=1}^{L}\binom{n-\sum_{j\lt i}u_j}{u_i}."></div>
+      <p class="eqn">Eq. 10</p>
+      <p>For a nonfinal block i &lt; L, think of (k<sub>i−1</sub>, b<sub>i</sub>) as its start boundary and (k<sub>i</sub>, b<sub>i+1</sub>) as its end boundary. Let ν(ℓ) = max{0, ℓ − z} be the number of real items among the first ℓ left vertices (dummies come first). A nonfinal block from (ℓ, b) to (r, c) carries the multiplier</p>
+      <div class="math" data-tex="\tau(\ell,b;r,c)=\phi(c-\ell,\,b-\ell,\,r-\ell)\binom{M-b}{c-b}\binom{n-\nu(\ell)}{u}h(b)^{u},\qquad u=r-\max\{\ell,z\}."></div>
+      <p class="eqn">Eq. 11</p>
+      <p>In words, the four factors are the block's share of Beniamini's coefficient, the number of ways to grow the forbidden set from b to c slots, the number of ways to pick this block's u real items among the n − ν(ℓ) not yet assigned, and the number of ways those u items can avoid their b forbidden slots. Each summand of Eq. 9 is then</p>
+      <div class="math" data-tex="\prod_{i=1}^{L-1}\tau\big(k_{i-1},b_i;\,k_i,b_{i+1}\big)\cdot\binom{M-k_{L-1}-1}{M-b_L}h(b_L)^{u_L},"></div>
+      <p class="eqn">Eq. 12</p>
+      <p>one multiplier per nonfinal block and one factor for the final block.</p>
+      <div class="def"><span class="label">Definition · prefixes and the forward state (Section 3.2)</span>
+        <p>A prefix consists of the first i &lt; L blocks of a representing sequence together with b<sub>i+1</sub>, so it ends at the boundary (k<sub>i</sub>, b<sub>i+1</sub>). Its weight is Π<sub>j ≤ i</sub> τ(k<sub>j−1</sub>, b<sub>j</sub>; k<sub>j</sub>, b<sub>j+1</sub>). The forward state F[ℓ, b] is the sum of the weights of all prefixes ending at (ℓ, b).</p>
+        <p>In words: F[ℓ, b] adds up every way of having placed the first ℓ left vertices in blocks, with the next block about to have a forbidden set of size b.</p>
+      </div>
+      <p>Since τ depends only on the start and end boundaries, every complete sequence that continues a prefix ending at (ℓ, b) contributes (weight of the prefix) × τ × (later factors), with the same τ and later factors whichever prefix came first. So prefixes with the same boundary can be added together before being extended. Starting from the empty prefix,</p>
+      <div class="math" data-tex="F[0,0]=1,"></div>
+      <p class="eqn">Eq. 13</p>
+      <p>with all other entries zero. By the binomial convention τ(ℓ, b; r, c) vanishes unless z ≤ r and c &gt; r, so only those entries are filled, for z ≤ r &lt; M and r &lt; c ≤ M:</p>
+      <div class="math" data-tex="F[r,c]=\sum_{\ell=0}^{r-1}\sum_{b=0}^{c-1}F[\ell,b]\,\tau(\ell,b;r,c)."></div>
+      <p class="eqn">Eq. 14</p>
+      <p>A final block takes all remaining items, which closes every prefix:</p>
+      <div class="math" data-tex="N_{\mathrm{bad}}=\sum_{\ell=0}^{M-1}\sum_{b=0}^{M}F[\ell,b]\binom{M-\ell-1}{M-b}h(b)^{\,n-\nu(\ell)}."></div>
+      <p class="eqn">Eq. 15</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does the recurrence compute exactly the sum in Eq. 9?</span></summary><div class="pfbody">
+        <p>This follows the paper. Each summand F[ℓ, b] τ(ℓ, b; r, c) in Eq. 14 extends every prefix ending at (ℓ, b) by one block ending at (r, c), multiplying its weight by τ. By induction on ℓ, F[ℓ, b] is the total weight of prefixes ending at (ℓ, b): the base case is Eq. 13, and every prefix ending at (r, c) arises from exactly one shorter prefix and one block. Eq. 15 multiplies each prefix by the final-block factor of Eq. 12, with the u<sub>L</sub> = n − ν(ℓ) items that remain. Each complete representing sequence is a prefix followed by its final block in exactly one way, so Eq. 15 reproduces each summand of Eq. 9 exactly once.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Fact · cost of the basic recurrence</span>
+        <p>There are O(M<sup>2</sup>) states and O(M<sup>2</sup>) predecessors per state, so the recurrence uses O(M<sup>4</sup>) integer operations and O(M<sup>2</sup>) cells.</p>
+      </div>
+      <p>On Table B (z = 1) the filled table is F[0, 0] = 1; F[1, 2] = 10, F[1, 3] = 20, F[1, 4] = 15, F[1, 5] = 4; F[2, 3] = 40, F[2, 4] = 240, F[2, 5] = 120; F[3, 4] = 900, F[3, 5] = 1080; F[4, 5] = 2640. These values are from our implementation of Eqs. 11 to 15. The entry F[2, 3] = 40 is where merging happens: it adds F[0, 0] τ(0, 0; 2, 3) = 400 and F[1, 2] τ(1, 2; 2, 3) = 10 · (−36) = −360, the third and fourth rows of the table in Section 4, into one number. In Eq. 15 only three states survive: F[1, 2] gives 10 · C(3, 3) · 3<sup>4</sup> = 810, F[1, 3] gives 20 · C(3, 2) · 1 = 60, and F[2, 3] gives 40 · C(2, 2) · 1 = 40. All other states die because h(b) = 0 for b ≥ 4 or because C(M − ℓ − 1, M − b) = 0. The total is 910.</p>
+      <p>The animation fills the table cell by cell, showing each nonzero contribution, then closes it with Eq. 15 and finally checks the result by testing Hall's condition on every outcome. The chips switch between Table A, Table B, and Table B with three choices per item.</p>
+      <div class="player" id="pCkDP">
+        <div class="ptitle"><span class="label">Animation · the forward recurrence</span><span class="scen"><button class="chip" data-ex="A" aria-pressed="false">A: 3 in 4</button><button class="chip" data-ex="B" aria-pressed="true">B: 4 in 5</button><button class="chip" data-ex="B3" aria-pressed="false">B, d = 3</button></span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="A grid of forward states F with rows indexed by l and columns by b, filled in step by step"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>cell being filled</span><span><i class="sw" style="background:var(--cool)"></i>its predecessors</span><span><i class="sw" style="background:var(--ok)"></i>survives Eq. 15</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p class="short"><b>In short:</b> every term of Eq. 9 is a product of block multipliers τ that see only the block's two boundaries (Eqs. 10 to 12); summing prefix weights per boundary gives the forward state F[ℓ, b] (Eqs. 13 and 14), and closing every prefix with its final block gives N<sub>bad</sub> (Eq. 15) in O(M<sup>4</sup>) operations.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Speed-ups">
+      <span class="num">6 · FASTER EVALUATION AND DRAWS WITH REPLACEMENT</span>
+      <h2>How does O(M<sup>4</sup>) become O(n<sup>2</sup> log n), and what changes if candidates may repeat?</h2>
+      <p>The basic recurrence has two weaknesses: its cost grows with the table size M rather than the number of items n, and the table must be rebuilt for every M. Section 3.3 removes both with three observations, which the paper states in outline.</p>
+      <p>First, after the initial block of degree 0, the total weight of the remaining blocks depends only on the number of remaining real items p = M − ℓ and the number of available slots v = M − b, where 0 ≤ v &lt; p ≤ n. The paper calls the remaining blocks a suffix and writes V[p, v] for their total weight. This gives O(n<sup>2</sup>) states that do not depend on M, so one table serves every table size. Second, in the recurrence for V[p, v], the inner sum over the next available-slot count w depends only on v and the next item count q, not on p. Computing these shared sums once splits each transition into two stages and lowers the cost from O(n<sup>4</sup>) to O(n<sup>3</sup>). Third, the binomial coefficients in both stages can be rearranged into convolution kernels, so both stages become polynomial multiplications, which the fast Fourier transform performs in O(n log n) time each. The result is O(n<sup>2</sup> log n).</p>
+      <div class="aside"><span class="label">Background · why convolutions are fast (not from the paper)</span>
+        <p>A sum of the form c<sub>k</sub> = Σ<sub>j</sub> a<sub>j</sub> b<sub>k−j</sub> is a convolution: it is exactly how the coefficients of a product of two polynomials are computed. Done directly it costs O(n<sup>2</sup>) for n coefficients. The fast Fourier transform evaluates both polynomials at the n-th roots of unity in O(n log n) steps, multiplies the values pointwise, and interpolates back, for O(n log n) in total. Binomial coefficients turn into convolution kernels by writing C(a, b) = a!/(b!(a − b)!) and absorbing the factorials into the sequences.</p>
+      </div>
+      <p>The paper gives this speed-up as a description: it does not write out the suffix recurrence or the convolution kernels, and points to its public implementation, so this chapter does not reconstruct them.</p>
+      <p>Section 3.4 treats a common variant: each item makes d independent uniform draws from the M slots, so a candidate tuple can repeat a slot. Then Q = M<sup>d</sup>, and a forbidden set of size b is avoided by h(b) = (M − b)<sup>d</sup> tuples. Apart from these two counts, the algorithms are unchanged. On Table A with replacement there are 16<sup>3</sup> = 4096 outcomes, and our implementation of Eq. 15 with h(b) = (4 − b)<sup>2</sup> gives N<sub>bad</sub> = 448, which a brute-force check of all 4096 outcomes confirms; p<sub>fail</sub> = 448/4096 = 7/64, about 11%, roughly four times the 1/36 without replacement, because an item that draws the same slot twice has only one place to go.</p>
+      <p class="short"><b>In short:</b> tracking remaining items and slots (p, v) instead of (ℓ, b) makes the state space O(n<sup>2</sup>) and independent of M; shared inner sums and FFT convolutions bring the cost to O(n<sup>2</sup> log n); draws with replacement only change Q and h(b).</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Separate tables">
+      <span class="num">7 · d SEPARATE TABLES</span>
+      <h2>What changes when each choice comes from its own table?</h2>
+      <p>The paper's second model splits the slots into d tables and gives each item one random slot in each. Section 4 extends the method to it.</p>
+      <div class="def"><span class="label">Definition · the separate-table model (Section 4.1)</span>
+        <p>There are d disjoint tables of positive lengths m<sub>1</sub>, …, m<sub>d</sub>. Each item chooses one slot uniformly from each table, independently across tables and items, and must occupy one of these slots. Write m = (m<sub>1</sub>, …, m<sub>d</sub>), M = Σ<sub>j</sub> m<sub>j</sub> and Q = Π<sub>j</sub> m<sub>j</sub>. There are Q<sup>n</sup> equally likely outcomes, N<sub>bad</sub>(n; m) of which admit no placement, with d &lt; n &lt; M.</p>
+        <p>In words: same matching problem, but the d candidates of every item are forced to come one from each table.</p>
+      </div>
+      <p>The one-table recurrence tracked only the total size b of the forbidden set, which was enough because h(b) depended only on b. Now it is not enough. The paper's example: with two tables of length 4, forbidden counts (3, 1) and (2, 2) both total four, but leave 1 · 3 = 3 and 2 · 2 = 4 choices per item. So the state must record the forbidden count b = (b<sub>1</sub>, …, b<sub>d</sub>) in each table, with |b| = Σ<sub>j</sub> b<sub>j</sub>. An item with forbidden counts b has</p>
+      <div class="math" data-tex="h_{\mathbf m}(\mathbf b)=\prod_{j=1}^{d}(m_j-b_j)"></div>
+      <p class="eqn">Eq. 16</p>
+      <p>candidate choices, and a forbidden set with counts b grows to one with counts c in</p>
+      <div class="math" data-tex="\binom{\mathbf m-\mathbf b}{\mathbf c-\mathbf b}=\prod_{j=1}^{d}\binom{m_j-b_j}{c_j-b_j}"></div>
+      <p class="eqn">Eq. 17</p>
+      <p>ways. The block multiplier changes in exactly these two places; the coefficient factor and the item-choice factor are unchanged:</p>
+      <div class="math" data-tex="\tau_d(\ell,\mathbf b;r,\mathbf c)=\phi\big(|\mathbf c|-\ell,\,|\mathbf b|-\ell,\,r-\ell\big)\binom{\mathbf m-\mathbf b}{\mathbf c-\mathbf b}\binom{n-\nu(\ell)}{u}h_{\mathbf m}(\mathbf b)^{u},"></div>
+      <p class="eqn">Eq. 18</p>
+      <p>with u = r − max{ℓ, z} and z = M − n as before. Starting from F<sub>d</sub>[0, 0] = 1, for z ≤ r &lt; M and 0 ≤ c ≤ m with |c| &gt; r,</p>
+      <div class="math" data-tex="F_d[r,\mathbf c]=\sum_{\ell=0}^{r-1}\;\sum_{\mathbf 0\le\mathbf b\lt\mathbf c}F_d[\ell,\mathbf b]\,\tau_d(\ell,\mathbf b;r,\mathbf c),"></div>
+      <p class="eqn">Eq. 19</p>
+      <div class="math" data-tex="N_{\mathrm{bad}}(n;\mathbf m)=\sum_{\ell=0}^{M-1}\;\sum_{\mathbf 0\le\mathbf b\le\mathbf m}F_d[\ell,\mathbf b]\binom{M-\ell-1}{M-|\mathbf b|}h_{\mathbf m}(\mathbf b)^{\,n-\nu(\ell)},"></div>
+      <p class="eqn">Eq. 20</p>
+      <p>and p<sub>fail</sub> = N<sub>bad</sub>(n; m)/Q<sup>n</sup>.</p>
+      <p>A small example, ours: 3 items and two tables of length 2, so M = 4 as in Table A. Each item picks one slot from each table, Q = 4 and there are 64 outcomes. By Hall's theorem, failure needs three items crowded into two slots, and since each item already uses one slot per table, all three must have picked the same pair: 4 outcomes, so p<sub>fail</sub> = 4/64 = 1/16. That is more than the 1/36 of Table A with the same four slots, because forcing one choice per table leaves each item only 4 possible candidate sets instead of 6. Our implementation of Eqs. 18 to 20 returns 4, and agrees with brute force on every other small case we tried.</p>
+      <div class="fact"><span class="label">Fact · cost for separate tables (Section 4.3)</span>
+        <p>If b<sub>j</sub> = m<sub>j</sub> for some table, then h<sub>m</sub>(b) = 0 and the state can be dropped, so only states with b<sub>j</sub> &lt; m<sub>j</sub> for every j are kept. In terms of remaining items p = M − ℓ and available slots v = m − b, the retained states satisfy 1 ≤ p ≤ n, v ≥ 1 and |v| &lt; p, at most C(p − 1, d) vectors for each p, so there are at most</p>
+        <div class="math" data-tex="1+\sum_{p=1}^{n}\binom{p-1}{d}=1+\binom{n}{d+1}=O(n^{d+1})"></div>
+        <p>states. With precomputed binomials and powers each transition costs O(1), giving O(n<sup>2d+2</sup>) operations and O(n<sup>d+1</sup>) cells per vector m. The suffix formulation of Section 3.3 also applies and builds a table depending only on n and d in O(n<sup>d+2</sup>) operations, after which each table-length vector is evaluated in O(n<sup>d+1</sup>).</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">detail</span><span class="q">Why is the sum of C(p − 1, d) equal to C(n, d + 1)?</span></summary><div class="pfbody">
+        <p>This is the hockey-stick identity, explained by us. Count the (d + 1)-element subsets of {1, …, n} by their largest element p: the other d elements come from {1, …, p − 1}, in C(p − 1, d) ways. Summing over p gives all C(n, d + 1) subsets.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The exponent grows with d because the state must remember a vector of d counts. The paper names as future work an algorithm for separate tables that is polynomial in both n and d.</p>
+      <p class="short"><b>In short:</b> with separate tables the state records how many slots are forbidden in each table (Eqs. 16 and 17); the multiplier and recurrence keep their shape (Eqs. 18 to 20); the cost is O(n<sup>d+2</sup>) for fixed d, polynomial in n but not in d.</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>What the paper establishes</h2>
+      <p>The paper is a methods paper: its results are exact algorithms and their running times, and it contains no tables of numerical failure probabilities or timing experiments. Its claims are collected here.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Model</th><th>Result</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>one table</td><td class="n">N<sub>bad</sub> as a sum over representing sequences</td><td>Eq. 9</td></tr>
+          <tr><td>one table</td><td class="n">forward recurrence: O(M<sup>2</sup>) states, O(M<sup>4</sup>) operations</td><td>§3.2, Eqs. 13 to 15</td></tr>
+          <tr><td>one table</td><td class="n">suffix states V[p, v]: O(n<sup>2</sup>), independent of M</td><td>§3.3</td></tr>
+          <tr><td>one table</td><td class="n">shared sums: O(n<sup>3</sup>); with FFT: O(n<sup>2</sup> log n)</td><td>§3.3</td></tr>
+          <tr><td>with replacement</td><td class="n">Q = M<sup>d</sup>, h(b) = (M − b)<sup>d</sup>, same algorithms</td><td>§3.4</td></tr>
+          <tr><td>d separate tables</td><td class="n">at most 1 + C(n, d + 1) = O(n<sup>d+1</sup>) states</td><td>§4.3</td></tr>
+          <tr><td>d separate tables</td><td class="n">O(n<sup>2d+2</sup>) operations per m; suffix version O(n<sup>d+2</sup>), then O(n<sup>d+1</sup>) per m</td><td>§4.3</td></tr>
+        </tbody>
+      </table></div>
+      <p>To see what the method produces, we implemented Eqs. 13 to 15 and 18 to 20 with exact integer arithmetic, checked them against brute force on every case small enough to enumerate (up to 4 084 101 outcomes), and evaluated a few larger tables. The numbers below are ours, not the paper's.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>n</th><th>M</th><th>d = 2</th><th>d = 3</th><th>2 tables</th><th>3 tables</th></tr></thead>
+        <tbody>
+          <tr><td class="n">10</td><td class="n">20</td><td class="n">3.44e−2</td><td class="n">5.67e−6</td><td class="n">4.73e−2</td><td class="n">3.14e−5</td></tr>
+          <tr><td class="n">15</td><td class="n">20</td><td class="n">0.420</td><td class="n">3.21e−3</td><td class="n">0.454</td><td class="n">5.51e−3</td></tr>
+          <tr><td class="n">18</td><td class="n">20</td><td class="n">0.864</td><td class="n">0.116</td><td class="n">0.876</td><td class="n">0.138</td></tr>
+          <tr><td class="n">20</td><td class="n">40</td><td class="n">5.55e−2</td><td class="n">2.33e−7</td><td class="n">·</td><td class="n">·</td></tr>
+          <tr><td class="n">30</td><td class="n">40</td><td class="n">0.672</td><td class="n">9.54e−4</td><td class="n">·</td><td class="n">·</td></tr>
+          <tr><td class="n">36</td><td class="n">40</td><td class="n">0.987</td><td class="n">0.159</td><td class="n">·</td><td class="n">·</td></tr>
+        </tbody>
+      </table></div>
+      <p>The table columns are p<sub>fail</sub> for one table with d = 2 or d = 3, and for separate tables of lengths (10, 10) and (7, 7, 6). At half load a third choice lowers the failure probability by a factor of about 6000 for M = 20 and about 240 000 for M = 40. At these small sizes separate tables fail somewhat more often than one shared table with the same number of choices, matching the four-slot example of Section 7.</p>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved in the paper.</b> Given Beniamini's coefficient formula (Theorem 2.2), the derivation from Eq. 5 to Eq. 15 is complete and elementary: dummy padding, the vanishing of monomials touching dummies, independence of items (Eq. 7), the count of graphs per representing sequence, the blockwise factorization (Eqs. 10 to 12) and the inductive correctness of the recurrence. The separate-table version (Eqs. 16 to 20) follows the same steps, and its state count is proved. Our brute-force comparisons on small cases, for one table, with replacement and with separate tables, all agree with the formulas.</p>
+      <p><b>Imported.</b> Theorem 2.2, which carries all the combinatorial depth, is quoted from Beniamini's 2022 paper and not reproved. Its correctness is the foundation of everything else; we confirmed it exhaustively for M ≤ 3.</p>
+      <p><b>Described rather than derived.</b> The O(n<sup>2</sup> log n) bound of Section 3.3 and the O(n<sup>d+2</sup>) bound for separate tables rest on suffix recurrences and convolution rearrangements that the text describes in a paragraph each, without explicit formulas or a proof; the authors point to their public implementation. The counts are of arithmetic operations. Since N<sub>bad</sub> and Q<sup>n</sup> are integers with roughly n log Q digits, the bit cost of exact arithmetic adds a further factor that the stated bounds do not include; this remark is ours, and the paper does not discuss numerical precision.</p>
+      <p><b>Scope.</b> The model assumes fully random hash functions, as is standard, and asks only whether a placement exists, not how long an insertion algorithm takes to find it. Variants with a stash, buckets holding several items, or other insertion rules are not treated. There are no numerical results in the paper, so practical speed and the sizes reachable are not reported.</p>
+      <p><b>Open.</b> An algorithm for separate tables that is polynomial in both n and d.</p>
+    </section>
+
+    <!-- further -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>C. Zhang, L. Ren, <a href="https://arxiv.org/abs/2611.17688" target="_blank" rel="noopener">Exact failure probabilities for d-choice cuckoo hashing</a>, arXiv:2611.17688 (2026). The paper itself; equation and theorem numbers in this chapter follow its HTML version.</p>
+        <p>G. Beniamini, N. Nisan, <a href="https://arxiv.org/abs/2001.07642" target="_blank" rel="noopener">Bipartite perfect matching as a real polynomial</a>, arXiv:2001.07642. Introduces the polynomial view of matching and shows that the dual, missing-edge representation has only exp(Θ(n log n)) monomials, against nearly all 2<sup>n²</sup> in the usual one.</p>
+        <p>G. Beniamini, <a href="https://arxiv.org/abs/2004.14318" target="_blank" rel="noopener">The approximate degree of bipartite perfect matching</a>, arXiv:2004.14318. The source of Theorem 2.2: it fully characterizes the dual polynomial's coefficients on the way to its main result about approximate degree.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.17688v1. Equation, theorem and section numbers match the paper. Both animations run real computations: cuckoo insertion with breadth-first eviction search on Table B, including the crowded group extracted from a failed search; and the forward recurrence of Eqs. 11 to 15 with its final sum, followed by a Hall's-condition test of every outcome. Hall's theorem and its sketch, the hand counts for Tables A and B, the M = 2 polynomial and its coefficient checks, the M = 3 exhaustive check, the per-outcome weights, the replacement and separate-table examples, the convolution and hockey-stick remarks, the bit-cost remark and the numerical table are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-17688',date:'2026-11-16',title:'Exact Failure Probabilities for d-Choice Cuckoo Hashing',authors:'Zhang, Ren',field:'cs.DS',tags:['hashing','bipartite matching','dynamic programming'],mins:35,
+     dek:'When n items each get d random slots and no slot may hold two, the exact chance that no valid seating exists was open for every d ≥ 3, and this paper computes it in O(n² log n) time. It writes "no perfect matching" as an explicit polynomial in the missing edges, sums it over every outcome in closed form, and adds the exponentially many resulting terms with a dynamic program over block boundaries.'},
     {id:'2611-15549',date:'2026-11-15',title:'Controlling Avalanche Sizes in the Abelian Sandpile Model',authors:'de Jongh, Járai, Boucherie, van Lieshout',field:'math.OC',tags:['Markov decision processes','sandpile model','random walks'],mins:40,
      dek:'Pay β to remove a grain before each new one lands, and on a line the best long-run policy clears a central interval that widens by one site at each end whenever β falls below the next triangular number k(k + 1)/2. Every grain has a price, the expected time for a random walk to reach the sink, and comparing prices with β decides when to intervene.'},
     {id:'2611-14906',date:'2026-11-14',title:'The Frustration Index of Fully Frustrated Hypercubes',authors:'Wang',field:'math.CO',tags:['signed graphs','hypercube','Ising model'],mins:45,
@@ -4134,6 +4486,107 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
       });}
     root.querySelectorAll('[data-b]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-b]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(+b.dataset.b)}));
     load(1.5);
+  })();
+
+
+  // ================= cuckoo hashing (2611-17688) =================
+  const CK=(function(){
+    const Cb=(a,b)=>{if(!Number.isInteger(a)||!Number.isInteger(b)||b<0||a<0||b>a)return 0;let r=1;for(let i=1;i<=b;i++)r=r*(a-b+i)/i;return Math.round(r)};
+    const phi=(a,b,r)=>b<=0?Cb(a-1,r):-Cb(a-b-1,r-b)*Cb(r-1,b-1);
+    const fmt=x=>(x<0?'−':'')+Math.abs(x).toLocaleString('en-US').replace(/,/g,'\u202f');
+    function combos(M,d){const out=[];(function rec(s,cur){if(cur.length===d){out.push(cur.slice());return}for(let j=s;j<M;j++){cur.push(j);rec(j+1,cur);cur.pop()}})(0,[]);return out}
+    function brute(n,M,d){const sets=combos(M,d).map(c=>c.reduce((m,j)=>m|(1<<j),0)),Q=sets.length;let bad=0;const idx=Array(n).fill(0),tot=Math.pow(Q,n);
+      const pc=x=>{let c=0;while(x){x&=x-1;c++}return c};
+      for(let t=0;t<tot;t++){let r=t;for(let i=0;i<n;i++){idx[i]=r%Q;r=Math.floor(r/Q)}
+        let fail=false;for(let S=1;S<(1<<n)&&!fail;S++){let u=0;for(let i=0;i<n;i++)if(S>>i&1)u|=sets[idx[i]];if(pc(u)<pc(S))fail=true}
+        if(fail)bad++}
+      return{bad,tot,Q}}
+    function dp(n,M,d){const z=M-n,h=b=>Cb(M-b,d),nu=l=>Math.max(0,l-z);
+      const F={};F['0,0']=1;const order=[];
+      const tau=(l,b,r,c)=>{const u=r-Math.max(l,z);if(u<0)return 0;return phi(c-l,b-l,r-l)*Cb(M-b,c-b)*Cb(n-nu(l),u)*Math.pow(h(b),u)};
+      for(let r=z;r<M;r++)for(let c=r+1;c<=M;c++){const terms=[];let s=0;
+        for(const k in F){const [l,b]=k.split(',').map(Number);if(l<r&&b<c&&F[k]){const t=tau(l,b,r,c);if(t){terms.push({l,b,F:F[k],t,p:F[k]*t});s+=F[k]*t}}}
+        if(terms.length){F[r+','+c]=s;order.push({r,c,terms,s})}}
+      const fin=[];let N=0;for(const k in F){const [l,b]=k.split(',').map(Number);const cf=Cb(M-l-1,M-b),hp=Math.pow(h(b),n-nu(l)),t=F[k]*cf*hp;if(t){fin.push({l,b,F:F[k],cf,hp,t});N+=t}}
+      return{F,order,fin,N,z}}
+    return{Cb,phi,fmt,brute,dp};
+  })();
+
+  // ---- Animation 1: cuckoo insertion on Table B ----
+  (function(){
+    const root=document.getElementById('pCkIns');if(!root)return;const P=Player(root);
+    const n=4,M=5,NM=['A','B','C','D'];
+    const SC={chain:[[3,4],[2,3],[0,3],[0,2]],fail:[[0,1],[1,2],[0,2],[0,2]]};
+    const sl=s=>s.map(j=>j+1).join(', ');
+    function run(om){
+      const slot=Array(M).fill(-1),pl=Array(n).fill(-1),F=[];
+      const snap=o=>Object.assign({pl:pl.slice(),upto:-1},o);
+      F.push(snap({t:'The outcome',upto:n-1,c:`Each item has drawn two of the five slots: ${om.map((c,i)=>NM[i]+' {'+sl(c)+'}').join(', ')}. Gray lines are candidate edges. Items now arrive in order A, B, C, D.`}));
+      for(let i=0;i<n;i++){const c=om[i];const free=c.filter(s=>slot[s]<0);
+        if(free.length){slot[free[0]]=i;pl[i]=free[0];F.push(snap({upto:i,cur:i,t:`Item ${NM[i]} arrives`,c:`Slot ${free[0]+1} is free, so ${NM[i]} takes it.${free.length<c.length?' Its other candidate is already taken.':''}`}));continue}
+        const prev={},q=[],seen=new Set(),reach=new Set();c.forEach(s=>{prev[s]=null;q.push(s);seen.add(s)});let end=-1;
+        while(q.length){const s=q.shift();if(slot[s]<0){end=s;break}const j=slot[s];reach.add(j);om[j].forEach(t=>{if(!seen.has(t)){seen.add(t);prev[t]=s;q.push(t)}})}
+        if(end<0){const S=[i,...reach].sort(),G=[...seen].sort((a,b)=>a-b);
+          F.push(snap({upto:i,cur:i,hall:{S,G},t:`Item ${NM[i]} arrives: no way through`,c:`Slots ${sl(c)} are both full. The search follows every eviction it could try and reaches only slots ${sl(G)}, all occupied. So the ${S.length} items ${S.map(x=>NM[x]).join(', ')} have just ${G.length} slots among all their candidates: Hall's condition fails, and no rearrangement can ever place them all.`}));
+          F.push(snap({upto:i,hall:{S,G},t:'The table fails',c:`This outcome is one of the 910 failing outcomes of Table B, even though ${M-G.length===1?'a slot is':M-G.length+' slots are'} still empty. The insertion order and the search rule do not matter: the crowded group exists in the candidate graph itself.`}));
+          return F}
+        const path=[end];while(prev[path[path.length-1]]!==null)path.push(prev[path[path.length-1]]);path.reverse();
+        const moves=[[i,path[0]]];for(let k=0;k<path.length-1;k++)moves.push([slot[path[k]],path[k+1]]);
+        F.push(snap({upto:i,cur:i,chain:moves,t:`Item ${NM[i]} arrives: search`,c:`Slots ${sl(c)} are both full. Breadth-first search finds an eviction chain ending at empty slot ${end+1}: ${moves.map(([x,s])=>NM[x]+' → '+(s+1)).join(', ')}. In graph terms this is an augmenting path.`}));
+        moves.forEach(([x,s])=>{slot[s]=x;pl[x]=s});
+        F.push(snap({upto:i,cur:i,chainDone:moves,t:`Item ${NM[i]} placed`,c:`Every item on the chain moves one step, the way a cuckoo pushes eggs out of a nest. ${moves.length} item${moves.length>1?'s':''} moved, and all ${i+1} items so far are placed.`}));}
+      F.push(snap({upto:n-1,t:'Success',c:`All four items are placed: ${pl.map((s,i)=>NM[i]+' in '+(s+1)).join(', ')}. This outcome is one of the 10 000 − 910 = 9090 that succeed.`}));
+      return F}
+    function load(om){const F=run(om);F.delay=4200;
+      P.load(F,(f,el)=>{const IX=80,SX=260,iy=i=>45+i*52,sy=j=>40+j*44;
+        el('text',{x:IX,y:16,class:'lab'}).textContent='items';el('text',{x:SX,y:16,class:'lab'}).textContent='slots';
+        const inS=x=>f.hall&&f.hall.S.includes(x),inG=s=>f.hall&&f.hall.G.includes(s);
+        om.forEach((c,i)=>{if(i>f.upto)return;c.forEach(s=>{const onChain=(f.chain||[]).some(([x,t])=>x===i&&t===s);const placed=f.pl[i]===s;
+          el('line',{x1:IX+16,y1:iy(i),x2:SX-16,y2:sy(s),stroke:onChain?'var(--ok)':placed?'var(--accent)':(inS(i)?'var(--bad)':'var(--line)'),'stroke-width':onChain?3.5:placed?4:(inS(i)?2:1.5),'stroke-dasharray':onChain?'6 4':'none',opacity:placed||onChain||inS(i)?1:.8})})});
+        for(let i=0;i<n;i++){const act=i<=f.upto,cur=f.cur===i;
+          el('circle',{cx:IX,cy:iy(i),r:16,fill:inS(i)?'var(--bad)':cur?'var(--accent)':'var(--raise)',stroke:inS(i)?'var(--bad)':act?'var(--accent)':'var(--line)','stroke-width':2,opacity:act?1:.45});
+          el('text',{x:IX,y:iy(i)+4,class:'msg',fill:inS(i)||cur?'var(--accent-ink)':'var(--fg)'}).textContent=NM[i];
+          el('text',{x:IX-24,y:iy(i)+4,class:'lab',style:'text-anchor:end'}).textContent='{'+om[i].map(s=>s+1).join(',')+'}';}
+        for(let j=0;j<M;j++){const occ=f.pl.indexOf(j);
+          el('rect',{x:SX-16,y:sy(j)-15,width:32,height:30,rx:6,fill:inG(j)?'var(--bad)':occ>=0?'var(--accent)':'var(--bg)',stroke:inG(j)?'var(--bad)':occ>=0?'var(--accent)':'var(--line)','stroke-width':2});
+          el('text',{x:SX,y:sy(j)+4,class:'msg',fill:inG(j)||occ>=0?'var(--accent-ink)':'var(--muted)'}).textContent=j+1;
+          if(occ>=0)el('text',{x:SX+24,y:sy(j)+4,class:'lab',style:'text-anchor:start'}).textContent='holds '+NM[occ];}
+      });}
+    const rnd=()=>Array.from({length:n},()=>{const a=Math.floor(Math.random()*M);let b=Math.floor(Math.random()*(M-1));if(b>=a)b++;return[Math.min(a,b),Math.max(a,b)]});
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen==='rand'?rnd():SC[b.dataset.scen])}));
+    load(SC.chain);
+  })();
+
+  // ---- Animation 2: the forward recurrence ----
+  (function(){
+    const root=document.getElementById('pCkDP');if(!root)return;const P=Player(root);const fmt=CK.fmt;
+    const EX={A:[3,4,2],B:[4,5,2],B3:[4,5,3]};
+    function load(n,M,d){
+      const D=CK.dp(n,M,d),Q=CK.Cb(M,d),z=D.z;const F=[];const filled=new Set(['0,0']);
+      F.push({filled:new Set(filled),cur:'0,0',t:'Start',c:`${n} items, ${M} slots, d = ${d}, so z = ${z} dummy item${z>1?'s':''}. Rows are ℓ, the number of left vertices already in blocks; columns are b, the size of the next forbidden set. Eq. 13 sets F[0, 0] = 1, the empty prefix. Cells fill row by row for z ≤ r &lt; ${M} and c &gt; r (Eq. 14).`});
+      D.order.forEach(o=>{const k=o.r+','+o.c;filled.add(k);const sh=o.terms.slice(0,3).map(t=>`F[${t.l}, ${t.b}] · τ(${t.l}, ${t.b}; ${o.r}, ${o.c}) = ${fmt(t.F)} · ${fmt(t.t)} = ${fmt(t.p)}`).join('; ');
+        const more=o.terms.length>3?`; and ${o.terms.length-3} more term${o.terms.length-3>1?'s':''}`:'';
+        F.push({filled:new Set(filled),cur:k,pred:o.terms.map(t=>t.l+','+t.b),t:`F[${o.r}, ${o.c}]`,c:`${o.terms.length>1?'Merging '+o.terms.length+' kinds of prefix: ':'One predecessor: '}${sh}${more}. So F[${o.r}, ${o.c}] = ${fmt(o.s)}.${o.terms.some(t=>t.t<0)?' A negative τ comes from φ with a positive middle argument.':''}`})});
+      const fin=D.fin.map(x=>x.l+','+x.b);
+      F.push({filled:new Set(filled),fin,t:'Close every prefix (Eq. 15)',c:`Each state is multiplied by C(M − ℓ − 1, M − b) · h(b)<sup>n − ν(ℓ)</sup>. Only ${D.fin.length} survive${D.fin.length===1?'s':''}: ${D.fin.map(x=>`F[${x.l}, ${x.b}] · ${x.cf} · ${fmt(x.hp)} = ${fmt(x.t)}`).join('; ')}. The rest vanish because h(b) = 0 or the binomial is 0. N<sub>bad</sub> = ${fmt(D.N)}.`});
+      const B=CK.brute(n,M,d);
+      F.push({filled:new Set(filled),fin,brute:B,t:'Check by brute force',c:`Testing Hall's condition on every one of the ${fmt(B.tot)} outcomes finds ${fmt(B.bad)} failures, ${B.bad===D.N?'exactly the recurrence\'s answer':'which does not match'}. So p<sub>fail</sub> = ${fmt(D.N)}/${fmt(B.tot)} ≈ ${(D.N/B.tot).toPrecision(3)}.`});
+      F.delay=5200;
+      P.load(F,(f,el)=>{const cw=Math.min(44,264/(M+1)),ch=Math.min(30,150/M),x0=58,y0=34;
+        el('text',{x:x0+(M+1)*cw/2,y:14,class:'lab'}).textContent='b, size of next forbidden set';
+        el('text',{x:16,y:y0+M*ch/2,class:'lab',transform:`rotate(-90 16 ${y0+M*ch/2})`}).textContent='ℓ, vertices placed';
+        for(let b=0;b<=M;b++)el('text',{x:x0+b*cw+cw/2,y:y0-6,class:'lab'}).textContent=b;
+        for(let l=0;l<M;l++){el('text',{x:x0-10,y:y0+l*ch+ch/2+4,class:'lab'}).textContent=l;
+          for(let b=0;b<=M;b++){const k=l+','+b,isF=f.filled.has(k),cur=f.cur===k,pr=(f.pred||[]).includes(k),fi=(f.fin||[]).includes(k);
+            const legal=(l===0&&b===0)||(l>=z&&b>l);
+            el('rect',{x:x0+b*cw+1,y:y0+l*ch+1,width:cw-2,height:ch-2,rx:4,fill:cur?'var(--accent)':fi?'var(--ok)':pr?'var(--cool)':isF?'var(--raise)':'none',stroke:legal?'var(--line)':'none','stroke-width':1,opacity:legal?1:.4});
+            if(isF){const v=D.F[k];el('text',{x:x0+b*cw+cw/2,y:y0+l*ch+ch/2+4,class:'lab',fill:cur||fi||pr?'var(--accent-ink)':'var(--fg)'}).textContent=fmt(v)}}}
+        const yb=y0+M*ch+28;
+        if(f.fin){el('text',{x:170,y:yb,class:'msg',fill:'var(--ok)'}).textContent='N_bad = '+D.fin.map(x=>fmt(x.t)).join(' + ').replace(/\+ −/g,'− ')+' = '+fmt(D.N);}
+        if(f.brute){el('text',{x:170,y:yb+20,class:'msg',fill:f.brute.bad===D.N?'var(--ok)':'var(--bad)'}).textContent='brute force: '+fmt(f.brute.bad)+' of '+fmt(f.brute.tot)+(f.brute.bad===D.N?'  ✓':'');}
+      });}
+    root.querySelectorAll('[data-ex]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-ex]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(...EX[b.dataset.ex])}));
+    load(...EX.B);
   })();
 
   route();
