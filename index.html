@@ -3503,10 +3503,513 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.17688v1. Equation, theorem and section numbers match the paper. Both animations run real computations: cuckoo insertion with breadth-first eviction search on Table B, including the crowded group extracted from a failed search; and the forward recurrence of Eqs. 11 to 15 with its final sum, followed by a Hall's-condition test of every outcome. Hall's theorem and its sketch, the hand counts for Tables A and B, the M = 2 polynomial and its coefficient checks, the M = 3 exhaustive check, the per-outcome weights, the replacement and separate-table examples, the convolution and hockey-stick remarks, the bit-cost remark and the numerical table are ours.</p>
   </footer>
 </div>
+<div class="wrap" id="view-p-2611-18759" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Tue, Nov 17</span></div>
+  <div class="paperhead">
+    <h1>Portfolio-Size Constraints on Default Correlation: Exact Coherence Tests and Sharp Asymptotic Bounds</h1>
+    <p class="meta">M. Palaisti · submitted Nov 11, 2026 · q-fin.RM · <a href="https://arxiv.org/abs/2611.18759" target="_blank" rel="noopener">arXiv 2611.18759</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">A credit model can say that 2% of 100 loans default within one year and 2.5% within two, and still describe something no real portfolio could ever do: in the paper's example, its two-year forecast makes "at least one default" about 24 percentage points less likely than its one-year forecast, although a loan that has defaulted stays defaulted. This paper finds exactly when such contradictions happen in the standard one-factor Gaussian model of credit risk. For a pool of n borrowers, checking all n tail probabilities reduces to checking two events, "nobody defaults" and "everybody defaults". Those two checks give an exact interval of allowed correlations for the next horizon, the interval shrinks as the pool grows, and its width goes to zero at the remarkably slow rate 1/√(log n). The chapter builds this from scratch: stochastic order, quantile couplings, binomial mixtures, a sign-change argument, the Gaussian factor model and an extreme-value estimate, all on a three-borrower pool small enough to check by hand.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>why a default that cannot be undone forces every tail probability of the default count to grow with the horizon, and why a rising mean is not enough (Eqs. 2 and 3, Example 3.3);</li>
+        <li>how a single uniform random number and a random shuffle build a default process from any stochastically ordered list of count laws (Proposition 3.2);</li>
+        <li>what a binomial mixture is, and how a shared economic factor inflates the variance of the default count (Eqs. 5 and 6);</li>
+        <li>why, when two mixing distributions cross at most once, the "no defaults" and "all defaults" probabilities decide all n tail comparisons (Theorem 4.1, Eqs. 7 to 11);</li>
+        <li>how the one-factor Gaussian model is built and why its correlation parameter has an exact feasible interval at the next horizon, computed from two scalar equations (Eqs. 12 to 17);</li>
+        <li>how an inconsistent correlation curve is repaired by projection, with the paper's 100-loan example (Eq. 18, Tables 1 and 4);</li>
+        <li>why only a constant correlation survives every pool size, and why the interval narrows like C/√(log n) (Corollary 7.2, Lemma 7.3, Theorem 7.4, Eqs. 23 to 31).</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>n</dt><dd>the number of borrowers in the pool, all alike (exchangeable) with equal loss per default</dd>
+        <dt>τ<sub>i</sub>, D<sub>i</sub>(t)</dt><dd>the first default time of borrower i, and its indicator 1{τ<sub>i</sub> ≤ t}, which can only switch from 0 to 1</dd>
+        <dt>K(t), K<sub>j</sub></dt><dd>the number of borrowers in default by time t; K<sub>j</sub> is the count at horizon t<sub>j</sub></dd>
+        <dt>p, p(t)</dt><dd>the cumulative default probability of one borrower by a horizon; p<sub>0</sub> ≤ p<sub>1</sub> for an earlier and a later horizon</dd>
+        <dt>K ≤<sub>st</sub> K′</dt><dd>stochastic order: P(K ≥ k) ≤ P(K′ ≥ k) for every k = 1, …, n</dd>
+        <dt>V<sub>n</sub></dt><dd>the largest drop in a count-tail probability between two horizons (Eq. 3)</dd>
+        <dt>F, F<sup>−1</sup></dt><dd>a distribution function and its left quantile, F<sup>−1</sup>(u) = min{k : F(k) ≥ u}</dd>
+        <dt>Q<sub>a</sub>, H<sub>a</sub></dt><dd>the default probability conditional on the economic environment at horizon a, and its distribution function</dd>
+        <dt>w<sub>k</sub>(q)</dt><dd>the kernel q<sup>k−1</sup>(1 − q)<sup>n−k</sup> in the tail-difference formula (Eq. 8)</dd>
+        <dt>T<sub>k</sub></dt><dd>P(K<sub>1</sub> ≥ k) − P(K<sub>0</sub> ≥ k), the change in the k-th tail</dd>
+        <dt>Φ, φ, Φ<sup>−1</sup></dt><dd>the standard normal distribution function, density and quantile; Φ̄ = 1 − Φ</dd>
+        <dt>ρ, c(p)</dt><dd>the latent Gaussian correlation, and the threshold c(p) = Φ<sup>−1</sup>(p)</dd>
+        <dt>μ, σ</dt><dd>the probit location c/√(1 − ρ) and scale √(ρ/(1 − ρ)) of Q (Eq. 14)</dd>
+        <dt>A<sub>n</sub>, S<sub>n</sub></dt><dd>P(all n default) = E Q<sup>n</sup>, and P(none default) = E(1 − Q)<sup>n</sup> (Eq. 15)</dd>
+        <dt>[ℓ<sub>n</sub>, u<sub>n</sub>], ρ̄</dt><dd>the feasible interval for the later correlation, and the correlation cap (0.99 in the numerics)</dd>
+        <dt>C, N<sub>*</sub>(δ)</dt><dd>the leading constant of the boundary expansion (Eq. 27), and the largest pool size that tolerates a correlation change δ</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>The toy pool (ours): three borrowers.</b> At the earlier horizon each defaults independently with probability 0.2. At the later horizon the economy is equally likely to be good or bad, and two forecasts are compared, both with p<sub>1</sub> = 0.3. In the <i>calm</i> forecast the conditional default probability is 0.1 or 0.5; in the <i>split</i> forecast it is 0.01 or 0.59. Every number about the toy pool can be checked with a pencil, and the first animation runs on it.</li>
+        <li><b>The paper's pool.</b> The one-factor Gaussian model with earlier default probability p<sub>0</sub> = 0.02, latent correlation ρ<sub>0</sub> = 0.15, and later default probability p<sub>1</sub> = 0.03 (Section 8.4, Table 2), together with the 100-loan example (p<sub>0</sub>, ρ<sub>0</sub>) = (0.02, 0.10) moving to (0.025, 0.40) (Section 8.3, Table 1). The second and third animations recompute the paper's tables in your browser.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Absorbing defaults">
+      <span class="num">1 · DEFAULTS DO NOT HEAL</span>
+      <h2>What must be true of default counts at two horizons?</h2>
+      <p>Banks and investors forecast portfolio losses at several horizons at once: one year, two years, five years. Each forecast is a probability distribution for the number of borrowers who will have defaulted by that date, all made today with today's information. The paper's starting point is that these distributions cannot be chosen freely, because default is a one-way door. A borrower who has defaulted by year one has also defaulted by year two, even if the loan is later cured or repaid, since the record being counted is the history of first defaults.</p>
+      <div class="def"><span class="label">Definition · absorbing default indicators (Section 2.1)</span>
+        <p>Let τ<sub>i</sub> be the first default time of borrower i and D<sub>i</sub>(t) = 1{τ<sub>i</sub> ≤ t} its cumulative default indicator. Then D<sub>i</sub>(s) ≤ D<sub>i</sub>(t) whenever s &lt; t, which is what absorbing means. For a homogeneous pool, p(t) = P(τ<sub>i</sub> ≤ t) is the same for every borrower and the default count is</p>
+        <div class="math" data-tex="K(t)=\sum_{i=1}^{n}D_i(t),\qquad \mathbb{E}K(t)=n\,p(t)."></div>
+        <p>In words: each borrower carries a switch that can flip from 0 to 1 once and never back, and K(t) counts the switches that have flipped by time t.</p>
+      </div>
+      <p>Since every switch only flips up, the count K(t) can only go up along any realized history. So if the event "at least k defaults by time s" happens, then "at least k defaults by time t" happens too, for every later t. Taking probabilities, every tail P(K(t) ≥ k) must be nondecreasing in t. This is a named relationship between two distributions.</p>
+      <div class="def"><span class="label">Definition · first-order stochastic order (Section 3)</span>
+        <p>For counts K and K′ taking values in {0, …, n}, write K ≤<sub>st</sub> K′ if</p>
+        <div class="math" data-tex="\mathbb{P}(K\ge k)\le\mathbb{P}(K'\ge k)\qquad\text{for every }k=1,\ldots,n."></div>
+        <p>In words: K′ is at least as likely as K to reach any threshold. Equivalently, the distribution function of K′ lies on or below that of K at every point.</p>
+      </div>
+      <p>Stochastic order is much stronger than an ordering of means. It implies E f(K) ≤ E f(K′) for every increasing function f, the mean being one example, but a larger mean does not imply it. The paper gives the comparison a financial meaning through loss layers. With normalized loss L(t) = K(t)/n, a tranche that absorbs losses between (k − 1)/n and k/n of the pool loses</p>
+      <div class="math" data-tex="\min\!\left\{\left(L(t)-\frac{k-1}{n}\right)_{+},\frac{1}{n}\right\}=\frac{1}{n}\mathbf{1}_{\{K(t)\geq k\}},\qquad k=1,\ldots,n."></div>
+      <p class="eqn">Eq. 2</p>
+      <details class="pf"><summary><span class="tagd">detail</span><span class="q">Why does a one-default-wide tranche lose exactly 1/n times an indicator?</span></summary><div class="pfbody">
+        <p>The argument is ours, though the identity is the paper's. Here x<sub>+</sub> = max(x, 0). Because K(t) is an integer, L(t) − (k − 1)/n = (K(t) − k + 1)/n is either at most 0, when K(t) ≤ k − 1, or at least 1/n, when K(t) ≥ k. In the first case the positive part is 0, and in the second the minimum with 1/n is 1/n. So the tranche is either untouched or wiped out, according to whether the k-th default has happened.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Taking expectations, the expected loss of the k-th layer is P(K(t) ≥ k)/n. So stochastic order between horizons says exactly that every single-default-wide layer has an expected loss that grows with maturity. To measure how badly a pair of forecasts fails, the paper uses the largest decline,</p>
+      <div class="math" data-tex="V_{n}=\max_{1\leq k\leq n}\bigl[\mathbb{P}(K_{0}\geq k)-\mathbb{P}(K_{1}\geq k)\bigr]_{+},"></div>
+      <p class="eqn">Eq. 3</p>
+      <p>which is zero exactly when the later count dominates the earlier one.</p>
+      <p>The toy pool shows how a forecast can raise the mean and still fail. At the earlier horizon K<sub>0</sub> is Binomial(3, 0.2), so P(K<sub>0</sub> = 0) = 0.8<sup>3</sup> = 0.512 and the tails are</p>
+      <div class="math" data-tex="\mathbb{P}(K_0\ge1)=0.488,\qquad \mathbb{P}(K_0\ge2)=0.104,\qquad \mathbb{P}(K_0\ge3)=0.008."></div>
+      <p>In the split forecast the later count is Binomial(3, 0.01) or Binomial(3, 0.59) with probability 1/2 each. Averaging, P(K<sub>1</sub> = 0) = (0.99<sup>3</sup> + 0.41<sup>3</sup>)/2 = (0.970299 + 0.068921)/2 = 0.519610, and the tails are 0.480390, 0.316920 and 0.102690. The mean rose from 0.6 to 0.9, and the two upper tails rose, but the chance of at least one default fell from 0.488 to 0.480390. So V<sub>3</sub> = 0.00761, and no default process has these two horizon laws. The calm forecast, with conditional probabilities 0.1 and 0.5, gives tails 0.573, 0.264 and 0.063, all larger than the earlier ones, so it passes. These toy numbers are ours.</p>
+      <p>The paper's Example 3.3 shows that the failure can also hide in the middle. Take n = 3 with K<sub>0</sub> = 2 surely, and K<sub>1</sub> equal to 1 or 3 with probabilities 2/5 and 3/5. Both no-default probabilities are 0, the all-default probability rises from 0 to 3/5, and the mean rises from 2 to 11/5. Yet P(K<sub>1</sub> ≥ 2) = 3/5 &lt; 1 = P(K<sub>0</sub> ≥ 2). The two extreme events look fine and an interior tail breaks. Section 4 identifies the extra structure under which the extremes are enough.</p>
+      <div class="fact"><span class="label">Fact · absorption orders the tails (Section 2.1)</span>
+        <p>If defaults are absorbing, every count-tail probability P(K(t) ≥ k), k = 1, …, n, is nondecreasing in the horizon t. A rising expected count does not imply this.</p>
+      </div>
+      <p class="short"><b>In short:</b> defaults are one-way switches, so the default count can only grow and its distribution must rise in stochastic order from horizon to horizon; each tail probability is the expected loss of a one-default-wide tranche (Eq. 2); V<sub>n</sub> measures the worst decline (Eq. 3); the split toy forecast raises the mean yet has V<sub>3</sub> = 0.00761.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Building the process">
+      <span class="num">2 · FROM ORDERED COUNTS TO A DEFAULT PROCESS</span>
+      <h2>Is stochastic order also enough for a real default process to exist?</h2>
+      <p>Section 1 showed that ordering is necessary. The converse question is whether, given count distributions at several horizons that are ordered, one can always build borrowers with absorbing default indicators that have exactly those distributions. The answer is yes, and the construction is short enough to run by hand.</p>
+      <div class="def"><span class="label">Definition 3.1 · absorbing compatibility</span>
+        <p>Fix horizons t<sub>0</sub> &lt; ⋯ &lt; t<sub>m</sub> and, at each horizon, an exchangeable law ν<sub>j</sub> on {0, 1}<sup>n</sup>. The laws are absorbing-compatible if some joint distribution has these marginals and satisfies D<sub>i,j+1</sub> ≥ D<sub>ij</sub> almost surely for every borrower i and every j.</p>
+        <p>In words: a single random history exists in which each horizon looks exactly as forecast and no borrower ever leaves default.</p>
+      </div>
+      <p>Exchangeable means that relabeling the borrowers does not change the law. Such a law is determined by its count: given K<sub>j</sub> = k, each set of k defaulted names has probability 1/C(n, k). So the question is only about counts.</p>
+      <div class="aside"><span class="label">Background · the quantile trick (not from the paper)</span>
+        <p>If F is the distribution function of a count and U is uniform on (0, 1), the left quantile F<sup>−1</sup>(U) = min{k : F(k) ≥ U} has distribution function F, because F<sup>−1</sup>(U) ≤ k exactly when U ≤ F(k). Feeding the same U into two quantile functions couples the two counts: if F<sub>1</sub>(k) ≤ F<sub>0</sub>(k) for every k, which is K<sub>0</sub> ≤<sub>st</sub> K<sub>1</sub>, then F<sub>1</sub><sup>−1</sup>(U) ≥ F<sub>0</sub><sup>−1</sup>(U) for every U.</p>
+      </div>
+      <div class="fact"><span class="label">Proposition 3.2 · ordering is exactly compatibility</span>
+        <p>The laws ν<sub>0</sub>, …, ν<sub>m</sub> are absorbing-compatible if and only if K<sub>0</sub> ≤<sub>st</sub> ⋯ ≤<sub>st</sub> K<sub>m</sub>. When this holds, an exchangeable absorbing coupling can be built from one uniform random variable and one independent uniform permutation of the borrowers.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How do one uniform number and one shuffle produce the process?</span></summary><div class="pfbody">
+        <p>Necessity: summing D<sub>i,j+1</sub> ≥ D<sub>ij</sub> over i gives K<sub>j+1</sub> ≥ K<sub>j</sub> pathwise, hence ordered tails. Sufficiency: let F<sub>j</sub> be the count distribution function at horizon j and set K<sub>j</sub> = F<sub>j</sub><sup>−1</sup>(U) for one uniform U, using the left quantile. Stochastic ordering gives K<sub>0</sub> ≤ ⋯ ≤ K<sub>m</sub> for every U. Let R<sub>1</sub>, …, R<sub>n</sub> be the ranks of an independent uniform random permutation and put D<sub>ij</sub> = 1{R<sub>i</sub> ≤ K<sub>j</sub>}. Given K<sub>j</sub> = k, the defaulted set is the k borrowers with the smallest ranks, which is a uniformly random k-set, so the horizon law is ν<sub>j</sub>. Since K<sub>j</sub> grows with j, so does each indicator.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Each borrower's default time is then the first horizon at which its indicator turns on. The paper notes that the coupling is one choice among many: the horizon laws do not pin down how the process moves between horizons.</p>
+      <p>On the toy pool, the distribution functions at k = 0, 1, 2 are F<sub>0</sub> = (0.512, 0.896, 0.992) for the earlier horizon, F<sub>1</sub> = (0.427, 0.736, 0.937) for the calm forecast and F<sub>1</sub> = (0.519610, 0.683080, 0.897310) for the split one. The calm values all sit below F<sub>0</sub>, as ordering requires. The split value at k = 0 sits above, by 0.00761. If U lands in the thin band (0.512, 0.519610], the earlier count is 1 and the later count is 0: somebody would have to leave default. The animation draws U, reads both quantiles off the staircases, shuffles three borrowers, and then repeats the construction 20 000 times to compare frequencies with the targets.</p>
+      <div class="player" id="pDcCoup">
+        <div class="ptitle"><span class="label">Animation · the quantile coupling on the toy pool</span><span class="scen"><button class="chip" data-scen="calm" aria-pressed="true">calm</button><button class="chip" data-scen="split" aria-pressed="false">split</button><button class="chip" data-scen="rand" aria-pressed="false">random U</button></span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Two staircase distribution functions on the left, a horizontal line at the uniform draw, and three borrowers at two horizons on the right"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--cool)"></i>earlier horizon</span><span><i class="sw" style="background:var(--accent)"></i>later horizon</span><span><i class="sw" style="background:var(--bad)"></i>defaulted</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p class="short"><b>In short:</b> exchangeable horizon laws are compatible with absorbing defaults exactly when their counts are stochastically ordered (Proposition 3.2); the proof feeds one uniform U to every quantile function and defaults the borrowers with the smallest random ranks; for the split toy forecast the band of U that would force a cure has width 0.00761.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Binomial mixtures">
+      <span class="num">3 · A SHARED ECONOMY: BINOMIAL MIXTURES</span>
+      <h2>What kind of count distributions do credit models produce?</h2>
+      <p>Borrowers do not default independently. In a recession many default together, and in a boom few do. The standard way to model this is to let a random environment set a common default probability Q, and to let borrowers default independently given Q. The count is then a binomial with a random success probability.</p>
+      <div class="def"><span class="label">Definition · binomial mixture (Eq. 5)</span>
+        <p>For a horizon a ∈ {0, 1},</p>
+        <div class="math" data-tex="K_{a}\mid Q_{a}\sim\operatorname{Bin}(n,Q_{a}),\qquad 0\lt Q_{a}\lt 1,"></div>
+        <p class="eqn">Eq. 5</p>
+        <p>and H<sub>a</sub> denotes the distribution function of Q<sub>a</sub>, the mixing distribution.</p>
+        <p>In words: first nature picks the state of the economy, which fixes a default probability Q<sub>a</sub>; then each borrower flips its own coin with that probability.</p>
+      </div>
+      <p>Writing p<sub>a</sub> = E Q<sub>a</sub>, the mean and variance of the count are</p>
+      <div class="math" data-tex="\mathbb{E}K_{a}=np_{a},\qquad\operatorname{Var}(K_{a})=np_{a}(1-p_{a})+n(n-1)\operatorname{Var}(Q_{a})."></div>
+      <p class="eqn">Eq. 6</p>
+      <details class="pf"><summary><span class="tagd">our derivation</span><span class="q">Where does the extra n(n − 1) Var(Q) come from?</span></summary><div class="pfbody">
+        <p>The paper states Eq. 6; this derivation is ours and uses the law of total variance, Var K = E[Var(K | Q)] + Var(E[K | Q]). Given Q the count is binomial, so Var(K | Q) = nQ(1 − Q) and E[K | Q] = nQ. Hence</p>
+        <div class="math" data-tex="\operatorname{Var}K=n\,\mathbb{E}[Q-Q^2]+n^2\operatorname{Var}Q=n\bigl(p-p^2-\operatorname{Var}Q\bigr)+n^2\operatorname{Var}Q,"></div>
+        <p>using E Q<sup>2</sup> = p<sup>2</sup> + Var Q. Collecting terms gives np(1 − p) + n(n − 1) Var Q.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The first term is the binomial variance of independent borrowers. The second is the contribution of the shared environment, and because it grows like n<sup>2</sup> rather than n, it dominates in large pools. On the toy pool, Q<sub>0</sub> = 0.2 is constant, so Var K<sub>0</sub> = 3(0.2)(0.8) = 0.48. The calm forecast has Var Q<sub>1</sub> = 0.2<sup>2</sup> = 0.04 and Var K<sub>1</sub> = 0.63 + 6(0.04) = 0.87; the split forecast has Var Q<sub>1</sub> = 0.29<sup>2</sup> = 0.0841 and Var K<sub>1</sub> = 0.63 + 0.5046 = 1.1346. Both later forecasts have mean 0.9. The split one spreads its probability toward both extremes, which raised P(K<sub>1</sub> = 0) above its earlier value in Section 1.</p>
+      <div class="fact"><span class="label">Fact · common uncertainty fattens both ends (Section 4)</span>
+        <p>Different mixing laws with the same mean can change the probability of both mild and severe default outcomes. Greater spread in Q raises the probability of zero defaults as well as of many defaults, and that is how a rise in correlation can make a later forecast less likely than an earlier one to show any default at all.</p>
+      </div>
+      <p class="short"><b>In short:</b> a binomial mixture draws a common default probability Q and then independent defaults (Eq. 5); its variance is the binomial variance plus n(n − 1) Var Q (Eq. 6); on the toy pool the split forecast has variance 1.1346 against 0.87 for the calm one at the same mean.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · The two-event test">
+      <span class="num">4 · TWO EVENTS DECIDE ALL n</span>
+      <h2>When do "nobody defaults" and "everybody defaults" settle every tail?</h2>
+      <p>Checking stochastic order means comparing n tail probabilities, each an integral against the mixing distribution. Example 3.3 showed that the first and last tails do not suffice in general. The paper's main structural result is that for binomial mixtures they do suffice, under a mild condition on how the mixing distributions compare.</p>
+      <p>A function has at most one sign change if it has constant sign, or changes once from nonnegative to nonpositive, or once the other way; zeros are allowed.</p>
+      <div class="fact"><span class="label">Theorem 4.1 · the two-event criterion</span>
+        <p>Assume H<sub>0</sub> − H<sub>1</sub> has at most one sign change on (0, 1). Then K<sub>0</sub> ≤<sub>st</sub> K<sub>1</sub> if and only if</p>
+        <div class="math" data-tex="\mathbb{E}(1-Q_{1})^{n}\leq\mathbb{E}(1-Q_{0})^{n},\qquad\mathbb{E}Q_{1}^{n}\geq\mathbb{E}Q_{0}^{n}."></div>
+        <p class="eqn">Eq. 7</p>
+        <p>In words: E(1 − Q)<sup>n</sup> is the probability that nobody defaults and E Q<sup>n</sup> the probability that everybody does. When the mixing distributions cross at most once, the later forecast dominates exactly when it makes "nobody" no more likely and "everybody" no less likely.</p>
+      </div>
+      <p>The proof turns each tail difference into an integral of H<sub>0</sub> − H<sub>1</sub> against a positive weight. With g = H<sub>0</sub> − H<sub>1</sub> and w<sub>k</sub>(q) = q<sup>k−1</sup>(1 − q)<sup>n−k</sup>,</p>
+      <div class="math" data-tex="T_{k}:=\mathbb{P}(K_{1}\geq k)-\mathbb{P}(K_{0}\geq k)=n\binom{n-1}{k-1}\int_{0}^{1}w_{k}(q)g(q)\,dq."></div>
+      <p class="eqn">Eq. 8</p>
+      <details class="pf"><summary><span class="tagd">detail</span><span class="q">Why is the tail difference an integral of g against w<sub>k</sub>?</span></summary><div class="pfbody">
+        <p>The paper's reason is that the derivative of the binomial tail in q is n C(n − 1, k − 1) w<sub>k</sub>(q) and the boundary terms vanish. Filling in the steps is ours. Let B<sub>k</sub>(q) = P(Bin(n, q) ≥ k). Think of n uniform numbers on (0, 1); the count of those below q is Bin(n, q), and it is at least k exactly when the k-th smallest is below q. So B<sub>k</sub> is the distribution function of the k-th smallest of n uniforms, whose density is the chance that one specific number lands at q (n choices), k − 1 others land below (C(n − 1, k − 1) choices, probability q<sup>k−1</sup>) and the rest above (probability (1 − q)<sup>n−k</sup>). That is B′<sub>k</sub>(q) = n C(n − 1, k − 1) w<sub>k</sub>(q).</p>
+        <p>Now P(K<sub>a</sub> ≥ k) = ∫ B<sub>k</sub> dH<sub>a</sub>, and integrating by parts on [0, 1],</p>
+        <div class="math" data-tex="\int_0^1 B_k\,dH_a=\bigl[B_kH_a\bigr]_0^1-\int_0^1 B_k'(q)H_a(q)\,dq=1-\int_0^1 B_k'(q)H_a(q)\,dq,"></div>
+        <p>since B<sub>k</sub>(1) = H<sub>a</sub>(1) = 1 and B<sub>k</sub>(0) = 0 for k ≥ 1. Subtracting the a = 0 version from the a = 1 version leaves ∫ B′<sub>k</sub> (H<sub>0</sub> − H<sub>1</sub>) dq, which is Eq. 8.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Conditions (7) say T<sub>1</sub> ≥ 0 and T<sub>n</sub> ≥ 0. The weights w<sub>k</sub> slide from the left end of (0, 1) toward the right as k grows: w<sub>1</sub> = (1 − q)<sup>n−1</sup> lives near 0 and w<sub>n</sub> = q<sup>n−1</sup> near 1. If g is positive on the left and negative on the right, then T<sub>n</sub>, which weighs the right most heavily, is the hardest to keep nonnegative, and if T<sub>n</sub> survives, every intermediate T<sub>k</sub> does too. If g is negative on the left and positive on the right, T<sub>1</sub> is the hardest. That is the whole idea; the ratio inequalities below make it exact.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does a single crossing transfer the sign from T<sub>1</sub> or T<sub>n</sub> to every T<sub>k</sub>?</span></summary><div class="pfbody">
+        <p>Necessity is the thresholds k = 1 and k = n. For sufficiency, if g ≥ 0 every integral in Eq. 8 is nonnegative. If g ≤ 0, then T<sub>1</sub> ≥ 0 and w<sub>1</sub> &gt; 0 force g = 0 almost everywhere, and every T<sub>k</sub> = 0. Suppose g is nonnegative below a crossing point q<sub>*</sub> and nonpositive above it. The ratio w<sub>n</sub>/w<sub>k</sub> = [q/(1 − q)]<sup>n−k</sup> is nondecreasing, so for all q</p>
+        <div class="math" data-tex="w_{n}(q)g(q)\leq\frac{w_{n}(q_{*})}{w_{k}(q_{*})}w_{k}(q)g(q),\qquad 0\lt q\lt 1."></div>
+        <p class="eqn">Eq. 9</p>
+        <p>Below q<sub>*</sub>, g ≥ 0 and the ratio is at most its value at q<sub>*</sub>; above, g ≤ 0 and the ratio is at least that value; both give the inequality. Integrating, the left side is a positive multiple of T<sub>n</sub> ≥ 0, so ∫ w<sub>k</sub> g ≥ 0. If instead g is nonpositive below q<sub>*</sub> and nonnegative above, the nondecreasing ratio w<sub>k</sub>/w<sub>1</sub> = [q/(1 − q)]<sup>k−1</sup> gives</p>
+        <div class="math" data-tex="w_{k}(q)g(q)\geq\frac{w_{k}(q_{*})}{w_{1}(q_{*})}w_{1}(q)g(q),"></div>
+        <p class="eqn">Eq. 10</p>
+        <p>and T<sub>1</sub> ≥ 0 finishes the argument. Crossings at a boundary reduce to constant sign.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The toy pool runs through every step. In the calm forecast, H<sub>1</sub> jumps by 1/2 at 0.1 and at 0.5, and H<sub>0</sub> jumps by 1 at 0.2. So g = H<sub>0</sub> − H<sub>1</sub> is −1/2 on [0.1, 0.2), +1/2 on [0.2, 0.5), and 0 elsewhere: one sign change, from negative to positive, at q<sub>*</sub> = 0.2. The criterion says T<sub>1</sub> ≥ 0 is the binding check, and indeed Eq. 8 gives T<sub>1</sub> = 0.085, T<sub>2</sub> = 0.160 and T<sub>3</sub> = 0.055, exactly the differences of the tails listed in Section 1 (our computation). The split forecast has the same shape of g, with jumps at 0.01 and 0.59, and its binding check fails: T<sub>1</sub> = −0.00761. Example 3.3 escapes the theorem because a count that equals 2 surely is not a binomial mixture with 0 &lt; Q &lt; 1.</p>
+      <p>In practice the single-crossing condition is easy to verify, because credit models build Q by pushing one random factor through a fixed increasing function.</p>
+      <div class="fact"><span class="label">Corollary 4.2 · location-scale mixtures cross once</span>
+        <p>Let Z have a continuous strictly increasing distribution function F, let G be a continuous strictly increasing bijection from ℝ onto (0, 1), and let Q<sub>a</sub> = G(μ<sub>a</sub> + σ<sub>a</sub>Z) with σ<sub>a</sub> &gt; 0. Then the equivalence of Theorem 4.1 holds.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does a common factor and link guarantee one crossing?</span></summary><div class="pfbody">
+        <p>H<sub>a</sub>(q) = F((G<sup>−1</sup>(q) − μ<sub>a</sub>)/σ<sub>a</sub>). Since F is strictly increasing, H<sub>0</sub>(q) − H<sub>1</sub>(q) has the sign of</p>
+        <div class="math" data-tex="\left(\frac{1}{\sigma_{0}}-\frac{1}{\sigma_{1}}\right)G^{-1}(q)-\frac{\mu_{0}}{\sigma_{0}}+\frac{\mu_{1}}{\sigma_{1}},"></div>
+        <p class="eqn">Eq. 11</p>
+        <p>an affine function of the increasing quantity G<sup>−1</sup>(q), which changes sign at most once.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>This covers probit-normal mixing (G = Φ, Z normal) and logit-normal mixing, and also non-normal factors with full support, provided both horizons use the same factor distribution and link.</p>
+      <p class="short"><b>In short:</b> each tail change T<sub>k</sub> is the mixing-distribution difference integrated against a weight that slides from 0 to 1 as k grows (Eq. 8); if that difference changes sign once, the end weight on the far side is the hardest test, so the no-default and all-default comparisons decide all n tails (Theorem 4.1, Eq. 7); one-factor location-scale models always cross once (Eq. 11).</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · The Gaussian model">
+      <span class="num">5 · THE ONE-FACTOR GAUSSIAN MODEL</span>
+      <h2>How does the industry-standard model fit this picture?</h2>
+      <p>The model used in practice, going back to Li's Gaussian copula and Vasicek's large-pool analysis, gives each borrower a hidden "health" score that mixes a common economic factor with an individual shock. A borrower defaults by the horizon when its score falls below a threshold chosen to match its default probability.</p>
+      <div class="def"><span class="label">Definition · the homogeneous one-factor Gaussian model (Eq. 4)</span>
+        <p>Let V, ε<sub>1</sub>, …, ε<sub>n</sub> be independent standard normals and</p>
+        <div class="math" data-tex="X_{i}=\sqrt{\rho}\,V+\sqrt{1-\rho}\,\epsilon_{i},\qquad U_{i}=\Phi(X_{i}),\qquad D_{i}(t)=\mathbf{1}_{\{U_{i}\leq p(t)\}},\qquad 0\leq\rho\lt 1."></div>
+        <p class="eqn">Eq. 4</p>
+        <p>In words: each latent score X<sub>i</sub> is standard normal, any two scores have correlation ρ through the shared V, and Φ turns the score into a uniform number U<sub>i</sub>. A borrower is in default by time t when its U<sub>i</sub> is below p(t), which happens with probability exactly p(t).</p>
+      </div>
+      <p>If ρ is the same at every horizon, reusing the same U<sub>i</sub> makes every indicator nondecreasing whenever p(t) is, so the model is automatically consistent. The paper's question is what happens when a modeler fits a separate correlation at each maturity, which is common practice. Then the horizon laws are still binomial mixtures, but the coupling between horizons has to be found, and Section 2 says the test is stochastic order.</p>
+      <p>Conditioning on the common factor gives the mixing variable. With Z standard normal and c(p) = Φ<sup>−1</sup>(p),</p>
+      <div class="math" data-tex="Q(p,\rho)=\Phi\!\left(\frac{c(p)+\sqrt{\rho}\,Z}{\sqrt{1-\rho}}\right),\qquad c(p)=\Phi^{-1}(p),\quad 0\lt p\lt 1,\quad 0\lt\rho\lt 1."></div>
+      <p class="eqn">Eq. 12</p>
+      <details class="pf"><summary><span class="tagd">our derivation</span><span class="q">Why is this the default probability given the economy, and why is its mean p?</span></summary><div class="pfbody">
+        <p>A borrower defaults when Φ(X<sub>i</sub>) ≤ p, that is, X<sub>i</sub> ≤ c(p). Given V, this reads √(1 − ρ) ε<sub>i</sub> ≤ c(p) − √ρ V, which has probability Φ((c(p) − √ρ V)/√(1 − ρ)). Writing Z = −V, which is also standard normal, gives Eq. 12; the paper notes the sign of Z is immaterial. Given V the borrowers are independent, so the count is Bin(n, Q). For the mean, E Q = P(√(1 − ρ) ε − √ρ Z ≤ c(p)), and √(1 − ρ) ε − √ρ Z is standard normal because its variance is (1 − ρ) + ρ = 1, so the probability is Φ(c(p)) = p, as the paper states.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In probit form, Q = Φ(μ + σZ) with location and scale</p>
+      <div class="math" data-tex="\mu(p,\rho)=\frac{c(p)}{\sqrt{1-\rho}},\qquad\sigma(\rho)=\sqrt{\frac{\rho}{1-\rho}}."></div>
+      <p class="eqn">Eq. 14</p>
+      <p>so Corollary 4.2 applies with F = G = Φ. For the paper's pool, c(0.02) = −2.0537, and at ρ = 0.15 the location is μ = −2.2276 and the scale σ = 0.4201 (our arithmetic). Raising ρ raises σ, so Q spreads out: bad economies get worse and good ones better.</p>
+      <p>The parameter ρ is the correlation of the hidden scores, not of the default indicators. The latter is</p>
+      <div class="math" data-tex="\operatorname{Corr}(D_{i},D_{j})=\frac{\Phi_{2}(c(p),c(p);\rho)-p^{2}}{p(1-p)},\qquad i\neq j,"></div>
+      <p class="eqn">Eq. 13</p>
+      <p>where Φ<sub>2</sub>(·, ·; ρ) is the bivariate normal distribution function with correlation ρ. So a constant latent ρ can coexist with a changing default correlation as p grows. As an illustration (our computation), Φ<sub>2</sub>(c, c; ρ) is the probability that two given borrowers both default, which is E Q<sup>2</sup>; at p = 0.02 and ρ = 0.15 it is 0.000877, and the default correlation is only 0.0243. At p = 0.03 and the same ρ it is 0.0308. Small default correlations are typical, which is why the latent parameter is the one modelers fit.</p>
+      <p>The two events of Theorem 4.1 get names:</p>
+      <div class="math" data-tex="A_{n}(p,\rho)=\mathbb{E}Q(p,\rho)^{n},\qquad S_{n}(p,\rho)=\mathbb{E}[1-Q(p,\rho)]^{n}=A_{n}(1-p,\rho)."></div>
+      <p class="eqn">Eq. 15</p>
+      <p>A<sub>n</sub> is the probability that all n borrowers default and S<sub>n</sub> the probability that all survive; at ρ = 0 they reduce to p<sup>n</sup> and (1 − p)<sup>n</sup>. The identity S<sub>n</sub>(p, ρ) = A<sub>n</sub>(1 − p, ρ) holds because 1 − Φ(x) = Φ(−x) and c(1 − p) = −c(p), together with the symmetry of Z.</p>
+      <div class="fact"><span class="label">Lemma 5.1 · both extremes rise with correlation</span>
+        <p>For n ≥ 2, A<sub>n</sub>(p, ρ) and S<sub>n</sub>(p, ρ) are continuous and strictly increasing in ρ ∈ [0, 1). At fixed ρ, A<sub>n</sub> strictly increases and S<sub>n</sub> strictly decreases in p.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof sketch</span><span class="q">Why does more correlation make both extremes more likely?</span></summary><div class="pfbody">
+        <p>The monotonicity in p is immediate from Eq. 12. For ρ, A<sub>n</sub> is the probability that all coordinates of an equicorrelated normal vector lie below c(p). A classical identity of Plackett (1954) says the derivative of such an orthant probability with respect to one off-diagonal correlation is the bivariate normal density at the two thresholds, times the conditional probability that the remaining coordinates stay below theirs. Both factors are positive, and along the equicorrelation path the derivative is a sum of such terms over pairs. Continuity at ρ = 0 is dominated convergence. The same applies to S<sub>n</sub> at 1 − p.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Two closed forms let one test any implementation, and the paper uses them for exactly that. At p = ρ = 1/2, c = 0 and σ = 1, so Q = Φ(Z) is uniform on (0, 1) and A<sub>n</sub> = ∫<sub>0</sub><sup>1</sup> q<sup>n</sup> dq = 1/(n + 1). At n = 2 and p = 1/2, A<sub>2</sub> = 1/4 + arcsin(ρ)/(2π), the classical orthant formula for two correlated normals. The code behind the animations below reproduces both to about 15 digits.</p>
+      <p class="short"><b>In short:</b> each borrower's hidden score mixes a common factor with a private shock (Eq. 4); given the factor, the default probability is a probit-normal Q with location c/√(1 − ρ) and scale √(ρ/(1 − ρ)) (Eqs. 12 and 14); A<sub>n</sub> and S<sub>n</sub> are the all-default and no-default probabilities (Eq. 15), and both rise with ρ (Lemma 5.1).</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · The exact interval">
+      <span class="num">6 · THE EXACT INTERVAL OF CORRELATIONS</span>
+      <h2>Which later correlations are consistent with the earlier forecast?</h2>
+      <p>Fix the earlier pair (p<sub>0</sub>, ρ<sub>0</sub>) and the later default probability p<sub>1</sub> ≥ p<sub>0</sub>, and ask which later correlations r are compatible. By Corollary 4.2 and Theorem 4.1 the answer is the set of r with A<sub>n</sub>(p<sub>1</sub>, r) ≥ A<sub>n</sub>(p<sub>0</sub>, ρ<sub>0</sub>) and S<sub>n</sub>(p<sub>1</sub>, r) ≤ S<sub>n</sub>(p<sub>0</sub>, ρ<sub>0</sub>). Lemma 5.1 says both left sides increase in r. So the first inequality holds for all r from some point on, the second for all r up to some point, and the feasible set is an interval.</p>
+      <div class="fact"><span class="label">Theorem 5.2 · the exact interval</span>
+        <p>Fix a cap ρ̄ &lt; 1 with 0 &lt; ρ<sub>0</sub> &lt; ρ̄, and let I<sub>n</sub>(p<sub>0</sub>, ρ<sub>0</sub>; p<sub>1</sub>) be the set of r ∈ [0, ρ̄] for which the two Gaussian horizon laws are absorbing-compatible. For n ≥ 2, I<sub>n</sub> = [ℓ<sub>n</sub>, u<sub>n</sub>] with</p>
+        <div class="math" data-tex="\ell_{n}=\begin{cases}0,&p_{1}^{n}\geq A_{n}(p_{0},\rho_{0}),\\ \text{the unique }r\in(0,\rho_{0}]\text{ with }A_{n}(p_{1},r)=A_{n}(p_{0},\rho_{0}),&\text{otherwise},\end{cases}"></div>
+        <p class="eqn">Eq. 16</p>
+        <div class="math" data-tex="u_{n}=\begin{cases}\bar{\rho},&S_{n}(p_{1},\bar{\rho})\leq S_{n}(p_{0},\rho_{0}),\\ \text{the unique }r\in[\rho_{0},\bar{\rho})\text{ with }S_{n}(p_{1},r)=S_{n}(p_{0},\rho_{0}),&\text{otherwise}.\end{cases}"></div>
+        <p class="eqn">Eq. 17</p>
+        <p>The interval contains ρ<sub>0</sub>; it is {ρ<sub>0</sub>} if p<sub>1</sub> = p<sub>0</sub> and contains a neighborhood of ρ<sub>0</sub> if p<sub>1</sub> &gt; p<sub>0</sub>. For a finite sequence of horizons, compatibility holds exactly when each adjacent pair satisfies its interval.</p>
+        <p>In words: the lowest allowed correlation keeps "everybody defaults" from becoming less likely, and the highest keeps "nobody defaults" from becoming more likely. Each endpoint solves one equation in one unknown.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is ρ<sub>0</sub> always inside, and why do adjacent checks suffice for many horizons?</span></summary><div class="pfbody">
+        <p>For positive r, Corollary 4.2 reduces compatibility to the two inequalities, and Lemma 5.1 gives the roots and the interval between them. The choice r = ρ<sub>0</sub> satisfies both because A<sub>n</sub> increases and S<sub>n</sub> decreases in p and p<sub>1</sub> ≥ p<sub>0</sub>. When p<sub>1</sub> = p<sub>0</sub>, strict monotonicity in r forces r = ρ<sub>0</sub>; when p<sub>1</sub> &gt; p<sub>0</sub>, both inequalities are strict at ρ<sub>0</sub> and continuity gives a neighborhood. At r = 0, Q<sub>1</sub> = p<sub>1</sub> surely, and H<sub>0</sub> − H<sub>1</sub> is nonnegative below p<sub>1</sub> and nonpositive above, so Theorem 4.1 covers that endpoint. Finally, stochastic order is transitive and Proposition 3.2 builds one absorbing coupling across the whole grid.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Only one of the two equations matters in each direction of change. If p<sub>1</sub> ≥ p<sub>0</sub> and ρ<sub>1</sub> ≥ ρ<sub>0</sub>, compatibility is equivalent to S<sub>n</sub>(p<sub>1</sub>, ρ<sub>1</sub>) ≤ S<sub>n</sub>(p<sub>0</sub>, ρ<sub>0</sub>), because the all-default inequality holds automatically; if ρ<sub>1</sub> ≤ ρ<sub>0</sub>, it is equivalent to A<sub>n</sub>(p<sub>1</sub>, ρ<sub>1</sub>) ≥ A<sub>n</sub>(p<sub>0</sub>, ρ<sub>0</sub>) (Corollary 5.3).</p>
+      <p>Computing the endpoints needs A<sub>n</sub> accurately when it is astronomically small; at n = 100 and p = 0.02 it is about 10<sup>−27</sup>. The paper writes it as a one-dimensional integral over x = μ + σZ and works with logarithms:</p>
+      <div class="math" data-tex="A_{n}(p,r)=\frac{1}{\sigma\sqrt{2\pi}}\int_{-\infty}^{\infty}\exp\!\left\{n\log\Phi(x)-\frac{(x-\mu)^{2}}{2\sigma^{2}}\right\}\,dx,\qquad r\gt 0."></div>
+      <p class="eqn">Eq. 33</p>
+      <p>The exponent h(x) is strictly concave, its peak x<sub>*</sub> solves nφ(x<sub>*</sub>)/Φ(x<sub>*</sub>) = (x<sub>*</sub> − μ)/σ<sup>2</sup> (Eq. 35), and the integral is taken over x<sub>*</sub> ± 13σ after subtracting h(x<sub>*</sub>) (Eq. 34). The roots are found by bracketing, which Lemma 5.1 makes safe. The animation does exactly this in your browser: it plots log<sub>10</sub> A<sub>n</sub>(p<sub>1</sub>, r) and log<sub>10</sub> S<sub>n</sub>(p<sub>1</sub>, r) against r for the paper's pool, draws the earlier values as horizontal targets, and bisects for each crossing. The results match Table 2 to all six printed digits.</p>
+      <div class="player" id="pDcBand">
+        <div class="ptitle"><span class="label">Animation · bisecting for ℓ<sub>n</sub> and u<sub>n</sub></span><span class="scen"><button class="chip" data-scen="10" aria-pressed="true">n = 10</button><button class="chip" data-scen="100" aria-pressed="false">n = 100</button><button class="chip" data-scen="1000" aria-pressed="false">n = 1000</button></span></div>
+        <div class="stage"><svg viewBox="0 0 340 270" role="img" aria-label="Two curves against the later correlation r: the log all-default probability above and the log no-default probability below, each with a horizontal target line and a shrinking bisection bracket"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--cool)"></i>later curve</span><span><i class="sw" style="background:var(--muted)"></i>earlier target</span><span><i class="sw" style="background:var(--accent)"></i>bracket</span><span><i class="sw" style="background:var(--ok)"></i>feasible</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The upper endpoint is far from ρ<sub>0</sub> for small pools and the lower one close to it. That asymmetry has a reason: "everybody defaults" is a very rare event, and raising p from 0.02 to 0.03 multiplies its probability by a large factor, so a small drop in correlation is enough to undo the gain. "Nobody defaults" is a common event, and the same change in p moves it only modestly.</p>
+      <p>Larger pools can only be harder to satisfy.</p>
+      <div class="fact"><span class="label">Proposition 5.4 · the intervals are nested</span>
+        <p>For every n ≥ 2, I<sub>n+1</sub>(p<sub>0</sub>, ρ<sub>0</sub>; p<sub>1</sub>) ⊆ I<sub>n</sub>(p<sub>0</sub>, ρ<sub>0</sub>; p<sub>1</sub>). Consequently, for fixed parameters, the pool sizes that are compatible form an initial segment {1, 2, …, N}, possibly all integers.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can a larger pool never be easier?</span></summary><div class="pfbody">
+        <p>Delete one borrower from an absorbing coupling for n + 1 borrowers. What is left is still absorbing, and each horizon law is still the Gaussian binomial mixture with the same (p, ρ) and n borrowers, since the remaining borrowers share the same factor. So any correlation feasible for n + 1 is feasible for n.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For the paper's pool our code gives [0, 0.942] at n = 2, [0.064, 0.809] at n = 3 and [0.099, 0.656] at n = 5, before reaching the paper's [0.118262, 0.495604] at n = 10 and [0.135019, 0.253694] at n = 100. Its n = 50 and n = 500 values, [0.1327, 0.2934] and [0.1380, 0.2081], match the paper's Table 3.</p>
+      <p class="short"><b>In short:</b> the feasible later correlations form an exact interval [ℓ<sub>n</sub>, u<sub>n</sub>] containing ρ<sub>0</sub>, with ℓ<sub>n</sub> solving A<sub>n</sub>(p<sub>1</sub>, r) = A<sub>n</sub>(p<sub>0</sub>, ρ<sub>0</sub>) and u<sub>n</sub> solving S<sub>n</sub>(p<sub>1</sub>, r) = S<sub>n</sub>(p<sub>0</sub>, ρ<sub>0</sub>) (Eqs. 16 and 17); they are computed in log form by one-dimensional quadrature (Eqs. 33 to 35); the intervals shrink as the pool grows (Proposition 5.4).</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Repair">
+      <span class="num">7 · REPAIRING AN INCONSISTENT CURVE</span>
+      <h2>What should a modeler do with a correlation that falls outside the interval?</h2>
+      <p>Correlations fitted separately at each maturity will sometimes break the interval. The paper's remedy keeps every default probability and moves each offending correlation to the nearest feasible value, one horizon at a time.</p>
+      <div class="def"><span class="label">Definition · sequential repair (Eq. 18)</span>
+        <p>Given nondecreasing p<sub>0</sub>, …, p<sub>m</sub> and raw correlations ρ̂<sub>0</sub>, …, ρ̂<sub>m</sub> in [0, ρ̄], set ρ*<sub>0</sub> = ρ̂<sub>0</sub>. Given ρ*<sub>j−1</sub>, compute the interval [ℓ<sub>j</sub>, u<sub>j</sub>] for the step from (p<sub>j−1</sub>, ρ*<sub>j−1</sub>) to p<sub>j</sub>, and put</p>
+        <div class="math" data-tex="\rho_{j}^{*}=\min\{u_{j},\max\{\ell_{j},\widehat{\rho}_{j}\}\},\qquad j=1,\ldots,m."></div>
+        <p class="eqn">Eq. 18</p>
+        <p>In words: clip each raw correlation into the interval allowed by the previous repaired one.</p>
+      </div>
+      <div class="fact"><span class="label">Proposition 5.5 · the repair is valid and minimal step by step</span>
+        <p>The repaired sequence is absorbing-compatible and keeps every p<sub>j</sub>. Given the preceding repaired pair, ρ*<sub>j</sub> is the unique minimizer of |r − ρ̂<sub>j</sub>|<sup>a</sup> over the feasible interval, for every a &gt; 0.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the interval never empty, and why is clipping optimal?</span></summary><div class="pfbody">
+        <p>Each interval contains the preceding correlation (Theorem 5.2), so it is nonempty and the clip lands in it. Theorem 5.2 and Proposition 3.2 then give compatibility. Every correlation in Eq. 12 keeps the individual probability equal to p<sub>j</sub>. The closest point of a closed interval to a given number is the clip, whatever power of distance is used.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The paper's main worked example (Section 8.3) is a pool of 100 borrowers going from (p<sub>0</sub>, ρ<sub>0</sub>) = (0.02, 0.10) to a raw later pair (0.025, 0.40). Expected defaults rise from 2 to 2.5, but the higher correlation piles probability onto both extremes: P(K = 0) rises from 0.270717 to 0.514092, so the chance of at least one default falls by about 24.34 percentage points. Since ρ rose, Corollary 5.3 says only the no-default equation matters, and solving S<sub>100</sub>(0.025, r) = 0.270717 gives the closest feasible correlation, 0.153059. The animation computes the whole count distribution for each forecast and plots the change in all of the first 40 tails, so the two-event shortcut can be checked against the full list.</p>
+      <div class="player" id="pDcTails">
+        <div class="ptitle"><span class="label">Animation · all tail changes, 100 borrowers</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Bars showing the change in each count-tail probability between the two horizons, for thresholds 1 to 40"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--ok)"></i>tail rose</span><span><i class="sw" style="background:var(--bad)"></i>tail fell</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The paper puts the violation in money. With $1 million lost per default, the expected loss of the first $1 million layer is $1 million times P(K ≥ 1), and the raw forecast lowers it by about $243,375 as maturity increases. By direct enumeration the paper also finds that this parameter pair first becomes incompatible at n = 7; our code agrees, with P(K = 0) at 0.873273 earlier and 0.873592 later for n = 7, while n = 6 still passes.</p>
+      <p>With several horizons the clipping propagates. The paper's Table 4 uses 100 borrowers, default probabilities 0.010, 0.018, 0.026, 0.033, 0.040 and raw correlations 0.12, 0.30, 0.08, 0.25, 0.15 that oscillate. The repaired correlations are 0.120000, 0.291198, 0.269229, 0.254583 and 0.242514, and the repaired no-default probabilities 0.498412, 0.498412, 0.382275, 0.305172, 0.244556 never increase. The cut at horizon 2 only trims 0.30 to 0.291198, but it then forces horizon 3 up from 0.08 to 0.269229, and every later horizon inherits that choice. The paper notes that a joint calibration across the whole grid would optimize these choices together; the sequential projection is greedy.</p>
+      <p class="short"><b>In short:</b> clip each correlation into the interval allowed by the previous repaired one (Eq. 18); this keeps all default probabilities and is the closest feasible choice step by step (Proposition 5.5); in the 100-loan example the raw correlation 0.40 is cut to 0.153059, which restores all 100 tail inequalities, and the original violation was worth about $243,375 on a $1 million layer.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Smooth curves">
+      <span class="num">8 · SMOOTH HORIZON CURVES</span>
+      <h2>What if default probabilities and correlations are given as smooth functions of time?</h2>
+      <p>Term structures are often specified as curves rather than at a few dates. Section 6 of the paper turns the two-event test into a pair of differential inequalities: they limit how fast the correlation may move, given how fast the default probability rises.</p>
+      <p>Let μ(t) and σ(t) &gt; 0 be continuously differentiable on a compact interval, with σ bounded away from zero, Q<sub>t</sub> = Φ(μ(t) + σ(t)Z) and K<sub>t</sub> | Q<sub>t</sub> ∼ Bin(n, Q<sub>t</sub>). Define</p>
+      <div class="math" data-tex="J_{k}(t)=\mathbb{E}\!\left[\phi(\mu+\sigma Z)Q_{t}^{k-1}(1-Q_{t})^{n-k}\right],\qquad m_{k}(t)=\frac{\mathbb{E}[Z\phi(\mu+\sigma Z)Q_{t}^{k-1}(1-Q_{t})^{n-k}]}{J_{k}(t)}."></div>
+      <p class="eqn">Eq. 19</p>
+      <p>Here m<sub>k</sub> is the average of the factor Z under a reweighting that favors the economies in which exactly the k-th default is about to happen.</p>
+      <div class="fact"><span class="label">Proposition 6.1 · differential two-event test</span>
+        <p>All tails P(K<sub>t</sub> ≥ k) are nondecreasing in t if and only if, at every t,</p>
+        <div class="math" data-tex="\dot{\mu}(t)+\dot{\sigma}(t)m_{1}(t)\geq 0,\qquad\dot{\mu}(t)+\dot{\sigma}(t)m_{n}(t)\geq 0."></div>
+        <p class="eqn">Eq. 20</p>
+        <p>Moreover m<sub>1</sub>(t) &lt; ⋯ &lt; m<sub>n</sub>(t) for n ≥ 2.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why do only the first and last tails matter in the smooth case too?</span></summary><div class="pfbody">
+        <p>Differentiating under the integral, which Gaussian integrability justifies, and using the binomial tail derivative from Section 4,</p>
+        <div class="math" data-tex="\frac{d}{dt}\mathbb{P}(K_{t}\geq k)=n\binom{n-1}{k-1}J_{k}(t)[\dot{\mu}(t)+\dot{\sigma}(t)m_{k}(t)]."></div>
+        <p class="eqn">Eq. 21</p>
+        <p>The chain rule gives dQ<sub>t</sub>/dt = φ(μ + σZ)(μ̇ + σ̇Z), which is where both J<sub>k</sub> and m<sub>k</sub> come from. Going from k to k + 1 multiplies the reweighting density by Q<sub>t</sub>/(1 − Q<sub>t</sub>), an increasing function of Z, and tilting toward larger Z raises the mean of Z: for an increasing tilt h, the change in mean is Cov(Z, h(Z))/E h(Z) &gt; 0. So m<sub>k</sub> strictly increases in k. An affine function of m<sub>k</sub> is nonnegative at every k exactly when it is nonnegative at the two ends.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In credit language, with c(t) = Φ<sup>−1</sup>(p(t)) and Eq. 14, the pair becomes</p>
+      <div class="math" data-tex="\dot{c}(t)+\frac{\dot{\rho}(t)}{2(1-\rho(t))}\left[c(t)+\frac{m_{k}(t)}{\sqrt{\rho(t)}}\right]\geq 0,\qquad k\in\{1,n\}."></div>
+      <p class="eqn">Eq. 22</p>
+      <p>A correlation that does not move, ρ̇ = 0, leaves only ċ ≥ 0, which is the familiar requirement that default probabilities never fall. Any movement in ρ must be paid for by enough growth in c.</p>
+      <p class="short"><b>In short:</b> for smooth curves, each tail's rate of change is a positive factor times μ̇ + σ̇ m<sub>k</sub> (Eq. 21); the tilted factor means m<sub>k</sub> increase with k, so the first and last conditions imply all the rest (Eq. 20); in credit terms, the speed of a correlation change is limited by the speed of the default curve (Eq. 22).</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · Large pools">
+      <span class="num">9 · LARGE POOLS AND THE √(LOG n) LAW</span>
+      <h2>How fast does the freedom to change correlation disappear as the pool grows?</h2>
+      <p>The intervals shrink with n, and Section 7 of the paper answers two questions: what survives at every size, and how fast the endpoints approach ρ<sub>0</sub>. The first answer uses no Gaussian computation at all.</p>
+      <div class="fact"><span class="label">Proposition 7.1 · compatibility at every size</span>
+        <p>Let Q<sub>0</sub>, Q<sub>1</sub> have fixed laws on [0, 1] and K<sub>a,n</sub> | Q<sub>a</sub> ∼ Bin(n, Q<sub>a</sub>). Then K<sub>0,n</sub> ≤<sub>st</sub> K<sub>1,n</sub> for every positive integer n if and only if Q<sub>0</sub> ≤<sub>st</sub> Q<sub>1</sub>.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does the mixing variable itself have to be ordered?</span></summary><div class="pfbody">
+        <p>If Q<sub>0</sub> ≤<sub>st</sub> Q<sub>1</sub>, couple them through common quantiles so Q<sub>0</sub> ≤ Q<sub>1</sub>, and generate both sets of defaults from the same uniforms U<sub>i</sub> as 1{U<sub>i</sub> ≤ Q<sub>a</sub>}; the counts are ordered for every n. Conversely, K<sub>a,n</sub>/n converges in distribution to Q<sub>a</sub>, since E[(K<sub>a,n</sub>/n − Q<sub>a</sub>)<sup>2</sup>] ≤ 1/(4n), and stochastic order survives weak limits. This is the law of large numbers inside each economy: in a huge pool the fraction defaulted is the conditional default probability.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Corollary 7.2 · Gaussian rigidity</span>
+        <p>For 0 &lt; p<sub>0</sub>, p<sub>1</sub> &lt; 1 and 0 &lt; ρ<sub>0</sub>, ρ<sub>1</sub> &lt; 1, the Gaussian horizon laws are absorbing-compatible at every pool size if and only if ρ<sub>1</sub> = ρ<sub>0</sub> and p<sub>1</sub> ≥ p<sub>0</sub>.</p>
+      </div>
+      <p>The reason is Eq. 11: if the scales differ, the affine function of Φ<sup>−1</sup>(q) takes both signs because Φ<sup>−1</sup>(q) ranges over all of ℝ, so the mixing variables cross and cannot be ordered. Any change of latent correlation, however small, is therefore incompatible for some finite pool size. The paper describes this as an all-size form of the rigidity Andersen (2006) found in term-structure analysis.</p>
+      <p>The rate needs one prerequisite from extreme-value theory: the largest of n independent standard normals is close to √(2 log n). A rough reason, ours: P(ε &gt; x) is about e<sup>−x²/2</sup>, and n times that is of order one when x<sup>2</sup>/2 ≈ log n. The paper uses sharper tail bounds of exactly this kind.</p>
+      <div class="fact"><span class="label">Lemma 7.3 · the all-default probability for large n</span>
+        <p>Uniformly for p and ρ in compact subsets of (0, 1), as n → ∞,</p>
+        <div class="math" data-tex="\log A_{n}(p,\rho)=-\frac{1-\rho}{\rho}\log n+\frac{c(p)\sqrt{2(1-\rho)}}{\rho}\sqrt{\log n}+O(\log\log n)."></div>
+        <p class="eqn">Eq. 23</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does the maximum of n shocks control the all-default probability?</span></summary><div class="pfbody">
+        <p>Everybody defaults when every private shock is below the common hurdle. With M<sub>n</sub> = max<sub>i</sub> ε<sub>i</sub> and μ, σ from Eq. 14, conditional independence gives</p>
+        <div class="math" data-tex="A_{n}(p,\rho)=\mathbb{P}(M_{n}\leq\mu+\sigma Z)=\mathbb{E}\overline{\Phi}\!\left(\frac{M_{n}-\mu}{\sigma}\right)."></div>
+        <p class="eqn">Eq. 24</p>
+        <p>Put L = log n, b = √(2L) and d = 3 log L/b. Normal tail bounds give</p>
+        <div class="math" data-tex="\mathbb{P}(M_{n}\gt b+d)\leq n\overline{\Phi}(b+d)=O(L^{-7/2}),\qquad\mathbb{P}(M_{n}\lt b-d)\leq\exp\{-aL^{5/2}\}"></div>
+        <p class="eqn">Eq. 25</p>
+        <p>for a constant a &gt; 0 and large n. So M<sub>n</sub> is pinned within d of b, and since Φ̄ is decreasing, A<sub>n</sub> lies between P(M<sub>n</sub> ≤ b + d) Φ̄((b + d − μ)/σ) and Φ̄((b − d − μ)/σ) + exp{−aL<sup>5/2</sup>}. The normal tail expansion log Φ̄(x) = −x<sup>2</sup>/2 − log x − ½ log(2π) + O(x<sup>−2</sup>) then gives</p>
+        <div class="math" data-tex="\log A_{n}=-\frac{L}{\sigma^{2}}+\frac{\mu\sqrt{2L}}{\sigma^{2}}+O(\log L)."></div>
+        <p class="eqn">Eq. 26</p>
+        <p>Substituting σ<sup>2</sup> = ρ/(1 − ρ) and μ/σ<sup>2</sup> = c(1 − ρ)/(ρ√(1 − ρ)) = c√(1 − ρ)/ρ proves Eq. 23.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Lemma 7.3 makes the A<sub>n</sub> equation of Theorem 5.2 almost explicit. The leading term −((1 − ρ)/ρ) log n depends only on ρ, so matching log A<sub>n</sub>(p<sub>1</sub>, r) to log A<sub>n</sub>(p<sub>0</sub>, ρ<sub>0</sub>) forces r → ρ<sub>0</sub>; the second term, which carries the difference in c, sets the distance at the scale 1/√(log n).</p>
+      <div class="fact"><span class="label">Theorem 7.4 · the boundary expansion</span>
+        <p>Fix 0 &lt; p<sub>0</sub> &lt; p<sub>1</sub> &lt; 1 and 0 &lt; ρ<sub>0</sub> &lt; ρ̄ &lt; 1, and put</p>
+        <div class="math" data-tex="C=\rho_{0}\sqrt{2(1-\rho_{0})}\,[c(p_{1})-c(p_{0})]\gt 0."></div>
+        <p class="eqn">Eq. 27</p>
+        <p>For all large n both endpoints are interior to [0, ρ̄], and</p>
+        <div class="math" data-tex="\ell_{n}=\rho_{0}-\frac{C}{\sqrt{\log n}}+O\!\left(\frac{\log\log n}{\log n}\right),\qquad u_{n}=\rho_{0}+\frac{C}{\sqrt{\log n}}+O\!\left(\frac{\log\log n}{\log n}\right)."></div>
+        <p class="eqn">Eq. 28</p>
+        <p>In particular the width is 2C/√(log n) + O(log log n/log n).</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where does the constant C come from?</span></summary><div class="pfbody">
+        <p>Write a(r) = (1 − r)/r and b(p, r) = c(p)√(2(1 − r))/r. By Lemma 7.3,</p>
+        <div class="math" data-tex="\log A_{n}(p_{1},r)-\log A_{n}(p_{0},\rho_{0})=[a(\rho_{0})-a(r)]L+[b(p_{1},r)-b(p_{0},\rho_{0})]\sqrt{L}+O(\log L)."></div>
+        <p class="eqn">Eq. 29</p>
+        <p>At r = ρ<sub>0</sub> ± ε the L term dominates and is positive or negative, so the root is interior and converges to ρ<sub>0</sub>; the same holds for S<sub>n</sub> with p replaced by 1 − p. Now set r = ρ<sub>0</sub> + h/√L for bounded h. Since a′(ρ<sub>0</sub>) = −1/ρ<sub>0</sub><sup>2</sup>, Taylor expansion gives</p>
+        <div class="math" data-tex="\log A_{n}(p_{1},\rho_{0}+h/\sqrt{L})-\log A_{n}(p_{0},\rho_{0})=\sqrt{L}\left[\frac{h}{\rho_{0}^{2}}+\frac{[c(p_{1})-c(p_{0})]\sqrt{2(1-\rho_{0})}}{\rho_{0}}\right]+O(\log L)."></div>
+        <p class="eqn">Eq. 30</p>
+        <p>The bracket vanishes at h = −C. Brackets at h = −C ± η show √L(ℓ<sub>n</sub> − ρ<sub>0</sub>) → −C, and substituting back gives h = −C + O(log L/√L). For u<sub>n</sub>, use S<sub>n</sub>(p, r) = A<sub>n</sub>(1 − p, r) and c(1 − p) = −c(p): the b-difference changes sign and the root is h = +C.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For the paper's pool, c(0.03) − c(0.02) = −1.88079 + 2.05375 = 0.17296, and C = 0.15 · √1.7 · 0.17296 = 0.033826, the paper's value. The approach is extraordinarily slow. Table 2 lists the scaled distances √(log n)(ρ<sub>0</sub> − ℓ<sub>n</sub>) and √(log n)(u<sub>n</sub> − ρ<sub>0</sub>), which should both tend to 0.033826:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>n</th><th>ℓ<sub>n</sub></th><th>u<sub>n</sub></th><th>lower scaled</th><th>upper scaled</th></tr></thead>
+        <tbody>
+          <tr><td class="n">10</td><td class="n">0.118262</td><td class="n">0.495604</td><td class="n">0.048160</td><td class="n">0.524429</td></tr>
+          <tr><td class="n">10<sup>2</sup></td><td class="n">0.135019</td><td class="n">0.253694</td><td class="n">0.032148</td><td class="n">0.222524</td></tr>
+          <tr><td class="n">10<sup>3</sup></td><td class="n">0.138823</td><td class="n">0.198195</td><td class="n">0.029377</td><td class="n">0.126669</td></tr>
+          <tr><td class="n">10<sup>6</sup></td><td class="n">0.142354</td><td class="n">0.168643</td><td class="n">0.028419</td><td class="n">0.069293</td></tr>
+          <tr><td class="n">10<sup>12</sup></td><td class="n">0.144503</td><td class="n">0.159804</td><td class="n">0.028897</td><td class="n">0.051536</td></tr>
+          <tr><td class="n">10<sup>40</sup></td><td class="n">0.146837</td><td class="n">0.154259</td><td class="n">0.030354</td><td class="n">0.040875</td></tr>
+          <tr><td class="n">10<sup>160</sup></td><td class="n">0.148344</td><td class="n">0.151916</td><td class="n">0.031795</td><td class="n">0.036777</td></tr>
+        </tbody>
+      </table></div>
+      <p>Even at 10<sup>160</sup> borrowers, far more than there are atoms in the universe, the two scaled distances differ by about 15%. The paper calls these sizes mathematical diagnostics; the leading-order law gives the rate, and the exact equations give the finite-n answer.</p>
+      <p>Turning the expansion around answers a practical question: how large can the pool be before a given correlation change δ becomes impossible?</p>
+      <div class="fact"><span class="label">Corollary 7.5 · the critical pool size</span>
+        <p>Let N<sub>*</sub>(δ) be the largest pool size at which (p<sub>0</sub>, ρ<sub>0</sub>) and (p<sub>1</sub>, ρ<sub>0</sub> + δ) are compatible. Then N<sub>*</sub>(δ) is finite for δ ≠ 0 and</p>
+        <div class="math" data-tex="\lim_{\delta\to 0,\ \delta\neq 0}\delta^{2}\log N_{*}(\delta)=C^{2}."></div>
+        <p class="eqn">Eq. 31</p>
+        <p>In words: log N<sub>*</sub>(δ) ∼ C<sup>2</sup>/δ<sup>2</sup>, so the critical size grows exponentially in 1/δ<sup>2</sup>.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does nesting turn the boundary rate into a size rate?</span></summary><div class="pfbody">
+        <p>Size one is compatible, Proposition 5.4 makes the compatible sizes an initial segment, and Corollary 7.2 makes it finite. Every fixed size is compatible for small enough |δ|, so N<sub>*</sub>(δ) → ∞. For 0 &lt; η &lt; C, the relevant radius, u<sub>n</sub> − ρ<sub>0</sub> or ρ<sub>0</sub> − ℓ<sub>n</sub>, is asymptotic to C/√(log n). At sizes near exp[(C − η)<sup>2</sup>/δ<sup>2</sup>] and exp[(C + η)<sup>2</sup>/δ<sup>2</sup>] the radius is respectively larger and smaller than |δ|, so nesting traps N<sub>*</sub>(δ) between them. Multiply the logarithms by δ<sup>2</sup>, let δ → 0, then η → 0.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Because of the slow convergence, the limit can be far from the truth at realistic sizes, and the paper says the exact equations stay relevant for finite pools. To see how far, we computed N<sub>*</sub> exactly for the paper's pool with the code behind the animations (these numbers are ours). The leading-order law predicts N<sub>*</sub> ≈ exp(C<sup>2</sup>/δ<sup>2</sup>) ≈ 93 000 for δ = ±0.01. The exact answer is about 4 100 for δ = −0.01 and about 5 × 10<sup>11</sup> for δ = +0.01. Lowering correlation is caught by the rare all-default event in a pool of a few thousand; raising it is caught by the no-default event only in absurdly large pools.</p>
+      <p>The last result gives a non-Gaussian, quantitative version of the all-size failure, using Hoeffding's inequality, which bounds the chance that an average of n independent coin flips misses its mean by ε by e<sup>−2nε²</sup>.</p>
+      <div class="fact"><span class="label">Proposition 7.6 · a finite-size certificate</span>
+        <p>Suppose z ∈ (0, 1), 0 &lt; ε &lt; min(z, 1 − z) and δ = P(Q<sub>0</sub> ≥ z + ε) − P(Q<sub>1</sub> ≥ z − ε) &gt; 0. Then</p>
+        <div class="math" data-tex="\mathbb{P}(K_{0,n}/n\geq z)-\mathbb{P}(K_{1,n}/n\geq z)\geq\delta-2e^{-2n\varepsilon^{2}}."></div>
+        <p class="eqn">Eq. 32</p>
+        <p>In particular, compatibility fails whenever n &gt; log(2/δ)/(2ε<sup>2</sup>).</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does concentration certify a broken tail?</span></summary><div class="pfbody">
+        <p>Given Q<sub>0</sub> ≥ z + ε, the fraction K<sub>0,n</sub>/n falls below z with probability at most e<sup>−2nε²</sup>, so P(K<sub>0,n</sub>/n ≥ z) ≥ P(Q<sub>0</sub> ≥ z + ε) − e<sup>−2nε²</sup>. Splitting on Q<sub>1</sub> ≥ z − ε and using the opposite tail bound gives P(K<sub>1,n</sub>/n ≥ z) ≤ P(Q<sub>1</sub> ≥ z − ε) + e<sup>−2nε²</sup>. Subtract. The threshold count is ⌈nz⌉.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> compatibility at every size requires the mixing variables themselves to be ordered (Proposition 7.1), which in the Gaussian model forces a constant correlation (Corollary 7.2); the all-default probability behaves like a power of n set by ρ (Eq. 23), so the interval endpoints approach ρ<sub>0</sub> as ρ<sub>0</sub> ± C/√(log n) with C = 0.033826 for the paper's pool (Eqs. 27 and 28); the critical size obeys log N<sub>*</sub> ∼ C<sup>2</sup>/δ<sup>2</sup> (Eq. 31) but convergence is extremely slow; Hoeffding gives an explicit failing size for any mixing law (Eq. 32).</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>The paper's numbers</h2>
+      <p>All experiments use constructed parameters with a correlation cap of 0.99, and the computations are deterministic (Section 8). The numerical checks: at p = ρ = 1/2 and at n = 2, p = 1/2, nine evaluations of the closed forms have maximum absolute error 1.8 × 10<sup>−15</sup>; thirty parameter pairs at n = 8, 25 and 60 agree between the two-event test and an independent integration of every tail; tightening tolerances changes log-orthant values by at most 2.8 × 10<sup>−14</sup> and boundaries by at most 1.7 × 10<sup>−16</sup>.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Table 1, n = 100</th><th>p</th><th>ρ</th><th>E K</th><th>P(K = 0)</th><th>log<sub>10</sub> P(K = n)</th></tr></thead>
+        <tbody>
+          <tr><td>earlier</td><td class="n">0.020</td><td class="n">0.100000</td><td class="n">2.0</td><td class="n">0.270717</td><td class="n">−27.430</td></tr>
+          <tr><td>later raw</td><td class="n">0.025</td><td class="n">0.400000</td><td class="n">2.5</td><td class="n">0.514092</td><td class="n">−8.146</td></tr>
+          <tr><td>later repaired</td><td class="n">0.025</td><td class="n">0.153059</td><td class="n">2.5</td><td class="n">0.270717</td><td class="n">−18.947</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tbl"><table>
+        <thead><tr><th>p<sub>0</sub></th><th>p<sub>1</sub></th><th>ρ<sub>0</sub></th><th>n</th><th>ℓ<sub>n</sub></th><th>u<sub>n</sub></th><th>width</th></tr></thead>
+        <tbody>
+          <tr><td class="n">0.010</td><td class="n">0.015</td><td class="n">0.10</td><td class="n">50</td><td class="n">0.0890</td><td class="n">0.2734</td><td class="n">0.1844</td></tr>
+          <tr><td class="n">0.010</td><td class="n">0.015</td><td class="n">0.10</td><td class="n">500</td><td class="n">0.0927</td><td class="n">0.1566</td><td class="n">0.0638</td></tr>
+          <tr><td class="n">0.020</td><td class="n">0.025</td><td class="n">0.10</td><td class="n">50</td><td class="n">0.0929</td><td class="n">0.1790</td><td class="n">0.0861</td></tr>
+          <tr><td class="n">0.020</td><td class="n">0.025</td><td class="n">0.10</td><td class="n">500</td><td class="n">0.0954</td><td class="n">0.1263</td><td class="n">0.0310</td></tr>
+          <tr><td class="n">0.020</td><td class="n">0.030</td><td class="n">0.15</td><td class="n">50</td><td class="n">0.1327</td><td class="n">0.2934</td><td class="n">0.1608</td></tr>
+          <tr><td class="n">0.020</td><td class="n">0.030</td><td class="n">0.15</td><td class="n">500</td><td class="n">0.1380</td><td class="n">0.2081</td><td class="n">0.0701</td></tr>
+          <tr><td class="n">0.050</td><td class="n">0.065</td><td class="n">0.15</td><td class="n">50</td><td class="n">0.1353</td><td class="n">0.2263</td><td class="n">0.0910</td></tr>
+          <tr><td class="n">0.050</td><td class="n">0.065</td><td class="n">0.15</td><td class="n">500</td><td class="n">0.1401</td><td class="n">0.1835</td><td class="n">0.0434</td></tr>
+          <tr><td class="n">0.050</td><td class="n">0.065</td><td class="n">0.30</td><td class="n">50</td><td class="n">0.2762</td><td class="n">0.3845</td><td class="n">0.1083</td></tr>
+          <tr><td class="n">0.050</td><td class="n">0.065</td><td class="n">0.30</td><td class="n">500</td><td class="n">0.2827</td><td class="n">0.3458</td><td class="n">0.0631</td></tr>
+          <tr><td class="n">0.100</td><td class="n">0.125</td><td class="n">0.30</td><td class="n">50</td><td class="n">0.2738</td><td class="n">0.3694</td><td class="n">0.0956</td></tr>
+          <tr><td class="n">0.100</td><td class="n">0.125</td><td class="n">0.30</td><td class="n">500</td><td class="n">0.2813</td><td class="n">0.3396</td><td class="n">0.0583</td></tr>
+        </tbody>
+      </table></div>
+      <p>The second table is the paper's Table 3. In every row the upper endpoint sits farther from ρ<sub>0</sub> than the lower one, and going from 50 to 500 borrowers cuts the width by a factor between about 1.6 and 2.9. Table 2 appears in Section 9 and Table 4 in Section 7 of this chapter. Our implementation reproduces every entry of Tables 1, 2 (through 10<sup>12</sup>) and 4 and the rows of Table 3 we checked.</p>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved in the paper.</b> The equivalence of absorbing compatibility and stochastic order with an explicit coupling (Proposition 3.2); the two-event criterion under single crossing (Theorem 4.1) and its location-scale corollary; the exact Gaussian interval (Theorem 5.2), nesting (Proposition 5.4), the repair property (Proposition 5.5), the differential test (Proposition 6.1), all-size rigidity (Corollary 7.2), the boundary expansion (Theorem 7.4), the critical-size law (Corollary 7.5) and the Hoeffding certificate (Proposition 7.6). The proofs are short and, in the parts we checked step by step, complete. Lemma 5.1 rests on Plackett's identity, which is cited rather than reproved, and Lemma 7.3's tail bounds are stated with constants left implicit.</p>
+      <p><b>Shown numerically.</b> The interval values, the 100-loan example, the n = 7 threshold and the five-horizon repair are deterministic computations on constructed parameters, with independent full-tail checks. Our own implementation, written from Eqs. 33 to 35 and Theorem 5.2, reproduces them, which is a useful independent confirmation of the numerics.</p>
+      <p><b>Claimed or suggested, not tested.</b> The paper proposes the interval test as a step in a multi-horizon credit pipeline and sketches an empirical application with real default histories, censoring and estimation uncertainty. No real data are used, and whether fitted correlation term structures actually violate the intervals in practice is not examined.</p>
+      <p><b>Scope.</b> Borrowers are exchangeable with equal exposures; the paper notes that heterogeneous borrowers and unequal losses need multivariate and loss-distribution conditions it does not supply. All horizons share one information set, so the results say nothing about forecasts updated over time. The Gaussian model fixes a particular tail dependence; the single-crossing theorem applies to other one-factor families only when the same factor and link are used at both horizons. The sequential repair is greedy, and the paper itself points out that a joint calibration across the grid would choose differently.</p>
+      <p><b>Our observations.</b> The asymmetry between δ = −0.01 and δ = +0.01 in critical size, about 4 100 against about 5 × 10<sup>11</sup>, is our computation, as is the toy pool. The asymmetry suggests that in realistic pools it is decreases in correlation, policed by the all-default event, that the test will catch; the paper's Table 3 shows the same pattern at n = 50 and 500.</p>
+    </section>
+
+    <!-- further -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>M. Palaisti, <a href="https://arxiv.org/abs/2611.18759" target="_blank" rel="noopener">Portfolio-size constraints on default correlation: exact coherence tests and sharp asymptotic bounds</a>, arXiv:2611.18759 (2026). The paper itself; equation, theorem and table numbers in this chapter follow its <a href="https://arxiv.org/html/2611.18759" target="_blank" rel="noopener">HTML version</a>.</p>
+        <p>The paper's own references are the natural next steps, though we did not open them for this chapter: O. A. Vasicek, "Loan portfolio value" (Risk, 2002), for the large-pool limit of the one-factor model; D. X. Li, "On default correlation: a copula function approach" (Journal of Fixed Income, 2000), for the Gaussian copula; L. Andersen, "Portfolio losses in factor models" (Journal of Credit Risk, 2006), for the term-structure rigidity; and M. Shaked and J. G. Shanthikumar, Stochastic Orders (Springer, 2007), for stochastic order and couplings.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.18759v1. Equation, theorem, section and table numbers match the paper. All three animations run real computations: the quantile coupling of Proposition 3.2 on the toy pool, with a 20 000-draw simulation; bisection on the log orthant probabilities of Eqs. 33 to 35 for the interval of Theorem 5.2; and full count distributions for the 100-loan example of Section 8.3, with the repair of Eq. 18. The toy pool and all its numbers, the derivations marked as ours, the default-correlation values, the small-n intervals, the n = 7 check and the exact critical sizes are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-18759',date:'2026-11-17',title:'Portfolio-Size Constraints on Default Correlation',authors:'Palaisti',field:'q-fin.RM',tags:['credit risk','stochastic order','Gaussian copula'],mins:45,
+     dek:'A credit model can raise expected defaults from one horizon to the next and still describe something impossible, because a correlation change can make "at least one default" less likely. For n loans the paper shows that two events, nobody defaults and everybody defaults, decide all n tail checks, giving an exact interval of allowed correlations that narrows only like 1/√(log n).'},
     {id:'2611-17688',date:'2026-11-16',title:'Exact Failure Probabilities for d-Choice Cuckoo Hashing',authors:'Zhang, Ren',field:'cs.DS',tags:['hashing','bipartite matching','dynamic programming'],mins:35,
      dek:'When n items each get d random slots and no slot may hold two, the exact chance that no valid seating exists was open for every d ≥ 3, and this paper computes it in O(n² log n) time. It writes "no perfect matching" as an explicit polynomial in the missing edges, sums it over every outcome in closed form, and adds the exponentially many resulting terms with a dynamic program over block boundaries.'},
     {id:'2611-15549',date:'2026-11-15',title:'Controlling Avalanche Sizes in the Abelian Sandpile Model',authors:'de Jongh, Járai, Boucherie, van Lieshout',field:'math.OC',tags:['Markov decision processes','sandpile model','random walks'],mins:40,
@@ -4587,6 +5090,164 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
       });}
     root.querySelectorAll('[data-ex]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-ex]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(...EX[b.dataset.ex])}));
     load(...EX.B);
+  })();
+
+
+  // ================= 2611.18759: Gaussian default model numerics =================
+  const DC=(function(){
+    const SQ2PI=Math.sqrt(2*Math.PI);
+    function erfcxCF(x){let f=x,C=x,D=0;for(let k=1;k<300;k++){const a=k/2;D=x+a*D;if(D===0)D=1e-300;C=x+a/C;if(C===0)C=1e-300;D=1/D;const d=C*D;f*=d;if(Math.abs(d-1)<1e-16)break}return 1/(f*Math.sqrt(Math.PI))}
+    function erfS(x){let s=x,t=x;const x2=x*x;for(let n=1;n<200;n++){t*=-x2/n;const u=t/(2*n+1);s+=u;if(Math.abs(u)<1e-17*Math.abs(s))break}return 2/Math.sqrt(Math.PI)*s}
+    function logPhi(x){const z=-x/Math.SQRT2;if(z>3)return -z*z+Math.log(erfcxCF(z))-Math.LN2;if(z<-3)return Math.log1p(-Math.exp(-z*z)*erfcxCF(-z)/2);return Math.log((1-erfS(z))/2)}
+    const Phi=x=>Math.exp(logPhi(x));
+    function invPhi(p){const a=[-3.969683028665376e+01,2.209460984245205e+02,-2.759285104469687e+02,1.383577518672690e+02,-3.066479806614716e+01,2.506628277459239e+00],b=[-5.447609879822406e+01,1.615858368580409e+02,-1.556989798598866e+02,6.680131188771972e+01,-1.328068155288572e+01],c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400758277161838e+00,-2.549732539343734e+00,4.374664141464968e+00,2.938163982698783e+00],d=[7.784695709041462e-03,3.224671290700398e-01,2.445134137142996e+00,3.754408661907416e+00];
+      let x;if(p<0.02425){const q=Math.sqrt(-2*Math.log(p));x=(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}
+      else if(p<=0.97575){const q=p-0.5,r=q*q;x=(((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)}
+      else{const q=Math.sqrt(-2*Math.log(1-p));x=-(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}
+      for(let i=0;i<3;i++)x-=(Phi(x)-p)*SQ2PI*Math.exp(x*x/2);return x}
+    // log A_n(p,r) by Eqs. 33 to 35
+    function logA(n,p,r){if(r<=0)return n*Math.log(p);
+      const mu=invPhi(p)/Math.sqrt(1-r),s=Math.sqrt(r/(1-r)),s2=s*s;
+      const g=x=>n*Math.exp(-x*x/2-logPhi(x))/SQ2PI-(x-mu)/s2;
+      let lo=mu,hi=mu+1;while(g(hi)>0)hi=mu+2*(hi-mu);for(let i=0;i<100;i++){const m=(lo+hi)/2;if(g(m)>0)lo=m;else hi=m}
+      const xs=(lo+hi)/2,h=x=>n*logPhi(x)-(x-mu)*(x-mu)/(2*s2),hs=h(xs),N=1200,a=xs-13*s,dx=26*s/N;let sum=0;
+      for(let i=0;i<=N;i++)sum+=((i===0||i===N)?1:(i%2?4:2))*Math.exp(h(a+i*dx)-hs);
+      return hs-Math.log(s*SQ2PI)+Math.log(sum*dx/3)}
+    const logS=(n,p,r)=>logA(n,1-p,r);
+    function countLaw(n,p,r){const c=invPhi(p),sr=Math.sqrt(r),s1=Math.sqrt(1-r),out=new Array(n+1).fill(0),lg=[0];
+      for(let i=1;i<=n;i++)lg[i]=lg[i-1]+Math.log(i);const N=1600,a=-12,dz=24/N;
+      for(let i=0;i<=N;i++){const z=a+i*dz,w=((i===0||i===N)?1:(i%2?4:2))*dz/3*Math.exp(-z*z/2)/SQ2PI,x=(c+sr*z)/s1,lq=logPhi(x),l1=logPhi(-x);
+        for(let k=0;k<=n;k++)out[k]+=w*Math.exp(lg[n]-lg[k]-lg[n-k]+k*lq+(n-k)*l1)}
+      return out}
+    const tails=L=>{const t=new Array(L.length).fill(0);let s=0;for(let k=L.length-1;k>=1;k--){s+=L[k];t[k]=s}return t};
+    return{logA,logS,countLaw,tails,invPhi};
+  })();
+
+  // ================= 2611.18759: quantile coupling on the toy pool =================
+  (function(){
+    const root=document.getElementById('pDcCoup');if(!root)return;const P=Player(root);
+    const F0=[0.512,0.896,0.992,1],FC={calm:[0.427,0.736,0.937,1],split:[0.51961,0.68308,0.89731,1]};
+    const q=(F,u)=>{for(let k=0;k<4;k++)if(u<=F[k])return k;return 3};
+    const NM=['A','B','C'],f3=x=>x.toFixed(3),f4=x=>x.toFixed(4);
+    function load(kind){
+      const fc=kind==='split'?'split':'calm',F1=FC[fc];
+      const U=kind==='calm'?0.47:kind==='split'?0.515:Math.random();
+      let R=[2,1,3];if(kind==='rand'){const a=[1,2,3];for(let i=2;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}R=a}
+      const K0=q(F0,U),K1=q(F1,U),D0=R.map(r=>r<=K0),D1=R.map(r=>r<=K1),cure=D0.some((d,i)=>d&&!D1[i]);
+      // simulation
+      const M=20000,c0=[0,0,0,0],c1=[0,0,0,0];let cures=0,a0=0,a1=0;
+      for(let t=0;t<M;t++){const u=Math.random(),k0=q(F0,u),k1=q(F1,u);c0[k0]++;c1[k1]++;if(k1<k0)cures++;const rA=1+Math.floor(Math.random()*3);if(rA<=k0)a0++;if(rA<=k1)a1++}
+      const pmf=F=>F.map((v,k)=>v-(k?F[k-1]:0)),t1=pmf(F1);
+      const set=D=>{const s=NM.filter((_,i)=>D[i]);return s.length?s.join(', '):'nobody'};
+      const F=[
+        {s:1,t:'Two staircases',c:`The blue staircase is F<sub>0</sub>, the earlier count's distribution function: 0.512, 0.896, 0.992, 1 at k = 0, 1, 2, 3. The amber one is the ${fc} forecast's F<sub>1</sub>: ${F1.slice(0,3).map(f=>fc==='split'?f.toFixed(5):f3(f)).join(', ')}, 1. ${fc==='calm'?'Amber lies on or below blue everywhere, which is K<sub>0</sub> ≤<sub>st</sub> K<sub>1</sub>.':'At k = 0 amber is above blue by 0.00761, so the order fails there.'}`},
+        {s:2,t:'Draw one uniform U',c:`One uniform number is drawn: U = ${f4(U)}. The same U will be used at both horizons, which is the whole trick.`},
+        {s:3,t:'Read both quantiles',c:`Each count is the first k where its staircase reaches U: K<sub>0</sub> = ${K0} and K<sub>1</sub> = ${K1}. ${K1>=K0?'The later count is at least the earlier one.':'The later count is smaller: U fell in the thin band (0.512, 0.51961] where amber has already reached U and blue has not.'}`},
+        {s:4,t:'Shuffle the borrowers',c:`An independent random permutation gives the ranks A = ${R[0]}, B = ${R[1]}, C = ${R[2]}. Ranks decide who defaults first, and they are the same at both horizons.`},
+        {s:5,t:'Earlier horizon',c:`The K<sub>0</sub> = ${K0} borrower${K0===1?'':'s'} with the smallest rank${K0===1?' is':'s are'} in default: ${set(D0)}. Given the count, every set of that size is equally likely, as an exchangeable law requires.`},
+        {s:6,t:cure?'Later horizon: a cure':'Later horizon',c:cure?`Now only K<sub>1</sub> = ${K1} may be in default: ${set(D1)}. A borrower who had defaulted would have to leave default, which absorption forbids. This is the failure of stochastic order made concrete.`:`The K<sub>1</sub> = ${K1} smallest ranks are in default: ${set(D1)}. Everyone in default before still is, because K<sub>1</sub> ≥ K<sub>0</sub>.`},
+        {s:7,t:'Repeat 20 000 times',c:`Running the construction ${M.toLocaleString('en-US')} times: the later count takes 0, 1, 2, 3 with frequencies ${c1.map(v=>f3(v/M)).join(', ')} against targets ${t1.map(f3).join(', ')}. Borrower A was in default ${f3(a0/M)} of the time early and ${f3(a1/M)} late, against 0.2 and 0.3. Draws forcing a cure: ${cures} (${f4(cures/M)}), ${fc==='calm'?'exactly none, as Proposition 3.2 promises.':'close to the predicted 0.00761.'}`}];
+      F.delay=5200;
+      P.load(F,(fr,el)=>{
+        const X=k=>28+k*36,Y=v=>196-v*170;
+        el('line',{x1:24,y1:Y(0),x2:172,y2:Y(0),stroke:'var(--line)','stroke-width':1});el('line',{x1:24,y1:Y(1),x2:172,y2:Y(1),stroke:'var(--line)','stroke-width':1,'stroke-dasharray':'2 3'});
+        el('text',{x:14,y:Y(1)+3,class:'lab'}).textContent='1';el('text',{x:14,y:Y(0)+3,class:'lab'}).textContent='0';
+        for(let k=0;k<4;k++)el('text',{x:X(k)+18,y:212,class:'lab'}).textContent='k='+k;
+        [[F0,'var(--cool)',0],[F1,'var(--accent)',1]].forEach(([Fx,col,o])=>{let d='';for(let k=0;k<4;k++){d+=(k?' L':'M')+X(k)+' '+(Y(Fx[k])-o*0)+' L'+(X(k)+36)+' '+Y(Fx[k])}el('path',{d,fill:'none',stroke:col,'stroke-width':o?2:3,opacity:o?1:.8})});
+        el('text',{x:98,y:14,class:'lab'}).textContent='F(k) = P(count ≤ k)';
+        if(fr.s>=2){el('line',{x1:24,y1:Y(U),x2:172,y2:Y(U),stroke:'var(--fg)','stroke-width':1,'stroke-dasharray':'4 3'});el('text',{x:150,y:Y(U)-4,class:'lab',style:'fill:'+('var(--fg)')}).textContent='U';}
+        if(fr.s>=3){el('circle',{cx:X(K0)+18,cy:Y(F0[K0]),r:5,fill:'var(--cool)'});el('circle',{cx:X(K1)+18,cy:Y(F1[K1]),r:4,fill:'var(--accent)'});
+          el('text',{x:98,y:232,class:'lab',style:'fill:'+(K1>=K0?'var(--ok)':'var(--bad)')}).textContent=`K₀ = ${K0}, K₁ = ${K1}`;}
+        if(fr.s===7){const lines=[['later count','freq','target'],...c1.map((v,k)=>['K₁ = '+k,f3(v/M),f3(t1[k])]),['cures',String(cures),fc==='calm'?'0':'≈ 152']];
+          lines.forEach((L,i)=>{[200,262,310].forEach((x,j)=>{el('text',{x,y:46+i*22,class:'lab',style:'fill:'+(i===0?'var(--muted)':(i===lines.length-1&&cures>0?'var(--bad)':'var(--fg)'))}).textContent=L[j]})});return}
+        [['earlier',70,D0,fr.s>=5],['later',150,D1,fr.s>=6]].forEach(([lab,y,D,on])=>{el('text',{x:265,y:y-30,class:'lab'}).textContent=lab+' horizon';
+          for(let i=0;i<3;i++){const x=220+i*45,g=el('g',{});el('circle',{cx:x,cy:y,r:15,style:'fill:'+(on&&D[i]?'var(--bad)':'var(--raise)')+';stroke:var(--line)'},g);el('text',{x,y:y+4,class:'lab',style:'fill:'+(on&&D[i]?'var(--accent-ink)':'var(--fg)')},g).textContent=NM[i];
+            if(fr.s>=4)el('text',{x,y:y+30,class:'lab'}).textContent='rank '+R[i];}});
+        if(fr.s>=6&&cure){el('text',{x:265,y:236,class:'lab',style:'fill:'+('var(--bad)')}).textContent='a default would be undone';}
+      });}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen)}));
+    load('calm');
+  })();
+
+  // ================= 2611.18759: bisection for the feasible interval =================
+  (function(){
+    const root=document.getElementById('pDcBand');if(!root)return;const P=Player(root);
+    const p0=0.02,r0=0.15,p1=0.03,RX=0.6,L10=Math.LN10,cache={};
+    function data(n){if(cache[n])return cache[n];
+      const a0=DC.logA(n,p0,r0)/L10,s0=DC.logS(n,p0,r0)/L10,grid=[];
+      for(let i=0;i<=40;i++){const r=i*RX/40;grid.push({r,a:DC.logA(n,p1,r)/L10,s:DC.logS(n,p1,r)/L10})}
+      const bis=(f,lo,hi)=>{const st=[];for(let i=0;i<50;i++){const m=(lo+hi)/2,v=f(m);st.push({lo,hi,m,v});if(v>0)hi=m;else lo=m}return{st,root:(lo+hi)/2}};
+      // l: f(r)=a(r)-a0, negative below the root. u: f(r)=s(r)-s0, negative below the root.
+      const L=bis(r=>DC.logA(n,p1,r)/L10-a0,0,r0),U=bis(r=>DC.logS(n,p1,r)/L10-s0,r0,RX);
+      return cache[n]={a0,s0,grid,L,U}}
+    const fx=x=>x.toFixed(6),f2=x=>x.toFixed(2);
+    function load(n){const D=data(n),F=[];
+      F.push({t:'Two curves, two targets',c:`For n = ${n}, the top panel plots log₁₀ A<sub>${n}</sub>(0.03, r), the all-default probability at the later horizon, against the later correlation r. The bottom panel plots log₁₀ S<sub>${n}</sub>(0.03, r), the no-default probability. Grey lines are the earlier values at (0.02, 0.15): ${f2(D.a0)} and ${D.s0.toFixed(4)}. Both curves rise with r (Lemma 5.1).`});
+      F.push({t:'What feasible means',c:'Theorem 5.2 needs the top curve on or above its target and the bottom curve on or below its target. The first holds to the right of one crossing, ℓ, the second to the left of another, u. Each crossing is one equation in one unknown, so bisection finds it.'});
+      const show=[0,1,2,3,4,5];
+      show.forEach(i=>{const s=D.L.st[i];F.push({ph:'L',i,t:`Lower end, step ${i+1}`,c:`Bracket [${s.lo.toFixed(4)}, ${s.hi.toFixed(4)}], midpoint ${s.m.toFixed(4)}. There the top curve is ${s.v>0?'above':'below'} its target by ${Math.abs(s.v).toFixed(3)} in log₁₀, so the crossing lies to the ${s.v>0?'left: the bracket keeps its lower half':'right: the bracket keeps its upper half'}.`})});
+      F.push({ph:'L',i:49,t:'Lower end found',c:`After 50 halvings, ℓ<sub>${n}</sub> = ${fx(D.L.root)}. Below this correlation the all-default event would become less likely than it was earlier.`});
+      show.forEach(i=>{const s=D.U.st[i];F.push({ph:'U',i,t:`Upper end, step ${i+1}`,c:`Bracket [${s.lo.toFixed(4)}, ${s.hi.toFixed(4)}], starting from ρ<sub>0</sub> = 0.15 and r = 0.6, where the bottom curve is already above its target. At the midpoint ${s.m.toFixed(4)} it is ${s.v>0?'above':'below'} the target by ${Math.abs(s.v).toFixed(4)}, so the crossing lies to the ${s.v>0?'left':'right'}.`})});
+      F.push({ph:'U',i:49,t:'Upper end found',c:`After 50 halvings, u<sub>${n}</sub> = ${fx(D.U.root)}. Above this correlation, "nobody defaults" would become more likely than it was earlier.`});
+      F.push({ph:'end',t:'The feasible interval',c:`I<sub>${n}</sub> = [${fx(D.L.root)}, ${fx(D.U.root)}]${n===10?', the paper\'s Table 2 row for n = 10: [0.118262, 0.495604]':n===100?', the paper\'s Table 2 row for n = 100: [0.135019, 0.253694]':', the paper\'s Table 2 row for n = 1000: [0.138823, 0.198195]'}. The width is ${(D.U.root-D.L.root).toFixed(4)}, and the earlier correlation 0.15 sits much closer to the lower end. Try the other sizes to watch the interval shrink.`});
+      F.delay=4200;
+      P.load(F,(fr,el)=>{const X=r=>36+r/RX*290;
+        const panel=(key,tgt,y0,y1,lab,st,rootv,isOn,feas)=>{
+          const rmin=Math.max(0.02,0.5*D.L.root),vals=D.grid.filter(g=>g.r>=rmin).map(g=>g[key]).concat([tgt]);let lo=Math.min(...vals),hi=Math.max(...vals);const pad=(hi-lo)*0.08;lo-=pad;hi+=pad;const Y=v=>y1-(Math.max(lo,v)-lo)/(hi-lo)*(y1-y0);
+          el('rect',{x:36,y:y0,width:290,height:y1-y0,fill:'none',stroke:'var(--line)'});
+          if(feas)el('rect',{x:X(feas[0]),y:y0,width:X(feas[1])-X(feas[0]),height:y1-y0,fill:'var(--ok)',opacity:.18});
+          if(st){el('rect',{x:X(st.lo),y:y0,width:Math.max(1,X(st.hi)-X(st.lo)),height:y1-y0,fill:'var(--accent)',opacity:.16});}
+          el('line',{x1:36,y1:Y(tgt),x2:326,y2:Y(tgt),stroke:'var(--muted)','stroke-width':1.2,'stroke-dasharray':'5 3'});
+          el('path',{d:D.grid.map((g,i)=>(i?'L':'M')+X(g.r).toFixed(1)+' '+Y(g[key]).toFixed(1)).join(' '),fill:'none',stroke:'var(--cool)','stroke-width':2});
+          if(st){el('line',{x1:X(st.m),y1:y0,x2:X(st.m),y2:y1,stroke:'var(--accent)','stroke-width':1.5});}
+          if(rootv!=null){el('line',{x1:X(rootv),y1:y0,x2:X(rootv),y2:y1,stroke:'var(--ok)','stroke-width':2});el('text',{x:X(rootv)+(X(rootv)>270?-4:4),y:y1-5,class:'lab',style:'fill:var(--ok);text-anchor:'+(X(rootv)>270?'end':'start')}).textContent=rootv.toFixed(4);}
+          el('text',{x:36,y:y0-4,class:'lab',style:'text-anchor:start'}).textContent=lab;
+          const fm=v=>v.toFixed(key==='a'?0:2).replace('-','−');el('text',{x:32,y:y0+8,class:'lab',style:'text-anchor:end'}).textContent=fm(hi);el('text',{x:32,y:y1,class:'lab',style:'text-anchor:end'}).textContent=fm(lo);};
+        const fin=fr.ph==='end',lDone=fin||fr.ph==='U'||(fr.ph==='L'&&fr.i===49),uDone=fin||(fr.ph==='U'&&fr.i===49);
+        panel('a',D.a0,22,112,'log₁₀ P(all '+n+' default)',fr.ph==='L'&&fr.i<49?D.L.st[fr.i]:null,lDone?D.L.root:null,0,fin?[D.L.root,D.U.root]:(lDone?[D.L.root,RX]:null));
+        panel('s',D.s0,146,234,'log₁₀ P(none default)',fr.ph==='U'&&fr.i<49?D.U.st[fr.i]:null,uDone?D.U.root:null,0,fin?[D.L.root,D.U.root]:(uDone?[0,D.U.root]:null));
+        [0,0.15,0.3,0.45,0.6].forEach(r=>el('text',{x:X(r),y:248,class:'lab'}).textContent=r.toFixed(2));
+        el('text',{x:181,y:264,class:'lab'}).textContent='later correlation r';
+      });}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(+b.dataset.scen)}));
+    let started=false;const go=()=>{if(started)return;started=true;load(10)};
+    if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();go()}},{rootMargin:'600px'});io.observe(root)}else go();
+    root.querySelectorAll('.btn').forEach(b=>b.addEventListener('click',go,{capture:true}));
+  })();
+
+  // ================= 2611.18759: all tail changes, 100 borrowers =================
+  (function(){
+    const root=document.getElementById('pDcTails');if(!root)return;const P=Player(root);
+    let started=false;
+    function go(){if(started)return;started=true;
+      const n=100,s0=DC.logS(n,0.02,0.10);let lo=0.10,hi=0.99;for(let i=0;i<60;i++){const m=(lo+hi)/2;if(DC.logS(n,0.025,m)>s0)hi=m;else lo=m}const rs=(lo+hi)/2;
+      const L0=DC.countLaw(n,0.02,0.10),L1=DC.countLaw(n,0.025,0.40),L2=DC.countLaw(n,0.025,rs),T0=DC.tails(L0),T1=DC.tails(L1),T2=DC.tails(L2);
+      const d1=[],d2=[];let V=0,kV=1,neg=[],mn=1;for(let k=1;k<=n;k++){d1[k]=T1[k]-T0[k];d2[k]=T2[k]-T0[k];if(-d1[k]>V){V=-d1[k];kV=k}if(d1[k]<-1e-12)neg.push(k);mn=Math.min(mn,d2[k])}
+      const mean=L=>L.reduce((s,v,k)=>s+k*v,0),l10=r=>(r===0.10?DC.logA(n,0.02,r):DC.logA(n,0.025,r))/Math.LN10;
+      const f6=x=>x.toFixed(6),pct=x=>(x*100).toFixed(2);
+      const F=[
+        {k:'pmf',B:L1,t:'Two forecasts',c:`Earlier: p = 0.02, ρ = 0.10. Later raw: p = 0.025, ρ = 0.40. Each bar pair is P(K = k) for k = 0 to 15, computed by integrating the binomial over the factor. Expected defaults rise from ${mean(L0).toFixed(3)} to ${mean(L1).toFixed(3)}, but the later law puts ${f6(L1[0])} on zero defaults against ${f6(L0[0])} earlier.`},
+        {k:'diff',d:d1,t:'Every tail, raw forecast',c:`Each bar is P(K₁ ≥ k) − P(K₀ ≥ k) for k = 1 to 40. Red bars are tails that fell, which absorption forbids: k = ${neg.join(', ')}. The largest fall is V<sub>100</sub> = ${V.toFixed(4)} at k = ${kV}, about ${pct(V)} percentage points.`},
+        {k:'diff',d:d1,hl:1,t:'The binding event',c:`The correlation rose, so Corollary 5.3 says only the no-default comparison matters, and the k = 1 bar is exactly S<sub>100</sub> earlier minus S<sub>100</sub> later. Higher correlation spreads Q, which piles probability on zero defaults as well as on many.`},
+        {k:'pmf',B:L2,t:'The repair',c:`Bisection on S<sub>100</sub>(0.025, r) = ${f6(Math.exp(s0))} gives r = ${f6(rs)}, the paper's 0.153059. The default probability stays at 0.025 and the mean at ${mean(L2).toFixed(3)}, while P(K = 0) returns to ${f6(L2[0])}.`},
+        {k:'diff',d:d2,t:'Every tail, repaired',c:`With the repaired correlation no bar is red. Across all 100 thresholds the smallest change is ${Math.abs(mn)<1e-9?'zero, at k = 1, where the two no-default probabilities are equal':mn.toExponential(2)}. Two checks fixed a hundred inequalities, as Theorem 4.1 promises.`},
+        {k:'tab',t:'The extremes',c:`log₁₀ P(all 100 default) is ${l10(0.10).toFixed(3).replace('-','−')} earlier, ${l10(0.40).toFixed(3).replace('-','−')} raw and ${l10(rs).toFixed(3).replace('-','−')} repaired, matching Table 1. Both later values exceed the earlier one, so the all-default condition never bound here.`}];
+      F.delay=5600;
+      P.load(F,(fr,el)=>{
+        if(fr.k==='pmf'){const X=k=>26+k*19.5,BASE=200,mx=0.75,Y=v=>v/mx*170;el('line',{x1:20,y1:BASE,x2:334,y2:BASE,stroke:'var(--line)'});
+          for(let k=0;k<=15;k++){const a=Math.min(L0[k],mx),b=Math.min(fr.B[k],mx);el('rect',{x:X(k),y:BASE-Y(a),width:8,height:Y(a),fill:'var(--cool)'});el('rect',{x:X(k)+8.5,y:BASE-Y(b),width:8,height:Y(b),fill:'var(--accent)'});if(k%3===0)el('text',{x:X(k)+8,y:BASE+13,class:'lab'}).textContent=k;}
+          el('text',{x:177,y:232,class:'lab'}).textContent='defaults k (blue earlier, amber later)';el('text',{x:177,y:16,class:'lab'}).textContent='P(K = k)';return}
+        if(fr.k==='tab'){const rows=[['','ρ','P(K = 0)','log₁₀ P(K = n)'],['earlier','0.100000',f6(L0[0]),l10(0.10).toFixed(3)],['raw','0.400000',f6(L1[0]),l10(0.40).toFixed(3)],['repaired',f6(rs),f6(L2[0]),l10(rs).toFixed(3)]];
+          rows.forEach((r,i)=>[50,125,200,285].forEach((x,j)=>el('text',{x,y:70+i*34,class:'lab',style:'fill:'+(i?'var(--fg)':'var(--muted)')}).textContent=r[j].replace('-','−')));return}
+        const X=k=>22+(k-1)*7.9,MID=118,S=360;el('line',{x1:18,y1:MID,x2:336,y2:MID,stroke:'var(--line)'});
+        for(let k=1;k<=40;k++){const v=fr.d[k],h=Math.max(0.6,Math.abs(v)*S);el('rect',{x:X(k),y:v>=0?MID-h:MID,width:6,height:h,fill:v<-1e-9?'var(--bad)':'var(--ok)',stroke:fr.hl===k?'var(--fg)':'none','stroke-width':1.5});
+          if(k===1||k%10===0)el('text',{x:X(k)+3,y:MID+(k===1&&v<0?h+12:14),class:'lab'}).textContent=k;}
+        el('text',{x:177,y:16,class:'lab'}).textContent='change in P(K ≥ k), k = 1 to 40';
+        el('text',{x:330,y:MID-0.1*S+3,class:'lab',style:'text-anchor:end'}).textContent='+0.1';el('text',{x:330,y:MID+0.2*S+3,class:'lab',style:'text-anchor:end'}).textContent='−0.2';
+        el('line',{x1:300,y1:MID-0.1*S,x2:336,y2:MID-0.1*S,stroke:'var(--line)','stroke-dasharray':'2 3'});el('line',{x1:300,y1:MID+0.2*S,x2:336,y2:MID+0.2*S,stroke:'var(--line)','stroke-dasharray':'2 3'});
+      });}
+    root.querySelectorAll('.btn').forEach(b=>b.addEventListener('click',go,{capture:true}));
+    if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();go()}},{rootMargin:'600px'});io.observe(root)}else go();
   })();
 
   route();
