@@ -4004,10 +4004,372 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.18759v1. Equation, theorem, section and table numbers match the paper. All three animations run real computations: the quantile coupling of Proposition 3.2 on the toy pool, with a 20 000-draw simulation; bisection on the log orthant probabilities of Eqs. 33 to 35 for the interval of Theorem 5.2; and full count distributions for the 100-loan example of Section 8.3, with the repair of Eq. 18. The toy pool and all its numbers, the derivations marked as ours, the default-correlation values, the small-n intervals, the n = 7 check and the exact critical sizes are ours.</p>
   </footer>
 </div>
+<!-- ================= PAPER: 2611.21709 ================= -->
+<div class="wrap" id="view-p-2611-21709" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Wed, Nov 18</span></div>
+  <div class="paperhead">
+    <h1>QEDist: Practical Exact Distance Certification for Stabilizer Codes</h1>
+    <p class="meta">Jong Yeon Lee · posted Nov 16, 2026 · quant-ph · <a href="https://arxiv.org/abs/2611.21709" target="_blank" rel="noopener">arXiv 2611.21709</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">A quantum error-correcting code is only as strong as its lightest undetectable error, and for many of the codes now proposed for real hardware nobody had proved how light that error can be; this paper proves it, exactly, for 88 of 95 surveyed codes, often in seconds on a laptop. The number in question is the distance d. Finding one bad error shows that d is at most its weight, but showing that d is at least some value means ruling out every lighter error, and the number of candidates is astronomically large. QEDist (Quantum Exact Distance) rules them out with a depth-first tree search that grows an error one qubit at a time, guided by the parity checks it violates, and cuts branches with four exact tests: a symmetry reduction, a parity shortcut, a lower bound on how many more qubits any completion still needs, and a rule that throws out partial errors that a stabilizer could shorten. The chapter builds each piece by hand on two small codes and then watches the whole search run on a 50-qubit code.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what a parity-check matrix is, how binary arithmetic describes errors, and what the distance of a code means;</li>
+        <li>how a CSS quantum code splits into two binary problems, and why its distance is the minimum in Eq. 1 rather than the classical minimum weight;</li>
+        <li>why an upper bound on distance is one example but a lower bound is a proof about every support up to a cutoff W;</li>
+        <li>how the tree search grows supports through unsatisfied checks, why ordered children with forbidden sets cover every completion exactly once, and how symmetry cuts the starting points (Eq. 3);</li>
+        <li>the parity shortcut, the syndrome-count bound and the disjoint-neighborhood bound (Eq. 4), and how satisfied checks sharpen them into the weighted-check bound (Eqs. 8 to 10);</li>
+        <li>why a partial support that covers more than half of a stabilizer can be discarded (Eq. 5), and why all the rules together never discard a shortest logical (Theorem 1);</li>
+        <li>how lifted-product structure shrinks the search (Eqs. 6 and 7), and what the benchmarks do and do not show.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>𝔽₂</dt><dd>the two-element field {0, 1} with addition mod 2, so 1 + 1 = 0</dd>
+        <dt>n, k</dt><dd>the number of physical qubits and the number of encoded (logical) qubits</dd>
+        <dt>H<sub>X</sub>, H<sub>Z</sub></dt><dd>binary check matrices with n columns; their rows are the X-type and Z-type stabilizer generators</dd>
+        <dt>H, S</dt><dd>in the Z sector, H = H<sub>X</sub> (the checks that see Z errors) and S = row H<sub>Z</sub> (the Z-type stabilizers)</dd>
+        <dt>z, supp, wt</dt><dd>a binary vector of length n, its support (the positions holding 1), and its weight |supp z|</dd>
+        <dt>ker H</dt><dd>the vectors z with Hz = 0: the undetectable supports</dd>
+        <dt>d<sub>X</sub>, d<sub>Z</sub>, d</dt><dd>the two sector distances and the code distance d = min(d<sub>X</sub>, d<sub>Z</sub>)</dd>
+        <dt>L</dt><dd>a logical detector matrix (Eq. 2)</dd>
+        <dt>W, W<sub>eff</sub></dt><dd>the weight cutoff of an exclusion, and the cutoff after the parity shortcut</dd>
+        <dt>T, F</dt><dd>the support selected at a search node, and the forbidden coordinates</dd>
+        <dt>s</dt><dd>the syndrome H<b>1</b><sub>T</sub> of the selected support; check c is unsatisfied when s<sub>c</sub> = 1</dd>
+        <dt>N<sub>c</sub>(T, F)</dt><dd>the available neighborhood of check c (Eq. 3)</dd>
+        <dt>b</dt><dd>the remaining budget W<sub>eff</sub> − |T|</dd>
+        <dt>w<sub>c</sub>, p</dt><dd>the largest column weight of H, and the size of a packing of disjoint neighborhoods</dd>
+        <dt>x<sub>v</sub>, β, c<sub>v</sub>, D</dt><dd>the 0/1 indicator that qubit v is added, and the constant, coefficients and coefficient cap of a combined inequality (Eq. 10)</dd>
+        <dt>g</dt><dd>a stabilizer, used in the shortening rule (Eq. 5)</dd>
+        <dt>P</dt><dd>the period of a verified cyclic symmetry</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Code A: the Steane code, 7 qubits.</b> Its checks fit in a 7 × 7 matrix, every set of codewords can be listed by hand, and its distance is 3. We use it to make every definition concrete and to run the search by hand. The specific cyclic presentation below is our choice.</li>
+        <li><b>Code B: the toric code on a 5 × 5 torus, 50 qubits.</b> Qubits sit on the edges of a square grid whose opposite sides are glued together, and an error is a set of edges you can draw. Its distance is 5. The animation in Section 7 runs the paper's search on it. Neither code appears in the paper; both are standard textbook examples chosen because the paper's rules can be checked on them by eye.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Parity checks">
+      <span class="num">1 · PARITY CHECKS AND DISTANCE</span>
+      <h2>What does it mean for a code to have distance d?</h2>
+      <p>Everything in this paper is linear algebra over the two-element field 𝔽₂, so it is worth starting with a classical code, where the ideas are the same and nothing is quantum yet. A message is stored redundantly as a string of n bits, and noise flips some of them. Record which bits were flipped as a vector z in 𝔽₂<sup>n</sup>, with a 1 in each flipped position. Adding vectors mod 2 composes flips: flipping a bit twice undoes it, which is the rule 1 + 1 = 0.</p>
+      <p>A parity check is a question of the form "is the number of flipped bits among these positions odd?". Write the positions as a row of a binary matrix H; then the answers to all checks at once are the vector Hz, computed mod 2. That vector is called the syndrome. An error with syndrome zero passes every check and is undetectable.</p>
+      <div class="def"><span class="label">Definition · syndrome, weight, distance (background, not from the paper)</span>
+        <p>For a binary matrix H with n columns, the syndrome of z ∈ 𝔽₂<sup>n</sup> is Hz, and z is undetectable when Hz = 0, that is, when z lies in the kernel ker H. The support of z is the set of positions where z has a 1, and its weight wt(z) is the size of the support. The distance of the classical code ker H is</p>
+        <div class="math" data-tex="d_{\text{classical}}=\min\{\operatorname{wt}(z): Hz=0,\ z\neq 0\}."></div>
+        <p>In words: the distance is the smallest number of bit flips that every check fails to notice. Any error of smaller weight changes at least one parity and is caught.</p>
+      </div>
+      <p>The matrix for Code A is a circulant: each row is the previous row shifted one place to the right, wrapping around. Label the positions 0 to 6. Row i checks positions i, i + 2, i + 3 and i + 4, counted mod 7, so</p>
+      <div class="math" data-tex="H=\begin{pmatrix}1&0&1&1&1&0&0\\0&1&0&1&1&1&0\\0&0&1&0&1&1&1\\1&0&0&1&0&1&1\\1&1&0&0&1&0&1\\1&1&1&0&0&1&0\\0&1&1&1&0&0&1\end{pmatrix}."></div>
+      <p>Only three rows are independent (rank 3), because the cyclic shifts repeat information; seven redundant rows are allowed and keep the symmetry visible. Its kernel is the [7, 4] Hamming code: 2<sup>4</sup> = 16 vectors, namely the zero vector, seven of weight 3, seven of weight 4, and the all-ones vector of weight 7. One of the weight-3 vectors has support {0, 2, 6}. Check row 0, whose support is {0, 2, 3, 4}: it overlaps {0, 2, 6} in two positions, an even number, so it is satisfied, and the same happens for every row. The classical distance is 3.</p>
+      <details class="pf"><summary><span class="tagd">our check</span><span class="q">How do we know no vector of weight 1 or 2 is in the kernel?</span></summary><div class="pfbody">
+        <p>A weight-1 vector with support {j} has syndrome equal to column j of H. Every column has four 1s (each position is checked by four rows), so no column is zero. A weight-2 vector with support {i, j} has syndrome column i + column j, which is zero only if the two columns are equal. Column j of a circulant is column 0 shifted down by j places, and column 0 is (1, 0, 0, 1, 1, 1, 0)<sup>T</sup>, which equals none of its nontrivial cyclic shifts. So all seven columns are distinct and nonzero, and the smallest kernel vectors have weight 3.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> errors are binary vectors, checks are rows of H, the syndrome is Hz mod 2, and the classical distance is the smallest weight of a nonzero vector in ker H; for Code A it is 3.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Quantum codes">
+      <span class="num">2 · CSS CODES AND THE QUANTUM DISTANCE</span>
+      <h2>What changes when the errors are quantum?</h2>
+      <p>A qubit can suffer two independent kinds of error: a bit flip X and a phase flip Z (their product is the third Pauli error, Y). An X error on a set of qubits is described by a binary support vector, and so is a Z error. The fact that makes quantum codes look like pairs of classical codes is a commutation rule from quantum mechanics: an X-type operator with support a and a Z-type operator with support b commute exactly when a and b overlap in an even number of qubits, and anticommute when the overlap is odd. Measuring an X-type operator therefore detects a Z error precisely when the overlap is odd, which is a parity check.</p>
+      <div class="def"><span class="label">Definition · CSS code and its Z sector (Section 2.1)</span>
+        <p>Let H<sub>X</sub> and H<sub>Z</sub> be binary matrices with n columns satisfying H<sub>X</sub>H<sub>Z</sub><sup>T</sup> = 0. Their rows generate the X- and Z-type stabilizers, and the code has k = n − rank H<sub>X</sub> − rank H<sub>Z</sub> &gt; 0 encoded qubits. For the Z sector put H = H<sub>X</sub> and S = row H<sub>Z</sub>. A binary support vector z represents an undetectable operator when Hz = 0, and a nontrivial logical operator when also z ∉ S. Thus</p>
+        <div class="math" data-tex="d_Z=\min\{\operatorname{wt}(z): Hz=0,\ z\notin S\}."></div>
+        <p class="eqn">Eq. 1</p>
+        <p>Interchanging X and Z gives d<sub>X</sub>, and the code distance is d = min(d<sub>X</sub>, d<sub>Z</sub>).</p>
+        <p>In words: the X-type checks catch Z errors; an undetectable Z error either is itself a stabilizer, which does nothing to the encoded information, or it is a logical operator, which silently corrupts it. The Z distance is the weight of the lightest corrupting one.</p>
+      </div>
+      <p>The condition H<sub>X</sub>H<sub>Z</sub><sup>T</sup> = 0 says every X-type generator overlaps every Z-type generator evenly, so all generators commute and can be measured together. It also means every row of H<sub>Z</sub> passes every check in H<sub>X</sub>, so S sits inside ker H. That is the one difference from Section 1: the minimum in Eq. 1 skips the nonzero vectors of S as well as zero. Stabilizers are undetectable but harmless, because the encoded state is defined to be unchanged by them. The paper puts it as: up to an overall phase, an undetectable Pauli acts trivially on the encoded information exactly when it belongs to the stabilizer group.</p>
+      <p>Code A becomes the Steane code by taking H<sub>X</sub> = H<sub>Z</sub> = H. Any two rows of H overlap in exactly two positions and each row has weight 4, so H H<sup>T</sup> = 0 and the code is valid, with k = 7 − 3 − 3 = 1. In the Z sector, ker H is the 16-vector Hamming code and S is the 8-vector row space: zero and seven vectors of weight 4. The vectors in ker H but not in S are the seven of weight 3 and the all-ones vector, so d<sub>Z</sub> = 3. The X sector is identical, so d = 3.</p>
+      <details class="pf"><summary><span class="tagd">our check</span><span class="q">Why are the weight-4 kernel vectors exactly the stabilizers?</span></summary><div class="pfbody">
+        <p>The row space of H has dimension 3, so it has 2<sup>3</sup> = 8 vectors. Each row has weight 4, and the sum of two rows has weight 4 + 4 − 2 · 2 = 4 because any two rows overlap in two positions. The sum of two rows is again a row (for instance rows 0 and 1 add to row 5, as the matrix above shows, and every other pair follows by shifting), so the zero vector and the seven rows are closed under addition and form the whole row space. All have weight 4, and ker H has exactly seven vectors of weight 4, so they coincide.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Testing z ∉ S can be done by Gaussian elimination over 𝔽₂. The paper also describes a faster equivalent test. A logical detector matrix L has rows that represent a complete logical basis of the opposite sector, chosen so that the rows of L together with those of H span S<sup>⊥</sup>, the set of vectors orthogonal to all of S. Then</p>
+      <div class="math" data-tex="\bigl(Hz=0,\ Lz=0\bigr)\quad\Longleftrightarrow\quad z\in S."></div>
+      <p class="eqn">Eq. 2</p>
+      <p>so a zero-syndrome candidate is logically nontrivial exactly when Lz ≠ 0. In Code A, a single row works: L = (1, 1, 1, 1, 1, 1, 1). Then Lz is the parity of wt(z), and indeed the stabilizers all have even weight while the logicals have weight 3 or 7.</p>
+      <details class="pf"><summary><span class="tagd">our sketch</span><span class="q">Why does Eq. 2 hold?</span></summary><div class="pfbody">
+        <p>Over 𝔽₂, as over the reals, a subspace equals the orthogonal complement of its orthogonal complement: S = (S<sup>⊥</sup>)<sup>⊥</sup>. The rows of H and L span S<sup>⊥</sup>, so z ∈ S exactly when z is orthogonal to every row of H and of L, which is the statement Hz = 0 and Lz = 0. In Code A, S<sup>⊥</sup> is the Hamming code of dimension 4, spanned by the three independent rows of H plus the all-ones vector, which is the L chosen above.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Code B lives on a torus. Draw a 5 × 5 grid of vertices and glue the right edge to the left and the bottom to the top, so the grid has 25 vertices, 25 horizontal edges, 25 vertical edges and 25 square faces. Put a qubit on each of the 50 edges. Each vertex gives an X-type check on its four edges (a "star"), and each face gives a Z-type stabilizer on its four edges (a "plaquette"). A star and a plaquette share either zero or two edges, so the CSS condition holds. Each family has rank 24 (the 25 stars add to zero, since every edge has two endpoints, and likewise the 25 plaquettes), giving k = 50 − 24 − 24 = 2.</p>
+      <p>In the Z sector a support z is a set of edges, and the star at a vertex is unsatisfied exactly when an odd number of chosen edges meet there. For a path of edges, the unsatisfied checks are its two endpoints. Undetectable supports are therefore sets of closed loops. A loop that bounds a region is a sum of the plaquettes inside it, hence a stabilizer; a loop that wraps around the torus is not, and is a logical operator. The shortest wrapping loop is a straight line of 5 edges, so d<sub>Z</sub> = 5, and by the symmetry between the grid and its dual d<sub>X</sub> = 5 too.</p>
+      <div class="aside"><span class="label">Background · the toric code (not from the paper)</span>
+        <p>The toric code is due to Kitaev (see Further reading). That every contractible loop is a sum of plaquettes, while a loop around the torus is not, is a standard topological fact about the torus that we use without proof; the 5 × 5 size and the edge numbering in the animation are ours.</p>
+      </div>
+      <p class="short"><b>In short:</b> a CSS code is two binary check matrices whose rows overlap evenly; the Z distance is the smallest weight of a vector that passes every X check but is not a Z stabilizer (Eq. 1); Code A has d = 3 and Code B, whose errors are edge sets with syndromes at their endpoints, has d = 5.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Certification">
+      <span class="num">3 · THE CERTIFICATION PROBLEM</span>
+      <h2>Why is a lower bound so much harder than an upper bound?</h2>
+      <p>To prove d<sub>Z</sub> ≤ w, it is enough to exhibit one vector of weight w that passes all checks and is not a stabilizer; anyone can verify it with one matrix product and one membership test. The paper calls such a vector a witness. To prove d<sub>Z</sub> ≥ W + 1, one must show that no nontrivial logical operator of weight at most W exists. That is a statement about every support of weight up to W.</p>
+      <div class="def"><span class="label">Definition · exclusion and certification (Section 2.1)</span>
+        <p>Choose a cutoff W. A completed exclusion shows that no nontrivial logical operator of weight at most W exists, and so establishes d<sub>Z</sub> ≥ W + 1. Together with a checked logical operator of weight W + 1, it establishes d<sub>Z</sub> = W + 1. Both sectors must reach the required lower bound to certify the code distance, and a witness in either sector supplies an upper bound.</p>
+        <p>In words: an exact distance needs a witness from above and an exhaustive proof from below, and the two must meet.</p>
+      </div>
+      <p>The scale is what makes the proof hard. One benchmark code in the paper has n = 1768 qubits and Z distance 22, so its certificate is an exclusion through weight 21. The number of supports of weight exactly 21 among 1768 positions is C(1768, 21), about 2.7 × 10<sup>48</sup> (our arithmetic). No computer will list them. For comparison, QEDist's search on this exclusion visits 23.6 million nodes (Section 4.2).</p>
+      <p>The codes in question are quantum low-density parity-check (LDPC) codes, whose checks each touch only a handful of qubits. For hypergraph-product codes the distance follows from smaller classical codes, but for lifted-product (LP) codes, a more flexible family that can reach larger distances, it does not, and published distances were often only upper bounds from randomized searches for witnesses. A reported upper bound leaves open the possibility of a substantially lighter logical operator, which, as the introduction notes, could change which finite-length code one chooses.</p>
+      <p>The sectors can also behave differently. For the [[1428, 186]] code, the paper finds d<sub>X</sub> = 18 and 19 ≤ d<sub>Z</sub> ≤ 28, which already gives d = 18 without pinning down d<sub>Z</sub>. For asymmetric codes, knowing both sector distances says more than d alone.</p>
+      <div class="fact"><span class="label">Fact · the survey (Table 1)</span>
+        <p>Of 95 tabulated lifted-product instances with d &gt; 5, drawn from fifteen source families, QEDist verifies the exact distance of 88 and leaves 7 unresolved, all 7 from one "logical spectroscopy" study. Of the 88, 64 match upper bounds reported in the cited sources.</p>
+      </div>
+      <p class="short"><b>In short:</b> a witness proves d ≤ w in one line, while d ≥ W + 1 needs a proof about every support up to weight W, a number like 10<sup>48</sup> for real codes; QEDist supplies that proof by exhaustive but heavily pruned search.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · The tree search">
+      <span class="num">4 · GROWING A SUPPORT THROUGH THE CHECKS</span>
+      <h2>How can a search avoid looking at every subset?</h2>
+      <p>The key is that sparse checks constrain how a candidate can grow. If a partial support T leaves some check unsatisfied, any undetectable support containing T must include another qubit of that check, so the search only ever needs to add qubits from unsatisfied checks. The paper describes this search in Section 3; the support-growth principle goes back to linked-cluster methods of Dumer, Kovalev and Pryadko, and QEDist's contribution is the bookkeeping and pruning built on top.</p>
+      <div class="def"><span class="label">Definition · satisfied checks and irreducible supports (Section 3.1)</span>
+        <p>A check is unsatisfied if it overlaps the selected support in an odd number of qubits and satisfied if the overlap is even. A nonempty undetectable support is support-irreducible if it contains no smaller nonempty undetectable support.</p>
+        <p>In words: an unsatisfied check is one that currently fires, and an irreducible support is an undetectable error with no undetectable piece you could cut out of it.</p>
+      </div>
+      <p>Every shortest logical operator is support-irreducible. That is why the search can stop as soon as the syndrome becomes zero: any extension would contain the current undetectable support and hence could not be a shortest logical.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why must a shortest logical be irreducible?</span></summary><div class="pfbody">
+        <p>This is the first step of the paper's proof of Theorem 1 (Appendix A). Let z be a minimum-weight logical with support U, and suppose a nonzero y ∈ ker H were supported on a proper subset of U. If y ∉ S, then y is itself a logical and is lighter than z. If y ∈ S, then z + y is in the same logical class as z, and since y sits inside U, adding it simply deletes the positions of y from U, so z + y is a lighter logical. Either way z was not of minimum weight.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>A search node records the selected support T, its syndrome s = H<b>1</b><sub>T</sub>, and a set F of forbidden coordinates that this branch has promised never to use. For each check c, its available neighborhood is</p>
+      <div class="math" data-tex="N_c(T,F)=\operatorname{supp}(H_c)\setminus(T\cup F)."></div>
+      <p class="eqn">Eq. 3</p>
+      <p>that is, the qubits of check c that are neither selected nor forbidden. If s ≠ 0, the search picks an unsatisfied check c; every completion must include an element of N<sub>c</sub>. Order its available neighbors q<sub>1</sub>, …, q<sub>m</sub>. Child i includes q<sub>i</sub> and forbids q<sub>1</sub>, …, q<sub>i−1</sub>. To keep the number of children small, the check chosen is one with the fewest available neighbors. When s = 0, the search tests membership in S and ends the branch.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does forbidding earlier siblings lose nothing and repeat nothing?</span></summary><div class="pfbody">
+        <p>A completion of T is a set of extra qubits, disjoint from F, that makes the syndrome zero. It must contain at least one of q<sub>1</sub>, …, q<sub>m</sub>, so it has a first one in this order, say q<sub>i</sub>. It contains q<sub>i</sub> and none of q<sub>1</sub>, …, q<sub>i−1</sub>, which is exactly what child i requires, and it violates the requirement of every other child: child j &lt; i requires q<sub>j</sub>, which it lacks, and child j &gt; i forbids q<sub>i</sub>, which it has. The paper states this as: each possible completion is assigned to exactly one child, determined by its first neighbor in this order.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Where does the search start? Every support contains some qubit, so in general it starts once from each of the n qubits, with all earlier qubits forbidden. Symmetry cuts this down. If a permutation of the qubits maps the check row spaces to themselves, it maps logicals to logicals of the same weight. For a cyclic translation of period P acting on blocks of P qubits, the paper shows it suffices to start once at position 0 of each block, excluding all earlier blocks, which reduces the starting coordinates from n to n/P. QEDist verifies the symmetry on the supplied matrices before using it.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is one start per block enough?</span></summary><div class="pfbody">
+        <p>Take any nonempty support and look at its first occupied block a. Translate the whole support until one of its qubits in block a sits at position 0. Translation moves all blocks together, so blocks before a stay empty. The translated support has the same weight and the same logical status, and it is compatible with the start at (a, 0) with all earlier blocks forbidden. The rule covers every orbit, including orbits shorter than P, and may cover an orbit more than once, which is harmless.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In Code A, cyclic shift by one position is a symmetry: shifting maps row i of H to row i + 1. The seven positions form a single block with P = 7, so one start at qubit 0 suffices instead of seven. In Code B, horizontal and vertical translations of the torus are both symmetries, and the paper's rule for several generators (start at the smallest coordinate of each joint orbit and exclude earlier coordinates) leaves two starts: one horizontal edge with nothing forbidden, and one vertical edge with every horizontal edge forbidden. The paper reports the same count, two starting points, for the bivariate bicycle codes, which have the same two-translation structure.</p>
+      <p>Here is the whole search on Code A at cutoff W = 3, by hand. Start with T = {0}. Qubit 0 lies in rows 0, 3, 4 and 5, so those four checks fire. Each has three available neighbors, so take the lowest, row 0, with N = {2, 3, 4}. The children are T = {0, 2}; T = {0, 3} with 2 forbidden; and T = {0, 4} with 2 and 3 forbidden. In the first child, the syndrome is the sum of columns 0 and 2, which fires rows 2, 3, 4 and 6. Row 2 has N = {4, 5, 6}, giving children {0, 2, 4}, {0, 2, 5} and {0, 2, 6}. The first two still fire checks and have used the whole budget. The third has syndrome zero, weight 3, and is not one of the weight-4 stabilizers: a witness, found at the fifth node. At W = 2 the same tree stops one level higher: each child {0, q} has used the budget with checks still firing, so the search finishes after four nodes with no witness and proves d<sub>Z</sub> ≥ 3. Together with the witness, d<sub>Z</sub> = 3.</p>
+      <p class="short"><b>In short:</b> the search adds only qubits of a firing check, gives each child a forbidden set so every completion lives in exactly one subtree, stops at zero syndrome because shortest logicals are irreducible, and uses verified symmetries to start from n/P coordinates instead of n.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Counting the rest">
+      <span class="num">5 · BOUNDING THE WEIGHT STILL NEEDED</span>
+      <h2>When can a branch be abandoned before it runs out of budget?</h2>
+      <p>The search above only stops a branch when it has used the whole weight allowance. Far better is to notice early that the firing checks cannot all be fixed within the remaining allowance. Section 3.2 gives three such tests; each one is a short counting argument.</p>
+      <p>The first applies before the search starts. If the all-ones vector lies in row H, every undetectable operator has even weight, so an odd cutoff W can be replaced by W − 1. Write W<sub>eff</sub> = W − 1 in that case and W<sub>eff</sub> = W otherwise. A list of check rows summing to the all-ones vector certifies the reduction.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does the all-ones vector force even weight?</span></summary><div class="pfbody">
+        <p>Appendix A writes the certificate as a binary vector α with α<sup>T</sup>H = <b>1</b><sup>T</sup>, meaning the rows selected by α add up to all ones. For z ∈ ker H, wt(z) ≡ <b>1</b><sup>T</sup>z = α<sup>T</sup>Hz = α<sup>T</sup>0 = 0 (mod 2). So no undetectable support has odd weight, and in particular no logical of weight exactly W when W is odd.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Neither running example qualifies. Code A has logicals of weight 3. In Code B, rows summing to all ones would be a set of vertices containing exactly one endpoint of every edge, a two-coloring of the grid, and a 5 × 5 torus has odd loops of length 5, so none exists. On a 4 × 4 torus, by contrast, a checkerboard coloring works and every closed loop has even length (our example).</p>
+      <p>The second test counts. Let b = W<sub>eff</sub> − |T| be the number of further qubits permitted, and w<sub>c</sub> the largest column weight of H, the most checks any one qubit touches. If wt(s) &gt; b w<sub>c</sub>, the remaining b qubits cannot touch every unsatisfied check, so the branch is pruned. An unsatisfied check with no available neighbor rules out completion immediately.</p>
+      <p>The third test looks at where the firing checks are. If p unsatisfied checks have pairwise disjoint available neighborhoods, each needs its own new qubit, so</p>
+      <div class="math" data-tex="\text{additional weight}\ \geq p,\qquad p>b\ \Longrightarrow\ \text{prune}."></div>
+      <p class="eqn">Eq. 4</p>
+      <p>Such a collection is called a packing, and any packing gives a valid bound. QEDist builds one greedily, considering smaller neighborhoods first (Appendix A.1). In Code B the bound is vivid. A path of edges fires its two endpoints, and unless the endpoints are next to each other their stars share no edge, so the packing has size 2 and the path needs at least two more edges to close. With one edge of budget left it is pruned at once. When the endpoints are adjacent, their stars share the single edge between them, the packing drops to 1, and one edge can indeed close the loop.</p>
+      <details class="pf"><summary><span class="tagd">our check</span><span class="q">Why is the syndrome-count bound weaker than the packing bound here?</span></summary><div class="pfbody">
+        <p>In Code B each edge touches two stars, so w<sub>c</sub> = 2, and an open path fires two stars. The count test prunes only when 2 &gt; 2b, that is, when b = 0, which the budget test already catches. The packing test prunes when 2 &gt; b, that is, at b = 1, one level earlier. The count test knows only how many checks fire; the packing test also knows that no single edge can reach both endpoints.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> parity can lower an odd cutoff by one, the number of firing checks over the column weight bounds the qubits still needed, and a packing of firing checks with disjoint neighborhoods gives a sharper bound (Eq. 4); a branch whose bound exceeds its budget b is cut.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Satisfied checks">
+      <span class="num">6 · THE WEIGHTED-CHECK BOUND</span>
+      <h2>Why should a check that is already satisfied matter?</h2>
+      <p>The bounds of Section 5 look only at checks that fire. But adding a qubit to satisfy one check can violate another and force further additions. Section 3.3 gives the paper's own small example, which the animation below works through. Unsatisfied checks c<sub>1</sub> and c<sub>2</sub> have available neighborhoods {a, b} and {a, c}, and a satisfied check e has neighborhood {a, d}. The first two share a, so their disjoint-neighborhood bound is one. Adding a satisfies both but violates e, forcing the addition of d. Avoiding a requires both b and c. In either case, at least two additions are needed.</p>
+      <p>To turn that reasoning into arithmetic, let x<sub>v</sub> ∈ {0, 1} indicate whether available qubit v is added. Every completion satisfies two families of inequalities (Appendix A.2):</p>
+      <div class="math" data-tex="\sum_{v\in N_c}x_v\ \geq\ 1\qquad\text{if } s_c=1,"></div>
+      <p class="eqn">Eq. 8</p>
+      <div class="math" data-tex="\sum_{u\in N_e\setminus\{v\}}x_u\;-\;x_v\ \geq\ 0\qquad\text{if } s_e=0,\ v\in N_e."></div>
+      <p class="eqn">Eq. 9</p>
+      <p>The first says a firing check needs at least one new qubit. The second says that if v is added to a satisfied check e, some other qubit of e must also be added to restore even parity. These replace the exact parity conditions with weaker linear inequalities, which the paper calls a parity relaxation.</p>
+      <div class="def"><span class="label">Definition · the weighted-check bound (Eq. 10)</span>
+        <p>Add the inequalities of Eqs. 8 and 9 with nonnegative integer multipliers. The result has the form β ≤ Σ<sub>v</sub> c<sub>v</sub>x<sub>v</sub>, where β is the sum of the multipliers on unsatisfied checks and the coefficients c<sub>v</sub> may have either sign. For any D ≥ 0 such that every c<sub>v</sub> ≤ D, a completion within budget b must satisfy</p>
+        <div class="math" data-tex="\beta\ \leq\ \sum_{v\in V}c_v x_v\ \leq\ D\sum_{v\in V}x_v\ \leq\ Db."></div>
+        <p class="eqn">Eq. 10</p>
+        <p>Thus β &gt; Db excludes the node.</p>
+        <p>In words: weight the firing checks, use satisfied checks to cancel any qubit that would count too many times, and if the total demand still exceeds what b qubits of capped value can supply, no completion fits.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is each step of Eq. 10 valid?</span></summary><div class="pfbody">
+        <p>A completion within budget gives a 0/1 vector x that satisfies every inequality of Eqs. 8 and 9; multiplying by nonnegative numbers and adding preserves ≥, so β ≤ Σ c<sub>v</sub>x<sub>v</sub>. Each x<sub>v</sub> is 0 or 1, so c<sub>v</sub>x<sub>v</sub> ≤ D x<sub>v</sub> whether c<sub>v</sub> is positive or negative. Finally Σ x<sub>v</sub> is the number of added qubits, at most b. The argument uses only that x describes some zero-syndrome completion, so, as the paper notes, it applies to every kernel completion, including stabilizers, and never removes a shortest logical.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>On the example, the multipliers 1 on c<sub>1</sub>, 1 on c<sub>2</sub> and 1 on the inequality of e with v = a give</p>
+      <div class="math" data-tex="(x_a+x_b)+(x_a+x_c)+(x_d-x_a)\ \geq\ 2\quad\Longrightarrow\quad x_a+x_b+x_c+x_d\ \geq\ 2."></div>
+      <p>The inequality from e reduces the coefficient of x<sub>a</sub> from two to one and introduces x<sub>d</sub>, so each possible addition contributes at most one: D = 1 and β = 2. With one addition left, 2 &gt; 1 · 1 and the node is cut. Without e, the coefficient of x<sub>a</sub> is 2, so D = 2 and the test 2 &gt; 2 · 1 fails. The implementation keeps every coefficient at most two, so a combined requirement above 2b rules out completion. It raises multipliers greedily with bounded effort, because the bound is evaluated at many nodes; the effort limits choose which valid inequality is found, while Eq. 10 guarantees safety.</p>
+      <p>The same inequality can test a single proposed child. Conditioning on adding coordinate q gives β − c<sub>q</sub> ≤ D(b − 1), so a violation rules out that child without building it.</p>
+      <p>The animation computes all of this for the example: the exact minimum by checking all sixteen subsets of {a, b, c, d}, the greedy packing, and both combined inequalities.</p>
+      <div class="player" id="pQdWcb">
+        <div class="ptitle"><span class="label">Animation · the weighted-check bound on the paper's Fig. 3(c) example</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Three checks above four qubits a, b, c, d, with the coefficients of a combined inequality under each qubit"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>unsatisfied check</span><span><i class="sw" style="background:var(--cool)"></i>satisfied check</span><span><i class="sw" style="background:var(--ok)"></i>chosen qubits</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <div class="fact"><span class="label">Fact · what satisfied checks buy (Section 4.2)</span>
+        <p>Across fourteen LP and PP sector problems, a bound using only unsatisfied checks speeds up the higher-check-weight examples but slows several others. Adding satisfied-check inequalities reduces median search time by factors of 1.37 to 5.28 relative to that bound, and with both types every one of the fourteen exclusions finishes faster than with the bound disabled. The 1112-qubit PP input takes 10.6 seconds with the bound disabled, 11.4 seconds with only unsatisfied checks, and 5.14 seconds with both.</p>
+      </div>
+      <p class="short"><b>In short:</b> firing checks demand qubits (Eq. 8), satisfied checks charge for disturbing them (Eq. 9), and a nonnegative combination with demand β and coefficient cap D proves no completion fits in b qubits whenever β &gt; Db (Eq. 10).</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Stabilizer shortening">
+      <span class="num">7 · USING STABILIZER EQUIVALENCE</span>
+      <h2>Can a partial support already be provably too heavy?</h2>
+      <p>The bounds so far apply to any undetectable completion. The last rule uses the quantum structure: multiplying a logical operator by a stabilizer preserves its encoded action and can reduce its weight. If the partial support T already covers more than half of some stabilizer, then any logical containing T can be made lighter by multiplying by that stabilizer, so the branch cannot contain a shortest logical.</p>
+      <div class="def"><span class="label">Definition · the shortening rule (Section 3.4)</span>
+        <p>For every g ∈ S, a minimum-weight logical z satisfies</p>
+        <div class="math" data-tex="|\operatorname{supp}(z)\cap\operatorname{supp}(g)|\ \leq\ \frac{\operatorname{wt}(g)}{2},"></div>
+        <p class="eqn">Eq. 5</p>
+        <p>since otherwise z + g is a lighter representative of the same nonzero logical class. Because the selected support only grows, a violation by T persists throughout its subtree, and the branch is pruned.</p>
+        <p>In words: a shortest logical never covers more than half of any stabilizer, because swapping the covered half for the uncovered half would shorten it.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">our derivation</span><span class="q">Where does "more than half" come from?</span></summary><div class="pfbody">
+        <p>Adding two binary vectors cancels their common positions, so</p>
+        <div class="math" data-tex="\operatorname{wt}(z+g)=\operatorname{wt}(z)+\operatorname{wt}(g)-2\,|\operatorname{supp}(z)\cap\operatorname{supp}(g)|."></div>
+        <p>This is less than wt(z) exactly when the overlap exceeds wt(g)/2. And z + g passes every check, since both terms do, and is not in S, since otherwise z = (z + g) + g would be in S. So z + g is a lighter logical, contradicting minimality. If T ⊆ supp(z) already overlaps g in more than wt(g)/2 positions, so does z.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In Code A, stabilizer row 0 has support {0, 2, 3, 4}. The node T = {0, 2, 4} from the hand search overlaps it in three positions, more than 4/2, so any logical through that node would be shortened by row 0, and the rule discards it at once. In Code B every plaquette has weight 4, so a path that runs along three sides of a face is discarded: going around the fourth side instead is shorter. The rule is cheap because QEDist updates the overlaps with the supplied generators as each qubit is added or removed. It also has a limit the paper points out: the [[2970, 1188]] code's supplied generators have weight 22 or 23, so a partial support of weight at most 11 can never trip it, and the weighted-check bound must do the work.</p>
+      <p>With every rule in place, the animation below runs the search on Code B, exactly as the paper's pseudocode in Appendix A.1 orders the tests: the shortening rule first, then the zero-syndrome test, then the budget and the bounds, then branching on the firing check with the fewest available edges, children in increasing edge order. Edges are numbered h(i, j) for the edge leaving vertex (i, j) to the right and v(i, j) for the edge leaving it downward, row i and column j counted from the top left, with wrap-around. The first scenario excludes every logical of weight up to 4, which proves d<sub>Z</sub> ≥ 5. The second runs the same exclusion with the packing and shortening rules switched off, keeping only the budget. The third raises the cutoff to 5 and finds a witness.</p>
+      <div class="player" id="pQdTor">
+        <div class="ptitle"><span class="label">Animation · the full search on the 5 × 5 toric code</span><span class="scen"><button class="chip" data-scen="all" aria-pressed="true">W = 4, all rules</button><button class="chip" data-scen="none" aria-pressed="false">W = 4, budget only</button><button class="chip" data-scen="w5" aria-pressed="false">W = 5</button></span></div>
+        <div class="stage"><svg viewBox="0 0 340 300" role="img" aria-label="A 5 by 5 torus grid with the selected edges, forbidden edges, firing vertices and branch options of the current search node"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>selected T / firing check</span><span><i class="sw" style="background:var(--cool)"></i>branch options</span><span><i class="sw" style="background:var(--bad)"></i>forbidden F</span><span><i class="sw" style="background:var(--deep)"></i>shortening plaquette</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The node counts in the animation are computed live by the page: 16 nodes with all rules and 44 with the budget alone, for the same proof. The real codes show the same effect at scale. For the Z-sector exclusion through weight 21 in the [[1768, 224, 22]] LP code, enabling the weighted-check bound reduces the visited nodes from 86.3 million to 23.6 million, chiefly by pruning deeper branches (Section 4.2, Fig. 4(a)).</p>
+      <p class="short"><b>In short:</b> a shortest logical covers at most half of every stabilizer (Eq. 5), so a partial support that covers more is discarded with its whole subtree; on the toric code this cuts paths that wrap three sides of a face.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Soundness">
+      <span class="num">8 · WHY A FINISHED SEARCH IS A PROOF</span>
+      <h2>Could the pruning rules ever throw away the answer?</h2>
+      <p>Each rule cuts branches, and a single wrong cut would turn a "proof" into a false claim. The paper's central theorem says that cannot happen.</p>
+      <div class="fact"><span class="label">Theorem 1 · sound cutoff exclusion (Section 3.5)</span>
+        <p>Let S be a subspace of ker H over 𝔽₂, and let any supplied permutation generators preserve both spaces. Apply the starting-point, branching, stopping and pruning rules at cutoff W. If every required branch finishes without finding a word in ker H \ S, then d<sub>Z</sub> ≥ W + 1.</p>
+      </div>
+      <p>The strategy is to imagine that a light logical exists and follow it down the tree. Call a node (T, F) compatible with a support U if T ⊆ U and F ∩ U = ∅.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does the proof follow a shortest logical through every rule?</span></summary><div class="pfbody">
+        <p>Suppose d<sub>Z</sub> ≤ W and let z be a minimum-weight logical with support U. By the argument in Section 4, z is support-irreducible. A verified symmetry moves an occupied coordinate of the first occupied orbit to that orbit's smallest coordinate, preserving weight and logical nontriviality, so after relabeling, the node at that starting coordinate is compatible with U.</p>
+        <p>At a compatible node, every unsatisfied check has an available neighbor in U \ T. The child that adds the first such neighbor in the branching order remains compatible, while every other child adds a coordinate outside U or forbids that neighbor. Parity reduction lowers an odd cutoff only when every kernel word has even weight, so wt(z) ≤ W<sub>eff</sub>, and U \ T is a completion within the remaining budget. It therefore satisfies the syndrome-count and disjoint-neighborhood bounds and the weighted-check and proposed-addition inequalities, all of which hold for every completion within budget. A stabilizer overlapping T in more than half its weight would shorten z, contradicting minimality.</p>
+        <p>The compatible path thus survives every pruning rule, and support irreducibility prevents it from stopping at a zero-syndrome proper subset of U. It reaches z, which the exact membership test identifies as a witness. So a completed witness-free search implies d<sub>Z</sub> &gt; W.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>A finished exclusion is a computational proof, and the paper is careful about what backs it. QEDist checks inputs, symmetries and witnesses, records each run by content hash with its sector, cutoffs and partition, and verifies that the completion records cover every required starting coordinate. Verifying the exhaustive exclusion from these records requires replaying the search. In validation runs QEDist reproduces previously certified distances, including fourteen high-check-weight controls, and agrees with the two completed calculations of the exact Boolean optimizer MaxCDCL.</p>
+      <p class="short"><b>In short:</b> every rule only removes completions that are either too heavy or shortenable, so the branch leading to a shortest logical always survives; if the search ends without a witness, none of weight at most W exists (Theorem 1).</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · Lifted products">
+      <span class="num">9 · PRODUCT STRUCTURE AND EXTENSIONS</span>
+      <h2>How does the structure of lifted-product codes shrink the search further?</h2>
+      <p>Most of the benchmark codes are lifted products, built from two small matrices A and B whose entries are polynomials in a cyclic shift t with t<sup>P</sup> = 1; replacing t by a P × P cyclic permutation matrix expands them into binary checks. For constituents A and B of sizes r<sub>A</sub> × s<sub>A</sub> and r<sub>B</sub> × s<sub>B</sub>, the Z-sector check matrix is the binary expansion of</p>
+      <div class="math" data-tex="H_X=\begin{bmatrix}A\otimes I_{s_B} & I_{r_A}\otimes B^{\dagger}\end{bmatrix},"></div>
+      <p class="eqn">Eq. 6</p>
+      <p>where † combines transpose with inversion of group elements (t ↦ t<sup>−1</sup>) and ⊗ is the Kronecker product, which replaces each entry of the left matrix by that entry times the whole right matrix. The physical qubits split into two blocks, and a support is written (u, v), with u in the first block arranged as an s<sub>A</sub> × s<sub>B</sub> array.</p>
+      <p>The paper treats the two cases v ≠ 0 and v = 0 differently. Logicals with v ≠ 0 are found by full-code searches started only from the second block, with all first-block qubits available. For v = 0, the block form of Eq. 6 shows that each of the s<sub>B</sub> columns of u must separately satisfy the binary checks of A. Let K be the kernel of the binary expansion of A, and E<sub>j</sub>a the placement of a constituent vector a in column j. Every zero-syndrome (u, 0) is then a sum Σ<sub>j</sub> E<sub>j</sub>a<sub>j</sub> with a<sub>j</sub> ∈ K. A column word may be a stabilizer in one placement and logical in another, so define the common trivial subspace</p>
+      <div class="math" data-tex="S_{\cap}=\{a\in K\mid E_j a\in S\ \text{for every } j\}."></div>
+      <p class="eqn">Eq. 7</p>
+      <p>Then a ∉ S<sub>∩</sub> exactly when at least one placement E<sub>j</sub>a is logical, with weight wt(a). One search for a word in K \ S<sub>∩</sub> on the small constituent replaces the first-block part of the full search, and Theorem 1 applies to it too.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is it enough to look at one column at a time?</span></summary><div class="pfbody">
+        <p>If Σ<sub>j</sub> E<sub>j</sub>a<sub>j</sub> is logical, at least one term E<sub>j</sub>a<sub>j</sub> must be logical, since each term has zero syndrome and a sum of stabilizers is a stabilizer. That term weighs no more than the whole sum, because the columns occupy disjoint physical qubits. So a lightest logical with v = 0 can be taken to live in a single column, which is exactly a constituent word outside S<sub>∩</sub>.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For the 3 × 5 constituents of the Webster et al. benchmark, this replaces 34 full-code starting points with nine in the second block and five in the smaller constituent problem (Section 4.5). The implementation checks the needed conditions directly on the physical matrices, and they also hold for the non-Abelian [[975, 195, 24]] mitten code, which lets the same reduction speed it up.</p>
+      <p>Three extensions round out the method. Non-CSS stabilizer codes fit by giving each qubit three unit-cost binary choices X<sub>i</sub>, Y<sub>i</sub>, Z<sub>i</sub>; Appendix A.4 shows that the smallest number of chosen Pauli choices forming a nontrivial logical equals the physical distance, because several choices on one qubit multiply to a single Pauli or the identity without increasing weight. Syndrome-extraction circuits give the same search problem with faults in place of qubits and detectors in place of checks, which is how the paper confirms a circuit fault distance (Section 5.2). And the tree can be split into shards, groups of subtrees assigned by a deterministic hash at a fixed depth, for parallel workers; for the 1768-qubit benchmark, four workers give a median 3.31-fold speedup over one (Appendix B.8).</p>
+      <p class="short"><b>In short:</b> for lifted products, logicals with no second-block support reduce to single columns of the constituent code, searched once against the common trivial subspace (Eqs. 6 and 7); the same framework handles non-CSS codes, circuit faults and parallel shards.</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>What the paper reports</h2>
+      <p>Table 2 of the paper compares three exact methods on seven sector exclusions through cutoff W, with the same physical input, witness and parity reductions for each. Times are total elapsed seconds, including preparation, on an Apple M3 Pro reference scale; T marks the time limit of about 570 seconds. m4riCC is the connected-cluster search in dist-m4ri v0.9.0 (a repaired build), and MaxCDCL is a conflict-learning Boolean optimizer.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>n</th><th>k</th><th>P</th><th>Sector</th><th>W</th><th>QEDist</th><th>m4riCC</th><th>MaxCDCL</th></tr></thead>
+        <tbody>
+          <tr><td class="n">320</td><td class="n">64</td><td class="n">16</td><td>Z</td><td class="n">9</td><td class="n">0.169</td><td class="n">2.62</td><td class="n">12.1</td></tr>
+          <tr><td class="n">476</td><td class="n">56</td><td class="n">7</td><td>Z</td><td class="n">13</td><td class="n">0.446</td><td class="n">T</td><td class="n">340</td></tr>
+          <tr><td class="n">714</td><td class="n">100</td><td class="n">21</td><td>Z</td><td class="n">15</td><td class="n">0.323</td><td class="n">T</td><td class="n">T</td></tr>
+          <tr><td class="n">1122</td><td class="n">148</td><td class="n">33</td><td>Z</td><td class="n">19</td><td class="n">2.43</td><td class="n">T</td><td class="n">T</td></tr>
+          <tr><td class="n">1428</td><td class="n">186</td><td class="n">42</td><td>X</td><td class="n">17</td><td class="n">0.589</td><td class="n">T</td><td class="n">T</td></tr>
+          <tr><td class="n">1428</td><td class="n">186</td><td class="n">42</td><td>Z</td><td class="n">17</td><td class="n">0.728</td><td class="n">T</td><td class="n">T</td></tr>
+          <tr><td class="n">1768</td><td class="n">224</td><td class="n">52</td><td>Z</td><td class="n">21</td><td class="n">7.94</td><td class="n">T</td><td class="n">T</td></tr>
+          <tr><td colspan="5">Completed</td><td class="n">7/7</td><td class="n">1/7</td><td class="n">2/7</td></tr>
+        </tbody>
+      </table></div>
+      <p>Selected certifications and measurements from the rest of the paper:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Result</th><th>Value</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>Surveyed LP instances with d &gt; 5</td><td class="n">88 of 95 exact</td><td>Table 1</td></tr>
+          <tr><td>[[2075, 87]] polynomial LP code</td><td class="n">d = 34</td><td>Sec. 1.1, 5; 5.7 worker-hours</td></tr>
+          <tr><td>[[975, 195]] non-Abelian mitten code</td><td class="n">d = 24</td><td>Sec. 5.1; 43.0 worker-min</td></tr>
+          <tr><td>Bivariate bicycle codes</td><td class="n">[[360,12,24]], [[756,16,34]]</td><td>Sec. 1.1</td></tr>
+          <tr><td>Trivariate tricycle sectors (d<sub>X</sub>, d<sub>Z</sub>)</td><td class="n">(20, 8), (36, 12)</td><td>Sec. 1.1</td></tr>
+          <tr><td>Gross code [[144,12,12]] circuit fault distance</td><td class="n">10</td><td>Sec. 5.2</td></tr>
+          <tr><td>Weighted-check bound, 1768-qubit exclusion</td><td class="n">86.3M → 23.6M nodes</td><td>Sec. 4.2</td></tr>
+          <tr><td>Weighted-check bound, first five LP tests</td><td class="n">3.1 to 21× faster</td><td>Sec. 1.1, Table 4</td></tr>
+          <tr><td>LP reduction, eleven inputs with d<sub>Z</sub> ≥ 20</td><td class="n">median 2.59× (2.33 to 4.25)</td><td>Table 3</td></tr>
+          <tr><td>Other solvers vs QEDist at highest common cutoff</td><td class="n">11.5 to 273× slower</td><td>Sec. 4.4, Table 5</td></tr>
+        </tbody>
+      </table></div>
+      <p>The paper also certifies [[882, 24]] at d = 24 (previously 18 ≤ d ≤ 24), raises the [[1270, 28]] lower bound from 16 to 24, and certifies the radial code [[736, 18, 26]] and the [[5220, 1674]] spectroscopy example at d = 16, while several smaller codes from the same spectroscopy study remain unresolved. Blocklength alone, the paper notes, is a poor guide to the cost of certification.</p>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved in the paper.</b> Theorem 1, soundness of a completed exclusion under all the starting-point, branching, stopping and pruning rules, with the argument in Appendix A; the parity certificate; the validity of the weighted-check inequality (Eq. 10) and the proposed-addition test; the column decomposition behind the LP reduction; and the encoding of non-CSS distance as a binary search (Appendix A.4). These arguments are short and, in the steps we followed, complete. The correctness of a given distance then rests on the implementation matching these rules, which the paper supports with input and witness checks, completion records, agreement with previously certified distances, and two agreements with MaxCDCL, but which an outside reader can only confirm by replaying the search. The paper itself names compact, independently checkable exclusion proofs as future work.</p>
+      <p><b>Shown by experiment.</b> The speedups are measured, not proved: medians of two or three runs, rescaled to an Apple M3 Pro reference, on chosen benchmark sets, with time limits of about 570, 300 or 30 seconds depending on the comparison. The comparison with m4riCC used a repaired build and the same cyclic starting points as QEDist, and MaxCDCL was given a particular Boolean encoding; different encodings or settings could change those ratios. Some gains are uneven: the LP configuration is slower on six inputs whose CSS searches finish in under 0.01 seconds, and the unsatisfied-only bound slows several of the fourteen examples before satisfied checks are added.</p>
+      <p><b>Not claimed.</b> There is no worst-case running-time guarantee; exact distance is computationally hard in general, and the paper states that a quantitative relation between check structure and search cost is the central open problem. Seven surveyed instances remain unresolved. The paper acknowledges using AI tools for brainstorming, running numerical searches, making figures and editing, with the author taking responsibility for the results.</p>
+      <p><b>Our additions.</b> Code A in cyclic form, Code B, every hand computation on them, the 2.7 × 10<sup>48</sup> count, the 4 × 4 torus parity remark, and the animations are ours. The toric-code search implements the rules of Sections 3.1, 3.2 and 3.4 (greedy packing, syndrome count, shortening by supplied plaquettes); it does not implement the full weighted-check bound, which appears only in the separate Fig. 3(c) animation.</p>
+    </section>
+
+    <!-- further -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>J. Y. Lee, <a href="https://arxiv.org/abs/2611.21709" target="_blank" rel="noopener">QEDist: Practical Exact Distance Certification for Stabilizer Codes</a>, arXiv:2611.21709 (2026). The paper itself; equation, table, section and theorem numbers in this chapter follow its <a href="https://arxiv.org/html/2611.21709v1" target="_blank" rel="noopener">HTML version</a>. The paper states that the software is available under the MIT license on GitHub.</p>
+        <p>S. Bravyi, A. W. Cross, J. M. Gambetta, D. Maslov, P. Rall and T. J. Yoder, <a href="https://arxiv.org/abs/2308.07915" target="_blank" rel="noopener">High-threshold and low-overhead fault-tolerant quantum memory</a>, arXiv:2308.07915. The bivariate bicycle codes, including the [[144, 12, 12]] gross code whose conjectured circuit fault distance of ten QEDist confirms.</p>
+        <p>A. Yu. Kitaev, <a href="https://arxiv.org/abs/quant-ph/9707021" target="_blank" rel="noopener">Fault-tolerant quantum computation by anyons</a>, arXiv:quant-ph/9707021. The origin of the toric code used as Code B.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.21709v1. Equation, table, section and theorem numbers match the paper. Both animations run real computations in the page: the toric-code search enumerates its tree node by node with the paper's starting-point, branching, packing, syndrome-count and shortening rules and an exact stabilizer-membership test by Gaussian elimination over 𝔽₂; the weighted-check animation checks all sixteen subsets and forms both combined inequalities. The running examples, hand computations and derivations marked as ours are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-21709',date:'2026-11-18',title:'QEDist: Practical Exact Distance Certification for Stabilizer Codes',authors:'Lee',field:'quant-ph',tags:['error correction','tree search','linear algebra over F₂'],mins:40,
+     dek:'A quantum code is only as strong as its lightest undetectable error, and proving that no lighter one exists means ruling out astronomically many candidates. This paper does it exactly for 88 of 95 surveyed codes, with a tree search that grows errors through the parity checks they violate and prunes with bounds that never discard the answer.'},
     {id:'2611-18759',date:'2026-11-17',title:'Portfolio-Size Constraints on Default Correlation',authors:'Palaisti',field:'q-fin.RM',tags:['credit risk','stochastic order','Gaussian copula'],mins:45,
      dek:'A credit model can raise expected defaults from one horizon to the next and still describe something impossible, because a correlation change can make "at least one default" less likely. For n loans the paper shows that two events, nobody defaults and everybody defaults, decide all n tail checks, giving an exact interval of allowed correlations that narrows only like 1/√(log n).'},
     {id:'2611-17688',date:'2026-11-16',title:'Exact Failure Probabilities for d-Choice Cuckoo Hashing',authors:'Zhang, Ren',field:'cs.DS',tags:['hashing','bipartite matching','dynamic programming'],mins:35,
@@ -5246,6 +5608,118 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
         el('text',{x:330,y:MID-0.1*S+3,class:'lab',style:'text-anchor:end'}).textContent='+0.1';el('text',{x:330,y:MID+0.2*S+3,class:'lab',style:'text-anchor:end'}).textContent='−0.2';
         el('line',{x1:300,y1:MID-0.1*S,x2:336,y2:MID-0.1*S,stroke:'var(--line)','stroke-dasharray':'2 3'});el('line',{x1:300,y1:MID+0.2*S,x2:336,y2:MID+0.2*S,stroke:'var(--line)','stroke-dasharray':'2 3'});
       });}
+    root.querySelectorAll('.btn').forEach(b=>b.addEventListener('click',go,{capture:true}));
+    if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();go()}},{rootMargin:'600px'});io.observe(root)}else go();
+  })();
+
+
+  // ================= 2611.21709: weighted-check bound on the Fig. 3(c) example =================
+  (function(){
+    const root=document.getElementById('pQdWcb');if(!root)return;const P=Player(root);
+    let started=false;
+    function go(){if(started)return;started=true;
+      const Q=['a','b','c','d'],CH=[{n:'c₁',N:[0,1],s:1},{n:'c₂',N:[0,2],s:1},{n:'e',N:[0,3],s:0}];
+      // exact: all 16 subsets
+      const feas=[];for(let m=0;m<16;m++){const ok=CH.every(c=>c.N.filter(q=>m>>q&1).length%2===c.s);if(ok)feas.push(m)}
+      const nm=m=>'{'+Q.filter((_,q)=>m>>q&1).join(', ')+'}',wt=m=>Q.filter((_,q)=>m>>q&1).length;
+      const minW=Math.min(...feas.map(wt)),best=feas.filter(m=>wt(m)===minW);
+      // greedy packing, smaller neighborhoods first
+      const used=new Set(),pack=[];CH.filter(c=>c.s).sort((x,y)=>x.N.length-y.N.length).forEach(c=>{if(!c.N.some(q=>used.has(q))){pack.push(c);c.N.forEach(q=>used.add(q))}});
+      // combined inequality from multipliers: unsatisfied checks (Eq. 8) and e with v=a (Eq. 9)
+      function combo(mu,muE){const cv=[0,0,0,0];let beta=0;CH.forEach((c,i)=>{if(c.s&&mu[i]){c.N.forEach(q=>cv[q]+=mu[i]);beta+=mu[i]}});
+        if(muE){const e=CH[2],v=0;e.N.forEach(q=>cv[q]+=(q===v?-1:1)*muE)}const D=Math.max(0,...cv);return{cv,beta,D}}
+      const U=combo([1,1,0],0),Wc=combo([1,1,0],1);
+      const F=[
+        {t:'The node',hl:[],c:`Checks c₁ and c₂ fire, with available qubits {a, b} and {a, c}. Check e is satisfied, with available qubits {a, d}. One more addition is allowed. Can any completion fit?`},
+        {t:'Disjoint neighborhoods',hl:[],pk:1,c:`The greedy packing takes ${pack.map(c=>c.n).join(', ')} and then cannot add ${CH.filter(c=>c.s&&!pack.includes(c)).map(c=>c.n).join(', ')}, which shares qubit a. Packing size ${pack.length} is not more than the budget of 1, so Eq. 4 cannot cut this node.`},
+        {t:'The exact answer',hl:best[0],c:`Checking all 16 subsets of {a, b, c, d} against the three parities, the completions are ${feas.map(nm).join(', ')}. The lightest have ${minW} qubits: ${best.map(nm).join(' and ')}. So the node should be cut, if a bound can see it.`},
+        {t:'Unsatisfied checks only',cv:U.cv,c:`Adding the two Eq. 8 inequalities gives ${U.beta} ≤ ${U.cv.map((c,q)=>c?(c>1?c:'')+'x<sub>'+Q[q]+'</sub>':null).filter(Boolean).join(' + ')}. Here β = ${U.beta} and the largest coefficient is D = ${U.D}, so Db = ${U.D}. Since ${U.beta} &gt; ${U.D} is false, the node survives.`},
+        {t:'Add the satisfied check',cv:Wc.cv,c:`Eq. 9 for e with v = a adds x<sub>d</sub> − x<sub>a</sub> ≥ 0. The total is ${Wc.beta} ≤ ${Wc.cv.map((c,q)=>c?'x<sub>'+Q[q]+'</sub>':null).filter(Boolean).join(' + ')}: every coefficient is now ${Wc.D}, so D = ${Wc.D} and Db = ${Wc.D}. Since ${Wc.beta} &gt; ${Wc.D}, Eq. 10 cuts the node.`},
+        {t:'With a budget of two',cv:Wc.cv,hl:best[0],b2:1,c:`If two additions were allowed, the same inequality gives Db = ${Wc.D*2}, and ${Wc.beta} &gt; ${Wc.D*2} is false, so the node survives. That is correct: ${best.map(nm).join(' and ')} fit within two. The bound is never wrong, only sometimes too weak.`}];
+      F.delay=6400;
+      const CX=[80,170,260],QX=[65,135,205,275],CY=50,QY=140;
+      P.load(F,(fr,el)=>{
+        CH.forEach((c,i)=>c.N.forEach(q=>el('line',{x1:CX[i],y1:CY,x2:QX[q],y2:QY,class:'edge'})));
+        CH.forEach((c,i)=>{const lit=c.s,inP=fr.pk&&pack.includes(c);const g=el('g',{});el('rect',{x:CX[i]-14,y:CY-14,width:28,height:28,rx:5,fill:lit?'var(--accent)':'var(--bg)',stroke:inP?'var(--ok)':(lit?'var(--accent)':'var(--cool)'),'stroke-width':inP?3:2},g);
+          el('text',{x:CX[i],y:CY+4,class:'msg',style:'fill:'+(lit?'var(--accent-ink)':'var(--cool)')},g).textContent=c.n;
+          el('text',{x:CX[i],y:CY-22,class:'lab'}).textContent=lit?'fires':'satisfied';});
+        Q.forEach((q,i)=>{const on=fr.hl!=null&&typeof fr.hl==='number'&&(fr.hl>>i&1);el('circle',{cx:QX[i],cy:QY,r:15,fill:on?'var(--ok)':'var(--raise)',stroke:on?'var(--ok)':'var(--line)','stroke-width':2});
+          el('text',{x:QX[i],y:QY+4,class:'msg',style:'fill:'+(on?'var(--accent-ink)':'var(--fg)')}).textContent=q;
+          if(fr.cv){el('text',{x:QX[i],y:QY+40,class:'msg',style:'fill:'+(fr.cv[i]>1?'var(--bad)':'var(--fg)')}).textContent=String(fr.cv[i]).replace('-','−');}});
+        if(fr.cv){el('text',{x:20,y:QY+40,class:'lab',style:'text-anchor:start'}).textContent='c_v';
+          const R=fr.cv===U.cv?U:Wc,b=fr.b2?2:1;el('text',{x:170,y:228,class:'msg',style:'fill:'+(R.beta>R.D*b?'var(--bad)':'var(--ok)')}).textContent=`β = ${R.beta}, D = ${R.D}, b = ${b}: ${R.beta>R.D*b?'β > Db, cut':'β ≤ Db, keep'}`;}
+        else el('text',{x:170,y:228,class:'lab'}).textContent='budget: one more qubit';
+      });}
+    root.querySelectorAll('.btn').forEach(b=>b.addEventListener('click',go,{capture:true}));
+    if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();go()}},{rootMargin:'600px'});io.observe(root)}else go();
+  })();
+
+  // ================= 2611.21709: QEDist search on the 5 x 5 toric code =================
+  (function(){
+    const root=document.getElementById('pQdTor');if(!root)return;const P=Player(root);
+    const L=5,NQ=2*L*L,hI=(i,j)=>L*((i+L)%L)+((j+L)%L),vI=(i,j)=>L*L+L*((i+L)%L)+((j+L)%L);
+    const stars=[],plaq=[];for(let i=0;i<L;i++)for(let j=0;j<L;j++){stars.push([hI(i,j),hI(i,j-1),vI(i,j),vI(i-1,j)]);plaq.push([hI(i,j),hI(i+1,j),vI(i,j),vI(i,j+1)])}
+    const enm=e=>(e<L*L?'h':'v')+'('+Math.floor((e%(L*L))/L)+','+(e%L)+')',vnm=c=>'('+Math.floor(c/L)+','+(c%L)+')',setS=a=>'{'+[...a].map(enm).join(', ')+'}';
+    // exact stabilizer membership by Gaussian elimination over F2 (bitmasks as BigInt)
+    const piv=new Map();const toB=r=>r.reduce((a,q)=>a^(1n<<BigInt(q)),0n);
+    const red=x=>{for(let p=NQ-1;p>=0;p--){if(((x>>BigInt(p))&1n)&&piv.has(p))x^=piv.get(p)}return x};
+    plaq.forEach(r=>{const x=red(toB(r));if(x){let p=NQ-1;while(!((x>>BigInt(p))&1n))p--;piv.set(p,x)}});
+    const inS=T=>red(toB(T))===0n;
+    function search(W,rules){const log=[];let found=null;
+      const syn=T=>stars.map(s=>s.filter(q=>T.has(q)).length%2);
+      const starts=[{q:0,F:[]},{q:L*L,F:[...Array(L*L).keys()]}];
+      function rec(T,F,d){const nd={d,T:[...T],F:[...F]};log.push(nd);const s=syn(T);nd.s=s;
+        if(rules.stab)for(let g=0;g<plaq.length;g++){if(plaq[g].filter(q=>T.has(q)).length>2){nd.k='stab';nd.g=g;return}}
+        if(!s.some(x=>x)){nd.k='zero';nd.logical=!inS([...T]);if(nd.logical)found=nd;return}
+        const b=W-T.size;nd.b=b;const uns=s.map((x,i)=>x?i:-1).filter(i=>i>=0),N={};uns.forEach(i=>N[i]=stars[i].filter(q=>!T.has(q)&&!F.has(q)));nd.uns=uns;
+        if(b<=0){nd.k='budget';return}
+        if(rules.pack){if(uns.length>2*b){nd.k='count';return}
+          const used=new Set(),pack=[];[...uns].sort((a,c)=>N[a].length-N[c].length||a-c).forEach(i=>{if(!N[i].some(q=>used.has(q))){pack.push(i);N[i].forEach(q=>used.add(q))}});nd.pack=pack;
+          if(pack.length>b){nd.k='pack';return}}
+        const c=uns.reduce((a,i)=>N[i].length<N[a].length?i:a,uns[0]);nd.c=c;nd.Nc=[...N[c]].sort((x,y)=>x-y);
+        if(!nd.Nc.length){nd.k='dead';return}nd.k='branch';
+        const F2=new Set(F);for(const q of nd.Nc){rec(new Set([...T,q]),new Set(F2),d+1);if(found)return;F2.add(q)}}
+      for(const st of starts){rec(new Set([st.q]),new Set(st.F),0);if(found)break}
+      return{log,found}}
+    const SC={all:{W:4,rules:{stab:1,pack:1}},none:{W:4,rules:{stab:0,pack:0}},w5:{W:5,rules:{stab:1,pack:1}}};
+    function cap(nd,i,n){const T=nd.T,fl=nd.s.map((x,c)=>x?c:-1).filter(c=>c>=0),Fs=nd.F.length?(nd.F.length>6?` ${nd.F.length} edges are forbidden.`:` Forbidden: ${setS(nd.F)}.`):'';
+      const head=`T = ${setS(T)}, weight ${T.length}${nd.b!=null?', budget b = '+nd.b:''}.`;
+      if(nd.k==='branch')return `${head}${Fs} Firing checks: ${fl.map(vnm).join(' and ')}.${nd.pack?` Packing of size ${nd.pack.length} is within the budget, so no cut.`:''} Branch on ${vnm(nd.c)}, which has ${nd.Nc.length} available edge${nd.Nc.length>1?'s':''}: ${nd.Nc.map(enm).join(', ')}. Each later child forbids the earlier ones.`;
+      if(nd.k==='pack')return `${head}${Fs} Firing checks ${nd.pack.map(vnm).join(' and ')} share no available edge, so a packing of size ${nd.pack.length} exceeds b = ${nd.b} (Eq. 4): any completion needs ${nd.pack.length} more edges. Cut.`;
+      if(nd.k==='count')return `${head} ${fl.length} firing checks exceed b·w<sub>c</sub> = ${2*nd.b}. Cut.`;
+      if(nd.k==='stab')return `${head}${Fs} T covers 3 of the 4 edges of the face at ${vnm(nd.g)}, more than 4/2 (Eq. 5). Going around the fourth side would be shorter, so no shortest logical lies below. Cut.`;
+      if(nd.k==='budget')return `${head}${Fs} The budget is spent and ${fl.map(vnm).join(' and ')} still fire${fl.length>1?'':'s'}. The branch ends.`;
+      if(nd.k==='dead')return `${head} A firing check has no available edge. The branch ends.`;
+      if(nd.k==='zero')return nd.logical?`${head} The syndrome is zero, and Gaussian elimination shows T is not a sum of plaquettes: a logical operator of weight ${T.length} wrapping the torus. Witness found.`:`${head} The syndrome is zero, and Gaussian elimination shows T is a sum of plaquettes: a stabilizer, harmless. Any extension would contain it, so the branch ends.`;
+      return head}
+    function load(key){const sc=SC[key],R=search(sc.W,sc.rules),n=R.log.length;
+      const F=[{k:'intro',t:'Two starting points',c:`Horizontal and vertical translations map stars to stars and plaquettes to plaquettes, so every support can be moved to contain h(0,0), or, if it has no horizontal edges, v(0,0). Two starts replace fifty. Cutoff W = ${sc.W}; rules: ${sc.rules.pack?'budget, syndrome count, packing and shortening':'budget only'}.`}];
+      R.log.forEach((nd,i)=>F.push({k:'node',nd,t:`Node ${i+1} of ${n}${nd.d===0?' · start':' · depth '+nd.d}`,c:cap(nd,i,n)}));
+      F.push({k:'end',nd:R.found||null,t:R.found?'Witness':'Exclusion complete',c:R.found?`The search stops after ${n} nodes with a weight-${R.found.T.length} logical, so d<sub>Z</sub> ≤ ${R.found.T.length}. With the exclusion through 4 from the first scenario, d<sub>Z</sub> = 5.`:`Both starts finished after ${n} nodes with no witness, so no logical of weight at most ${sc.W} exists: d<sub>Z</sub> ≥ ${sc.W+1} (Theorem 1). ${sc.W===4?(sc.rules.pack?'Switching off the packing and shortening rules makes the same proof take '+search(4,{stab:0,pack:0}).log.length+' nodes.':'With all rules on, the same proof takes '+search(4,{stab:1,pack:1}).log.length+' nodes.'):''}`});
+      F.delay=key==='none'?3400:5600;
+      const S=50,X0=70,Y0=24,px=j=>X0+j*S,py=i=>Y0+i*S;
+      function seg(e,attrs,el){const h=e<L*L,i=Math.floor((e%(L*L))/L),j=e%L,x=px(j),y=py(i);
+        if(h){if(j<L-1)el('line',{x1:x,y1:y,x2:x+S,y2:y,...attrs});else{el('line',{x1:x,y1:y,x2:x+S/2,y2:y,...attrs});el('line',{x1:px(0)-S/2,y1:y,x2:px(0),y2:y,...attrs})}}
+        else{if(i<L-1)el('line',{x1:x,y1:y,x2:x,y2:y+S,...attrs});else{el('line',{x1:x,y1:y,x2:x,y2:y+S/2,...attrs});el('line',{x1:x,y1:py(0)-S/2,x2:x,y2:py(0),...attrs})}}}
+      P.load(F,(fr,el)=>{const nd=fr.nd;
+        if(nd&&nd.k==='stab'){const i=Math.floor(nd.g/L),j=nd.g%L;el('rect',{x:px(j),y:py(i),width:S,height:S,fill:'var(--deep)',opacity:.28})}
+        const Tset=new Set(nd?nd.T:[]),Fset=new Set(nd?nd.F:[]),Nset=new Set(nd&&nd.k==='branch'?nd.Nc:[]);
+        for(let e=0;e<NQ;e++){let a={stroke:'var(--line)','stroke-width':2};
+          if(Fset.has(e))a={stroke:'var(--bad)','stroke-width':2,'stroke-dasharray':'3 3',opacity:.7};
+          if(Nset.has(e))a={stroke:'var(--cool)','stroke-width':4};
+          if(Tset.has(e))a={stroke:'var(--accent)','stroke-width':5,'stroke-linecap':'round'};
+          seg(e,a,el)}
+        if(fr.k==='intro'){seg(0,{stroke:'var(--accent)','stroke-width':5},el);seg(L*L,{stroke:'var(--cool)','stroke-width':5},el)}
+        for(let c=0;c<L*L;c++){const i=Math.floor(c/L),j=c%L,fire=nd&&nd.s&&nd.s[c],inP=nd&&nd.pack&&nd.pack.includes(c)&&nd.k==='pack',ch=nd&&nd.k==='branch'&&nd.c===c;
+          if(inP||ch)el('circle',{cx:px(j),cy:py(i),r:10,fill:'none',stroke:inP?'var(--ok)':'var(--cool)','stroke-width':2});
+          el('circle',{cx:px(j),cy:py(i),r:fire?6:3.5,fill:fire?'var(--accent)':'var(--muted)'})}
+        el('text',{x:px(0)-30,y:py(0)+4,class:'lab',style:'text-anchor:end'}).textContent='0';
+        el('text',{x:px(0),y:py(0)-12,class:'lab'}).textContent='0';
+        const info=fr.k==='intro'?`W = ${SC[key].W} · starts h(0,0), v(0,0)`:fr.k==='end'?(R.found?'witness: '+setS(R.found.T):'no witness · nodes: '+n):`|T| = ${nd.T.length} · |F| = ${nd.F.length} · ${nd.k==='branch'?'branch':nd.k==='zero'?(nd.logical?'logical':'stabilizer'):'cut'}`;
+        el('text',{x:170,y:292,class:'lab'}).textContent=info;
+      });}
+    let started=false;const go=()=>{if(started)return;started=true;load('all')};
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{started=true;root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen)}));
     root.querySelectorAll('.btn').forEach(b=>b.addEventListener('click',go,{capture:true}));
     if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();go()}},{rootMargin:'600px'});io.observe(root)}else go();
   })();
