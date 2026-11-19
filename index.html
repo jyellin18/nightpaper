@@ -4364,10 +4364,411 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.21709v1. Equation, table, section and theorem numbers match the paper. Both animations run real computations in the page: the toric-code search enumerates its tree node by node with the paper's starting-point, branching, packing, syndrome-count and shortening rules and an exact stabilizer-membership test by Gaussian elimination over 𝔽₂; the weighted-check animation checks all sixteen subsets and forms both combined inequalities. The running examples, hand computations and derivations marked as ours are ours.</p>
   </footer>
 </div>
+<div class="wrap" id="view-p-2611-24574" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Thu, Nov 19</span></div>
+  <div class="paperhead">
+    <h1>The Number of Cycles in a Random 2-Factor of a Random Regular Graph</h1>
+    <p class="meta">Katerina Adler, Simi Haber · posted Nov 18, 2026 · math.CO · <a href="https://arxiv.org/abs/2611.24574" target="_blank" rel="noopener">arXiv 2611.24574</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">Pick a random regular graph, pick one of its 2-factors at random (a set of edges that covers every vertex with disjoint loops), and count the loops: in the paper's averaged model the count is exactly a sum of independent coin flips with biases 1, 1/3, 1/5, 1/7 and so on, whatever the degree of the graph, and for a single random graph it is the same up to small corrections. That formula, Theorem 3.3 of the paper, answers a question left open by work from 1996, when Frieze, Jerrum, Molloy, Robinson and Wormald showed how to find Hamilton cycles in random regular graphs by drawing random 2-factors until one happens to be a single loop. The number of loops is about ½ log n, it is normally distributed around that value, and the chance that a random 2-factor is a Hamilton cycle is of order 1/√n, so roughly √n draws are needed. The proof of the exact formula is a page of generating functions. The second half of the paper does the harder work of transferring the answer from an average over all graphs to a single fixed graph, using a second-moment computation, the short cycles of the graph and a 2 × 2 matrix whose eigenvalues are d − 1 and −1. The chapter builds all of it from two examples small enough to check by hand.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what a 2-factor and a Hamilton cycle are, and how to list the 2-factors of a small cubic graph;</li>
+        <li>how the pairing (configuration) model builds a random d-regular multigraph from points, and why it counts perfect matchings M(2m) = (2m)!/(m! 2<sup>m</sup>);</li>
+        <li>how exponential generating functions and the exponential formula count 2-factors with exactly c cycles (Theorem 3.1);</li>
+        <li>why the degree d cancels, and why the cycle count is 1 plus a sum of independent Bernoulli(1/(2j + 1)) variables (Theorem 3.3), both from the generating function and from a step-by-step coupling;</li>
+        <li>where the mean ½ log n + γ/2 + log 2, the variance ½ log n and the bell curve come from (Corollary 3.4);</li>
+        <li>why the Hamilton-cycle probability is ½√(π/n), and why forbidding loops and double edges shifts the mean by −¾ (Corollary 4.2, Theorem 4.1);</li>
+        <li>how the short cycles of the host graph, a transfer matrix and small subgraph conditioning carry the results to a single fixed random graph (Sections 5 to 7 of the paper).</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>n, d</dt><dd>the number of vertices and the degree, with d ≥ 3 fixed and dn even</dd>
+        <dt>[n]</dt><dd>the vertex set {1, …, n}</dd>
+        <dt>M(2m)</dt><dd>the number of perfect matchings of 2m points, (2m)!/(m! 2<sup>m</sup>)</dd>
+        <dt>P, G</dt><dd>a pairing of the dn points, and the multigraph it projects to</dd>
+        <dt>F</dt><dd>a 2-factor of P: a set of pairs covering exactly two points of every vertex</dd>
+        <dt>X = X(F)</dt><dd>the number of cycles of F, the quantity the paper studies</dd>
+        <dt>Z<sub>c</sub>(P), Z(P)</dt><dd>the number of 2-factors of P with exactly c cycles, and with any number of cycles</dd>
+        <dt>Z(u) = Z(u, P)</dt><dd>the generating polynomial Σ<sub>c</sub> Z<sub>c</sub>(P) u<sup>c</sup></dd>
+        <dt>X′, Z<sub>c</sub><sup>≥3</sup></dt><dd>the same quantities when F may not contain loops or double edges (girth at least 3)</dd>
+        <dt>𝔼, ℙ</dt><dd>expectation and probability for a uniformly random pair (P, F); 𝔼 of a function of P alone means a uniform random pairing</dd>
+        <dt>[x<sup>n</sup>] f(x)</dt><dd>the coefficient of x<sup>n</sup> in the power series f</dd>
+        <dt>L(x)</dt><dd>log(1/(1 − x)) = Σ<sub>k≥1</sub> x<sup>k</sup>/k</dd>
+        <dt>H<sub>m</sub>, γ</dt><dd>the harmonic number 1 + 1/2 + ⋯ + 1/m, and Euler's constant γ ≈ 0.5772</dd>
+        <dt>Γ</dt><dd>the Gamma function, with Γ(x + 1) = xΓ(x) and Γ(½) = √π</dd>
+        <dt>X<sub>i</sub>, λ<sub>i</sub>, δ<sub>i</sub></dt><dd>the number of i-cycles of the host graph G, its limiting Poisson mean (d − 1)<sup>i</sup>/(2i), and the relative change of that mean caused by a 2-factor (Eq. 2)</dd>
+        <dt>μ<sub>n</sub>, σ<sub>n</sub></dt><dd>the simple-graph centring ½ log n + γ/2 + log 2 − ¾ and scale √(½ log n)</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Example A: the triangular prism.</b> Two triangles a b c and a′ b′ c′ joined by the rungs a a′, b b′, c c′. It is a simple cubic graph (every vertex has degree 3) on six vertices and nine edges, and all of its 2-factors can be listed by hand. It is our choice; the paper does not use it.</li>
+        <li><b>Example B: the pairing world with n = 4 and d = 3.</b> Four vertices, each owning three points, twelve points in all, paired in M(12) = 10,395 ways. The paper itself checks its formulas on exactly this case by brute force (Appendix B), and we reproduce its counts by hand.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · 2-factors">
+      <span class="num">1 · 2-FACTORS AND HAMILTON CYCLES</span>
+      <h2>What exactly is being counted?</h2>
+      <p>A Hamilton cycle is a single loop through a graph that visits every vertex exactly once. Deciding whether a general graph has one is a famously hard problem, but for random regular graphs much more is known: Robinson and Wormald proved that almost all of them are Hamiltonian. Finding one efficiently is another matter. The natural relaxation drops the requirement that the loop be single.</p>
+      <div class="def"><span class="label">Definition · regular graph, 2-factor, Hamilton cycle (Section 1)</span>
+        <p>A graph is d-regular when every vertex has exactly d incident edges. A 2-factor of a graph is a spanning 2-regular subgraph: a set of edges such that every vertex lies on exactly two of them. Such a set is a disjoint union of cycles covering every vertex. A Hamilton cycle is a 2-factor with exactly one cycle.</p>
+        <p>In words: a 2-factor is a way of covering all the vertices with non-overlapping loops; a Hamilton cycle is the special case where one loop does the whole job.</p>
+      </div>
+      <p>For a cubic graph (d = 3) there is a neat shortcut. Each vertex has three edges and a 2-factor keeps two of them, so the discarded edges touch every vertex exactly once: they form a perfect matching. Conversely, removing any perfect matching from a cubic graph leaves a 2-factor. The paper uses this to enumerate 2-factors of cubic graphs up to n = 80 (Appendix B).</p>
+      <p>Example A has six vertices, so a 2-factor keeps six of the nine edges. A perfect matching must pair the three vertices of the top triangle somehow, and three is odd, so at least one rung is used. If all three rungs are removed, what remains is the two triangles: a 2-factor with two cycles. If exactly one rung is removed, say a a′, the matching must also remove b c and b′ c′, and what remains is the six-cycle a b b′ a′ c′ c a. There are three such choices. So the prism has four 2-factors, three of them Hamilton cycles.</p>
+      <p>The animation below checks this by brute force: it tries every one of the C(9, 6) = 84 sets of six edges, keeps those in which every vertex has degree 2, and counts cycles.</p>
+      <div class="player" id="pTfPrism">
+        <div class="ptitle"><span class="label">Animation · all 2-factors of the triangular prism</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="The triangular prism with the edges of one 2-factor highlighted and the removed perfect matching dashed"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>edges of the 2-factor</span><span><i class="sw" style="background:var(--bad)"></i>removed perfect matching</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>Choosing one of the four uniformly at random, the number of cycles X equals 1 with probability 3/4 and 2 with probability 1/4, so its mean is 5/4. The paper asks the same question for a random d-regular graph with n vertices as n grows: what is the distribution of X when the graph is random and the 2-factor is a uniformly random 2-factor of it?</p>
+      <div class="aside"><span class="label">Background · why this matters for algorithms (Section 1)</span>
+        <p>Frieze, Jerrum, Molloy, Robinson and Wormald generate Hamilton cycles of a random regular graph by sampling nearly uniform 2-factors (2-factors reduce to perfect matchings by a construction of Tutte) until a Hamiltonian one appears. They showed that 2-factors outnumber Hamilton cycles by at most a polynomial factor, so polynomially many draws suffice. They did not determine how many cycles a typical 2-factor has, and so not how many draws are needed. The paper's answer is of order √n.</p>
+      </div>
+      <p class="short"><b>In short:</b> a 2-factor covers every vertex with disjoint cycles, a Hamilton cycle is a 2-factor with one cycle, and the prism has four 2-factors, three of them Hamiltonian; the paper finds the distribution of the cycle count X for random regular graphs.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Pairing model">
+      <span class="num">2 · THE PAIRING MODEL</span>
+      <h2>How do you choose a regular graph at random?</h2>
+      <p>Listing all d-regular graphs on n vertices and picking one is hopeless, so random regular graphs are almost always studied through a construction that is easy to count. Give every vertex d points (think of half-edges or stubs) and match all the points up in pairs uniformly at random. Each pair becomes an edge.</p>
+      <div class="def"><span class="label">Definition · pairing, multigraph (Section 2)</span>
+        <p>Let dn be even. Each vertex v ∈ [n] owns d points, and a pairing P is a perfect matching of the dn points. Contracting the points of each vertex projects P to a d-regular multigraph G. The number of perfect matchings of 2m points is</p>
+        <div class="math" data-tex="M(2m)=\frac{(2m)!}{m!\,2^{m}}."></div>
+        <p>In words: a pairing is a way of joining all the stubs two at a time; the resulting graph may contain loops (a pair of two points at the same vertex) and multiple edges, which is why it is called a multigraph.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">background</span><span class="q">Why is the number of perfect matchings (2m)!/(m! 2<sup>m</sup>)?</span></summary><div class="pfbody">
+        <p>Line the 2m points up in any of (2m)! orders and pair positions 1 with 2, 3 with 4, and so on. Every perfect matching arises, and each arises (m!)(2<sup>m</sup>) times: the m pairs can be listed in any order, and within each pair the two points can be swapped. Equivalently, M(2m) = (2m − 1)(2m − 3)⋯3 · 1, because the first point has 2m − 1 possible partners, then the next unmatched point has 2m − 3, and so on. That second form will matter in Section 4.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For Example B, the twelve points can be paired in M(12) = 12!/(6! · 2<sup>6</sup>) = 10,395 ways, which is 11 · 9 · 7 · 5 · 3 · 1. Some of these pairings produce loops or double edges. A classical result quoted in the paper (Lemma 5.3) says the probability that the multigraph is simple tends to a constant c<sub>d</sub> ∈ (0, 1), so any event that has vanishing probability in the pairing model also has vanishing probability for a uniformly random simple d-regular graph. A standard fact we add (not stated in the paper): conditioned on being simple, the pairing gives every simple d-regular graph the same probability, since each one arises from (d!)<sup>n</sup> pairings.</p>
+      <p>A 2-factor lives naturally in the same world. A 2-factor of the pairing P is a subset F ⊆ P of pairs such that every vertex has exactly two of its points covered by F. Projected to the multigraph, a pair joining two points of the same vertex is a loop, a cycle of length 1, and two pairs joining the same two vertices form a cycle of length 2. The paper writes Z<sub>c</sub>(P) for the number of 2-factors of P with exactly c cycles and Z<sup>≥3</sup><sub>c</sub>(P) for those of girth at least 3, meaning no loops and no repeated edges. If the multigraph is simple, every 2-factor automatically has girth at least 3.</p>
+      <p>The probability space of the first half of the paper is a pair: a uniformly random element of Ω<sub>n,d</sub>, the set of all pairs (P, F) where P is a pairing and F ⊆ P is a 2-factor of it. This is subtly different from "random graph, then random 2-factor", because a pairing with many 2-factors appears in many pairs.</p>
+      <div class="fact"><span class="label">Fact · the uniform pair (Section 2)</span>
+        <p>Every partial pairing F that covers exactly two points of each vertex extends to exactly M((d − 2)n) full pairings, one for each way of pairing the remaining (d − 2)n points. Hence, under the uniform pair, the pairing P has probability proportional to its number of 2-factors Z(P), and</p>
+        <div class="math" data-tex="\mathbb{P}(X=c)=\frac{\mathbb{E}Z_c}{\mathbb{E}Z},"></div>
+        <p>where 𝔼 on the right is over a uniformly random pairing.</p>
+      </div>
+      <p>The last formula is a ratio of two counts: the number of pairs (P, F) in which F has c cycles, divided by the number of all pairs. In Example B, Section 3 will show that these counts are 11,664, 10,692, 2,916 and 243 for c = 1, 2, 3, 4, with total 25,515. The paper's question for a fixed graph, a random 2-factor of one given G, is answered in Section 8 by showing that the two pictures agree asymptotically.</p>
+      <p class="short"><b>In short:</b> a random regular multigraph is a uniform perfect matching of dn points; a 2-factor is a set of pairs covering two points per vertex; and in the uniform pair (P, F), the cycle count has ℙ(X = c) = 𝔼Z<sub>c</sub>/𝔼Z.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Counting">
+      <span class="num">3 · COUNTING 2-FACTORS BY CYCLES</span>
+      <h2>How many 2-factors have exactly c cycles?</h2>
+      <p>The count splits into two pieces: choose which partial pairing F is the 2-factor, then complete it in M((d − 2)n) ways. So everything reduces to counting partial pairings that cover two points per vertex and form c cycles. Structures built from labelled pieces, here cycles on disjoint vertex sets, are exactly what exponential generating functions are designed for.</p>
+      <div class="def"><span class="label">Definition · exponential generating function and the exponential formula (background, not from the paper)</span>
+        <p>If a<sub>k</sub> is the number of ways to put one connected structure on k labelled vertices, its exponential generating function is A(x) = Σ<sub>k≥1</sub> a<sub>k</sub> x<sup>k</sup>/k!. The exponential formula says that the number of ways to split [n] into exactly c blocks and put one such structure on each block is</p>
+        <div class="math" data-tex="n!\,[x^n]\,\frac{A(x)^c}{c!}."></div>
+        <p>In words: multiplying exponential generating functions combines structures on disjoint label sets, with the binomial coefficients for distributing the labels handled automatically by the factorials; dividing by c! forgets the order in which the c blocks were listed.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">background</span><span class="q">Why does multiplying exponential generating functions distribute the labels correctly?</span></summary><div class="pfbody">
+        <p>For two structures with counts a<sub>j</sub> and b<sub>k</sub>, the number of ways to split [n] into an ordered pair of sets of sizes j and n − j and put an A-structure on the first and a B-structure on the second is Σ<sub>j</sub> C(n, j) a<sub>j</sub> b<sub>n−j</sub>. The coefficient of x<sup>n</sup> in A(x)B(x) is Σ<sub>j</sub> (a<sub>j</sub>/j!)(b<sub>n−j</sub>/(n − j)!), which is that sum divided by n!. Repeating this c times gives ordered c-tuples of blocks, and since the blocks are disjoint and nonempty, each unordered collection is counted exactly c! times.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The paper applies this with "one cycle of the 2-factor" as the connected structure. Let a<sub>k</sub> be the number of single-cycle partial pairings on k fixed labelled vertices of degree d. The proof of Theorem 3.1 computes it in three cases.</p>
+      <ul>
+        <li>For k = 1, a loop, choose an unordered pair of the d points: a<sub>1</sub> = C(d, 2) = d(d − 1)/2.</li>
+        <li>For k = 2, a double edge, choose two points at each vertex and one of the two crosswise pairings: a<sub>2</sub> = 2 C(d, 2)<sup>2</sup> = (d(d − 1))<sup>2</sup>/2.</li>
+        <li>For k ≥ 3, there are (k − 1)!/2 undirected cyclic orders of the vertices, and along a fixed traversal each vertex chooses an ordered (entry point, exit point), in d(d − 1) ways: a<sub>k</sub> = ((k − 1)!/2)(d(d − 1))<sup>k</sup>.</li>
+      </ul>
+      <p>In all three cases a<sub>k</sub> x<sup>k</sup>/k! = (d(d − 1)x)<sup>k</sup>/(2k), a pleasant coincidence of the small cases with the general one. Summing over k, the exponential generating function of single cycles is ½ L(d(d − 1)x), where L(x) = log(1/(1 − x)) = Σ x<sup>k</sup>/k.</p>
+      <div class="fact"><span class="label">Theorem 3.1 · the count of 2-factors with c cycles</span>
+        <p>For all n, d ≥ 3 and c ≥ 1, summing over all M(dn) pairings,</p>
+        <div class="math" data-tex="\sum_{P}Z_c(P)=n!\,[x^n]\,\frac{1}{c!}\left(\frac{L(x)}{2}\right)^{c}\cdot\bigl(d(d-1)\bigr)^{n}\,M\bigl((d-2)n\bigr)."></div>
+        <p>The same holds for Z<sub>c</sub><sup>≥3</sup> with L(x)/2 replaced by L<sub>≥3</sub>(x) = L(x)/2 − x/2 − x<sup>2</sup>/4, which deletes the loop and double-edge terms.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where do the factors (d(d − 1))<sup>n</sup> and M((d − 2)n) come from?</span></summary><div class="pfbody">
+        <p>Both sides count pairs (P, F) where F has c cycles. Each admissible partial pairing extends to exactly M((d − 2)n) full pairings, so it suffices to count partial pairings with c cycles. By the exponential formula with A(x) = ½ L(d(d − 1)x), that number is n! [x<sup>n</sup>] (½ L(d(d − 1)x))<sup>c</sup>/c!. Substituting y = d(d − 1)x scales the coefficient of x<sup>n</sup> by (d(d − 1))<sup>n</sup>, which gives (d(d − 1))<sup>n</sup> n! [x<sup>n</sup>] (L(x)/2)<sup>c</sup>/c!. Excluding cycle lengths 1 and 2 removes the terms x/2 and x<sup>2</sup>/4 from L/2.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The factor (d(d − 1))<sup>n</sup> is simply each vertex choosing which two of its d points the 2-factor uses, in order. The remaining coefficient n! [x<sup>n</sup>] (L/2)<sup>c</sup>/c! no longer mentions d at all; it counts 2-regular structures on [n] with c cycles, where a cycle of length k ≥ 3 counts (k − 1)!/2 ways and loops and double edges count ½ each.</p>
+      <p>On Example B, n = 4 and d = 3, so (d(d − 1))<sup>n</sup> = 6<sup>4</sup> = 1296 and M((d − 2)n) = M(4) = 3, a combined factor of 3888. The coefficients of L are [x<sup>k</sup>] L = 1/k, so:</p>
+      <ul>
+        <li>For c = 1: 4! · (1/4)/2 = 3, and 3 · 3888 = 11,664.</li>
+        <li>For c = 2: [x<sup>4</sup>] L<sup>2</sup> = 1/(1·3) + 1/(2·2) + 1/(3·1) = 11/12, so 4! · (11/12)/(4 · 2) = 11/4, and (11/4) · 3888 = 10,692.</li>
+        <li>For c = 3: [x<sup>4</sup>] L<sup>3</sup> collects the three orderings of 1 + 1 + 2, each 1/2, giving 3/2, so 4! · (3/2)/(8 · 6) = 3/4, and (3/4) · 3888 = 2,916.</li>
+        <li>For c = 4: [x<sup>4</sup>] L<sup>4</sup> = 1, so 4!/(16 · 24) = 1/16, and 3888/16 = 243.</li>
+      </ul>
+      <p>These are exactly the four counts the paper reports from brute-force enumeration of all 10,395 pairings (Appendix B). The total is 25,515 pairs (P, F), so an average pairing of Example B has 25,515/10,395 ≈ 2.45 two-factors.</p>
+      <div class="fact"><span class="label">Corollary 3.2 · first two counts</span>
+        <p>For all n ≥ 1 and d ≥ 3, 𝔼Z<sub>1</sub> = ((n − 1)!/2)(d(d − 1))<sup>n</sup> M((d − 2)n)/M(dn), which recovers the expected number of Hamilton cycles found by Frieze et al., and 𝔼Z<sub>2</sub>/𝔼Z<sub>1</sub> = ½ H<sub>n−1</sub>.</p>
+      </div>
+      <p>The ratio follows from [x<sup>n</sup>] L<sup>2</sup> = Σ<sub>k=1</sub><sup>n−1</sup> 1/(k(n − k)) = (2/n) H<sub>n−1</sub>, the partial-fraction identity 1/(k(n − k)) = (1/n)(1/k + 1/(n − k)). For Example B it says 10,692/11,664 = ½ H<sub>3</sub> = 11/12, which checks.</p>
+      <p class="short"><b>In short:</b> one cycle on k labelled vertices contributes (d(d − 1)x)<sup>k</sup>/(2k) to an exponential generating function, the exponential formula assembles c cycles, and Theorem 3.1 gives the exact count; in Example B it produces 11,664, 10,692, 2,916 and 243.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Exact law">
+      <span class="num">4 · THE EXACT DISTRIBUTION</span>
+      <h2>Why does the answer not depend on the degree?</h2>
+      <p>Theorem 3.1 already hints at the main surprise: the degree enters only through a factor (d(d − 1))<sup>n</sup> M((d − 2)n) that is the same for every c, and so cancels from ℙ(X = c). To get the whole distribution at once, the paper packages the counts into a probability generating function.</p>
+      <div class="def"><span class="label">Definition · probability generating function (background)</span>
+        <p>For a random variable X taking values 0, 1, 2, …, its probability generating function is 𝔼u<sup>X</sup> = Σ<sub>c</sub> ℙ(X = c) u<sup>c</sup>. Two facts make it useful: the PGF of a sum of independent variables is the product of their PGFs, and a Bernoulli(p) variable, equal to 1 with probability p and 0 otherwise, has PGF 1 − p + pu.</p>
+        <p>In words: the PGF is a polynomial or power series whose coefficients are the probabilities, and independence turns into multiplication.</p>
+      </div>
+      <div class="fact"><span class="label">Theorem 3.3 · the cycle count of a uniform pair</span>
+        <p>For a uniform pair (P, F) and every d ≥ 3,</p>
+        <div class="math" data-tex="\mathbb{E}\,u^{X}=\frac{[y^n](1-y)^{-u/2}}{[y^n](1-y)^{-1/2}}=\frac{\Gamma\!\left(n+\frac{u}{2}\right)\Gamma\!\left(\frac12\right)}{\Gamma\!\left(n+\frac12\right)\Gamma\!\left(\frac{u}{2}\right)}=u\prod_{j=1}^{n-1}\frac{u+2j}{1+2j}."></div>
+        <p>In particular the distribution of X does not depend on d, and</p>
+        <div class="math" data-tex="X\overset{d}{=}1+\sum_{j=1}^{n-1}B_j,\qquad B_j\sim\mathrm{Bernoulli}\!\left(\frac{1}{2j+1}\right)\ \text{independent}."></div>
+        <p>In words: the number of cycles is distributed like one guaranteed cycle plus n − 1 independent coin flips, the j-th of which comes up heads with probability 1/(2j + 1).</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How do the three expressions follow from Theorem 3.1?</span></summary><div class="pfbody">
+        <p>Multiply Theorem 3.1 by u<sup>c</sup> and sum over c ≥ 1. Since Σ<sub>c≥0</sub> (uL(x)/2)<sup>c</sup>/c! = e<sup>uL(x)/2</sup> = (1 − x)<sup>−u/2</sup>, the sum is n! [x<sup>n</sup>] (1 − x)<sup>−u/2</sup> (d(d − 1))<sup>n</sup> M((d − 2)n). (The c = 0 term is the constant 1, which has no x<sup>n</sup> coefficient for n ≥ 1.) Dividing by the value at u = 1 cancels every factor that involves d and gives the first expression.</p>
+        <p>The binomial series gives [y<sup>n</sup>] (1 − y)<sup>−u/2</sup> = C(n + u/2 − 1, n) = Γ(n + u/2)/(Γ(u/2) n!), which gives the second. For the third, Γ(n + u/2)/Γ(u/2) = Π<sub>j=0</sub><sup>n−1</sup> (j + u/2) = 2<sup>−n</sup> u Π<sub>j=1</sub><sup>n−1</sup> (u + 2j), and dividing by its value at u = 1 leaves u Π (u + 2j)/(1 + 2j). Finally the prefactor u is the PGF of the constant 1, and (u + 2j)/(1 + 2j) = 1 − 1/(2j + 1) + u/(2j + 1) is the PGF of a Bernoulli(1/(2j + 1)) variable.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For Example B the product is u(u + 2)(u + 4)(u + 6)/(3 · 5 · 7) = (48u + 44u<sup>2</sup> + 12u<sup>3</sup> + u<sup>4</sup>)/105. Multiplying by 25,515/105 = 243 gives back 11,664, 10,692, 2,916 and 243. So ℙ(X = 1) = 48/105 = 16/35 ≈ 0.457: in the n = 4 world, a little under half of all (pairing, 2-factor) pairs have a Hamilton cycle as their 2-factor.</p>
+      <p>The paper also gives the combinatorial reason for the independence from d (Remark 3.6). Once we specify which two of the d points at each vertex belong to the 2-factor, the remaining (d − 2)n points can be paired in M((d − 2)n) ways no matter how the 2n chosen points are paired. So under the uniform pair, F is just a uniformly random pairing of 2n points, two at each vertex, and its cycle structure is that of a random 2-regular multigraph on [n]. The other d − 2 points at each vertex are bystanders.</p>
+      <p>That observation gives a second proof of the Bernoulli decomposition, which we find more illuminating than the generating function. The paper calls Theorem 3.3 the analogue for 2-factors of the Feller coupling for random permutations but proves it by generating functions; the step-by-step argument below is ours.</p>
+      <details class="pf"><summary><span class="tagd">our derivation</span><span class="q">Can the coin flips be seen directly, one pair at a time?</span></summary><div class="pfbody">
+        <p>Build the uniform pairing of the 2n points by repeatedly matching one chosen point to a uniformly random unmatched point, which produces a uniform perfect matching (this is the product form M(2n) = (2n − 1)(2n − 3)⋯1). Choose the points cleverly. Start a cycle at the lowest vertex with free points: call one of its points the start and the other the open end. Match the open end to a uniform random point among all other unmatched points, including the start. If it hits the start, the cycle closes. If it hits a point of a new vertex w, the other point of w becomes the new open end and we repeat. When a cycle closes, start the next one the same way.</p>
+        <p>Count the choices. At the first match there are 2n − 1 candidates, at the next 2n − 3, and in general each match uses up two points, so the candidate counts run through 2n − 1, 2n − 3, …, 3, 1, one match for each m = n, n − 1, …, 1. Exactly one candidate, the start, closes the current cycle, so the match with 2m − 1 candidates closes a cycle with probability 1/(2m − 1), whatever happened before. A sequence of events whose conditional probabilities given the past are fixed numbers is a sequence of independent Bernoulli variables. The last match, with one candidate, always closes, which is the guaranteed 1. Writing 2m − 1 = 2j + 1 for the others gives X = 1 + Σ<sub>j=1</sub><sup>n−1</sup> B<sub>j</sub> with B<sub>j</sub> ∼ Bernoulli(1/(2j + 1)).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The animation runs this process on Example B. Only the two 2-factor points of each vertex are drawn, since the remaining point at each vertex plays no role. At each step it highlights the open end and every candidate partner, shows the closing probability, draws the random choice, and at the end compares the run with the exact distribution from Theorem 3.3.</p>
+      <div class="player" id="pTfSeq">
+        <div class="ptitle"><span class="label">Animation · building a random 2-factor one pair at a time</span><span class="scen"><button class="chip" data-scen="a" aria-pressed="true">Run A</button><button class="chip" data-scen="b" aria-pressed="false">Run B</button><button class="chip" data-scen="r" aria-pressed="false">New random run</button></span></div>
+        <div class="stage"><svg viewBox="0 0 340 260" role="img" aria-label="Four vertices with two points each; pairs are added one at a time and the closing probability is shown"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>open end</span><span><i class="sw" style="background:var(--cool)"></i>candidate partners</span><span><i class="sw" style="background:var(--ok)"></i>start of the current cycle</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p class="short"><b>In short:</b> the degree cancels because the 2-factor is itself a uniform pairing of two points per vertex; its cycle count has PGF u Π (u + 2j)/(1 + 2j) (Theorem 3.3), so it is 1 plus independent Bernoulli(1/(2j + 1)) variables, one per closing chance.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Mean and CLT">
+      <span class="num">5 · MEAN, VARIANCE AND THE BELL CURVE</span>
+      <h2>How many cycles does a typical 2-factor have?</h2>
+      <p>A sum of independent Bernoulli variables is the easiest object in probability: its mean is the sum of the biases and its variance is the sum of p(1 − p). Here the biases are the reciprocals of the odd numbers, and their sum grows like a logarithm.</p>
+      <div class="fact"><span class="label">Corollary 3.4 and 3.5 · mean, variance, central limit theorem</span>
+        <p>For a uniform pair and every d ≥ 3,</p>
+        <div class="math" data-tex="m_n:=\mathbb{E}X=H_{2n-1}-\tfrac12H_{n-1}=\tfrac12\log n+\tfrac{\gamma}{2}+\log 2+o(1),"></div>
+        <div class="math" data-tex="v_n:=\operatorname{Var}X=\sum_{j=1}^{n-1}\frac{2j}{(2j+1)^2}=\tfrac12\log n+O(1),"></div>
+        <p>and (X − ½ log n)/√(½ log n) converges in distribution to a standard normal N(0, 1).</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where do the harmonic numbers and the constant γ/2 + log 2 come from?</span></summary><div class="pfbody">
+        <p>The mean is 1 + Σ<sub>j=1</sub><sup>n−1</sup> 1/(2j + 1) = 1 + 1/3 + 1/5 + ⋯ + 1/(2n − 1), the sum of reciprocals of the odd numbers up to 2n − 1. All reciprocals up to 2n − 1 sum to H<sub>2n−1</sub>, and the even ones, 1/2 + 1/4 + ⋯ + 1/(2n − 2), sum to ½ H<sub>n−1</sub>; subtracting gives the formula. With H<sub>m</sub> = log m + γ + o(1), the mean is log(2n) + γ − ½(log n + γ) + o(1) = ½ log n + γ/2 + log 2 + o(1). The variance is Σ p<sub>j</sub>(1 − p<sub>j</sub>) with p<sub>j</sub> = 1/(2j + 1), which is 2j/(2j + 1)<sup>2</sup>, roughly 1/(2j), so it too grows like ½ log n.</p>
+        <p>For the bell curve the paper cites Lindeberg's condition, the standard criterion for sums of independent variables: here each summand is bounded by 1 while the total variance tends to infinity, so no single term matters and the normalized sum is asymptotically normal, exactly as in Goncharov's theorem for the cycles of a random permutation.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Numerically γ/2 + log 2 ≈ 0.982. For Example B the exact mean is 1 + 1/3 + 1/5 + 1/7 = 176/105 ≈ 1.676, while the asymptotic formula gives ½ log 4 + 0.982 ≈ 1.675, already very close. At n = 1000 the exact mean is 4.4356, at n = 10<sup>6</sup> about 7.89. A 2-factor of a million-vertex random graph has fewer than ten cycles on average.</p>
+      <p>The comparison with random permutations is instructive. A uniform permutation of n elements has its number of cycles distributed as Σ<sub>m=1</sub><sup>n</sup> Bernoulli(1/m), with mean H<sub>n</sub> ≈ log n (the Feller coupling the paper alludes to). Our reading of the difference: building a permutation's cycle, the open end has m candidates of which one closes; in a 2-factor the open end has 2m − 1 candidates, because every unused vertex offers two points, so cycles close about half as often and there are about half as many of them.</p>
+      <p>Corollary 3.5 adds a quantitative version that the second half of the paper needs: uniformly for complex s with |s| ≤ ε,</p>
+      <div class="math" data-tex="\frac{\mathbb{E}Z(e^{s})}{\mathbb{E}Z(1)}=\exp\Bigl(m_ns+\tfrac12v_ns^2+O(|s|^3\log n)\Bigr)."></div>
+      <p class="eqn">Eq. 1</p>
+      <p>The left side is 𝔼e<sup>sX</sup>, the moment generating function, and Eq. 1 says its logarithm is a quadratic in s up to a small error. This is the shape required by Hwang's quasi-power theorem, a general tool that turns such expansions into central limit theorems with rates. The proof expands log(1 − p<sub>j</sub> + p<sub>j</sub>e<sup>s</sup>) = p<sub>j</sub>s + ½ p<sub>j</sub>(1 − p<sub>j</sub>)s<sup>2</sup> + O(p<sub>j</sub>|s|<sup>3</sup>) and sums over j.</p>
+      <p>The animation computes the exact distribution by multiplying the n − 1 Bernoulli generating functions together, for n from 4 up to 4096, and overlays the normal curve with the exact mean m<sub>n</sub> and variance v<sub>n</sub>.</p>
+      <div class="player" id="pTfDist">
+        <div class="ptitle"><span class="label">Animation · the exact law of X as n grows</span></div>
+        <div class="stage"><svg viewBox="0 0 340 240" role="img" aria-label="Bar chart of the exact probabilities P(X = c) with a normal curve overlaid"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--cool)"></i>exact ℙ(X = c), Theorem 3.3</span><span><i class="sw" style="background:var(--accent)"></i>normal with mean m<sub>n</sub>, variance v<sub>n</sub></span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The convergence to the bell curve is slow, because the variance grows only like ½ log n: even at n = 4096 the standard deviation is under 2 and the distribution is visibly lumpy and skewed. That slowness is typical of logarithmic combinatorial structures such as permutation cycles.</p>
+      <p class="short"><b>In short:</b> the mean is the sum of odd reciprocals, H<sub>2n−1</sub> − ½ H<sub>n−1</sub> ≈ ½ log n + 0.982, the variance is about ½ log n, and the count is asymptotically normal (Corollary 3.4), half as many cycles as a random permutation.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Hamilton cycles">
+      <span class="num">6 · HAMILTON CYCLES AND SIMPLE GRAPHS</span>
+      <h2>How often is a random 2-factor a single cycle, and what changes when loops are forbidden?</h2>
+      <p>The algorithmic question from Section 1 is the probability that X = 1. With the coin-flip picture, X = 1 means every one of the n − 1 coins comes up tails.</p>
+      <div class="fact"><span class="label">Corollary 4.2 · the Hamilton probability</span>
+        <p>For a uniform pair and every d ≥ 3,</p>
+        <div class="math" data-tex="\mathbb{P}(X=1)=\prod_{j=1}^{n-1}\frac{2j}{2j+1}=\frac{2^{2n-1}\,n!\,(n-1)!}{(2n)!}=\frac12\sqrt{\frac{\pi}{n}}\,\bigl(1+o(1)\bigr)."></div>
+      </div>
+      <details class="pf"><summary><span class="tagd">our derivation</span><span class="q">How does the product become ½√(π/n)?</span></summary><div class="pfbody">
+        <p>The paper says Stirling's formula; here are the steps. The numerator of the product is 2 · 4 ⋯ (2n − 2) = 2<sup>n−1</sup>(n − 1)!, and the denominator is 3 · 5 ⋯ (2n − 1) = (2n)!/(2<sup>n</sup> n!), the odd part of (2n)!. Dividing gives the middle expression. Using (n − 1)! = n!/n, it equals 4<sup>n</sup>/(2n · C(2n, n)). Stirling's formula m! ≈ √(2πm)(m/e)<sup>m</sup> gives the central binomial estimate C(2n, n) ≈ 4<sup>n</sup>/√(πn), so the probability is about √(πn)/(2n) = ½√(π/n).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For Example B the product is (2/3)(4/5)(6/7) = 16/35 ≈ 0.457, against ½√(π/4) ≈ 0.443. At n = 1000 the exact value is 0.02803 and the approximation 0.02802. One 2-factor in roughly 1.13√n is Hamiltonian: the paper puts the constant as Σ<sub>c</sub>𝔼Z<sub>c</sub>/𝔼Z<sub>1</sub> = (2/√π)√n (1 + o(1)) (Remark 4.3).</p>
+      <p>The pairing model allows loops and double edges, but a simple graph has neither, so its 2-factors all have girth at least 3. Forbidding the two shortest cycle lengths changes the count slightly. Recall from Theorem 3.1 that this replaces L/2 with L<sub>≥3</sub> = L/2 − x/2 − x<sup>2</sup>/4, so e<sup>uL/2</sup> = (1 − x)<sup>−u/2</sup> picks up a factor e<sup>−u(x/2 + x<sup>2</sup>/4)</sup>.</p>
+      <div class="fact"><span class="label">Theorem 4.1 · girth at least three</span>
+        <p>Let X′ be the number of cycles of F when (P, F) is uniform over pairs in which F has girth at least 3. Uniformly for u in compact subsets of ℂ \ {0, −2, −4, …},</p>
+        <div class="math" data-tex="\mathbb{E}\,u^{X'}=\frac{[y^n]\,e^{-u(y/2+y^2/4)}(1-y)^{-u/2}}{[y^n]\,e^{-(y/2+y^2/4)}(1-y)^{-1/2}}=e^{-\frac{3(u-1)}{4}}\,n^{\frac{u-1}{2}}\,\frac{\Gamma(1/2)}{\Gamma(u/2)}\,\bigl(1+o(1)\bigr)."></div>
+        <p>Consequently 𝔼X′ = ½ log n + γ/2 + log 2 − ¾ + o(1), Var X′ = ½ log n + O(1), and X′ satisfies the same central limit theorem as X. In particular ℙ(X′ = 1) = (√π e<sup>3/4</sup>/2) n<sup>−1/2</sup> (1 + o(1)) (Corollary 4.2).</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof sketch</span><span class="q">Why does an extra factor e<sup>−u(y/2 + y²/4)</sup> only shift the mean?</span></summary><div class="pfbody">
+        <p>The coefficient [y<sup>n</sup>] of a function is governed, for large n, by its behaviour near its singularity closest to the origin, here y = 1 (the paper cites singularity analysis from Flajolet and Sedgewick). The factor e<sup>−u(y/2 + y<sup>2</sup>/4)</sup> is entire, with no singularities, so near y = 1 it simply acts as the constant e<sup>−u(1/2 + 1/4)</sup> = e<sup>−3u/4</sup>. That gives [y<sup>n</sup>] e<sup>−u(y/2 + y<sup>2</sup>/4)</sup>(1 − y)<sup>−u/2</sup> = e<sup>−3u/4</sup> n<sup>u/2 − 1</sup>/Γ(u/2) (1 + O(1/n)). Dividing by the value at u = 1 produces the factor e<sup>−3(u − 1)/4</sup>, whose logarithm −¾(u − 1) has derivative −¾ at u = 1: the mean drops by ¾. The variance and CLT follow from Hwang's quasi-power theorem.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The −¾ has a direct reading, which is ours but follows the proof of Lemma 5.1: in a uniform random 2-factor of the pairing model, the expected number of loop components tends to ½ and the expected number of double-edge components to ¼, the "all-F" contributions 1/(2i) for i = 1, 2. Forbidding them removes ½ + ¼ = ¾ of a cycle on average. The constant √π e<sup>3/4</sup>/2 ≈ 1.876 is larger than ½√π ≈ 0.886 for the same reason: removing short cycles makes a single long cycle more likely.</p>
+      <p>Lemma 5.3 of the paper confirms that this girth-restricted law is the right one for simple graphs: conditioning the pairing on simplicity gives 𝔼[u<sup>X</sup> | simple] = e<sup>−3(u − 1)/4</sup> 𝔼u<sup>X</sup> (1 + o(1)) near u = 1, so a uniformly random 2-factor of a uniformly random simple d-regular graph has mean μ<sub>n</sub> = ½ log n + γ/2 + log 2 − ¾ ≈ ½ log n + 0.232, which is the column the paper's tables compare against.</p>
+      <p>A small exact check of our own: under the girth-3 rule, every labelled simple 2-regular graph on [n] gets the same weight, since each cycle of length k carries (k − 1)!/2 orderings times (d(d − 1))<sup>k</sup>. On six vertices there are 5!/2 = 60 Hamilton cycles and C(6, 3)/2 = 10 ways to split into two triangles, so ℙ(X′ = 1) = 60/70 = 6/7 at n = 6. The prism, a particular graph with two triangles, has Hamilton fraction 3/4, lower than the average; Section 7 explains why triangles in the host graph push in that direction, though n = 6 is far from the asymptotic regime.</p>
+      <p class="short"><b>In short:</b> ℙ(X = 1) = Π 2j/(2j + 1) ≈ ½√(π/n); forbidding loops and double edges multiplies the PGF by e<sup>−3(u − 1)/4</sup>, lowering the mean by ¾ and raising the Hamilton constant to √π e<sup>3/4</sup>/2 (Theorem 4.1, Corollary 4.2).</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Short cycles">
+      <span class="num">7 · SHORT CYCLES AND A TRANSFER MATRIX</span>
+      <h2>How does a particular graph differ from the average?</h2>
+      <p>Everything so far averaged over pairings, weighting each pairing by its number of 2-factors. A fixed graph G has its own number of 2-factors Z(G) and its own Hamilton fraction Z<sub>1</sub>(G)/Z(G), and these fluctuate from graph to graph. The classical insight, due to Robinson and Wormald, is that for random regular graphs almost all of this fluctuation is explained by a handful of short cycles. Let X<sub>i</sub> be the number of i-cycles of the host multigraph G. In the pairing model the X<sub>i</sub> converge in distribution to independent Poisson variables with means</p>
+      <div class="math" data-tex="\lambda_i=\frac{(d-1)^i}{2i}."></div>
+      <p>For cubic graphs, λ<sub>3</sub> = 8/6 = 4/3: a random cubic graph has on average 4/3 triangles, however large n is.</p>
+      <p>The key question is how the presence of a 2-factor biases these counts. In a graph drawn with probability proportional to its number of 2-factors, short cycles should be a little more or less common. The paper measures this by δ<sub>i</sub>, defined by 𝔼[Z X<sub>i</sub>]/𝔼Z → λ<sub>i</sub>(1 + δ<sub>i</sub>).</p>
+      <div class="fact"><span class="label">Lemma 5.1 · short cycles next to a 2-factor</span>
+        <p>For a uniform pair, conditioning on F leaves P = F ∪ R, where R is a uniform pairing of the remaining (d − 2)n points, and</p>
+        <div class="math" data-tex="\mathbb{E}\,X_i(F\cup R)\longrightarrow\frac{(d-1)^i+(-1)^i}{2i},\qquad\text{hence}\qquad\delta_i^{2\mathrm{F}}=\frac{(-1)^i}{(d-1)^i}."></div>
+        <p>If F is constrained to be a Hamilton cycle, δ<sub>i</sub><sup>H</sup> = ((−1)<sup>i</sup> − 1)/(d − 1)<sup>i</sup>, which vanishes for even i. More generally, weighting each 2-factor by u<sup>X(F)</sup>,</p>
+        <div class="math" data-tex="\frac{\mathbb{E}\bigl[Z(u)\,X_i\bigr]}{\mathbb{E}Z(u)}\longrightarrow\lambda_i\bigl(1+\delta_i(u)\bigr),\qquad\delta_i(u)=\frac{u-1+(-1)^i}{(d-1)^i}."></div>
+        <p class="eqn">Eq. 2</p>
+      </div>
+      <p>The proof is a lovely piece of linear algebra. Walk around a prospective i-cycle and label each edge F or R according to which part of the pairing it uses. Each vertex of the cycle contributes a factor depending on the types of its two cycle edges: if both are F-edges, the ordered (entry, exit) choice among its two F-points gives 2; if both are R-edges, (d − 2)(d − 3); if mixed, 2(d − 2). Each F-edge is present with probability about 1/(2n), and each R-edge with probability about 1/((d − 2)n). The paper records the sequence of types with the transfer matrix</p>
+      <div class="math" data-tex="T=\begin{pmatrix}1&\sqrt{2(d-2)}\\ \sqrt{2(d-2)}&d-3\end{pmatrix},"></div>
+      <p>whose eigenvalues are d − 1 and −1, and concludes that the expected number of i-cycles tends to tr(T<sup>i</sup>)/(2i) = ((d − 1)<sup>i</sup> + (−1)<sup>i</sup>)/(2i).</p>
+      <details class="pf"><summary><span class="tagd">our derivation</span><span class="q">Why are those the entries of T, and why does a trace appear?</span></summary><div class="pfbody">
+        <p>The paper states T; here is one way to see where it comes from. A directed closed walk of length i through distinct vertices has about n<sup>i</sup> choices of vertex labels. Give each vertex its factor n, and split each edge's probability evenly between its two ends: an F-edge contributes 1/√(2n) at each end and an R-edge 1/√((d − 2)n). A vertex whose cycle edges have types s and t then carries n × (point factor) × (one half-share for s) × (one half-share for t). For F, F that is n · 2 · 1/(2n) = 1. For R, R it is n(d − 2)(d − 3)/((d − 2)n) = d − 3. For a mixed vertex it is n · 2(d − 2)/√(2n · (d − 2)n) = √(2(d − 2)). These are exactly the entries of T, and the powers of n cancel.</p>
+        <p>The weight of a closed walk is then a product of entries T<sub>t<sub>1</sub>t<sub>2</sub></sub>T<sub>t<sub>2</sub>t<sub>3</sub></sub>⋯T<sub>t<sub>i</sub>t<sub>1</sub></sub> over its cyclic sequence of edge types, and summing over all type sequences is the definition of tr(T<sup>i</sup>). Each undirected cycle is traced by 2i directed closed walks (i starting points, two directions), hence the division by 2i. The trace of T is d − 2 and its determinant is (d − 3) − 2(d − 2) = −(d − 1), so the characteristic polynomial λ<sup>2</sup> − (d − 2)λ − (d − 1) = (λ − (d − 1))(λ + 1) has roots d − 1 and −1, and tr(T<sup>i</sup>) = (d − 1)<sup>i</sup> + (−1)<sup>i</sup>.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Take d = 3. Then T has rows (1, √2) and (√2, 0), with eigenvalues 2 and −1, and tr(T<sup>3</sup>) = 8 − 1 = 7. Next to a random 2-factor the expected number of triangles is 7/6, slightly less than the unbiased 8/6. Conditioned on a Hamilton cycle, the configuration in which the whole triangle lies inside F is impossible (a Hamilton cycle has no short components), which removes 1/(2i) = 1/6 and leaves 6/6 = 1. In terms of Eq. 2, δ<sub>3</sub><sup>2F</sup> = −1/8 and δ<sub>3</sub><sup>H</sup> = −2/8. Triangles are mildly hostile to 2-factors and twice as hostile to Hamilton cycles, so a graph with many triangles tends to have a lower Hamilton fraction, the direction seen in the prism. For even i the two effects agree, δ<sub>i</sub><sup>H</sup> = 0, recovering the known fact that only odd short cycles affect Hamilton cycle counts.</p>
+      <p>The u-weighted version in Eq. 2 follows the same logic: a short cycle that uses at least one R-edge barely affects the rest of F, while a short cycle lying entirely in F is an extra component of F and is multiplied by the weight u. That turns the "all-F" contribution 1/(2i) into u/(2i). Lemma 5.2 extends Eq. 2 to joint factorial moments of several cycle counts, the input small subgraph conditioning requires.</p>
+      <p class="short"><b>In short:</b> short-cycle counts are asymptotically Poisson with means (d − 1)<sup>i</sup>/(2i); next to a 2-factor the means become tr(T<sup>i</sup>)/(2i) for a 2 × 2 transfer matrix with eigenvalues d − 1 and −1, giving the biases δ<sub>i</sub>(u) of Eq. 2.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Fixed graph">
+      <span class="num">8 · FROM THE AVERAGE TO A FIXED GRAPH</span>
+      <h2>Does a single random graph behave like the average?</h2>
+      <p>The uniform pair weights each graph by its number of 2-factors. To speak about one fixed random simple graph G and a uniform 2-factor of it, the paper uses small subgraph conditioning, a method of Robinson, Wormald and Janson. Its statement, as quoted in Section 5 of the paper, is: if a count Y of spanning structures satisfies 𝔼[Y X<sub>i</sub>]/𝔼Y → λ<sub>i</sub>(1 + δ<sub>i</sub>) together with 𝔼Y<sup>2</sup>/(𝔼Y)<sup>2</sup> → exp(Σ<sub>i≥1</sub> λ<sub>i</sub>δ<sub>i</sub><sup>2</sup>), then</p>
+      <div class="math" data-tex="\frac{Y}{\mathbb{E}Y}\longrightarrow W_Y=\prod_{i\ge1}(1+\delta_i)^{X_i}e^{-\lambda_i\delta_i},"></div>
+      <p>in the sense that the ratio of the two sides tends to 1 in probability. In words: once the short cycle counts of G are known, the number of spanning structures is determined up to a factor tending to 1. The second-moment condition says the short cycles explain all of the variance, with nothing left over.</p>
+      <p>So the hard input is a second moment. For 2-factors, unlike Hamilton cycles, it has an exact finite formula. Theorem 6.1 expresses Σ<sub>P</sub> Z(u, P)<sup>2</sup> as an explicit double sum, by colouring the pairs of two 2-factors F<sub>1</sub>, F<sub>2</sub>: those in both are purple and form vertex-disjoint paths and cycles, and the rest are red (F<sub>1</sub> only) or blue (F<sub>2</sub> only). Contracting each purple path to a single vertex leaves two independent u-weighted 2-regular completions, one red and one blue, each counted by the same Pochhammer product that gave Theorem 3.3. The paper checks Theorem 6.1 integer for integer against all 10,395 pairings for (n, d) = (4, 3) and (3, 4) at u ∈ {½, 1, 2}.</p>
+      <p>Proposition 6.2, proved by a two-dimensional Laplace method in Appendix A, then shows that uniformly for complex u near 1,</p>
+      <div class="math" data-tex="\frac{\mathbb{E}\,Z(u)^2}{\bigl(\mathbb{E}\,Z(u)\bigr)^2}\longrightarrow C(u)=\exp\Bigl(\sum_{i\ge1}\lambda_i\,\delta_i(u)^2\Bigr)=\Bigl(\frac{d-1}{d-2}\Bigr)^{\frac{1+(u-1)^2}{2}}\Bigl(\frac{d-1}{d}\Bigr)^{u-1}."></div>
+      <p class="eqn">Eq. 4</p>
+      <p>This is exactly the small subgraph conditioning condition with the δ<sub>i</sub>(u) of Eq. 2. Two checks are built in: C(1) = √((d − 1)/(d − 2)) is Robalewska's constant for 2-factors, and C(0<sup>+</sup>) = d/(d − 2) is the Robinson–Wormald constant for Hamilton cycles. For cubic graphs C(1) = √2 and C(0<sup>+</sup>) = 3.</p>
+      <details class="pf"><summary><span class="tagd">our check</span><span class="q">Does the series in Eq. 4 really sum to that closed form at u = 1?</span></summary><div class="pfbody">
+        <p>At u = 1, δ<sub>i</sub> = (−1)<sup>i</sup>/(d − 1)<sup>i</sup>, so λ<sub>i</sub>δ<sub>i</sub><sup>2</sup> = (d − 1)<sup>i</sup>/(2i) · (d − 1)<sup>−2i</sup> = (d − 1)<sup>−i</sup>/(2i). Summing, Σ x<sup>i</sup>/i = log(1/(1 − x)) with x = 1/(d − 1) gives ½ log((d − 1)/(d − 2)), and the exponential is √((d − 1)/(d − 2)), matching the closed form at u = 1.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>With these inputs, Lemma 7.2 gives Z(u)/𝔼Z(u) → W(u) = Π<sub>i</sub>(1 + δ<sub>i</sub>(u))<sup>ξ<sub>i</sub></sup>e<sup>−λ<sub>i</sub>δ<sub>i</sub>(u)</sup> jointly with the cycle counts, for real u near 1, where the ξ<sub>i</sub> are the independent Poisson(λ<sub>i</sub>) limits of the X<sub>i</sub>. Combining the case u = 1 with the Robinson–Wormald result for Hamilton cycles, both jointly with the cycle counts, gives the first fixed-graph result.</p>
+      <div class="fact"><span class="label">Proposition 7.1 · Hamilton fraction of a fixed graph</span>
+        <p>For a uniformly random simple d-regular graph G, as n → ∞,</p>
+        <div class="math" data-tex="\sqrt{n}\;\frac{Z_1(G)}{Z(G)}\Longrightarrow\Lambda=\frac{\sqrt{\pi}\,e^{3/4}}{2}\prod_{i\ge3}\left(\frac{1+\delta_i^{\mathrm H}}{1+\delta_i^{2\mathrm F}}\right)^{\xi_i}e^{\lambda_i(\delta_i^{2\mathrm F}-\delta_i^{\mathrm H})},"></div>
+        <p>a strictly positive, almost surely finite random variable. So ℙ(F Hamiltonian | G) = Θ<sub>p</sub>(n<sup>−1/2</sup>), and the expected number of resamplings in the scheme of Frieze et al. is √n/Λ (1 + o<sub>p</sub>(1)).</p>
+      </div>
+      <p>The formula reads naturally: the girth-3 constant from Corollary 4.2, times one factor for each short cycle length i ≥ 3, raised to the number of such cycles the graph actually has. For d = 3 and i = 3 the base is (1 − 1/4)/(1 − 1/8) = 6/7 &lt; 1, so each triangle lowers the Hamilton fraction by a factor of about 6/7, while even cycle lengths contribute base 1/(1 + δ<sub>i</sub><sup>2F</sup>) &lt; 1 as well. The paper notes a subtle cancellation: the centring terms Σ λ<sub>i</sub>(δ<sub>i</sub><sup>2F</sup> − δ<sub>i</sub><sup>H</sup>) = Σ 1/(2i) diverge separately, and only the combination with the ξ<sub>i</sub> terms converges, by Kolmogorov's two-series theorem. Earlier methods gave only ℙ(F Hamiltonian | G) = Ω(n<sup>−5/2</sup>) with high probability (Remark 4.3).</p>
+      <p>For the full cycle count, the paper needs Z(u) at complex u, because the characteristic function of X is 𝔼[u<sup>X</sup> | G] = Z(u)/Z(1) at u = e<sup>it/σ<sub>n</sub></sup>. Small subgraph conditioning only works for nonnegative counts, so Lemma 7.3 upgrades the real-u convergence to convergence of random holomorphic functions on a complex disk: the complex second moment of Lemma 6.3 bounds them uniformly, Montel's theorem gives compactness, and the identity theorem pins down the limit from its values on the real line. Differentiating at u = 1 gives the conditional mean.</p>
+      <div class="fact"><span class="label">Theorems 7.4, 7.5 and Proposition 7.6 · a fixed graph</span>
+        <p>Let G be a uniformly random simple d-regular graph, X the number of cycles of a uniformly random 2-factor of G, μ<sub>n</sub> = ½ log n + γ/2 + log 2 − ¾ and σ<sub>n</sub> = √(½ log n). Then</p>
+        <div class="math" data-tex="\mathbb{E}[X\mid G]-\mu_n\Longrightarrow\sum_{i\ge3}\Bigl(\xi_i\,\frac{(d-1)^{-i}}{1+(-1)^i(d-1)^{-i}}-\frac{1}{2i}\Bigr),"></div>
+        <p>an almost surely finite random variable with finite variance (Eq. 9); the conditional law of (X − μ<sub>n</sub>)/σ<sub>n</sub> given G converges to N(0, 1) in probability; and Var(X | G) = σ<sub>n</sub><sup>2</sup>(1 + o<sub>p</sub>(1)).</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof idea</span><span class="q">Why does the conditional mean pick up exactly a derivative of log W?</span></summary><div class="pfbody">
+        <p>For a fixed G, 𝔼[X | G] = ∂<sub>u</sub> log Z(u) at u = 1. Writing Z(u) = 𝔼Z(u) · Ŷ<sub>n</sub>(u) with Ŷ<sub>n</sub> = Z(u)/𝔼Z(u), the logarithm splits into ∂<sub>u</sub> log 𝔼Z(u), which is the pairing mean 𝔼X (Eq. 11), plus Ŷ′<sub>n</sub>(1)/Ŷ<sub>n</sub>(1), which converges to ∂<sub>u</sub> log W(1) because the convergence is as holomorphic functions. Conditioning on simplicity sets ξ<sub>1</sub> = ξ<sub>2</sub> = 0, and the deterministic terms for i = 1, 2 contribute −½ − ¼ = −¾, the same shift as in Theorem 4.1. The derivative of log(1 + δ<sub>i</sub>(u)) is (d − 1)<sup>−i</sup>/(1 + δ<sub>i</sub>(u)), and λ<sub>i</sub>δ′<sub>i</sub>(1) = 1/(2i), which gives the displayed series.</p>
+        <p>For the CLT, the characteristic function factors as the pairing characteristic function, which tends to e<sup>−t<sup>2</sup>/2</sup> by Eq. 1, times Ŷ<sub>n</sub>(u<sub>n</sub>)/Ŷ<sub>n</sub>(1) with u<sub>n</sub> = e<sup>it/σ<sub>n</sub></sup> → 1, which tends to 1 in probability because the derivative of Ŷ<sub>n</sub> is bounded in probability near u = 1 (Eq. 12 and Lemma 7.3). The variance statement uses contiguity between the uniform and the 2-factor-weighted graph distributions.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The conditional mean therefore differs from μ<sub>n</sub> by an amount of order one that depends on the graph's short cycles, chiefly its triangles. Since ξ<sub>3</sub> is unbounded, the paper points out that no fixed constant C can bound |𝔼[X | G] − μ<sub>n</sub>| with probability tending to 1; but with probability at least 1 − ε it is at most some C(d, ε) (Eq. 10). Against a mean of order log n, that is a small correction, and the variance and bell curve are unaffected.</p>
+      <p class="short"><b>In short:</b> the exact second moment (Theorem 6.1, Eq. 4) shows that short cycles explain all the graph-to-graph variation; a fixed random graph then has Hamilton fraction Λ/√n (Proposition 7.1), conditional mean μ<sub>n</sub> + O<sub>p</sub>(1), variance σ<sub>n</sub><sup>2</sup> and a normal limit (Theorems 7.4, 7.5, Proposition 7.6).</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>What the paper reports</h2>
+      <p>The theorems are exact or asymptotic, so the numerical sections serve as checks. Table 1 of the paper enumerates every 2-factor of sampled random simple cubic graphs (via perfect-matching complements) and records the exact mean of X′ on each graph; the table gives the average and standard deviation of these per-graph means, against the prediction ½ log n + 0.232.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>n</th><th>graphs</th><th>mean X′ (avg ± sd)</th><th>½ log n + 0.232</th></tr></thead>
+        <tbody>
+          <tr><td class="n">8</td><td class="n">40</td><td class="n">1.33 ± 0.16</td><td class="n">1.27</td></tr>
+          <tr><td class="n">12</td><td class="n">40</td><td class="n">1.52 ± 0.20</td><td class="n">1.47</td></tr>
+          <tr><td class="n">16</td><td class="n">40</td><td class="n">1.67 ± 0.19</td><td class="n">1.62</td></tr>
+          <tr><td class="n">24</td><td class="n">40</td><td class="n">1.88 ± 0.25</td><td class="n">1.82</td></tr>
+          <tr><td class="n">32</td><td class="n">40</td><td class="n">2.06 ± 0.36</td><td class="n">1.96</td></tr>
+          <tr><td class="n">48</td><td class="n">40</td><td class="n">2.26 ± 0.26</td><td class="n">2.17</td></tr>
+          <tr><td class="n">64</td><td class="n">20</td><td class="n">2.34 ± 0.14</td><td class="n">2.31</td></tr>
+          <tr><td class="n">80</td><td class="n">10</td><td class="n">2.53 ± 0.23</td><td class="n">2.42</td></tr>
+        </tbody>
+      </table></div>
+      <p>For larger n, Table 2 samples one 2-factor per graph with the Karp–Sipser heuristic finished by Edmonds' blossom algorithm, over N = 100 graphs per row, with ± the standard error. A selection:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>d</th><th>n</th><th>mean X′ (± se)</th><th>simple-graph μ<sub>n</sub></th></tr></thead>
+        <tbody>
+          <tr><td class="n">3</td><td class="n">10<sup>2</sup></td><td class="n">2.57 ± 0.12</td><td class="n">2.53</td></tr>
+          <tr><td class="n">3</td><td class="n">10<sup>3</sup></td><td class="n">3.49 ± 0.16</td><td class="n">3.69</td></tr>
+          <tr><td class="n">3</td><td class="n">10<sup>4</sup></td><td class="n">5.04 ± 0.20</td><td class="n">4.84</td></tr>
+          <tr><td class="n">3</td><td class="n">10<sup>5</sup></td><td class="n">6.40 ± 0.22</td><td class="n">5.99</td></tr>
+          <tr><td class="n">3</td><td class="n">10<sup>6</sup></td><td class="n">7.48 ± 0.24</td><td class="n">7.14</td></tr>
+          <tr><td class="n">4</td><td class="n">10<sup>6</sup></td><td class="n">7.58 ± 0.27</td><td class="n">7.14</td></tr>
+          <tr><td class="n">10</td><td class="n">10<sup>5</sup></td><td class="n">6.00 ± 0.22</td><td class="n">5.99</td></tr>
+          <tr><td class="n">30</td><td class="n">10<sup>4</sup></td><td class="n">4.49 ± 0.17</td><td class="n">4.84</td></tr>
+          <tr><td class="n">50</td><td class="n">10<sup>4</sup></td><td class="n">5.21 ± 0.20</td><td class="n">4.84</td></tr>
+        </tbody>
+      </table></div>
+      <p>For d = 4 the paper also enumerates every 2-factor of 40 simple 4-regular graphs at each n ∈ {8, 12, 16, 20, 24}, with per-graph sample means 1.29, 1.49, 1.62, 1.74 and 1.82, close to the predictions 1.27, 1.47, 1.62, 1.73 and 1.82. The paper's exact constants, collected:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Quantity</th><th>Value</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>Law of X, uniform pair</td><td class="n">1 + Σ Bernoulli(1/(2j + 1))</td><td>Thm 3.3</td></tr>
+          <tr><td>𝔼X</td><td class="n">H<sub>2n−1</sub> − ½H<sub>n−1</sub></td><td>Cor 3.4</td></tr>
+          <tr><td>ℙ(X = 1)</td><td class="n">½√(π/n)(1 + o(1))</td><td>Cor 4.2</td></tr>
+          <tr><td>ℙ(X′ = 1)</td><td class="n">(√π e<sup>3/4</sup>/2) n<sup>−1/2</sup>(1 + o(1))</td><td>Cor 4.2</td></tr>
+          <tr><td>Mean shift for simple graphs</td><td class="n">−¾</td><td>Thm 4.1, Lemma 5.3</td></tr>
+          <tr><td>Second-moment constant C(u)</td><td class="n">Eq. 4; C(1) = √((d − 1)/(d − 2))</td><td>Prop 6.2</td></tr>
+          <tr><td>Hamilton fraction of fixed G</td><td class="n">Λ/√n, Λ ∈ (0, ∞) a.s.</td><td>Prop 7.1</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved, and easy to trust.</b> The exact results for the uniform pair (Theorems 3.1 and 3.3, Corollaries 3.2, 3.4 and 4.2) are short generating-function arguments with no gaps that we could find. We reproduced the paper's counts for n = 4, d = 3 by hand from Theorem 3.1, checked them against the product formula, and our independent step-by-step coupling in Section 4 gives the same law. The independence from d is explained cleanly by Remark 3.6.</p>
+      <p><b>Proved, relying on heavier machinery.</b> The transfer to a fixed graph rests on the second-moment asymptotics of Proposition 6.2, whose Laplace-method proof occupies Appendix A, and on the small subgraph conditioning theorem of Janson. We followed the structure of these arguments, checked the transfer-matrix computation of Lemma 5.1 and the value C(1), but did not verify the appendix's Hessian and tail estimates line by line. The complex-analytic extension in Lemma 7.3 is a standard tightness and identity-theorem argument. The asymptotic statements for girth at least 3 cite singularity analysis rather than spelling it out.</p>
+      <p><b>The simulations.</b> Table 1 is an exact computation on sampled graphs and is a genuine check, though at n ≤ 80 all the per-graph averages sit 0.03 to 0.11 above the asymptotic prediction; we read this as finite-n corrections and graph-to-graph fluctuation (Theorem 7.4 says the per-graph mean differs from μ<sub>n</sub> by an O<sub>p</sub>(1) amount), but the paper does not discuss it. Table 2 uses a heuristic sampler that, as the paper states, is not guaranteed to produce uniform 2-factors, so it tests the theory only to the extent that the heuristic is close to uniform. Several rows differ from μ<sub>n</sub> by more than one standard error, for example 7.48 ± 0.24 against 7.14 at d = 3, n = 10<sup>6</sup>, and 5.21 ± 0.20 against 4.84 at d = 50; with 100 graphs per row that is not alarming, but these rows do not add much evidence beyond the theorems.</p>
+      <p><b>Scope.</b> The paper determines the typical number of cycles and the order √n of the Hamilton fraction, but the fixed-graph results are limit theorems in distribution: they do not give explicit error rates for finite n. The paper's AI usage statement says the authors used AI models for language editing, for generating Figure 1 and the C++ code, and for checking the proofs, and that they reviewed and take responsibility for everything.</p>
+      <p><b>Our additions.</b> Example A (the prism) and its enumeration, the hand computation of the n = 4 counts, the sequential coupling proof of Theorem 3.3, the comparison with permutation cycles, the reading of −¾ as expected loops and double edges, the n = 6 count 60/70, the derivation of the entries of T, the check of C(1), the Stirling steps, and all three animations are ours.</p>
+    </section>
+
+    <!-- further -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>K. Adler and S. Haber, <a href="https://arxiv.org/abs/2611.24574" target="_blank" rel="noopener">The number of cycles in a random 2-factor of a random regular graph</a>, arXiv:2611.24574 (2026). The paper itself; theorem, lemma and equation numbers in this chapter follow its <a href="https://arxiv.org/html/2611.24574" target="_blank" rel="noopener">HTML version</a>.</p>
+        <p>M. Christoph, N. Draganić, A. Girão, E. Hurley, L. Michel and A. Müyesser, <a href="https://arxiv.org/abs/2507.19417" target="_blank" rel="noopener">Cycle-factors of regular graphs via entropy</a>, arXiv:2507.19417. A worst-case companion cited in the paper's introduction: a uniformly random cycle-factor of any d-regular digraph has O((n log d)/d) cycles in expectation, proved with entropy and bounds on perfect matchings.</p>
+        <p>J. Kahn, E. Lubetzky and N. Wormald, <a href="https://arxiv.org/abs/1401.2707" target="_blank" rel="noopener">Cycle factors and renewal theory</a>, arXiv:1401.2707. Cited in the paper for k-cycle factors of random cubic graphs, studied with renewal theory.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.24574v1. Theorem, lemma, corollary and equation numbers match the paper. All three animations run real computations in the page: the prism animation tests all 84 six-edge subsets for 2-regularity and counts components; the coupling animation draws a uniform random pairing of the eight 2-factor points one match at a time and computes the exact distribution by polynomial multiplication; the distribution animation multiplies n − 1 Bernoulli generating functions exactly in floating point. The running examples, hand computations and derivations marked as ours are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-24574',date:'2026-11-19',title:'The Number of Cycles in a Random 2-Factor of a Random Regular Graph',authors:'Adler, Haber',field:'math.CO',tags:['random graphs','generating functions','Hamilton cycles'],mins:40,
+     dek:'Cover the vertices of a random regular graph with disjoint loops, chosen at random, and in the paper’s averaged model the number of loops is exactly a sum of independent coin flips with biases 1, 1/3, 1/5 and so on, whatever the degree. From that formula follow a mean of about half log n, a bell curve, and the fact that one such cover in about the square root of n is a single Hamilton cycle.'},
     {id:'2611-21709',date:'2026-11-18',title:'QEDist: Practical Exact Distance Certification for Stabilizer Codes',authors:'Lee',field:'quant-ph',tags:['error correction','tree search','linear algebra over F₂'],mins:40,
      dek:'A quantum code is only as strong as its lightest undetectable error, and proving that no lighter one exists means ruling out astronomically many candidates. This paper does it exactly for 88 of 95 surveyed codes, with a tree search that grows errors through the parity checks they violate and prunes with bounds that never discard the answer.'},
     {id:'2611-18759',date:'2026-11-17',title:'Portfolio-Size Constraints on Default Correlation',authors:'Palaisti',field:'q-fin.RM',tags:['credit risk','stochastic order','Gaussian copula'],mins:45,
@@ -5722,6 +6123,108 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{started=true;root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen)}));
     root.querySelectorAll('.btn').forEach(b=>b.addEventListener('click',go,{capture:true}));
     if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();go()}},{rootMargin:'600px'});io.observe(root)}else go();
+  })();
+
+  // ================= 2611.24574: prism 2-factors =================
+  (function(){
+    const root=document.getElementById('pTfPrism');if(!root)return;const P=Player(root);
+    const V=[{n:'a',x:170,y:28},{n:'b',x:62,y:212},{n:'c',x:278,y:212},{n:'a′',x:170,y:96},{n:'b′',x:124,y:168},{n:'c′',x:216,y:168}];
+    const E=[[0,1],[1,2],[0,2],[3,4],[4,5],[3,5],[0,3],[1,4],[2,5]];
+    function comps(S){const adj=V.map(()=>[]);S.forEach(i=>{const[a,b]=E[i];adj[a].push(b);adj[b].push(a)});const seen=new Set();const cyc=[];
+      for(let v=0;v<V.length;v++){if(seen.has(v))continue;const c=[];const st=[v];while(st.length){const x=st.pop();if(seen.has(x))continue;seen.add(x);c.push(x);st.push(...adj[x])}cyc.push(c)}return cyc}
+    const found=[];let tried=0;
+    for(let m=0;m<512;m++){let cnt=0;for(let i=0;i<9;i++)if(m>>i&1)cnt++;if(cnt!==6)continue;tried++;
+      const S=[];for(let i=0;i<9;i++)if(m>>i&1)S.push(i);const deg=V.map(()=>0);S.forEach(i=>{deg[E[i][0]]++;deg[E[i][1]]++});
+      if(deg.every(x=>x===2))found.push({S,cyc:comps(S)})}
+    found.sort((a,b)=>b.cyc.length-a.cyc.length);
+    const nm=i=>V[E[i][0]].n+V[E[i][1]].n;
+    const ham=found.filter(f=>f.cyc.length===1).length,mean=found.reduce((s,f)=>s+f.cyc.length,0)/found.length;
+    const F=[{t:'The graph',c:`The prism: two triangles and three rungs, nine edges, every vertex of degree 3. A 2-factor keeps six edges so that each vertex keeps exactly two.`},
+      {t:'The search',c:`The page tests all ${tried} subsets of six edges and keeps those in which every vertex has degree exactly 2. It finds ${found.length}.`}];
+    found.forEach((f,k)=>{const M=[...Array(9).keys()].filter(i=>!f.S.includes(i));
+      F.push({S:f.S,M,t:`2-factor ${k+1} of ${found.length}`,c:`Removed perfect matching: ${M.map(nm).join(', ')}. What remains has ${f.cyc.length===1?'one cycle through all six vertices: a Hamilton cycle':f.cyc.length+' cycles, the two triangles '+f.cyc.map(c=>c.map(v=>V[v].n).join(' ')).join(' and ')}. X = ${f.cyc.length}.`})});
+    F.push({t:'The tally',sum:true,c:`${found.length} two-factors, ${ham} of them Hamiltonian. A uniform random 2-factor has ℙ(X = 1) = ${ham}/${found.length} and 𝔼X = ${mean.toFixed(2)}.`});
+    F.delay=3800;
+    P.load(F,(fr,el)=>{
+      E.forEach((e,i)=>{const a=V[e[0]],b=V[e[1]];const on=fr.S&&fr.S.includes(i),off=fr.M&&fr.M.includes(i);
+        el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:on?'var(--accent)':off?'var(--bad)':'var(--line)','stroke-width':on?4:2,'stroke-dasharray':off?'5 4':'none'})});
+      V.forEach(v=>{el('circle',{cx:v.x,cy:v.y,r:12,fill:'var(--raise)',stroke:'var(--muted)','stroke-width':1.2});const t=el('text',{x:v.x,y:v.y+4,class:'lab',fill:'var(--fg)'});t.textContent=v.n});
+      if(fr.sum)found.forEach((f,k)=>{el('text',{x:60+k*74,y:244,class:'lab'}).textContent='#'+(k+1)+': X = '+f.cyc.length});
+    });
+  })();
+
+  // ================= 2611.24574: sequential pairing =================
+  (function(){
+    const root=document.getElementById('pTfSeq');if(!root)return;const P=Player(root);const n=4;
+    function rng(seed){let s=seed>>>0;return()=>{s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+    // exact distribution from Theorem 3.3
+    let pg=[0,1];for(let j=1;j<n;j++){const q=Array(pg.length+1).fill(0);pg.forEach((a,i)=>{q[i]+=a*2*j/(2*j+1);q[i+1]+=a/(2*j+1)});pg=q}
+    const num=[0,48,44,12,1];
+    const cx=126,cy=128,R=78;const ang=v=>-Math.PI/2+v*Math.PI/2;
+    const ctr=v=>({x:cx+R*Math.cos(ang(v)),y:cy+R*Math.sin(ang(v))});
+    const pt=p=>{const v=p>>1,s=p&1,c=ctr(v),a=ang(v)+Math.PI/2,o=s?11:-11;return{x:c.x+o*Math.cos(a),y:c.y+o*Math.sin(a)}};
+    function run(rand){
+      const free=new Set([...Array(2*n).keys()]);const pairs=[];let open=null,start=null,cycles=0;const F=[];const log=[];
+      F.push({pairs:[],t:'The setup',c:`Four vertices, each showing the two points the 2-factor will use. A uniform pairing of these eight points is a uniform 2-factor (Remark 3.6). Matches are made one at a time.`,log:[]});
+      while(free.size||open!==null){
+        if(open===null){const v=Math.min(...[...free].map(p=>p>>1));start=2*v;open=2*v+1;free.delete(start);free.delete(open);}
+        const cand=[...free,start].sort((a,b)=>a-b);const m=cand.length;
+        F.push({pairs:pairs.slice(),open,start,cand,t:`Match with ${m} candidate${m>1?'s':''}`,log:log.slice(),
+          c:`The open end at vertex ${(open>>1)+1} must pair with one of the ${m} unmatched points. Exactly one of them, the start of the current cycle at vertex ${(start>>1)+1}, closes the cycle, so the chance of closing is 1/${m}${m===1?', a certainty':''}.`});
+        const r=cand[Math.floor(rand()*m)];pairs.push([open,r]);
+        if(r===start){cycles++;log.push({m,closed:true});
+          F.push({pairs:pairs.slice(),t:'Cycle closed',log:log.slice(),c:`It picked the start${m>1?' (probability 1/'+m+')':''}. Cycle ${cycles} is complete. ${free.size?'The next cycle starts at the lowest vertex with free points.':'Every point is matched.'}`});
+          open=null;}
+        else{free.delete(r);const o=r^1;free.delete(o);log.push({m,closed:false});
+          F.push({pairs:pairs.slice(),open:o,start,t:'Path extended',log:log.slice(),c:`It picked a point of vertex ${(r>>1)+1}, with probability ${m-1}/${m} of avoiding the start. The other point of vertex ${(r>>1)+1} becomes the new open end.`});
+          open=o;}
+      }
+      F.push({pairs:pairs.slice(),end:true,t:`Result: X = ${cycles}`,log:log.slice(),
+        c:`This run made ${log.length} matches with ${log.map(l=>l.m).join(', ')} candidates and closed ${cycles} cycle${cycles>1?'s':''}. Over all runs the closings are independent coin flips with chances 1/7, 1/5, 1/3, 1, so X has ℙ = 48, 44, 12, 1 out of 105 for X = 1, 2, 3, 4 (bars, from Theorem 3.3).`});
+      return F}
+    function draw(fr,el){
+      for(let v=0;v<n;v++){const c=ctr(v);el('circle',{cx:c.x,cy:c.y,r:22,fill:'none',stroke:'var(--line)','stroke-width':1.5});
+        const lp={x:cx+(R+32)*Math.cos(ang(v)),y:cy+(R+30)*Math.sin(ang(v))+4};el('text',{x:lp.x,y:lp.y,class:'lab'}).textContent='v'+(v+1)}
+      fr.pairs.forEach(([a,b])=>{const A=pt(a),B=pt(b);
+        if((a>>1)===(b>>1)){const c=ctr(a>>1),dx=(c.x-cx)/R,dy=(c.y-cy)/R;el('path',{d:`M${A.x} ${A.y} C ${A.x+dx*46} ${A.y+dy*46}, ${B.x+dx*46} ${B.y+dy*46}, ${B.x} ${B.y}`,fill:'none',stroke:'var(--accent)','stroke-width':3})}
+        else el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:'var(--accent)','stroke-width':3})});
+      for(let p=0;p<2*n;p++){const q=pt(p);let col='var(--muted)',r=5;
+        if(fr.cand&&fr.cand.includes(p)){col='var(--cool)';r=6.5}
+        if(p===fr.start&&!fr.end){col='var(--ok)';r=7}
+        if(p===fr.open){col='var(--accent)';r=7}
+        el('circle',{cx:q.x,cy:q.y,r,fill:col})}
+      // right panel
+      const X0=244;el('text',{x:X0+42,y:22,class:'lab'}).textContent='closing chances';
+      [7,5,3,1].forEach((m,i)=>{const L=fr.log[i];const y=44+i*20;
+        el('text',{x:X0+10,y,class:'lab',fill:L?'var(--fg)':'var(--muted)'}).textContent='1/'+m;
+        el('text',{x:X0+60,y,class:'lab',fill:L?(L.closed?'var(--ok)':'var(--muted)'):'var(--muted)'}).textContent=L?(L.closed?'closed':'open'):'·'});
+      if(fr.end){const B=240,H=90;el('line',{x1:X0,y1:B,x2:336,y2:B,stroke:'var(--line)'});
+        const X=fr.pairs.length?fr.log.filter(l=>l.closed).length:0;
+        for(let c=1;c<=4;c++){const h=pg[c]*H/0.5,x=X0+4+(c-1)*23;el('rect',{x,y:B-h,width:17,height:Math.max(h,1),rx:2,fill:c===X?'var(--accent)':'var(--cool)'});
+          el('text',{x:x+8.5,y:B+12,class:'lab'}).textContent=c;el('text',{x:x+8.5,y:B-h-4,class:'lab'}).textContent=num[c]}
+        el('text',{x:X0+46,y:B-H-26,class:'lab'}).textContent='ℙ(X = c) × 105';}
+    }
+    const SC={a:20261119,b:7};
+    function load(k){const seed=k==='r'?Math.floor(Math.random()*1e9):SC[k];const F=run(rng(seed));F.delay=3600;P.load(F,draw)}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen)}));
+    load('a');
+  })();
+
+  // ================= 2611.24574: exact law vs n =================
+  (function(){
+    const root=document.getElementById('pTfDist');if(!root)return;const P=Player(root);
+    const NS_=[4,16,64,256,1024,4096],K=14,g=0.5772156649;
+    const F=NS_.map(n=>{let p=[0,1];let m=1,v=0;for(let j=1;j<n;j++){const q=Array(p.length+1).fill(0),b=1/(2*j+1);p.forEach((a,i)=>{q[i]+=a*(1-b);q[i+1]+=a*b});p=q;m+=b;v+=b*(1-b)}
+      const asym=0.5*Math.log(n)+g/2+Math.log(2),h1=0.5*Math.sqrt(Math.PI/n);
+      return{n,p,m,v,t:`n = ${n}`,c:`Mean m<sub>n</sub> = ${m.toFixed(3)} (asymptotic ½ log n + 0.982 = ${asym.toFixed(3)}), variance v<sub>n</sub> = ${v.toFixed(3)}. ℙ(X = 1) = ${p[1].toFixed(4)} against ½√(π/n) = ${h1.toFixed(4)}.${n===4?' These are the 48/105, 44/105, 12/105, 1/105 of Example B.':n===4096?' Even here the standard deviation is only '+Math.sqrt(v).toFixed(2)+', and the discrete bars still differ visibly from the curve.':''}`}});
+    F.delay=4200;
+    P.load(F,(fr,el)=>{const B=200,H=160,X0=30,W=21;const top=Math.max(...fr.p.slice(1,K+1))*1.1;
+      el('line',{x1:X0-6,y1:B,x2:336,y2:B,stroke:'var(--line)'});
+      for(let c=1;c<=K;c++){const pr=fr.p[c]||0,h=pr/top*H,x=X0+(c-1)*W;el('rect',{x:x+2,y:B-h,width:W-4,height:Math.max(h,0.5),rx:2,fill:'var(--cool)'});el('text',{x:x+W/2,y:B+13,class:'lab'}).textContent=c}
+      let d='';for(let s=0;s<=200;s++){const xv=0.5+s*(K/200),y=Math.exp(-((xv-fr.m)**2)/(2*fr.v))/Math.sqrt(2*Math.PI*fr.v);const X=X0+(xv-0.5)*W,Y=B-y/top*H;d+=(s?'L':'M')+X.toFixed(1)+' '+Math.max(8,Y).toFixed(1)}
+      el('path',{d,fill:'none',stroke:'var(--accent)','stroke-width':2});
+      el('text',{x:170,y:230,class:'lab'}).textContent='number of cycles c';
+      el('text',{x:300,y:22,class:'lab'}).textContent='n = '+fr.n;});
   })();
 
   route();
