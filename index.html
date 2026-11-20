@@ -4763,10 +4763,365 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.24574v1. Theorem, lemma, corollary and equation numbers match the paper. All three animations run real computations in the page: the prism animation tests all 84 six-edge subsets for 2-regularity and counts components; the coupling animation draws a uniform random pairing of the eight 2-factor points one match at a time and computes the exact distribution by polynomial multiplication; the distribution animation multiplies n − 1 Bernoulli generating functions exactly in floating point. The running examples, hand computations and derivations marked as ours are ours.</p>
   </footer>
 </div>
+<div class="wrap" id="view-p-2611-25102" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Fri, Nov 20</span></div>
+  <div class="paperhead">
+    <h1>Compact Slack-Free Penalty Functions for Inequality Constraints in Higher-Order Unconstrained Binary Optimization</h1>
+    <p class="meta">Naoaki Mochida, Shoya Yasuda · posted Nov 18, 2026 · math.OC · <a href="https://arxiv.org/abs/2611.25102" target="_blank" rel="noopener">arXiv 2611.25102</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">To tell a quantum annealer that a 6-bit number X must not exceed 53, the obvious method lists the ten forbidden values 54 to 63 and charges a penalty of degree six for each, but this paper shows that the single polynomial x<sub>6</sub>x<sub>5</sub>(x<sub>4</sub> + x<sub>3</sub>x<sub>2</sub>) does exactly the same job: it is zero for every X ≤ 53 and at least 1 for every X &gt; 53. The recipe behind it reads the threshold's binary digits from the bottom up, adding a variable at every 0 and multiplying by a variable at every 1, and it never needs the extra "slack" bits that textbook QUBO formulations use for inequalities. The number of terms it produces is the number of zero bits of the threshold, so at most k for a k-bit number, where listing the forbidden values can take 2<sup>k</sup> − 1. Lower bounds work the same way with the roles of 0 and 1 swapped, and two simple rules, adding penalties for "and" and multiplying them for "or", turn the pieces into interval and exclusion constraints. The mathematics is a careful induction on the number of bits, and the chapter builds it from binary comparison upwards, with two examples small enough to check by hand and a final section on what happens when the penalty goes into a real optimization problem.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what QUBO and HUBO problems are, why annealers and QAOA need constraints written as penalty polynomials, and why inequalities are harder than equalities;</li>
+        <li>how slack variables and the "trivial" enumerative penalty handle X ≤ U, and what each costs;</li>
+        <li>why comparing two binary numbers comes down to the highest bit where they differ;</li>
+        <li>the add-or-multiply recursion of Theorem 1, its proof by induction, and how to run it by hand (Algorithm 1);</li>
+        <li>the unrolled formula of Eq. (11), what each of its terms detects, and why the penalty takes values between 1 and k off the feasible set;</li>
+        <li>the lower-bound version (Theorem 2) and the one's-complement duality of Eq. (17);</li>
+        <li>the term-count and degree comparison of Section 2.5, including the averages ½ log<sub>2</sub> R against (R − 1)/2;</li>
+        <li>why adding nonnegative penalties gives "and" and multiplying gives "or" (Theorems 3 and 4);</li>
+        <li>how to choose a penalty weight on a toy problem, and the paper's stated limitations: quadratization, non-monotone penalties and the absence of solver benchmarks.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>k</dt><dd>the number of bits of the encoded integer</dd>
+        <dt>x<sub>1</sub>, …, x<sub>k</sub></dt><dd>binary variables, with x<sub>1</sub> the least significant bit</dd>
+        <dt>X</dt><dd>the encoded integer Σ x<sub>i</sub> 2<sup>i−1</sup> (Eq. 2), written (x<sub>k</sub> ⋯ x<sub>1</sub>)<sub>2</sub>; it ranges over 0, …, 2<sup>k</sup> − 1</dd>
+        <dt>R</dt><dd>the size of the representable range, 2<sup>k</sup></dd>
+        <dt>U, L</dt><dd>an upper and a lower threshold in {0, …, 2<sup>k</sup> − 1}, with bits u<sub>i</sub> and ℓ<sub>i</sub></dd>
+        <dt>X<sub>k</sub>, U′, L′</dt><dd>in the recursion, the integer formed by the lowest k bits of X, U or L</dd>
+        <dt>literal</dt><dd>a variable x<sub>i</sub> or its complement 1 − x<sub>i</sub></dd>
+        <dt>product term</dt><dd>a product of literals; the product-term count of a penalty is the number of such products in its generated sum</dd>
+        <dt>degree</dt><dd>the number of literals in a product term; the degree of a penalty is the largest of these</dd>
+        <dt>H<sub>upper</sub>(X, U)</dt><dd>the paper's penalty for X ≤ U: zero exactly when X ≤ U</dd>
+        <dt>H<sub>lower</sub>(X, L)</dt><dd>the paper's penalty for L ≤ X</dd>
+        <dt>H<sub>in</sub>, H<sub>out</sub></dt><dd>the interval penalty (L ≤ X ≤ U) and exclusion penalty (X ≤ L or U ≤ X)</dd>
+        <dt>X̄</dt><dd>the one's complement 2<sup>k</sup> − 1 − X, obtained by flipping every bit</dd>
+        <dt>f, P</dt><dd>an objective to be minimized and a positive penalty weight (used in our Section 9 example, not in the paper)</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Example A: three bits, X ≤ 4.</b> Here X = 4x<sub>3</sub> + 2x<sub>2</sub> + x<sub>1</sub> takes the values 0 to 7, and 5, 6, 7 are forbidden. The paper uses this case to introduce the trivial penalty (Eq. 1), and its own construction for it appears in Table 2. We also use it as a toy optimization problem in Section 9.</li>
+        <li><b>Example B: six bits, U = 53 and L = 17.</b> Here X runs over 0 to 63. The paper's worked examples (Eqs. 12 and 16) and its Figure 3 use exactly these thresholds, and its numerical check evaluates all 64 assignments for them.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Penalties">
+      <span class="num">1 · CONSTRAINTS AS ENERGY</span>
+      <h2>Why must a constraint be turned into a polynomial?</h2>
+      <p>Quantum annealers, QAOA circuits and many classical "Ising machines" solve one kind of problem: minimize a polynomial in binary variables, with no side conditions at all. Real problems come with conditions (a knapsack has a weight limit, a schedule has a deadline), so before such a machine can be used every condition has to be folded into the polynomial itself, as an extra energy that is zero when the condition holds and positive when it fails.</p>
+      <div class="def"><span class="label">Definition · QUBO and HUBO (Section 1.1; background from Glover et al.)</span>
+        <p>A quadratic unconstrained binary optimization (QUBO) problem asks for the minimum of</p>
+        <div class="math" data-tex="f(x)=\sum_{i\le j} Q_{ij}\,x_i x_j,\qquad x_i\in\{0,1\},"></div>
+        <p>over all 2<sup>n</sup> bit strings. A higher-order (HUBO) problem allows products of three or more variables as well. Because x<sub>i</sub><sup>2</sup> = x<sub>i</sub> for a bit, no variable ever needs to appear squared, so every such polynomial is a sum of products of distinct variables.</p>
+        <p>In words: a QUBO is a weighted count of which pairs of bits are on, a HUBO also counts triples, quadruples and so on, and the machine's job is to find the cheapest bit string.</p>
+      </div>
+      <p>QUBO is the native language of most current annealers, which have two-body couplings only. HUBO is the more natural language for many problems, and solvers that handle higher-order terms directly exist, for example the tensor-network solver HOBOTAN that the paper cites. The paper works in HUBO throughout.</p>
+      <div class="def"><span class="label">Definition · penalty function (Section 2.1)</span>
+        <p>A penalty function for a constraint is a nonnegative function of the binary variables that is zero for every feasible assignment and strictly positive for every infeasible one. In this paper every penalty is a polynomial in the original binary variables.</p>
+        <p>In words: a penalty is an energy that costs nothing when the rule is obeyed and something when it is broken. Adding P times a penalty to an objective, with a large enough weight P, makes every rule-breaking bit string more expensive than the best rule-obeying one.</p>
+      </div>
+      <p>Equality constraints are easy. If the condition is g(x) = 0 for some polynomial g, then g<sup>2</sup> is a penalty: it is zero exactly when g is zero and positive otherwise, and it uses no variables beyond those already in g. The paper makes exactly this point at the start of Section 1.1. Some inequalities have neat penalties too. The tutorial of Glover, Kochenberger and Du lists, for instance, the constraint x + y ≤ 1 with penalty xy: of the four assignments, only x = y = 1 breaks the rule, and only that one makes xy = 1.</p>
+      <p>A general inequality is harder, because "g(x) ≤ 0" has no squaring trick: a polynomial that is zero on a whole region and positive outside it has to be built by hand. The paper's question is how to do that for the most basic inequality on an integer stored in binary: X ≤ U.</p>
+      <div class="fact"><span class="label">Fact · what an exact penalty must do (Definition 1)</span>
+        <p>The four penalties studied in the paper are defined by their zero sets: H<sub>upper</sub>(X, U) = 0 exactly when X ≤ U (Eq. 3), H<sub>lower</sub>(X, L) = 0 exactly when L ≤ X (Eq. 4), H<sub>in</sub>(X, L, U) = 0 exactly when L ≤ X ≤ U (Eq. 5), and H<sub>out</sub>(X, L, U) = 0 exactly when X ≤ L or U ≤ X (Eq. 6), the last two for L ≤ U. Each must also be strictly positive everywhere else.</p>
+      </div>
+      <p class="short"><b>In short:</b> annealers and QAOA minimize polynomials in bits without side conditions, so every constraint must become a penalty polynomial that is zero exactly on the feasible set; equalities have the squaring trick, inequalities do not.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Old methods">
+      <span class="num">2 · BINARY INTEGERS AND THE TWO STANDARD FIXES</span>
+      <h2>What do people do today with X ≤ U?</h2>
+      <p>An integer variable with values 0 to 2<sup>k</sup> − 1 is stored in k bits by the usual base-2 expansion,</p>
+      <div class="math" data-tex="X=\sum_{i=1}^{k} x_i\,2^{\,i-1},\qquad x_i\in\{0,1\},\tag{2}"></div>
+      <p>and written X = (x<sub>k</sub> x<sub>k−1</sub> ⋯ x<sub>1</sub>)<sub>2</sub>. The paper stresses that this encoding needs only O(log R) qubits for a range of size R, against O(R) for one-hot encoding with one bit per value, but that the encoding alone says nothing about how to penalize X &gt; U. Two methods are standard.</p>
+      <p>The first is the slack variable. The inequality X ≤ U is rewritten as an equality X + s = U with a new integer s ≥ 0, the slack, which is itself stored in binary, and the squaring trick is applied to the equality. In Example A, the constraint X ≤ 4 becomes X + s = 4; the slack must reach 4, so it needs three bits s = s<sub>1</sub> + 2s<sub>2</sub> + 4s<sub>3</sub>, and the penalty is</p>
+      <div class="math" data-tex="P\,(x_1+2x_2+4x_3+s_1+2s_2+4s_3-4)^2 ."></div>
+      <p>This worked example is ours, built the way the Glover tutorial builds its knapsack example. The penalty is quadratic, which suits QUBO hardware, but three auxiliary bits have been added to a three-bit problem: the search space grows from 8 to 64 bit strings, and every feasible X now sits in a landscape of slack settings that the solver must also get right.</p>
+      <p>The second method, which the paper calls the trivial penalty, adds one product term for each forbidden bit string, a term that equals 1 on that string and 0 on every other. For Example A the forbidden values are 5 = (101)<sub>2</sub>, 6 = (110)<sub>2</sub> and 7 = (111)<sub>2</sub>, and the trivial penalty is</p>
+      <div class="math" data-tex="H=x_3(1-x_2)x_1+x_3x_2(1-x_1)+x_3x_2x_1 .\tag{1}"></div>
+      <p>It is exact and needs no new variables, but it has as many terms as there are forbidden values, namely 2<sup>k</sup> − U − 1, and every term involves all k bits.</p>
+      <div class="def"><span class="label">Definition · literal, product term, product-term count, degree (Section 2.1)</span>
+        <p>A literal is a variable x<sub>i</sub> or its complement 1 − x<sub>i</sub>. A product term is a product of literals. A penalty written as a sum of product terms has product-term count equal to the number of products in the sum, where a factor written outside parentheses does not add to the count: the expression x<sub>6</sub>x<sub>5</sub>(x<sub>4</sub> + x<sub>3</sub>x<sub>2</sub>) = x<sub>6</sub>x<sub>5</sub>x<sub>4</sub> + x<sub>6</sub>x<sub>5</sub>x<sub>3</sub>x<sub>2</sub> has two (Eq. 7), and (1 − x<sub>2</sub>)(1 − x<sub>1</sub>) has one (Eq. 8). A complemented literal is not expanded into 1 and −x<sub>i</sub>. The degree of a product term is its number of literals, and the degree of a penalty is the largest degree among its terms.</p>
+        <p>In words: count the products as the construction writes them, before multiplying anything out, and measure each by how many bits it ties together. The zero polynomial, which is the penalty for a vacuous constraint such as X ≤ 2<sup>k</sup> − 1, has count zero and no degree.</p>
+      </div>
+      <p>By these measures the trivial penalty for Example A has three terms of degree three. The paper lists four drawbacks of the trivial construction (Section 1.1): the term count grows linearly with the number of forbidden values, the degree is always the full k, no structure is shared between bit widths, and the construction does not reuse anything from the threshold's own binary digits. Degree matters in practice because current annealers have two-body couplings only, and every term of degree three or more has to be reduced to quadratic form, usually with extra auxiliary variables (Section 9 shows how).</p>
+      <p class="short"><b>In short:</b> slack variables keep the penalty quadratic but add bits; the trivial penalty adds no bits but one degree-k term per forbidden value; the paper wants a penalty with neither cost.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Comparing">
+      <span class="num">3 · COMPARING BINARY NUMBERS</span>
+      <h2>How do you tell, bit by bit, whether X exceeds U?</h2>
+      <p>Everything in the paper rests on a fact so familiar from decimal numbers that it is rarely stated: to compare two numbers with the same number of digits, read from the left and stop at the first place they differ. This section states it for binary and proves it, because the recursion of the next section is this rule written as algebra. The statement and proof below are standard background, written out by us.</p>
+      <div class="fact"><span class="label">Fact · the highest differing bit decides (background)</span>
+        <p>Let X = (x<sub>k</sub> ⋯ x<sub>1</sub>)<sub>2</sub> and U = (u<sub>k</sub> ⋯ u<sub>1</sub>)<sub>2</sub> be different, and let m be the largest index with x<sub>m</sub> ≠ u<sub>m</sub>. Then X &gt; U exactly when x<sub>m</sub> = 1 and u<sub>m</sub> = 0.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can the lower bits never overturn the highest differing bit?</span></summary><div class="pfbody">
+        <p>Above position m the two numbers agree, so those bits contribute the same amount to both. Suppose x<sub>m</sub> = 1 and u<sub>m</sub> = 0. Then X − U equals 2<sup>m−1</sup> plus the difference of the lower parts, and the lower part of U is at most</p>
+        <div class="math" data-tex="\sum_{i=1}^{m-1}2^{\,i-1}=2^{\,m-1}-1"></div>
+        <p>by the geometric series, while the lower part of X is at least 0. So X − U ≥ 2<sup>m−1</sup> − (2<sup>m−1</sup> − 1) = 1 &gt; 0. The case x<sub>m</sub> = 0, u<sub>m</sub> = 1 is the same argument with X and U exchanged.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In Example B, with U = 53 = (110101)<sub>2</sub>, take X = 54 = (110110)<sub>2</sub>. Reading from the top, the bits agree at positions 6, 5, 4 and 3 and first differ at position 2, where x<sub>2</sub> = 1 and u<sub>2</sub> = 0, so X &gt; U. Take instead X = 41 = (101001)<sub>2</sub>: the first difference is at position 5, where x<sub>5</sub> = 0 and u<sub>5</sub> = 1, so X &lt; U, whatever the lower bits do.</p>
+      <p>Two consequences drive the construction. If the top bit of U is 0, then any X with top bit 1 is too big, and when the top bit of X is 0 the question passes unchanged to the lower bits. If the top bit of U is 1, then any X with top bit 0 is automatically small enough, and when the top bit of X is 1 the question again passes to the lower bits. "Too big already" is a condition to be added to the penalty; "fine already" is a condition that should switch the rest of the penalty off. Addition and multiplication are exactly the tools for those two jobs.</p>
+      <p class="short"><b>In short:</b> X &gt; U exactly when the highest bit where they differ is 1 in X and 0 in U; a 0 in U makes a 1 in X fatal, and a 1 in U makes a 0 in X safe.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Upper bound">
+      <span class="num">4 · THE UPPER-BOUND RECURSION</span>
+      <h2>How can a penalty for k + 1 bits be built from one for k bits?</h2>
+      <p>The idea is to grow the penalty one bit at a time, from the least significant bit upwards. Split a (k + 1)-bit integer and threshold into their top bit and the rest: X<sub>k+1</sub> = 2<sup>k</sup>x<sub>k+1</sub> + X<sub>k</sub> and U = 2<sup>k</sup>u<sub>k+1</sub> + U′, where X<sub>k</sub> and U′ are the k-bit lower parts. The two consequences at the end of Section 3 then tell us what to do with a penalty H<sub>k</sub>(X<sub>k</sub>, U′) that already handles the lower parts.</p>
+      <div class="def"><span class="label">Theorem 1 · exact recursive upper-bound penalty</span>
+        <p>For k = 1, set H<sub>1</sub>(X, 0) = x<sub>1</sub> and H<sub>1</sub>(X, 1) = 0. For the step from k to k + 1 bits, define</p>
+        <div class="math" data-tex="H_{k+1}(X_{k+1},U)=\begin{cases}x_{k+1}+H_k(X_k,U'), & u_{k+1}=0,\\[2pt] x_{k+1}\,H_k(X_k,U'), & u_{k+1}=1.\end{cases}"></div>
+        <p>Then H<sub>k</sub>(X, U) is a nonnegative integer-valued polynomial in the original bits, and H<sub>k</sub>(X, U) = 0 if and only if X ≤ U.</p>
+        <p>In words: walk up the threshold's bits; at a 0, add the new bit of X to the penalty (a 1 there is a violation on its own); at a 1, multiply the penalty by the new bit of X (a 0 there makes everything below irrelevant). The paper writes H<sub>upper</sub>(X, U) for the result.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does the recursion give exactly the right zero set? (the paper's induction)</span></summary><div class="pfbody">
+        <p><b>Base case.</b> With one bit, X = x<sub>1</sub>. For U = 0 the penalty x<sub>1</sub> vanishes exactly when X = 0, which is exactly when X ≤ 0. For U = 1 the penalty is 0, and both values of X satisfy X ≤ 1.</p>
+        <p><b>Inductive hypothesis.</b> For some k and every k-bit U′, the polynomial H<sub>k</sub>(X<sub>k</sub>, U′) is a nonnegative integer that is zero exactly when X<sub>k</sub> ≤ U′.</p>
+        <p><b>Case A, u<sub>k+1</sub> = 0</b> (Eq. 9: H<sub>k+1</sub> = x<sub>k+1</sub> + H<sub>k</sub>). Then U = U′ &lt; 2<sup>k</sup>. A sum of two nonnegative numbers is zero exactly when both are zero, so H<sub>k+1</sub> = 0 exactly when x<sub>k+1</sub> = 0 and X<sub>k</sub> ≤ U′. Since U &lt; 2<sup>k</sup>, any X with x<sub>k+1</sub> = 1 is at least 2<sup>k</sup> &gt; U, so these two conditions together are equivalent to X<sub>k+1</sub> ≤ U.</p>
+        <p><b>Case B, u<sub>k+1</sub> = 1</b> (Eq. 10: H<sub>k+1</sub> = x<sub>k+1</sub>H<sub>k</sub>). Then U = 2<sup>k</sup> + U′. If x<sub>k+1</sub> = 0, the penalty is 0, and indeed X<sub>k+1</sub> = X<sub>k</sub> &lt; 2<sup>k</sup> ≤ U. If x<sub>k+1</sub> = 1, the penalty equals H<sub>k</sub>(X<sub>k</sub>, U′), and X<sub>k+1</sub> ≤ U is equivalent to X<sub>k</sub> ≤ U′, so the hypothesis gives the claim.</p>
+        <p>In both cases H<sub>k+1</sub> arises from a nonnegative integer polynomial by adding or multiplying by a bit, so it is again a nonnegative integer polynomial. By induction the theorem holds for every k.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The paper's Table 1 runs the recursion for all two-bit thresholds: the threshold U = 0 = (00)<sub>2</sub> gives x<sub>2</sub> + x<sub>1</sub>, the threshold 1 gives x<sub>2</sub>, the threshold 2 = (10)<sub>2</sub> gives x<sub>2</sub>x<sub>1</sub>, and the threshold 3 gives 0. Each can be checked against the four values of X directly. For example, x<sub>2</sub>x<sub>1</sub> is nonzero only for X = 3, the only two-bit value above 2.</p>
+      <p>For Example A, U = 4 = (100)<sub>2</sub>. Start with u<sub>1</sub> = 0, so H = x<sub>1</sub>. Next u<sub>2</sub> = 0, so H = x<sub>2</sub> + x<sub>1</sub>. Last u<sub>3</sub> = 1, so</p>
+      <div class="math" data-tex="H_{\mathrm{upper}}(X,4)=x_3\,(x_2+x_1),"></div>
+      <p>which is the entry for U = 4 in the paper's Table 2. Its values on X = 0, …, 7 are 0, 0, 0, 0, 0, 1, 1, 2: zero exactly on the feasible values, and positive on 5, 6 and 7. It has two product terms of degree two, against three of degree three in Eq. (1). It is already quadratic, so for this threshold no further reduction is needed for QUBO hardware.</p>
+      <p>Written as a loop, the recursion is the paper's Algorithm 1: initialize H = x<sub>1</sub> if u<sub>1</sub> = 0 and H = 0 if u<sub>1</sub> = 1; then for i = 2, …, k replace H by x<sub>i</sub> + H when u<sub>i</sub> = 0 and by x<sub>i</sub>H when u<sub>i</sub> = 1. The animation runs it on Example B's threshold U = 53 = (110101)<sub>2</sub>. At each step it also evaluates the current penalty on every value of the lower bits, so the bars show the zero set taking shape: after step i, the bars are zero exactly up to the threshold formed by the lowest i bits of U.</p>
+      <div class="player" id="pHuBuild">
+        <div class="ptitle"><span class="label">Animation · Algorithm 1 for U = 53</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="The bits of U = 53, the penalty expression after each step, and bars showing its value on every value of the lower bits"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>bit being read</span><span><i class="sw" style="background:var(--bad)"></i>penalty value</span><span><i class="sw" style="background:var(--ok)"></i>zero (feasible)</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The final expression is the paper's Eq. (12),</p>
+      <div class="math" data-tex="H_{\mathrm{upper}}(X,53)=x_6x_5\,(x_4+x_3x_2),\tag{12}"></div>
+      <p>with two product terms and degree four. The trivial construction for the same constraint has 2<sup>6</sup> − 53 − 1 = 10 terms, each of degree six.</p>
+      <p class="short"><b>In short:</b> reading U from the bottom, a 0 bit adds x<sub>i</sub> and a 1 bit multiplies by x<sub>i</sub>; induction on k proves the result is zero exactly when X ≤ U; for U = 4 this gives x<sub>3</sub>(x<sub>2</sub> + x<sub>1</sub>) and for U = 53 it gives Eq. (12).</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Unrolled form">
+      <span class="num">5 · THE UNROLLED FORMULA</span>
+      <h2>What does each term of the penalty actually detect?</h2>
+      <p>The recursion produces nested parentheses. Multiplying them out gives a flat formula that is easier to count and, as we show below, easier to interpret. Each zero bit of U starts a term, and each one bit above it multiplies that term by the corresponding variable.</p>
+      <div class="def"><span class="label">Corollary 1 · explicit sum-product form</span>
+        <p>For U = (u<sub>k</sub> ⋯ u<sub>1</sub>)<sub>2</sub>,</p>
+        <div class="math" data-tex="H_{\mathrm{upper}}(X,U)=\sum_{\substack{1\le i\le k\\ u_i=0}} x_i\prod_{\substack{j>i\\ u_j=1}} x_j ,\tag{11}"></div>
+        <p>with an empty product equal to 1 and an empty sum equal to 0.</p>
+        <p>In words: there is one term for each 0 in the threshold; the term for position i is x<sub>i</sub> times every x<sub>j</sub> sitting above a 1 of the threshold.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does unrolling the recursion give Eq. (11)?</span></summary><div class="pfbody">
+        <p>Follow Algorithm 1 as it reads the bits upwards and keep the penalty as a flat sum. A zero bit at position i appends a new term x<sub>i</sub>. A one bit at position j multiplies every term already present by x<sub>j</sub>, and those are exactly the terms started at zero bits below j. So the term started at position i ends up multiplied by x<sub>j</sub> for every j &gt; i with u<sub>j</sub> = 1, and by nothing else. This is the paper's argument.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For U = 53 = (110101)<sub>2</sub>, the zero bits sit at positions 2 and 4. The term for position 2 picks up the one bits above it at positions 3, 5 and 6, giving x<sub>6</sub>x<sub>5</sub>x<sub>3</sub>x<sub>2</sub>. The term for position 4 picks up positions 5 and 6, giving x<sub>6</sub>x<sub>5</sub>x<sub>4</sub>. Their sum is Eq. (12) multiplied out.</p>
+      <p>The following reading of Eq. (11) is ours; the paper proves correctness by induction and does not interpret the individual terms. The term for a zero bit i equals 1 exactly when x<sub>i</sub> = 1 and x<sub>j</sub> = 1 at every position j &gt; i where u<sub>j</sub> = 1. In other words, at position i the number X has a 1 where U has a 0, and above position i, X has a 1 wherever U does. Such a term can only fire when X &gt; U, and when X &gt; U the term at the highest differing bit always fires.</p>
+      <details class="pf"><summary><span class="tagd">our derivation</span><span class="q">Why does a firing term force X &gt; U, and why does some term fire when X &gt; U?</span></summary><div class="pfbody">
+        <p>Suppose the term for position i fires. Then x<sub>i</sub> = 1 ≠ 0 = u<sub>i</sub>, so X ≠ U; let m ≥ i be the highest differing bit. If m = i, Section 3 gives X &gt; U at once. If m &gt; i and u<sub>m</sub> = 1, then x<sub>m</sub> = 0, but the firing term requires x<sub>m</sub> = 1 at every one bit of U above i, a contradiction. So u<sub>m</sub> = 0, x<sub>m</sub> = 1 and X &gt; U.</p>
+        <p>Conversely, if X &gt; U, let m be the highest differing bit; Section 3 says x<sub>m</sub> = 1 and u<sub>m</sub> = 0. Above m the bits agree, so x<sub>j</sub> = 1 wherever u<sub>j</sub> = 1. Hence the term for position m fires.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>So H<sub>upper</sub>(X, U) counts the zero bits of U at which X "breaks through" while dominating U above. It is at least 1 off the feasible set and at most the number of zero bits of U, which is at most k. The animation evaluates both terms of Eq. (12) on six values of X, showing which literals are on and where the highest differing bit sits.</p>
+      <div class="player" id="pHuCheck">
+        <div class="ptitle"><span class="label">Animation · evaluating H<sub>upper</sub>(X, 53)</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Bits of X and U side by side, with the two product terms of the penalty evaluated"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>highest differing bit</span><span><i class="sw" style="background:var(--ok)"></i>literal equal to 1</span><span><i class="sw" style="background:var(--bad)"></i>term fires</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <div class="fact"><span class="label">Fact · bounded penalty values (Section 4.3)</span>
+        <p>Each single-bound penalty has smallest positive value 1 and largest value at most the bit width k, because each product term takes the value 0 or 1 and there are at most k terms. For Example B the largest value of H<sub>upper</sub>(X, 53) is 2, reached at X = 62 and 63.</p>
+      </div>
+      <p class="short"><b>In short:</b> unrolled, the penalty has one term per zero bit of U (Eq. 11); each term detects a specific way of exceeding U (our reading), so the penalty is a whole number between 1 and k whenever X &gt; U.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Lower bound">
+      <span class="num">6 · LOWER BOUNDS AND DUALITY</span>
+      <h2>Does the same idea enforce X ≥ L?</h2>
+      <p>A lower bound is the mirror image of an upper bound. Now a 1 in the threshold where X has a 0 is the danger, and a 0 in the threshold where X has a 1 makes X safe. The literal that signals danger at position i is therefore 1 − x<sub>i</sub>, which is 1 when the bit is off.</p>
+      <div class="def"><span class="label">Theorem 2 · exact recursive lower-bound penalty</span>
+        <p>For k = 1, set H<sub>1</sub>(X, 0) = 0 and H<sub>1</sub>(X, 1) = 1 − x<sub>1</sub>. Writing L = 2<sup>k</sup>ℓ<sub>k+1</sub> + L′, define</p>
+        <div class="math" data-tex="H_{k+1}(X_{k+1},L)=\begin{cases}(1-x_{k+1})\,H_k(X_k,L'), & \ell_{k+1}=0,\\[2pt] (1-x_{k+1})+H_k(X_k,L'), & \ell_{k+1}=1.\end{cases}"></div>
+        <p>Then H<sub>k</sub>(X, L) is a nonnegative integer-valued polynomial with H<sub>k</sub>(X, L) = 0 if and only if L ≤ X. The paper writes H<sub>lower</sub>(X, L).</p>
+        <p>In words: at a 1 of the threshold, add "this bit of X is off"; at a 0, multiply by "this bit of X is off", so that a 1 in X there switches everything below off.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the induction the same as before?</span></summary><div class="pfbody">
+        <p>The base case is checked directly: 1 − x<sub>1</sub> vanishes exactly when X = 1 ≥ 1. In Case A, ℓ<sub>k+1</sub> = 0 (Eq. 13), so L = L′ &lt; 2<sup>k</sup>. If x<sub>k+1</sub> = 1 then X ≥ 2<sup>k</sup> &gt; L and the penalty is 0; if x<sub>k+1</sub> = 0, the penalty equals H<sub>k</sub>(X<sub>k</sub>, L′) and L ≤ X is equivalent to L′ ≤ X<sub>k</sub>. In Case B, ℓ<sub>k+1</sub> = 1 (Eq. 14), so L = 2<sup>k</sup> + L′. A sum of nonnegative terms is zero exactly when x<sub>k+1</sub> = 1 and L′ ≤ X<sub>k</sub>, which together say L ≤ X. Each step adds or multiplies by the nonnegative literal 1 − x<sub>k+1</sub>, so the result stays a nonnegative integer polynomial. This is the paper's proof, condensed.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Unrolling gives the mirror of Eq. (11), one term for each one bit of L:</p>
+      <div class="math" data-tex="H_{\mathrm{lower}}(X,L)=\sum_{\substack{1\le i\le k\\ \ell_i=1}}(1-x_i)\prod_{\substack{j>i\\ \ell_j=0}}(1-x_j).\tag{15}"></div>
+      <p>For Example B, L = 17 = (010001)<sub>2</sub> has one bits at positions 1 and 5. Running Algorithm 2 upwards: ℓ<sub>1</sub> = 1 gives 1 − x<sub>1</sub>; the zeros at positions 2, 3 and 4 multiply by 1 − x<sub>2</sub>, 1 − x<sub>3</sub>, 1 − x<sub>4</sub>; the one at position 5 adds 1 − x<sub>5</sub>; and the zero at position 6 multiplies everything by 1 − x<sub>6</sub>. The result is the paper's Eq. (16),</p>
+      <div class="math" data-tex="H_{\mathrm{lower}}(X,17)=(1-x_6)\big((1-x_5)+(1-x_4)(1-x_3)(1-x_2)(1-x_1)\big),\tag{16}"></div>
+      <p>with two product terms and degree five, against seventeen terms of degree six for the trivial construction. On X = 0 both terms fire and the penalty is 2; on X = 1 to 16 it is 1; from X = 17 on it is 0.</p>
+      <p>The two constructions are linked by flipping bits. Flipping every bit of X gives X̄ = Σ (1 − x<sub>i</sub>)2<sup>i−1</sup> = 2<sup>k</sup> − 1 − X, and flipping reverses order, so L ≤ X exactly when X̄ ≤ L̄.</p>
+      <div class="fact"><span class="label">Fact · one's-complement duality (Section 2.4)</span>
+        <div class="math" data-tex="H_{\mathrm{lower}}(X,L)=H_{\mathrm{upper}}\big(2^k-1-X,\;2^k-1-L\big).\tag{17}"></div>
+        <p>Each literal x<sub>i</sub> of the upper-bound construction becomes 1 − x<sub>i</sub>, and each zero bit of the complemented threshold is a one bit of L. The paper stresses that this is a substitution on X and the threshold, not the Boolean negation 1 − H<sub>upper</sub>.</p>
+      </div>
+      <p>As a check (ours), L̄ = 63 − 17 = 46 = (101110)<sub>2</sub> has zero bits at positions 1 and 5. By Eq. (11), H<sub>upper</sub> for threshold 46 has terms x<sub>1</sub>x<sub>2</sub>x<sub>3</sub>x<sub>4</sub>x<sub>6</sub> (the one bits above position 1 are 2, 3, 4, 6) and x<sub>5</sub>x<sub>6</sub>. Replacing every x<sub>i</sub> by 1 − x<sub>i</sub> gives exactly the two terms of Eq. (16).</p>
+      <p class="short"><b>In short:</b> the lower-bound penalty swaps the roles of 0 and 1 and uses the literals 1 − x<sub>i</sub>; it has one term per one bit of L (Eq. 15), and it is the upper-bound penalty applied to the bit-flipped number and threshold (Eq. 17).</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Size">
+      <span class="num">7 · HOW SMALL ARE THE PENALTIES?</span>
+      <h2>How many terms, and of what degree, compared with enumeration?</h2>
+      <p>The paper's practical claim is a comparison of size, measured by product-term count and degree on the expressions as generated, before any simplification (Section 2.5). Both measures can be read straight off Eq. (11).</p>
+      <p><b>Term count.</b> The upper-bound penalty has one term per zero bit of U, so at most k. The trivial construction has one term per forbidden integer, 2<sup>k</sup> − U − 1. The proposed count is strictly smaller for every U from 0 to 2<sup>k</sup> − 3; at U = 2<sup>k</sup> − 2 both have one term, and at the vacuous U = 2<sup>k</sup> − 1 both are zero. For lower bounds the count is the number of one bits of L against L for the trivial construction, with a tie only at L = 1.</p>
+      <div class="fact"><span class="label">Fact · average term counts (Section 2.5)</span>
+        <p>Averaged uniformly over all thresholds, the proposed construction has ½ log<sub>2</sub> R product terms, while the trivial construction has (R − 1)/2, where R = 2<sup>k</sup>. The worst case is k = log<sub>2</sub> R against R − 1.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">our derivation</span><span class="q">Where do the two averages come from?</span></summary><div class="pfbody">
+        <p>The paper states the averages; this short computation is ours. As U runs over all 2<sup>k</sup> values, each of its k bits is 0 for exactly half of them, so the total number of zero bits is k · 2<sup>k−1</sup> and the average is k/2 = ½ log<sub>2</sub> R. For the trivial construction, 2<sup>k</sup> − U − 1 runs over 2<sup>k</sup> − 1, …, 1, 0 as U runs upward, and the average of 0, 1, …, R − 1 is (R − 1)/2. For k = 6 the averages are 3 and 31.5.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p><b>Degree.</b> In Eq. (11), the term for a zero bit i has degree 1 plus the number of one bits above i. The lowest zero bit has the most one bits above it, so the degree of the whole penalty is 1 plus the number of one bits of U above its lowest zero bit. This equals k only when the lowest zero bit is bit 1 and every bit above it is 1, that is, U = 2<sup>k</sup> − 2, where the penalty is x<sub>k</sub> ⋯ x<sub>1</sub> and coincides with the trivial construction. For every smaller threshold the degree is less than k, while every trivial term has degree exactly k. For lower bounds the exceptional threshold is L = 1. The paper's Figures 1 and 2 plot both measures for all upper thresholds at k = 6.</p>
+      <p>For Example B, U = 53 has its lowest zero bit at position 2 with three one bits above (positions 3, 5, 6), giving degree four, as in Eq. (12). For Example A, U = 4 = (100)<sub>2</sub> has its lowest zero at position 1 with one one bit above, giving degree two.</p>
+      <div class="fact"><span class="label">Fact · the comparison in one line (Sections 1.3 and 2.5)</span>
+        <p>Except at one non-vacuous boundary threshold per bound (U = 2<sup>k</sup> − 2 and L = 1), the proposed single-bound penalty has both fewer product terms and lower degree than the trivial construction, and its term count is O(log R) against O(R).</p>
+      </div>
+      <p class="short"><b>In short:</b> term count is the number of zero bits of U (or one bits of L), averaging ½ log<sub>2</sub> R against (R − 1)/2; degree is 1 plus the one bits above the lowest zero bit, below k except at U = 2<sup>k</sup> − 2.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Composition">
+      <span class="num">8 · ADDING AND MULTIPLYING PENALTIES</span>
+      <h2>How do you combine bounds into intervals and exclusions?</h2>
+      <p>Many constraints are two-sided: a quantity must lie between two limits, or must avoid a middle range. Because the penalties are nonnegative, ordinary arithmetic combines their zero sets in exactly the logical way. A sum of nonnegative numbers is zero only when every summand is zero, so addition means "and". A product is zero as soon as one factor is zero, so multiplication means "or".</p>
+      <div class="def"><span class="label">Theorems 3 and 4 · interval and exclusion penalties</span>
+        <p>For 0 ≤ L ≤ U &lt; 2<sup>k</sup>,</p>
+        <div class="math" data-tex="H_{\mathrm{in}}(X,L,U)=H_{\mathrm{lower}}(X,L)+H_{\mathrm{upper}}(X,U)\tag{18}"></div>
+        <p>is zero exactly when L ≤ X ≤ U, and</p>
+        <div class="math" data-tex="H_{\mathrm{out}}(X,L,U)=H_{\mathrm{upper}}(X,L)\,H_{\mathrm{lower}}(X,U)\tag{19}"></div>
+        <p>is zero exactly when X ≤ L or U ≤ X. Both are strictly positive everywhere else.</p>
+        <p>In words: to demand both bounds, add their penalties; to demand at least one of two conditions, multiply theirs. Note that the exclusion uses the upper-bound penalty at L and the lower-bound penalty at U.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the product strictly positive in the excluded middle?</span></summary><div class="pfbody">
+        <p>For the interval: both summands are nonnegative, so the sum is zero exactly when both are zero, which by Theorems 1 and 2 means L ≤ X and X ≤ U. For the exclusion: if X ≤ L the first factor is zero, and if U ≤ X the second is. Conversely, a product of two numbers is zero only if one of them is, which by Theorems 1 and 2 gives X ≤ L or U ≤ X. Finally, if L &lt; X &lt; U, then X &gt; L makes the first factor a positive integer and X &lt; U makes the second a positive integer, so their product is at least 1. This is the paper's proof.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Degrees combine predictably: the interval penalty has degree at most the larger of the two component degrees, and the exclusion penalty at most their sum. The animation reproduces the paper's Figure 3 for Example B by evaluating every penalty on all 64 values of X. The last frame is ours: it also reports the largest value of the exclusion penalty, which the paper does not state.</p>
+      <div class="player" id="pHuCompose">
+        <div class="ptitle"><span class="label">Animation · interval and exclusion for L = 17, U = 53</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Bar charts of the penalties over X from 0 to 63"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--bad)"></i>penalty value</span><span><i class="sw" style="background:var(--ok)"></i>zero (feasible)</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The paper reports one numerical check (Section 4.1): all 64 assignments for k = 6, L = 17 and U = 53, on which all four penalties have exactly the predicted zero sets and are strictly positive elsewhere. The animation above performs the same check in the page.</p>
+      <p class="short"><b>In short:</b> for nonnegative penalties, addition realizes "and" (intervals, Eq. 18) and multiplication realizes "or" (exclusions, Eq. 19); for Example B both have exactly the required zero sets.</p>
+    </section>
+
+    <!-- 9 -->
+    <section data-sec="9 · In practice">
+      <span class="num">9 · USING THE PENALTY</span>
+      <h2>What happens when the penalty goes into an optimization problem?</h2>
+      <p>A penalty only matters once it is added to an objective. This section is mostly ours: a toy problem that shows how the penalty weight is chosen, followed by the practical points the paper raises in Sections 4.3 and 4.4.</p>
+      <p>Take Example A as an optimization: find the largest 3-bit X with X ≤ 4. Written as a minimization, the objective is f = −X = −(4x<sub>3</sub> + 2x<sub>2</sub> + x<sub>1</sub>), and the constrained answer is X = 4. The unconstrained problem is</p>
+      <div class="math" data-tex="\min_{x\in\{0,1\}^3}\; E(x)=-X+P\,x_3(x_2+x_1)."></div>
+      <p>If P is too small, breaking the rule pays. With P = 1, the energies of X = 5, 6, 7 are −4, −5, −5, and the minimum −5 sits at the infeasible values 6 and 7. With P = 2 the energy of X = 6 is −6 + 2 = −4, tied with the feasible optimum. Any P &gt; 2 works: then X = 5 costs −5 + P &gt; −3, X = 6 costs −6 + P &gt; −4, and X = 7 costs −7 + 2P &gt; −3, all above −4. The animation computes all eight energies for several weights.</p>
+      <div class="player" id="pHuEnergy">
+        <div class="ptitle"><span class="label">Animation · choosing the penalty weight (our example)</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Energy of each of the eight bit strings for increasing penalty weight"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--cool)"></i>feasible X ≤ 4</span><span><i class="sw" style="background:var(--bad)"></i>infeasible</span><span><i class="sw" style="background:var(--accent)"></i>minimum</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The general rule behind the example (standard, and ours to state here) is that P must exceed the largest gain the objective can make by violating the constraint, divided by the smallest penalty an infeasible point can receive. The paper's point in Section 4.3 is that the second number is always 1 for its single-bound penalties and the largest penalty is at most k, so the scale of the penalty is predictable. It adds that this does not remove the need to choose an overall weight.</p>
+      <p><b>Penalties are not distances.</b> The paper's third limitation (Section 4.4) is that the penalty value does not grow with the size of the violation. In Example B, H<sub>upper</sub>(X, 53) equals 1 at X = 54 and also at X = 61, and 2 only at 62 and 63. A solver that follows the penalty downhill gets no signal pointing it back towards the feasible region; the construction is an exact yes-or-no test, not a measure of how far off a point is.</p>
+      <p><b>Higher degree still costs something.</b> The second limitation is quadratization. Annealers with two-body couplings need degree-two polynomials, and a standard method from Dattani's review, due to Rosenberg, replaces a product x<sub>i</sub>x<sub>j</sub> by a new bit y and adds a multiple of</p>
+      <div class="math" data-tex="x_ix_j-2x_iy-2x_jy+3y,"></div>
+      <p>which is zero exactly when y = x<sub>i</sub>x<sub>j</sub> and at least 1 otherwise. Applying it to Eq. (12) is our worked example: substituting y for x<sub>6</sub>x<sub>5</sub> turns the penalty into y x<sub>4</sub> + y x<sub>3</sub>x<sub>2</sub>, and substituting z for x<sub>3</sub>x<sub>2</sub> turns that into y x<sub>4</sub> + y z. Two auxiliary bits plus two Rosenberg terms make the penalty quadratic. The ten degree-six terms of the trivial construction would need several reductions each. The paper notes that its slack-free property holds for the higher-order form and may not survive quadratization, and that the degree of the proposed penalty is not bounded independently of k.</p>
+      <p><b>Unused codes and fractions.</b> Section 4.3 points out two uses beyond stated inequalities. A variable with N admissible values needs ⌈log<sub>2</sub> N⌉ bits, and when N is not a power of two some bit strings mean nothing; the penalty H<sub>upper</sub>(X, N − 1) excludes them. Example A is exactly this situation for N = 5 choices stored in three bits. And a quantity with fixed fractional resolution, such as multiples of 1/8, can be stored as an integer count of that unit, with the thresholds scaled the same way, so the same constructions apply unchanged.</p>
+      <p class="short"><b>In short:</b> the penalty weight must beat the objective's gain from cheating, which on Example A means P &gt; 2; the paper's penalties have a predictable range but are not distances, and their slack-free advantage is for higher-order solvers, since quadratization adds auxiliary bits back.</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>What the paper reports</h2>
+      <p>The paper's results are theorems plus worked examples; its only numerical experiment is the exhaustive check of Section 4.1. The examples, as stated in the paper:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Constraint</th><th>Proposed penalty</th><th>Terms</th><th>Degree</th><th>Trivial terms / degree</th></tr></thead>
+        <tbody>
+          <tr><td>X ≤ 4, k = 3</td><td>x<sub>3</sub>(x<sub>2</sub> + x<sub>1</sub>) (Table 2)</td><td class="n">2</td><td class="n">2</td><td class="n">3 / 3 (Eq. 1)</td></tr>
+          <tr><td>X ≤ 53, k = 6</td><td>Eq. (12)</td><td class="n">2</td><td class="n">4</td><td class="n">10 / 6</td></tr>
+          <tr><td>X ≥ 17, k = 6</td><td>Eq. (16)</td><td class="n">2</td><td class="n">5</td><td class="n">17 / 6</td></tr>
+          <tr><td>X ≤ 6, k = 3</td><td>x<sub>3</sub>x<sub>2</sub>x<sub>1</sub> (Table 2)</td><td class="n">1</td><td class="n">3</td><td class="n">1 / 3 (coincide)</td></tr>
+        </tbody>
+      </table></div>
+      <p>The general comparison of Section 2.5, with R = 2<sup>k</sup>:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Quantity</th><th>Proposed</th><th>Trivial</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>Terms for X ≤ U</td><td class="n">zero bits of U, ≤ k</td><td class="n">2<sup>k</sup> − U − 1</td><td>Eq. 11, §2.5</td></tr>
+          <tr><td>Terms for L ≤ X</td><td class="n">one bits of L, ≤ k</td><td class="n">L</td><td>Eq. 15, §2.5</td></tr>
+          <tr><td>Average terms over thresholds</td><td class="n">½ log<sub>2</sub> R</td><td class="n">(R − 1)/2</td><td>§2.5</td></tr>
+          <tr><td>Worst-case terms</td><td class="n">O(log R)</td><td class="n">O(R)</td><td>§1.3, §2.5</td></tr>
+          <tr><td>Degree</td><td class="n">&lt; k except U = 2<sup>k</sup> − 2, L = 1</td><td class="n">k</td><td>§2.5, Fig. 2</td></tr>
+          <tr><td>Penalty range off the feasible set</td><td class="n">1 to at most k</td><td class="n">not stated</td><td>§4.3</td></tr>
+          <tr><td>Exhaustive check, k = 6, L = 17, U = 53</td><td class="n">all 64 assignments correct, all four penalties</td><td class="n">n/a</td><td>§4.1</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved, and easy to trust.</b> Theorems 1 to 4 and the two corollaries are complete, elementary inductions with no gaps that we could find. As an extra check, we evaluated Eq. (11) and Eq. (15) against the definitions for every k from 1 to 8, every threshold and every X, and found the zero sets exactly as claimed and the values never above k. The term-count and degree statements follow directly from the explicit formulas.</p>
+      <p><b>What the counts measure.</b> All counts are taken on the expressions as generated, with complemented literals kept as single literals and nothing multiplied out. That is a fair convention for a solver that accepts such literals, but it matters for hardware that wants plain monomials or Ising spins. The following observation is ours, not the paper's: expanding a product of d complemented literals such as (1 − x<sub>4</sub>)(1 − x<sub>3</sub>)(1 − x<sub>2</sub>)(1 − x<sub>1</sub>) in Eq. (16) gives 2<sup>d</sup> monomials, and in spin variables s<sub>i</sub> = 2x<sub>i</sub> − 1 both x<sub>i</sub> and 1 − x<sub>i</sub> are (1 ± s<sub>i</sub>)/2, so any degree-d product term becomes up to 2<sup>d</sup> spin terms. The O(log R) count is therefore a count of generated product terms, not of Hamiltonian coefficients.</p>
+      <p><b>Claimed only as a possibility.</b> The paper is careful, in Section 4.4, to say that it does not compare optimization performance with slack variables, unbalanced penalization or the trivial construction, and that fewer terms and lower degree should not be read as guarantees of higher feasibility rates, shorter time to solution or lower cost after quadratization. The statements that the construction "may" reduce evaluation work or embedding overhead are plausible but untested here.</p>
+      <p><b>Novelty in context.</b> The paper positions itself honestly: the set of binary vectors below a threshold was already characterized in integer programming by Muldoon et al. and Adams et al. through valid inequalities and convex hulls, and the closest HUBO work, a preprint by Minato, was withdrawn and corresponds to the trivial baseline. The contribution is the exact nonnegative polynomial with the right zero set, its recursion and its arithmetic composition.</p>
+      <p><b>Context.</b> The paper is short and was prepared for the journal Information Sciences. The first author lists a secondary-school affiliation alongside a company affiliation. The authors state that they used ChatGPT to improve language and readability, and that all claims and derivations are their own.</p>
+      <p><b>Our additions.</b> The proof of the highest-differing-bit rule, the interpretation of each term of Eq. (11) and its proof, the derivation of the two averages, the duality check with threshold 46, the slack-variable formulation of Example A, the penalty-weight example, the Rosenberg quadratization of Eq. (12), the remark on expanding complemented literals, the exhaustive check up to k = 8, and all four animations are ours.</p>
+    </section>
+
+    <!-- further -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>N. Mochida and S. Yasuda, <a href="https://arxiv.org/abs/2611.25102" target="_blank" rel="noopener">Compact slack-free penalty functions for inequality constraints in higher-order unconstrained binary optimization</a>, arXiv:2611.25102 (2026). The paper itself; theorem and equation numbers in this chapter follow its <a href="https://arxiv.org/html/2611.25102" target="_blank" rel="noopener">HTML version</a>.</p>
+        <p>F. Glover, G. Kochenberger and Y. Du, <a href="https://arxiv.org/abs/1811.11538" target="_blank" rel="noopener">A tutorial on formulating and using QUBO models</a>, arXiv:1811.11538 (published in 4OR, 2019 as "Quantum bridge analytics I"). Cited by the paper for the squaring trick; the source here for the table of known penalties such as x + y ≤ 1 → P xy and for slack variables in a knapsack constraint.</p>
+        <p>N. Dattani, <a href="https://arxiv.org/abs/1901.04405" target="_blank" rel="noopener">Quadratization in discrete optimization and quantum mechanics</a>, arXiv:1901.04405. Cited by the paper for quadratization; a catalogue of methods for reducing higher-order terms to quadratic ones, including the Rosenberg substitution used in Section 9.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.25102v1. Theorem, corollary, algorithm, table and equation numbers match the paper. All four animations run real computations in the page: the first runs Algorithm 1 on the bits of 53 and evaluates each intermediate polynomial on every value of the lower bits; the second evaluates the product terms of Eq. (11) literal by literal; the third evaluates all four penalties of Example B on all 64 values of X; the fourth computes the energy of all eight bit strings of Example A for each penalty weight. The running examples come from the paper; the derivations and examples marked as ours are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-25102',date:'2026-11-20',title:'Compact Slack-Free Penalty Functions for Inequality Constraints in Higher-Order Unconstrained Binary Optimization',authors:'Mochida, Yasuda',field:'math.OC',tags:['QUBO and HUBO','penalty functions','binary encoding'],mins:35,
+     dek:'To forbid a 6-bit number from exceeding 53, the usual penalty lists ten forbidden values, while x<sub>6</sub>x<sub>5</sub>(x<sub>4</sub> + x<sub>3</sub>x<sub>2</sub>) does the same job with no extra bits. Read the threshold’s binary digits upward, add a variable at each 0 and multiply at each 1, and the penalty has at most one term per bit, with sums and products giving intervals and exclusions.'},
     {id:'2611-24574',date:'2026-11-19',title:'The Number of Cycles in a Random 2-Factor of a Random Regular Graph',authors:'Adler, Haber',field:'math.CO',tags:['random graphs','generating functions','Hamilton cycles'],mins:40,
      dek:'Cover the vertices of a random regular graph with disjoint loops, chosen at random, and in the paper’s averaged model the number of loops is exactly a sum of independent coin flips with biases 1, 1/3, 1/5 and so on, whatever the degree. From that formula follow a mean of about half log n, a bell curve, and the fact that one such cover in about the square root of n is a single Hamilton cycle.'},
     {id:'2611-21709',date:'2026-11-18',title:'QEDist: Practical Exact Distance Certification for Stabilizer Codes',authors:'Lee',field:'quant-ph',tags:['error correction','tree search','linear algebra over F₂'],mins:40,
@@ -6225,6 +6580,118 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
       el('path',{d,fill:'none',stroke:'var(--accent)','stroke-width':2});
       el('text',{x:170,y:230,class:'lab'}).textContent='number of cycles c';
       el('text',{x:300,y:22,class:'lab'}).textContent='n = '+fr.n;});
+  })();
+
+
+  // ================= 2611.25102: shared helpers =================
+  const HU={sub:n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join(''),
+    bits:(v,k)=>Array.from({length:k},(_,i)=>(v>>i)&1),
+    up:(U,k)=>{const u=HU.bits(U,k),T=[];for(let i=0;i<k;i++)if(!u[i]){const t=[i];for(let j=i+1;j<k;j++)if(u[j])t.push(j);T.push(t)}return T},
+    lo:(L,k)=>{const l=HU.bits(L,k),T=[];for(let i=0;i<k;i++)if(l[i]){const t=[i];for(let j=i+1;j<k;j++)if(!l[j])t.push(j);T.push(t)}return T},
+    evU:(T,X,k)=>{const x=HU.bits(X,k);return T.reduce((s,t)=>s+(t.every(j=>x[j])?1:0),0)},
+    evL:(T,X,k)=>{const x=HU.bits(X,k);return T.reduce((s,t)=>s+(t.every(j=>!x[j])?1:0),0)},
+    ranges:v=>{const r=[];let a=null;v.forEach((y,i)=>{if(y===0&&a===null)a=i;if((y!==0||i===v.length-1)&&a!==null){r.push([a,y===0?i:i-1]);a=null}});return r.map(([a,b])=>a===b?''+a:a+' to '+b).join(' and ')}};
+  HU.strip=(el,y0,h,vals,label,thr)=>{const n=vals.length,W=320/n,mx=Math.max(1,...vals);
+    el('text',{x:10,y:y0-4,class:'lab',style:'text-anchor:start',fill:'var(--fg)'}).textContent=label;
+    el('line',{x1:10,y1:y0+h,x2:330,y2:y0+h,stroke:'var(--line)'});
+    vals.forEach((v,i)=>{const x=10+i*W;if(v===0)el('rect',{x:x+W*0.1,y:y0+h-3,width:Math.max(W*0.8,1),height:3,fill:'var(--ok)'});
+      else{const hh=v/mx*(h-4);el('rect',{x:x+W*0.1,y:y0+h-hh,width:Math.max(W*0.8,1),height:hh,fill:'var(--bad)'})}});
+    if(thr!=null){const x=10+(thr+1)*W;el('line',{x1:x,y1:y0-2,x2:x,y2:y0+h+2,stroke:'var(--muted)','stroke-dasharray':'3 3'})}
+    el('text',{x:330,y:y0-4,class:'lab',style:'text-anchor:end'}).textContent='max '+mx;};
+
+  // ================= 2611.25102: Algorithm 1 =================
+  (function(){
+    const root=document.getElementById('pHuBuild');if(!root)return;const P=Player(root);const k=6,U=53,u=HU.bits(U,k),sb=HU.sub;
+    let ex={s:'0',sum:false,zero:true},T=[];const F=[];
+    F.push({i:0,ex:{...ex},vals:null,t:'The threshold',c:`The threshold is U = 53 = (110101)<sub>2</sub>. Algorithm 1 reads its bits from u<sub>1</sub> (right) up to u<sub>6</sub> (left), and at each step the penalty covers one more bit of X.`});
+    for(let i=1;i<=k;i++){const b=u[i-1],xi='x'+sb(i);
+      if(b===0){ex=ex.zero?{s:xi,sum:false,zero:false}:{s:xi+' + '+ex.s,sum:true,zero:false};T.push([i-1])}
+      else{ex=ex.zero?ex:{s:xi+(ex.sum?'('+ex.s+')':ex.s),sum:false,zero:false};T.forEach(t=>t.push(i-1))}
+      const Up=U%(1<<i),vals=[];for(let X=0;X<(1<<i);X++)vals.push(HU.evU(T,X,i));
+      const ok=vals.every((v,X)=>(v===0)===(X<=Up)),nz=vals.filter(v=>v===0).length;
+      const rule=i===1?(b?'Bit u₁ = 1, so H starts at 0: with one bit, X ≤ 1 always holds.':'Bit u₁ = 0, so H starts as x₁: with one bit, X ≤ 0 fails exactly when x₁ = 1.')
+        :(b?`Bit u<sub>${i}</sub> = 1: multiply by x<sub>${i}</sub>. When x<sub>${i}</sub> = 0, X is below 2<sup>${i-1}</sup> ≤ U′ and everything is switched off.`:`Bit u<sub>${i}</sub> = 0: add x<sub>${i}</sub>. A 1 in this position puts X above the threshold on its own.`);
+      F.push({i,ex:{...ex},vals,Up,t:`Step ${i}: bit u${sb(i)} = ${b}`,c:`${rule} The page evaluates H on all ${1<<i} values of the lowest ${i===1?'bit':i+' bits'}: it is zero for exactly ${nz} of them, those up to ${Up} = U mod 2<sup>${i}</sup>${ok?'':' (check failed)'}.`});}
+    const triv=(1<<k)-U-1,deg=Math.max(...T.map(t=>t.length));
+    F.push({i:7,ex:{...ex},vals:F[k].vals,Up:U,t:'The result',c:`The result is H<sub>upper</sub>(X, 53) = x<sub>6</sub>x<sub>5</sub>(x<sub>4</sub> + x<sub>3</sub>x<sub>2</sub>), Eq. (12), with ${T.length} product terms, degree ${deg}. Listing the forbidden values 54 to 63 instead would take ${triv} terms of degree 6.`});
+    F.delay=4600;
+    P.load(F,(fr,el)=>{
+      for(let c=0;c<k;c++){const i=k-c,x=58+c*40,on=fr.i>=i&&fr.i<=k||fr.i===7,cur=fr.i===i;
+        el('rect',{x:x-15,y:14,width:30,height:30,rx:5,fill:cur?'var(--accent)':'var(--raise)',stroke:on?'var(--fg)':'var(--line)','stroke-width':1.2});
+        el('text',{x,y:34,class:'lab',fill:cur?'var(--surface)':on?'var(--fg)':'var(--muted)','font-size':14}).textContent=u[i-1];
+        el('text',{x,y:56,class:'lab'}).textContent='u'+sb(i)}
+      el('text',{x:24,y:34,class:'lab',fill:'var(--fg)'}).textContent='U =';
+      el('text',{x:170,y:86,class:'lab',fill:'var(--fg)','font-size':13}).textContent='H = '+fr.ex.s;
+      if(fr.vals){const n=fr.vals.length;HU.strip(el,118,84,fr.vals,'H on X = 0 … '+(n-1),fr.Up);
+        el('text',{x:170,y:226,class:'lab'}).textContent='zero up to U′ = '+fr.Up+' (dashed line)'}
+      else el('text',{x:170,y:160,class:'lab'}).textContent='values appear after step 1';
+    });
+  })();
+
+  // ================= 2611.25102: evaluating the terms =================
+  (function(){
+    const root=document.getElementById('pHuCheck');if(!root)return;const P=Player(root);const k=6,U=53,u=HU.bits(U,k),T=HU.up(U,k).reverse(),sb=HU.sub;
+    const XS=[41,53,54,56,61,63];
+    const tname=t=>t.slice().sort((a,b)=>b-a).map(j=>'x'+sb(j+1)).join('');
+    const F=[{t:'The two terms',c:`For U = 53 = (110101)<sub>2</sub>, Eq. (11) gives one term per zero bit: ${T.map(t=>tname(t)).join(' for bit 4, and ')} for bit 2. Each term is 1 only if every one of its bits is 1.`}];
+    XS.forEach(X=>{const x=HU.bits(X,k);let m=-1;for(let i=k-1;i>=0;i--)if(x[i]!==u[i]){m=i;break}
+      const vals=T.map(t=>t.every(j=>x[j])?1:0),H=vals.reduce((a,b)=>a+b,0),bin=x.slice().reverse().join('');
+      let why=m<0?'Here X equals U, so no bit differs.':x[m]?`The highest differing bit is bit ${m+1}, where X has 1 and U has 0, so X &gt; 53.`:`The highest differing bit is bit ${m+1}, where X has 0 and U has 1, so X &lt; 53.`;
+      const fired=T.filter((t,i)=>vals[i]).map(t=>tname(t));
+      F.push({X,x,m,vals,H,t:`X = ${X} = (${bin})₂`,c:`${why} ${fired.length?'Firing: '+fired.join(' and ')+'.':'No term fires.'} The penalty is H = ${vals.join(' + ')} = ${H}, so the point is ${H?'penalized':'feasible'}.${X===61?' Note that 61 gets the same penalty as 54: the value is a count, not a distance.':''}${X===63?' Both terms fire, the largest value this penalty can take.':''}`})});
+    F.delay=4400;
+    P.load(F,(fr,el)=>{
+      const cx=c=>110+c*36;
+      [['U',u],['X',fr.x]].forEach(([nm,b],r)=>{const y=34+r*38;el('text',{x:60,y:y+5,class:'lab',fill:'var(--fg)','font-size':12}).textContent=nm+(nm==='X'&&fr.X!=null?' = '+fr.X:' = 53');
+        for(let c=0;c<k;c++){const i=k-1-c,hl=fr.m===i;el('rect',{x:cx(c)-14,y:y-14,width:28,height:28,rx:5,fill:hl?'var(--accent)':'var(--raise)',stroke:'var(--line)'});
+          el('text',{x:cx(c),y:y+5,class:'lab',fill:hl?'var(--surface)':'var(--fg)','font-size':13}).textContent=b?b[i]:'·'}});
+      for(let c=0;c<k;c++)el('text',{x:cx(c),y:100,class:'lab'}).textContent='bit '+(k-c);
+      T.forEach((t,r)=>{const y=134+r*44,ts=t.slice().sort((a,b)=>b-a);
+        ts.forEach((j,q)=>{const x=40+q*44,v=fr.x?fr.x[j]:null;el('rect',{x:x-17,y:y-14,width:34,height:28,rx:5,fill:v===1?'var(--ok)':'var(--raise)',stroke:'var(--line)'});
+          el('text',{x,y:y+4,class:'lab',fill:v===1?'var(--surface)':'var(--fg)','font-size':11}).textContent='x'+sb(j+1)+(v!=null?'='+v:'')});
+        const fire=fr.vals&&fr.vals[r];el('text',{x:268,y:y+4,class:'lab',fill:fire?'var(--bad)':'var(--muted)','font-size':12}).textContent=fr.vals?'term = '+fr.vals[r]:'term '+(r+1)});
+      if(fr.H!=null)el('text',{x:170,y:232,class:'lab',fill:fr.H?'var(--bad)':'var(--ok)','font-size':13}).textContent='H = '+fr.H+(fr.H?'  (X > 53)':'  (X ≤ 53)');
+    });
+  })();
+
+  // ================= 2611.25102: composition =================
+  (function(){
+    const root=document.getElementById('pHuCompose');if(!root)return;const P=Player(root);const k=6,N=64,R=[...Array(N).keys()];
+    const u53=R.map(X=>HU.evU(HU.up(53,k),X,k)),l17=R.map(X=>HU.evL(HU.lo(17,k),X,k)),u17=R.map(X=>HU.evU(HU.up(17,k),X,k)),l53=R.map(X=>HU.evL(HU.lo(53,k),X,k));
+    const hin=R.map(X=>l17[X]+u53[X]),hout=R.map(X=>u17[X]*l53[X]);
+    const okIn=hin.every((v,X)=>(v===0)===(X>=17&&X<=53)),okOut=hout.every((v,X)=>(v===0)===(X<=17||X>=53));
+    const F=[
+      {S:[[u53,'H_upper(X, 53)']],t:'Upper bound',c:`The upper-bound penalty H<sub>upper</sub>(X, 53) on all 64 values is zero for X = ${HU.ranges(u53)}, then 1 or 2. Its largest value is ${Math.max(...u53)}.`},
+      {S:[[l17,'H_lower(X, 17)']],t:'Lower bound',c:`The lower-bound penalty H<sub>lower</sub>(X, 17) of Eq. (16) is ${l17[0]} at X = 0, 1 from X = 1 to 16, and zero for X = ${HU.ranges(l17)}.`},
+      {S:[[l17,'H_lower(X, 17)'],[u53,'H_upper(X, 53)'],[hin,'sum = H_in(X, 17, 53)']],t:'Add: interval',c:`Adding gives H<sub>in</sub> (Eq. 18). A sum of nonnegative numbers is zero only where both are, so the zero set is X = ${HU.ranges(hin)}${okIn?', exactly the interval':' (check failed)'}.`},
+      {S:[[u17,'H_upper(X, 17)'],[l53,'H_lower(X, 53)'],[hout,'product = H_out(X, 17, 53)']],t:'Multiply: exclusion',c:`For the exclusion, Eq. (19) uses the other pair: H<sub>upper</sub>(X, 17) is zero for X ≤ 17 and H<sub>lower</sub>(X, 53) for X ≥ 53. Their product is zero for X = ${HU.ranges(hout)}${okOut?', exactly the required set':' (check failed)'}.`},
+      {S:[[hin,'H_in(X, 17, 53)'],[hout,'H_out(X, 17, 53)']],t:'The check',c:`All 64 assignments agree with Theorems 3 and 4, as in the paper's Section 4.1. On the excluded middle the product ranges from ${Math.min(...hout.filter(v=>v))} to ${Math.max(...hout)} (our computation): a product of two positive integers is at least 1.`}];
+    F.delay=4800;
+    P.load(F,(fr,el)=>{const n=fr.S.length,h=n===1?150:n===2?70:46,gap=n===1?0:n===2?44:30;
+      fr.S.forEach(([v,l],i)=>HU.strip(el,26+i*(h+gap),h,v,l.replace(/_(upper|lower|in|out)/,' $1 ')));
+      el('text',{x:10,y:246,class:'lab',style:'text-anchor:start'}).textContent='X = 0';el('text',{x:330,y:246,class:'lab',style:'text-anchor:end'}).textContent='X = 63';});
+  })();
+
+  // ================= 2611.25102: penalty weight =================
+  (function(){
+    const root=document.getElementById('pHuEnergy');if(!root)return;const P=Player(root);const k=3,U=4,T=HU.up(U,k),R=[...Array(8).keys()];
+    const H=R.map(X=>HU.evU(T,X,k));
+    const mk=(Pw,kind)=>{const E=kind==='pen'?H.slice():R.map(X=>-X+Pw*H[X]);const mn=Math.min(...E),arg=R.filter(X=>E[X]===mn);return{E,mn,arg,Pw,kind}};
+    const desc=f=>`minimum ${String(f.mn).replace('-','−')} at X = ${f.arg.join(' and ')}`;
+    const F=[];
+    let f=mk(0,'obj');F.push({...f,t:'Objective only',c:`With no penalty the energy E = −X has its ${desc(f)}, which breaks the constraint X ≤ 4.`});
+    f=mk(1,'pen');F.push({...f,t:'The penalty alone',c:`The penalty H = x<sub>3</sub>(x<sub>2</sub> + x<sub>1</sub>) takes the values ${H.join(', ')} on X = 0 to 7: zero on the feasible values, positive on 5, 6, 7.`});
+    [1,2,3,5].forEach(Pw=>{const g=mk(Pw,'sum');const bad=g.arg.some(X=>X>U);
+      F.push({...g,t:`P = ${Pw}`,c:`With weight ${Pw}, the energy E = −X + ${Pw===1?'':Pw}H has its ${desc(g)}. ${bad?(g.arg.includes(U)?'A tie: the solver may return an infeasible string.':'The weight is too small: cheating pays.'):'The minimum is the constrained optimum X = 4.'}${Pw===3?' Any P &gt; 2 works here, since violating can gain at most 2 per unit of penalty (X = 6 against X = 4).':''}`})});
+    F.delay=4400;
+    P.load(F,(fr,el)=>{const s=15,base=30+4*s;
+      el('line',{x1:20,y1:base,x2:330,y2:base,stroke:'var(--line)'});el('text',{x:16,y:base+3,class:'lab',style:'text-anchor:end'}).textContent='0';
+      R.forEach(X=>{const v=fr.E[X],x=36+X*37,h=Math.abs(v)*s,isMin=fr.kind!=='pen'&&fr.arg.includes(X);
+        el('rect',{x:x,y:v>=0?base-h:base,width:26,height:Math.max(h,1),rx:3,fill:isMin?'var(--accent)':X>U?'var(--bad)':'var(--cool)'});
+        el('text',{x:x+13,y:v>=0?base-h-4:base+h+11,class:'lab',fill:'var(--fg)'}).textContent=String(v).replace('-','−');
+        el('text',{x:x+13,y:222,class:'lab',fill:'var(--fg)'}).textContent='X='+X;
+        el('text',{x:x+13,y:236,class:'lab'}).textContent=HU.bits(X,3).reverse().join('')});
+      el('text',{x:330,y:20,class:'lab',style:'text-anchor:end',fill:'var(--fg)'}).textContent=fr.kind==='obj'?'E = −X':fr.kind==='pen'?'H(X, 4)':'E = −X + '+fr.Pw+'H';});
   })();
 
   route();
