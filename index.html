@@ -5116,10 +5116,419 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.25102v1. Theorem, corollary, algorithm, table and equation numbers match the paper. All four animations run real computations in the page: the first runs Algorithm 1 on the bits of 53 and evaluates each intermediate polynomial on every value of the lower bits; the second evaluates the product terms of Eq. (11) literal by literal; the third evaluates all four penalties of Example B on all 64 values of X; the fourth computes the energy of all eight bit strings of Example A for each penalty weight. The running examples come from the paper; the derivations and examples marked as ours are ours.</p>
   </footer>
 </div>
+<div class="wrap" id="view-p-2611-26337" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Sat, Nov 21</span></div>
+  <div class="paperhead">
+    <h1>How Should Candidates Be Weighted under Open-List Proportional Representation? Harmonic Weights and Dirichlet Order Statistics</h1>
+    <p class="meta">Daria Boratyn, Dariusz Stolicki · posted Nov 19, 2026 · physics.soc-ph, cross-listed in math.PR · <a href="https://arxiv.org/abs/2611.26337" target="_blank" rel="noopener">arXiv 2611.26337</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">If a party's vote is split among its candidates at random, and you do not know how lopsided the split tends to be, not even its order of magnitude, then the share you should expect for the candidate in position k falls off like 1/k, and this paper proves it. The question comes from political science: under open-list proportional representation a few candidates collect most of a list's personal votes, so anyone who counts candidates (how many women a party nominates, how many incumbents return) needs a weight for each list position before any votes are cast. The authors model the split with the symmetric Dirichlet distribution, the standard family of random points on a simplex, and show that no single member of the family gives sensible weights: the uniform split is too even, and every fixed concentration makes the top of the list too flat and the bottom too steep. Averaging over the concentration with the scale-invariant prior dθ/θ, however, turns geometric profiles into a 1/k profile, and the result sits within 1.4 to 3.4 percent of the simple harmonic weights 1/(kH<sub>n</sub>). Along the way the paper uses some of the most useful tools in probability: the gamma representation of the Dirichlet distribution, order statistics and their gaps, hazard rates, Poisson processes, and the Poisson–Dirichlet limit that also describes the cycle lengths of a random permutation. This chapter builds each of those from the ground up, with a three-candidate example small enough to check by hand.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>why counting candidates on party lists needs weights, and what the paper means by the weight of a list position (Definitions 1 and 3, Assumption A1);</li>
+        <li>what the probability simplex and the symmetric Dirichlet distribution are, and how the parameter α controls how concentrated a random split is;</li>
+        <li>the gamma trick: a Dirichlet vector is a vector of independent gamma variables divided by their sum, and why that turns expected shares into expected order statistics (Lemma 1);</li>
+        <li>how to compute the expected gap between the k-th and (k+1)-th largest of n random numbers from a tail integral, and what a hazard rate is (Eq. 4);</li>
+        <li>why, for the uniform split, the expected largest of three shares is 11/18, and why the harmonic weights appear exactly as normalized expected margins (Proposition 1);</li>
+        <li>why every fixed α gives a profile that is flat at the top and collapses at the bottom (Definition 5, Proposition 2);</li>
+        <li>the sparse limit, the Poisson–Dirichlet distribution, and its connection to the longest cycle of a random permutation (Proposition 3, Remark 6);</li>
+        <li>why averaging geometric profiles over a scale-invariant prior produces 1/k decay (Theorem 1, Proposition 4), and how far the result is from the harmonic weights (Tables 1 to 3).</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>n</dt><dd>the number of candidates on a list, n ≥ 2</dd>
+        <dt>[n]</dt><dd>the set {1, …, n}</dd>
+        <dt>Δ<sub>n</sub></dt><dd>the probability simplex: vectors of n nonnegative numbers summing to 1</dd>
+        <dt>V = (V<sub>1</sub>, …, V<sub>n</sub>)</dt><dd>the random shares of the list vote won by the n candidates</dd>
+        <dt>x<sub>(k)</sub></dt><dd>the k-th largest coordinate of a vector x, so x<sub>(1)</sub> ≥ ⋯ ≥ x<sub>(n)</sub></dd>
+        <dt>α</dt><dd>the symmetric Dirichlet parameter, per candidate; α = 1 is the uniform distribution on Δ<sub>n</sub></dd>
+        <dt>θ</dt><dd>the total concentration nα (Definition 2)</dd>
+        <dt>π<sup>(n)</sup><sub>k</sub>(α)</dt><dd>the expected share of the k-th largest candidate, E(V<sub>(k)</sub>) (Definition 1)</dd>
+        <dt>H<sub>n</sub></dt><dd>the n-th harmonic number 1 + 1/2 + ⋯ + 1/n, with H<sub>0</sub> = 0</dd>
+        <dt>w<sup>(n)</sup><sub>k</sub></dt><dd>the harmonic weight 1/(kH<sub>n</sub>) (Definition 3)</dd>
+        <dt>d(p, q)</dt><dd>total variation distance, half the sum of |p<sub>k</sub> − q<sub>k</sub>| (Definition 4)</dd>
+        <dt>G<sub>1</sub>, …, G<sub>n</sub></dt><dd>independent gamma variables with shape α and unit scale</dd>
+        <dt>f<sub>α</sub>, F<sub>α</sub>, Q<sub>α</sub>, h<sub>α</sub></dt><dd>the gamma density, distribution function, quantile function and hazard rate f<sub>α</sub>/(1 − F<sub>α</sub>)</dd>
+        <dt>ρ<sup>(n)</sup><sub>k</sub>(α)</dt><dd>the expected reciprocal hazard rate E(1/h<sub>α</sub>(G<sub>(k)</sub>)) (Eq. 5)</dd>
+        <dt>N<sub>eff</sub></dt><dd>the effective number of candidates (Eq. 1)</dd>
+        <dt>ε<sub>k</sub>(p)</dt><dd>the elasticity of a profile at position k (Definition 5)</dd>
+        <dt>Γ(a, x), E<sub>1</sub>(x), γ</dt><dd>the upper incomplete gamma function, the exponential integral ∫<sub>x</sub><sup>∞</sup> t<sup>−1</sup>e<sup>−t</sup> dt, and the Euler–Mascheroni constant 0.5772…</dd>
+        <dt>ℓ<sub>k</sub>(θ)</dt><dd>the sparse profile: the limiting expected k-th largest share when θ is fixed and n → ∞ (Eq. 8)</dd>
+        <dt>θ<sub>0</sub>, g<sub>k</sub>(θ<sub>0</sub>)</dt><dd>the lower bound of the prior on θ and the mixture weight of position k (Eq. 11)</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Example A: three candidates, uniform split.</b> A list of n = 3 candidates divides its vote by a point chosen uniformly from the triangle Δ<sub>3</sub> (α = 1). This is the same as breaking a stick of length 1 at two uniformly random points. We will compute by hand that the expected shares of the first, second and third candidates are 11/18, 5/18 and 2/18, compare them with the harmonic weights 6/11, 3/11 and 2/11, and simulate the split in the page. The paper's Table 3 contains this case (n = 3, α = 1) as its first row.</li>
+        <li><b>Example B: unknown concentration with θ<sub>0</sub> = 1.</b> The total concentration θ is drawn from the prior dθ/θ on [1, ∞), and the list is long. The paper's Table 1 gives the resulting weights relative to the leader, 1, 0.533, 0.356, 0.263, 0.206, …, and the page recomputes them from Eqs. (8), (13) and (14).</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · The question">
+      <span class="num">1 · WEIGHTING LIST POSITIONS</span>
+      <h2>Why would anyone need a weight for each place on a list?</h2>
+      <p>In open-list proportional representation each party presents an ordered list of candidates. Voters cast preference votes for individual candidates; the votes of all of a party's candidates are pooled to decide how many seats the party wins, and the individual votes decide which of its candidates fill those seats (the empirical studies the paper cites look at elections of this kind in Italy, Poland and Finland). The paper's Section 1.1 makes the empirical point that those individual votes are divided very unevenly: a few candidates attract most of the list's vote, many attract almost none.</p>
+      <p>That unevenness is a problem for anyone who counts candidates. A study of how many women a party nominates, or how many of last election's candidates return, has to decide whether the leader of a list counts the same as the candidate in position 30. Section 2 of the paper reviews the existing answers: cut-offs that count only the top positions, weights that fall linearly with rank, estimated probabilities of being elected, logistic curves, and the reciprocal weights 1/k of Flis and coauthors, used before this paper without a derivation. Most of these need information beyond the list itself, such as the party's result at the previous election, and none is derived from a model of how a list's vote is divided.</p>
+      <p>The authors want weights that depend on list position alone and can be assigned before the election. Their definition of the weight of a position is the share of the list vote its occupant can be expected to receive. To connect positions with shares they make one idealizing assumption.</p>
+      <div class="def"><span class="label">Assumption A1 · sorting</span>
+        <p>The candidates appear on the list in nonincreasing order of their vote shares: the share of the candidate in position k is V<sub>(k)</sub>, the k-th largest of the shares V<sub>1</sub>, …, V<sub>n</sub>.</p>
+        <p>In words: the party ranks its candidates exactly by how well they will do. Real lists are sorted imperfectly, and Section 7 of the paper returns to this.</p>
+      </div>
+      <div class="def"><span class="label">Definition 1 · expected-share profile</span>
+        <p>For a random vector V of shares, the expected-share profile is the vector π<sup>(n)</sup> with coordinates</p>
+        <div class="math" data-tex="\pi^{(n)}_k:=\mathbb{E}\bigl(V_{(k)}\bigr),\qquad k\in[n]."></div>
+        <p>In words: the k-th weight is the average, over all possible splits of the vote, of the k-th largest share. Under A1 it is the weight an analyst who knows the model but not the result would give to position k. The coordinates sum to 1, because V<sub>(1)</sub> + ⋯ + V<sub>(n)</sub> = 1 for every split.</p>
+      </div>
+      <p>The candidate answer the paper ends up recommending has no free parameters at all.</p>
+      <div class="def"><span class="label">Definition 3 · harmonic weights</span>
+        <p>For a list of n candidates, the harmonic weights are</p>
+        <div class="math" data-tex="\begin{gathered}w^{(n)}_k:=\frac{1}{kH_n}\quad\text{for every }k\in[n],\\ H_n:=\sum_{j=1}^{n}\frac1j.\end{gathered}"></div>
+        <p class="eqn">Eq. 2</p>
+        <p>In words: weight position k in proportion to 1/k, and divide by H<sub>n</sub> so the weights sum to 1. The ratio of any two weights, w<sub>k</sub>/w<sub>l</sub> = l/k, does not depend on the length of the list; only the normalization does, and the leader's weight is 1/H<sub>n</sub>.</p>
+      </div>
+      <p>For Example A, H<sub>3</sub> = 1 + 1/2 + 1/3 = 11/6, so the harmonic weights are 6/11, 3/11 and 2/11, about 0.545, 0.273 and 0.182. The paper's Remark 3 notes that the sequence 1, 1/2, 1/3, … is also the sequence of divisors in the D'Hondt method of seat allocation: on a closed list, the k-th candidate is elected exactly when the list's vote divided by k is among the M largest quotients of all lists, where M is the number of seats.</p>
+      <p>To say how close two weight profiles are, the paper uses one measure throughout.</p>
+      <div class="def"><span class="label">Definition 4 · total variation distance</span>
+        <div class="math" data-tex="d(\mathbf p,\mathbf q):=\frac12\sum_{k=1}^{m}\lvert p_k-q_k\rvert ."></div>
+        <p>In words: the share of the total weight that would have to be moved from some positions to others to turn one profile into the other. A distance of 0.03 means three percent of the weight is in the wrong place.</p>
+      </div>
+      <p class="short"><b>In short:</b> the weight of a list position is defined as the expected share of the k-th largest candidate under a random split of the vote (Definition 1, Assumption A1); the candidate answer is the harmonic profile 1/(kH<sub>n</sub>), and profiles are compared by total variation distance.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Random splits">
+      <span class="num">2 · DIVIDING A VOTE AT RANDOM</span>
+      <h2>What does it mean to choose a split of the vote at random?</h2>
+      <p>A split of a list's vote among n candidates is a point of the probability simplex</p>
+      <div class="math" data-tex="\Delta_n:=\Bigl\{\mathbf x\in\mathbb R^n_{\ge0}:\ \sum_{i=1}^n x_i=1\Bigr\},"></div>
+      <p>which is a segment for n = 2, a triangle for n = 3 and a tetrahedron for n = 4. To speak of an expected share we need a probability distribution on this set, and since the weights are meant to be assigned before anything is known about the individual candidates, the distribution should treat all candidates alike. The paper's choice is the standard one.</p>
+      <div class="def"><span class="label">Assumption A2 · symmetric Dirichlet shares</span>
+        <p>The vector V has the symmetric Dirichlet distribution with parameter α &gt; 0, the distribution on Δ<sub>n</sub> with density proportional to</p>
+        <div class="math" data-tex="\prod_{i=1}^{n}v_i^{\,\alpha-1}."></div>
+        <p>In words: every candidate is treated the same (the distribution is exchangeable), and the single number α sets how concentrated a typical split is. For α = 1 the density is constant, so every split is equally likely. For α &lt; 1 the density blows up near the corners of the simplex, so the vote typically goes to a few candidates; for α &gt; 1 the mass moves towards the center, where all shares are close to 1/n (Remark 2).</p>
+      </div>
+      <p>The paper also notes that this family arises as the large-electorate limit of the Pólya–Eggenberger urn, a model in which each new voter tends to copy earlier ones. To compute anything with it we need one more family of distributions, which we review as background.</p>
+      <div class="aside"><span class="label">Background · the gamma distribution</span>The gamma distribution with shape α &gt; 0 and unit scale has density f<sub>α</sub>(x) = x<sup>α−1</sup>e<sup>−x</sup>/Γ(α) on x &gt; 0, where Γ(α) = ∫<sub>0</sub><sup>∞</sup> t<sup>α−1</sup>e<sup>−t</sup> dt is the gamma function, so that Γ(m) = (m − 1)! for whole numbers. Its mean is α and its variance is α, so E(G<sup>2</sup>) = α(α + 1). For α = 1 it is the exponential distribution, density e<sup>−x</sup>. The key closure property is that a sum of independent gamma variables with shapes α<sub>1</sub>, …, α<sub>n</sub> is gamma with shape α<sub>1</sub> + ⋯ + α<sub>n</sub>. The upper incomplete gamma function Γ(a, x) = ∫<sub>x</sub><sup>∞</sup> t<sup>a−1</sup>e<sup>−t</sup> dt gives the tail: 1 − F<sub>α</sub>(x) = Γ(α, x)/Γ(α).</div>
+      <p>The bridge between the two families is the most useful fact in this paper, quoted in the proof of Lemma 1 from the reference book of Kotz, Balakrishnan and Johnson.</p>
+      <div class="fact"><span class="label">Fact · the gamma trick (used in the proof of Lemma 1)</span>
+        <p>Let G<sub>1</sub>, …, G<sub>n</sub> be independent gamma variables with shape α and let S = G<sub>1</sub> + ⋯ + G<sub>n</sub>. Then (G<sub>1</sub>/S, …, G<sub>n</sub>/S) has the symmetric Dirichlet distribution with parameter α, and S is independent of that vector.</p>
+      </div>
+      <p>In words: to split a vote at random, give each candidate an independent random "strength", and hand out the vote in proportion to strength. The total strength S carries no information about how the vote is divided. For Example A this means: draw three independent exponential numbers and divide each by their sum. The three resulting shares are uniformly distributed on the triangle.</p>
+      <p>Independence of S from the shares is what makes the trick so effective, because it lets expectations factor. Since G<sub>(k)</sub> = V<sub>(k)</sub> S and E(S) = nα,</p>
+      <div class="math" data-tex="\pi^{(n)}_k(\alpha)=\frac{\mathbb E\bigl(G_{(k)}\bigr)}{n\alpha}.\tag{3}"></div>
+      <p>This is the first half of Lemma 1. In words: the expected k-th largest share is the expected k-th largest of n independent gamma numbers, divided by their expected total. A question about a distribution on a simplex has become a question about independent random numbers, which is much easier.</p>
+      <p>The same factoring measures how concentrated a split is. Political scientists use the effective number of candidates of Laakso and Taagepera, one over the sum of squared shares: it equals n when all shares are equal and 1 when one candidate takes everything. Evaluated at the expected sum of squares, the paper states that</p>
+      <div class="math" data-tex="\begin{gathered}N_{\mathrm{eff}}:=\frac{n\alpha+1}{\alpha+1},\\ \text{since}\quad \mathbb E\Bigl(\sum_{i=1}^n V_i^2\Bigr)=\frac{\alpha+1}{n\alpha+1}.\end{gathered}\tag{1}"></div>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">Where does the expected sum of squares come from? (our derivation)</span></summary><div class="pfbody">
+        <p>The paper states the formula without proof; this derivation is ours and uses only the gamma trick. Write G<sub>i</sub> = V<sub>i</sub>S. Because S is independent of V,</p>
+        <div class="math" data-tex="\mathbb E(G_i^2)=\mathbb E(V_i^2)\,\mathbb E(S^2)."></div>
+        <p>The left side is α(α + 1), the second moment of a gamma variable with shape α. The total S is gamma with shape nα, so E(S<sup>2</sup>) = nα(nα + 1). Dividing,</p>
+        <div class="math" data-tex="\begin{gathered}\mathbb E(V_i^2)=\frac{\alpha(\alpha+1)}{n\alpha(n\alpha+1)},\\ \sum_{i=1}^{n}\mathbb E(V_i^2)=\frac{\alpha+1}{n\alpha+1}.\end{gathered}"></div>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For the uniform split, α = 1, this gives N<sub>eff</sub> = (n + 1)/2: about half the list is effectively in play, whatever the list. For Example A it gives N<sub>eff</sub> = 2. The formula also shows that α alone is not the natural way to describe concentration on lists of different lengths, which motivates the second parameterization.</p>
+      <div class="def"><span class="label">Definition 2 · total concentration</span>
+        <p>The total concentration of a list is θ := nα, the sum of the Dirichlet parameters of its candidates.</p>
+        <p>In words: α measures concentration per candidate, θ for the list as a whole. If θ is held fixed while n grows, Eq. (1) gives N<sub>eff</sub> = (θ + 1)/(θ/n + 1) → 1 + θ, so the effective number of candidates stays bounded however many names are added at the bottom.</p>
+      </div>
+      <p class="short"><b>In short:</b> a random split is a symmetric Dirichlet point of the simplex, with α setting its concentration; dividing independent gamma variables by their sum produces it, which turns expected shares into expected gamma order statistics (Eq. 3) and gives N<sub>eff</sub> = (nα + 1)/(α + 1) (Eq. 1).</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Order statistics">
+      <span class="num">3 · ORDER STATISTICS AND THEIR GAPS</span>
+      <h2>How do you compute the expected k-th largest of n random numbers?</h2>
+      <p>Eq. (3) reduces everything to E(G<sub>(k)</sub>), the expected k-th largest of n independent gamma variables. Computing it directly from the density of G<sub>(k)</sub> is messy. The paper instead computes the expected gaps between neighbors, using two standard tools: the tail-integral formula for expectations and the hazard rate.</p>
+      <p>The tail-integral formula says that for a nonnegative random variable X, E(X) = ∫<sub>0</sub><sup>∞</sup> Pr(X &gt; x) dx. (It follows by writing X = ∫<sub>0</sub><sup>∞</sup> 1{x &lt; X} dx and taking expectations inside the integral.) The hazard rate of a distribution is</p>
+      <div class="math" data-tex="h_\alpha(x):=\frac{f_\alpha(x)}{1-F_\alpha(x)},"></div>
+      <p>the density at x divided by the probability of having survived past x. In words, it is the instantaneous rate at which a variable that has already passed x is about to stop. For the exponential distribution f<sub>1</sub>(x) = e<sup>−x</sup> and 1 − F<sub>1</sub>(x) = e<sup>−x</sup>, so h<sub>1</sub> ≡ 1: the exponential has a constant hazard, which is the memoryless property.</p>
+      <div class="def"><span class="label">Lemma 1 · gamma representation, second half</span>
+        <p>Let G<sub>(n+1)</sub> := 0. For every k ∈ [n],</p>
+        <div class="math" data-tex="\begin{aligned}&\mathbb E(G_{(k)})-\mathbb E(G_{(k+1)})\\&\quad=\binom nk\int_0^\infty F_\alpha^{\,n-k}\,(1-F_\alpha)^k\,dx\\&\quad=\frac1k\,\mathbb E\Bigl(\frac{1}{h_\alpha(G_{(k)})}\Bigr).\end{aligned}"></div>
+        <p class="eqn">Eq. 4</p>
+        <p>In words: the expected gap below the k-th largest value equals 1/k times the average reciprocal hazard rate at that value. Where the hazard is high, values are packed together; where it is low, they spread out.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the gap an integral of "exactly k exceed x"? (the paper's proof)</span></summary><div class="pfbody">
+        <p>By the tail-integral formula applied to both order statistics,</p>
+        <div class="math" data-tex="\begin{aligned}&\mathbb E(G_{(k)})-\mathbb E(G_{(k+1)})\\&\quad=\int_0^\infty\bigl(P_k(x)-P_{k+1}(x)\bigr)\,dx,\\&P_j(x):=\Pr(G_{(j)}>x).\end{aligned}"></div>
+        <p>The event G<sub>(k)</sub> &gt; x means at least k of the n variables exceed x, and G<sub>(k+1)</sub> &gt; x means at least k + 1 do. Their difference is the probability that exactly k exceed x, which is a binomial probability with success chance 1 − F<sub>α</sub>(x):</p>
+        <div class="math" data-tex="\binom nk\bigl(1-F_\alpha(x)\bigr)^k F_\alpha(x)^{n-k}."></div>
+        <p>That gives the first equality. For the second, substitute u = 1 − F<sub>α</sub>(x). Then du = −f<sub>α</sub>(x) dx, so dx = −du/(u h<sub>α</sub>(x)), and the integral becomes</p>
+        <div class="math" data-tex="\int_0^1\binom nk u^{k-1}(1-u)^{n-k}\,\frac{1}{h_\alpha\bigl(Q_\alpha(1-u)\bigr)}\,du."></div>
+        <p>The function C(n, k) u<sup>k−1</sup>(1 − u)<sup>n−k</sup> is 1/k times the density of the beta distribution with parameters k and n − k + 1, which is the distribution of 1 − F<sub>α</sub>(G<sub>(k)</sub>) (the k-th smallest of n uniform numbers). The integral is therefore 1/k times the expectation of 1/h<sub>α</sub>(G<sub>(k)</sub>).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For the exponential distribution the hazard is identically 1, so the expected gap is exactly 1/k. (This is also the memoryless picture: once k variables are still above some level, the time until the next of them stops is the minimum of k independent exponentials, which has mean 1/k. That intuition is ours; the paper's route is Eq. 4.) Adding gaps from the bottom up,</p>
+      <div class="math" data-tex="\mathbb E(G_{(k)})=\sum_{j=k}^{n}\frac1j\qquad(\alpha=1)."></div>
+      <p>For Example A, with n = 3: the smallest of three exponentials has mean 1/3, the middle one is 1/2 above it on average, and the largest a further 1 above that. So E(G<sub>(3)</sub>) = 1/3, E(G<sub>(2)</sub>) = 1/2 + 1/3 = 5/6 and E(G<sub>(1)</sub>) = 1 + 1/2 + 1/3 = 11/6. Dividing by nα = 3 as Eq. (3) says, the expected shares are</p>
+      <div class="math" data-tex="\pi^{(3)}(1)=\Bigl(\tfrac{11}{18},\ \tfrac{5}{18},\ \tfrac{2}{18}\Bigr)\approx(0.611,\ 0.278,\ 0.111)."></div>
+      <p>In stick-breaking language: break a stick at two uniform points, and the longest piece is on average 11/18 of the stick. The animation below checks this by simulation in the page, generating each split exactly as the gamma trick prescribes, and then looks at the gaps between the averaged shares, which will matter in the next section.</p>
+      <div class="player" id="pHwSplit">
+        <div class="ptitle"><span class="label">Animation · three candidates, uniform split, by simulation</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Random splits of a vote among three candidates and the running averages of the ordered shares"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>largest share</span><span><i class="sw" style="background:var(--cool)"></i>middle</span><span><i class="sw" style="background:var(--deep)"></i>smallest</span><span><i class="sw ring"></i>exact value</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p class="short"><b>In short:</b> the expected gap below the k-th largest of n variables is 1/k times the expected reciprocal hazard there (Eq. 4); for exponentials the hazard is 1, the gaps are 1, 1/2, …, 1/n, and for Example A the expected shares are 11/18, 5/18 and 2/18.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Uniform split">
+      <span class="num">4 · THE UNIFORM SPLIT</span>
+      <h2>Does the "know nothing" distribution already give harmonic weights?</h2>
+      <p>The uniform distribution on the simplex is the obvious model for complete ignorance about a split: every division of the vote is equally likely. The paper notes that it is the counterpart of the "impartial anonymous culture" of social choice theory and that its expected ordered coordinates have been used as average player weights in weighted voting games. This section asks what weights it gives and whether they are reasonable.</p>
+      <p>Combining Eqs. (3) and (4), for every α the expected margin by which the k-th candidate leads the next one is</p>
+      <div class="math" data-tex="\begin{gathered}\pi^{(n)}_k(\alpha)-\pi^{(n)}_{k+1}(\alpha)=\frac{\rho^{(n)}_k(\alpha)}{kn\alpha},\\ \rho^{(n)}_k(\alpha):=\mathbb E\Bigl(\frac{1}{h_\alpha(G_{(k)})}\Bigr),\end{gathered}\tag{5}"></div>
+      <p>with π<sup>(n)</sup><sub>n+1</sub> := 0. In words: the margins are harmonic, proportional to 1/k, up to the correction factors ρ<sub>k</sub>, the expected reciprocal hazard rates at the ordered values.</p>
+      <div class="def"><span class="label">Proposition 1 · expected margins</span>
+        <p>(i) If α = 1, then ρ<sup>(n)</sup><sub>k</sub>(1) = 1 for every k, and consequently</p>
+        <div class="math" data-tex="\begin{gathered}\pi^{(n)}_k(1)=\frac1n\sum_{j=k}^{n}\frac1j\quad\text{and}\\ w^{(n)}_k=\frac{\pi^{(n)}_k(1)-\pi^{(n)}_{k+1}(1)}{\pi^{(n)}_1(1)}\\ \text{for every }k\in[n].\end{gathered}\tag{6}"></div>
+        <p>(ii) If α &lt; 1, then ρ<sup>(n)</sup><sub>k</sub>(α) &lt; 1 and it is strictly decreasing in k; if α &gt; 1, then ρ<sup>(n)</sup><sub>k</sub>(α) &gt; 1 and it is strictly increasing in k. In either case the normalized expected margins are not harmonic.</p>
+        <p>(iii) For every α &gt; 0 and every fixed k, ρ<sup>(n)</sup><sub>k</sub>(α) → 1 as n → ∞.</p>
+        <p>In words: under the uniform split, the harmonic weight of position k is exactly the expected lead of its occupant over the next candidate, measured as a fraction of the leader's expected share. This identity holds for α = 1 and no other α, although the margins near the top of a long list are approximately harmonic for every α.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does the identity hold only for the uniform split? (the paper's proof)</span></summary><div class="pfbody">
+        <p>(i) The exponential hazard is h<sub>1</sub> ≡ 1, so every ρ<sub>k</sub> is 1. Summing Eq. (5) from position k to position n telescopes to the first formula. In particular π<sub>1</sub>(1) = H<sub>n</sub>/n, and dividing the margin 1/(kn) by H<sub>n</sub>/n gives 1/(kH<sub>n</sub>) = w<sub>k</sub>.</p>
+        <p>(ii) The gamma hazard rate is strictly decreasing when α &lt; 1 and strictly increasing when α &gt; 1, with limit 1 at infinity in both cases (a classical fact from reliability theory, cited from Barlow and Proschan). Take α &lt; 1. Then 1/h<sub>α</sub> is strictly increasing and smaller than 1. Since G<sub>(k+1)</sub> &lt; G<sub>(k)</sub> almost surely, ρ<sub>k+1</sub> &lt; ρ<sub>k</sub> &lt; 1. The case α &gt; 1 is symmetric. Finally, π<sub>1</sub>(α) is the sum of all margins, Σ<sub>j</sub> ρ<sub>j</sub>/(jnα), so the normalized margins are proportional to 1/k only if ρ<sub>k</sub> does not depend on k, which (ii) rules out.</p>
+        <p>(iii) As n grows, G<sub>(k)</sub> tends to infinity in probability, and 1/h<sub>α</sub>(x) → 1 as x → ∞. For α &lt; 1 the function 1/h<sub>α</sub> is bounded by 1 and the bounded convergence theorem applies; for α &gt; 1 it is decreasing, the quantity is monotone in n for nested samples, and monotone convergence applies.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For Example A the margins are 11/18 − 5/18 = 6/18, 5/18 − 2/18 = 3/18 and 2/18. Dividing by the leader's 11/18 gives 6/11, 3/11 and 2/11, exactly the harmonic weights of Section 1, as the last frame of the animation above also shows numerically. The expected shares themselves, 11/18, 5/18 and 2/18, are not harmonic: the paper's Table 3 puts them at total variation distance 0.071 from the harmonic weights, and the hand computation gives 14/198 ≈ 0.0707. The paper's Remark 5 quantifies how fast the identity breaks away from α = 1: for n = 10, ρ<sub>k</sub>(1/2) falls from 0.81 at the top of the list to 0.12 at the bottom, ρ<sub>k</sub>(2) rises from 1.24 to 4.66, and in both cases the normalized margins are at distance 0.12 from the harmonic weights.</p>
+      <p>The uniform split is nevertheless not a good model of real lists, and the paper gives three reasons, all in Section 4.</p>
+      <p><b>One concentration for every list.</b> By Eq. (1) the effective number of candidates is (n + 1)/2, about half the list, whatever the country, party or election.</p>
+      <p><b>Leaders become alike as lists grow.</b> The expected share of the second candidate relative to the leader is π<sub>2</sub>/π<sub>1</sub> = (H<sub>n</sub> − 1)/H<sub>n</sub> = 1 − 1/H<sub>n</sub>, which rises from 0.66 on a list of ten to 0.81 on a list of one hundred, while the leader's expected share H<sub>n</sub>/n falls from 0.293 to 0.052, a factor of 5.6. Adding weak candidates at the bottom of a list should not change how the top two compare, yet here it does.</p>
+      <p><b>Too even.</b> Under the uniform split, the variance of a candidate's share relative to the list average (that is, of nV<sub>i</sub>) is (n − 1)/(n + 1), below one. The lognormal distribution that Fortunato and Castellano fitted to exactly this quantity for elections in Italy, Poland and Finland has variance about 1.9. (The variance formula follows from the derivation under Eq. (1): with α = 1, E(V<sub>i</sub><sup>2</sup>) = 2/(n(n + 1)), so Var(nV<sub>i</sub>) = 2n/(n + 1) − 1 = (n − 1)/(n + 1); that check is ours.)</p>
+      <div class="fact"><span class="label">Fact · harmonic weights hide inside the uniform model (Proposition 1(i))</span>
+        <p>Under the uniform split, the harmonic weight of position k equals the expected lead of position k over position k + 1, divided by the leader's expected share. Within the symmetric Dirichlet family this holds only for α = 1.</p>
+      </div>
+      <p class="short"><b>In short:</b> the uniform split gives expected shares (1/n)(1/k + ⋯ + 1/n), not harmonic ones, though its normalized margins are exactly harmonic (Eq. 6); it is unrealistic because it fixes N<sub>eff</sub> at (n + 1)/2, makes leaders more alike on longer lists, and divides votes more evenly than real elections do.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Fixed α">
+      <span class="num">5 · A FIXED CONCENTRATION</span>
+      <h2>Can a better choice of α fix the uniform model?</h2>
+      <p>If the uniform split is too even, the obvious repair is a smaller α, which pushes mass towards the corners of the simplex. The choice of α then matters a great deal: on a list of thirty candidates the leader's expected share is 0.27, 0.19, 0.13 and 0.10 for α = 1/4, 1/2, 1 and 2. The paper shows that two defects remain for every fixed α. The first concerns the shape of the profile, measured by how fast it falls in proportional terms.</p>
+      <div class="def"><span class="label">Definition 5 · elasticity</span>
+        <p>For a weight profile p with positive coordinates and p<sub>m+1</sub> := 0, the elasticity at position k is</p>
+        <div class="math" data-tex="\varepsilon_k(\mathbf p):=\frac{k\,(p_k-p_{k+1})}{p_k}."></div>
+        <p>In words: the percentage drop from position k to k + 1, multiplied by k. A power law p<sub>k</sub> ∝ k<sup>−s</sup> has elasticity tending to s, so on doubly logarithmic axes it is a straight line of slope −s. For the harmonic weights ε<sub>k</sub> = k/(k + 1) for every k &lt; n, close to 1 except at the very top.</p>
+      </div>
+      <p>For Example A the harmonic elasticities are 1/2 and 2/3, and the uniform profile (11, 5, 2)/18 has ε<sub>1</sub> = 6/11 ≈ 0.55 and ε<sub>2</sub> = 2·3/5 = 1.2: flatter than harmonic at the top, steeper below (our computation from the definition). By Lemma 1 the elasticity of a Dirichlet profile is</p>
+      <div class="math" data-tex="\varepsilon_k\bigl(\boldsymbol\pi^{(n)}(\alpha)\bigr)=\frac{\mathbb E\bigl(1/h_\alpha(G_{(k)})\bigr)}{\mathbb E(G_{(k)})}.\tag{7}"></div>
+      <p>For large n the k-th largest observation concentrates near the quantile x<sub>k</sub> = Q<sub>α</sub>(1 − k/(n + 1)), so the right side is approximately 1/(x<sub>k</sub>h<sub>α</sub>(x<sub>k</sub>)). Everything therefore depends on the function x h<sub>α</sub>(x).</p>
+      <div class="def"><span class="label">Proposition 2 · shape of the profile</span>
+        <p>For every α &gt; 0 the function x ↦ x h<sub>α</sub>(x) is strictly increasing on (0, ∞), with limit 0 at zero and ∞ at infinity.</p>
+        <p>In words: the approximate elasticity 1/(x h(x)) runs from ∞ at the bottom of the list (small x) down to 0 at the top (large x). Every fixed-α profile is nearly flat among the leaders and collapses among the trailing candidates.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is x h(x) increasing for every shape α? (the paper's proof)</span></summary><div class="pfbody">
+        <p>Since the derivative of log(1 − F<sub>α</sub>) is −h<sub>α</sub>, and log f<sub>α</sub>(x) = (α − 1) log x − x − log Γ(α), the logarithmic derivative is</p>
+        <div class="math" data-tex="\frac{d}{dx}\log\bigl(xh_\alpha(x)\bigr)=\frac{\alpha}{x}-1+h_\alpha(x)."></div>
+        <p>If α ≤ 1 the hazard is nonincreasing with limit 1, so h<sub>α</sub> ≥ 1 and the derivative is at least α/x &gt; 0. If α &gt; 1, integration by parts gives Γ(α, x) = x<sup>α−1</sup>e<sup>−x</sup> + (α − 1)Γ(α − 1, x), and Γ(α − 1, x) ≤ Γ(α, x)/x (because t<sup>α−2</sup> ≤ t<sup>α−1</sup>/x for t ≥ x). Hence</p>
+        <div class="math" data-tex="h_\alpha(x)=\frac{x^{\alpha-1}e^{-x}}{\Gamma(\alpha,x)}\ \ge\ 1-\frac{\alpha-1}{x}\ >\ 1-\frac{\alpha}{x},"></div>
+        <p>and the derivative is again positive. The limits follow from h<sub>α</sub>(x) ~ x<sup>α−1</sup>/Γ(α) as x → 0 and h<sub>α</sub>(x) → 1 as x → ∞.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The elasticity equals 1, the harmonic value, at a single point, the fraction u*<sub>α</sub> = 1 − F<sub>α</sub>(x*) of the way down the list, where x*h<sub>α</sub>(x*) = 1. The paper reports u* = 0.14, 0.23, 1/e ≈ 0.37 and 0.52 for α = 1/4, 1/2, 1 and 2. (For α = 1 this is easy to check: h ≡ 1, so x* = 1 and u* = e<sup>−1</sup>.) Lowering α steepens the top of the profile only by moving the collapse higher up the list. On log-log axes a Dirichlet profile is concave, and it can only touch the straight harmonic line, never follow it.</p>
+      <p>The second defect concerns length. By Proposition 1(iii) and Eq. (5), E(G<sub>(1)</sub>) − E(G<sub>(k)</sub>) tends to H<sub>k−1</sub> as n → ∞, while E(G<sub>(1)</sub>) itself grows like log n (the maximum of n gamma variables, a standard extreme-value fact the paper cites). So the leader's share vanishes at the rate (log n)/(nα), and the ratios between the top few expected shares tend to 1: the "leaders become alike" problem of the uniform split is shared by every fixed α.</p>
+      <p class="short"><b>In short:</b> for any fixed α the elasticity rises from 0 at the top to ∞ at the bottom (Proposition 2), so the profile is too flat among leaders and too steep among the rest, and the leaders' shares become equal as the list grows.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Sparse limit">
+      <span class="num">6 · THE SPARSE LIMIT</span>
+      <h2>What happens if the list's total concentration, not α, stays fixed?</h2>
+      <p>Both defects come from tying concentration to the individual candidate. If each new name at the bottom of a list brings its own α, the list as a whole becomes more even as it grows. The paper's remedy is to fix the total concentration θ = nα instead, so α = θ/n. By Definition 2 the effective number of candidates then tends to 1 + θ, and the paper calls this limit the sparse regime: most of the vote goes to a bounded number of candidates, however long the list.</p>
+      <p>The limiting profile has an explicit formula in terms of the exponential integral E<sub>1</sub>(x) = ∫<sub>x</sub><sup>∞</sup> t<sup>−1</sup>e<sup>−t</sup> dt, which decreases from +∞ at x = 0 to 0 at infinity.</p>
+      <div class="def"><span class="label">Definition 6 and Proposition 3 · sparse profile</span>
+        <p>For θ &gt; 0 define</p>
+        <div class="math" data-tex="\begin{aligned}\ell_k(\theta):=\;&\frac{\theta^{k-1}}{(k-1)!}\\&\times\int_0^\infty E_1(x)^{k-1}\,e^{-\theta E_1(x)-x}\,dx.\end{aligned}"></div>
+        <p class="eqn">Eq. 8</p>
+        <p>If A2 holds with α = θ/n, then for every k</p>
+        <div class="math" data-tex="\lim_{n\to\infty}\pi^{(n)}_k(\theta/n)=\ell_k(\theta).\tag{9}"></div>
+        <p>Moreover the ℓ<sub>k</sub>(θ) sum to 1 over k, and</p>
+        <div class="math" data-tex="\ell_k(\theta)\ \ge\ \frac{e^{-\gamma}}{\theta}\Bigl(\frac{\theta}{1+\theta}\Bigr)^{k},\tag{10}"></div>
+        <p>with the ratio of the two sides tending to 1 as k → ∞.</p>
+        <p>In words: with the total concentration fixed, the expected shares of the leaders settle down to fixed numbers ℓ<sub>1</sub>, ℓ<sub>2</sub>, … that no longer depend on the length of the list, and far down the list they fall off geometrically, with ratio θ/(1 + θ).</p>
+      </div>
+      <p>The proof introduces two more classical objects, which we sketch as background before the details.</p>
+      <div class="aside"><span class="label">Background · Poisson processes and Poisson–Dirichlet</span>A Poisson process on (0, ∞) with intensity λ(x) dx is a random scatter of points such that the number of points in any interval is Poisson distributed with mean ∫ λ(x) dx over that interval, independently for disjoint intervals. Kingman's theorem (1975), quoted in the proof, says that as n → ∞ with α = θ/n, the ordered Dirichlet shares converge to the Poisson–Dirichlet distribution with parameter θ: take the points J<sub>1</sub> ≥ J<sub>2</sub> ≥ ⋯ of a Poisson process with intensity (θ/x)e<sup>−x</sup> dx, which has infinitely many tiny points but a finite total S = J<sub>1</sub> + J<sub>2</sub> + ⋯, and divide each point by S. It is the n = ∞ version of the gamma trick, and once more S is gamma distributed (with shape θ) and independent of the normalized sequence.</div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where does the E<sub>1</sub> formula come from? (the paper's proof of Eqs. 8 to 10)</span></summary><div class="pfbody">
+        <p>The ordered shares are bounded, so convergence in distribution to Poisson–Dirichlet implies convergence of their expectations. As in Eq. (3), independence of S gives the limit E(J<sub>k</sub>)/E(S) = E(J<sub>k</sub>)/θ. The number of points above x is Poisson with mean ∫<sub>x</sub><sup>∞</sup> (θ/t)e<sup>−t</sup> dt = θE<sub>1</sub>(x). The k-th largest point lies in [x, x + dx] when one point falls there (probability (θ/x)e<sup>−x</sup> dx) and exactly k − 1 lie above, which gives the density</p>
+        <div class="math" data-tex="\frac{\theta^{k}}{(k-1)!\,x}\,E_1(x)^{k-1}e^{-\theta E_1(x)-x}"></div>
+        <p>for J<sub>k</sub>. Multiplying by x, integrating and dividing by θ gives Eq. (8). Summing over k inside the integral, the series Σ (θE<sub>1</sub>)<sup>k−1</sup>/(k − 1)! equals e<sup>θE<sub>1</sub></sup>, which cancels the exponential and leaves ∫ e<sup>−x</sup> dx = 1.</p>
+        <p>For the bound (10), let T<sub>k</sub> be a sum of k independent unit exponentials. By the same Poisson property J<sub>k</sub> has the distribution of E<sub>1</sub><sup>−1</sup>(T<sub>k</sub>/θ): the k-th point from the top is reached when the Poisson count θE<sub>1</sub>(x) has accumulated k unit-exponential waiting times. The expansion E<sub>1</sub>(x) = −γ − log x + Ein(x), with Ein(x) = ∫<sub>0</sub><sup>x</sup> t<sup>−1</sup>(1 − e<sup>−t</sup>) dt ≥ 0, from the NIST handbook, rearranges to</p>
+        <div class="math" data-tex="J_k=e^{-\gamma}e^{-T_k/\theta}e^{\mathrm{Ein}(J_k)}\ \ge\ e^{-\gamma}e^{-T_k/\theta}."></div>
+        <p>Each exponential X has E(e<sup>−X/θ</sup>) = 1/(1 + 1/θ) = θ/(1 + θ), so E(e<sup>−T<sub>k</sub>/θ</sup>) = (θ/(1 + θ))<sup>k</sup>, and dividing by θ gives (10). For the asymptotic statement, the paper shows that the correction factor e<sup>Ein(J<sub>k</sub>)</sup> has expectation tending to 1 under the appropriately tilted distribution of T<sub>k</sub>, using J<sub>k</sub> → 0 and a uniform integrability bound.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The case θ = 1 is famous in combinatorics, as the paper's Remark 6 notes: Eq. (8) and the asymptotic form of (10) were found by Shepp and Lloyd in 1966 for the cycle lengths of a uniformly random permutation. Write a random permutation of n objects as a product of cycles; the longest cycle has expected length about ℓ<sub>1</sub>(1) n, and ℓ<sub>1</sub>(1) = 0.62433… is the Golomb–Dickman constant, which the paper's appendix recovers to five decimals as a check on its numerics. The cited preprint of Mendonça and Negret extends this to the Ewens measure, which weights a permutation by θ raised to its number of cycles, and its integral formula for the longest cycle, ∫<sub>0</sub><sup>∞</sup> exp(−t − θE<sub>1</sub>(t)) dt, is Eq. (8) with k = 1.</p>
+      <p>The animation evaluates Eq. (8) in the page by numerical integration for four values of θ, plots the first ten ℓ<sub>k</sub> against the geometric lower bound (10), and then compares the θ = 3 profile with the harmonic weights, as the paper's Table 1 does.</p>
+      <div class="player" id="pHwSparse">
+        <div class="ptitle"><span class="label">Animation · the sparse profile ℓ<sub>k</sub>(θ), Eq. (8)</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Bar charts of the sparse profile for several total concentrations"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--cool)"></i>ℓ<sub>k</sub>(θ)</span><span><i class="sw" style="background:var(--bad)"></i>lower bound (10)</span><span><i class="sw" style="background:var(--accent)"></i>harmonic 1/k</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The sparse limit cures the length problem: the top shares no longer depend on n. It does not by itself give harmonic weights. Its tail is geometric, so for any fixed θ it eventually falls far below 1/k. The paper reports that for θ = 3 the sparse profile is within d = 0.010 of the harmonic weights over the top three positions, but even the best-fitting θ has distance growing from 0.007 over three positions to 0.173 over one hundred.</p>
+      <p class="short"><b>In short:</b> fixing θ = nα keeps N<sub>eff</sub> near 1 + θ and makes the top expected shares converge to ℓ<sub>k</sub>(θ) of Eq. (8), the Poisson–Dirichlet profile (for θ = 1, the longest cycles of a random permutation); its tail is geometric with ratio θ/(1 + θ) (Eq. 10), so no single θ is harmonic.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Random θ">
+      <span class="num">7 · NOT KNOWING THE CONCENTRATION</span>
+      <h2>What if θ itself is unknown, even in order of magnitude?</h2>
+      <p>An analyst assigning weights before an election knows how concentrated a list's vote will be no better than how it will be divided. The concentration also varies across countries, parties and elections, since electoral rules shape the incentive to cultivate a personal vote. So the paper treats θ as random, with a distribution that does not depend on the length of the list.</p>
+      <p>For a positive quantity whose order of magnitude is unknown, the classical choice (Jeffreys, 1946; Jaynes, 1968) is the scale-invariant measure dθ/θ. It gives equal mass to [1, 10], [10, 100] and [0.1, 1], and, up to a constant factor, it is the only measure on (0, ∞) that looks the same after θ is multiplied by any constant: under θ = cφ, dθ/θ = dφ/φ (standard background). Equivalently, log θ is uniform. The measure has infinite total mass, so the paper restricts it to an interval and takes limits.</p>
+      <div class="def"><span class="label">Assumption A3 · random concentration</span>
+        <p>The total concentration θ has density proportional to θ<sup>−1</sup> on [θ<sub>0</sub>, Θ], where 0 &lt; θ<sub>0</sub> &lt; Θ &lt; ∞, and A2 holds conditionally on θ with α = θ/n.</p>
+        <p>In words: first pick the list's concentration log-uniformly between θ<sub>0</sub> and Θ, then split the vote with that concentration.</p>
+      </div>
+      <div class="def"><span class="label">Definition 7 and Theorem 1 · random concentration</span>
+        <p>The mixture weight of position k is</p>
+        <div class="math" data-tex="g_k(\theta_0):=\int_{\theta_0}^{\infty}\ell_k(\theta)\,\theta^{-1}\,d\theta.\tag{11}"></div>
+        <p>Under A1 to A3: (i) for every k,</p>
+        <div class="math" data-tex="\lim_{\Theta\to\infty}\lim_{n\to\infty}\frac{\mathbb E(V_{(k)})}{\mathbb E(V_{(1)})}=\frac{g_k(\theta_0)}{g_1(\theta_0)};\tag{12}"></div>
+        <p>(ii) for every k ≥ 2,</p>
+        <div class="math" data-tex="g_k(\theta_0)=\frac{1}{k-1}\sum_{j=1}^{k-1}\ell_j(\theta_0),\tag{13}"></div>
+        <p>and in particular ∫<sub>0</sub><sup>∞</sup> ℓ<sub>k</sub>(θ) θ<sup>−1</sup> dθ = 1/(k − 1); (iii) the leader's mixture weight is finite and equals</p>
+        <div class="math" data-tex="g_1(\theta_0)=\int_0^\infty e^{-x}\,E_1\bigl(\theta_0E_1(x)\bigr)\,dx."></div>
+        <p class="eqn">Eq. 14</p>
+        <p>In words: averaged over a scale-invariant range of concentrations, the expected share of position k ≥ 2 is 1/(k − 1) times a partial sum of a series whose total is 1. Since that series has a geometric tail, the partial sum is essentially 1 after the first few positions, and the weights decay like 1/(k − 1), that is, like 1/k.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does integrating over θ produce 1/(k − 1)? (the paper's proof of Eqs. 13 and 14)</span></summary><div class="pfbody">
+        <p>All integrands are nonnegative, so the θ integral in (11) and the x integral in (8) can be swapped. For fixed x, write y = E<sub>1</sub>(x). The θ integral for k ≥ 2 is</p>
+        <div class="math" data-tex="\int_{\theta_0}^{\infty}\theta^{k-2}e^{-\theta y}\,d\theta=\frac{\Gamma(k-1,\theta_0y)}{y^{k-1}}."></div>
+        <p>The factor y<sup>k−1</sup> cancels the E<sub>1</sub>(x)<sup>k−1</sup> of Eq. (8). Next comes the gamma–Poisson identity, valid for whole numbers: with λ = θ<sub>0</sub>y,</p>
+        <div class="math" data-tex="\frac{\Gamma(k-1,\lambda)}{(k-2)!}=\sum_{j=0}^{k-2}e^{-\lambda}\frac{\lambda^{j}}{j!}."></div>
+        <p>(It says that a gamma variable with shape k − 1 exceeds λ exactly when a rate-one Poisson process has fewer than k − 1 points in [0, λ].) The j-th term, integrated against e<sup>−x</sup> dx, is exactly ℓ<sub>j+1</sub>(θ<sub>0</sub>) by Eq. (8), and the factor 1/(k − 1) comes from (k − 2)!/(k − 1)!. This gives (13). Letting θ<sub>0</sub> → 0, every ℓ<sub>j</sub>(θ<sub>0</sub>) with j ≥ 2 tends to 0 and ℓ<sub>1</sub>(θ<sub>0</sub>) to 1, so the sum tends to 1/(k − 1). For k = 1 the θ integral is ∫<sub>θ<sub>0</sub></sub><sup>∞</sup> θ<sup>−1</sup>e<sup>−θy</sup> dθ = E<sub>1</sub>(θ<sub>0</sub>y), which gives (14); the paper bounds E<sub>1</sub> to show this integral is finite.</p>
+        <p>For (i), under A3 the expected share is the log-uniform average of π<sup>(n)</sup><sub>k</sub>(θ/n) over [θ<sub>0</sub>, Θ]. By Proposition 3 and bounded convergence, as n → ∞ it tends to (g<sub>k</sub>(θ<sub>0</sub>) − g<sub>k</sub>(Θ))/log(Θ/θ<sub>0</sub>). The normalizing logarithm cancels in the ratio, and g<sub>k</sub>(Θ) → 0 as Θ → ∞ because every g<sub>k</sub>(θ<sub>0</sub>) is finite.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The mechanism has a one-line prototype, given in the paper's Remark 7: ∫<sub>0</sub><sup>1</sup> r<sup>k−1</sup> dr = 1/k. Averaging geometric sequences r<sup>k−1</sup> over their ratio r produces a harmonic one. Here each fixed θ gives a profile with geometric tail ratio θ/(1 + θ), and the paper's intuition is that averaging such geometric profiles over a scale-invariant range of concentrations produces the harmonic rate. The paper places this within a general principle (citing Newman's review of power laws): mixtures of exponentially decaying terms with scale-free rates decay polynomially. The exponent comes from the prior.</p>
+      <div class="def"><span class="label">Proposition 4 · power priors</span>
+        <p>For every s ∈ (0, 1) and every k,</p>
+        <div class="math" data-tex="\begin{gathered}\int_0^\infty\ell_k(\theta)\,\theta^{-s}\,d\theta=C_s\,\frac{\Gamma(k-s)}{\Gamma(k)},\\ C_s:=\int_0^\infty e^{-x}E_1(x)^{s-1}\,dx&lt;\infty.\end{gathered}"></div>
+        <p class="eqn">Eq. 15</p>
+        <p>In words: a prior proportional to θ<sup>−s</sup> gives weights proportional to Γ(k − s)/Γ(k), which behaves like k<sup>−s</sup> for large k. The harmonic rate k<sup>−1</sup> belongs specifically to the scale-invariant prior.</p>
+      </div>
+      <p>The leader is special. Formula (13) does not apply to k = 1, and g<sub>1</sub> depends strongly on the lower bound: Remark 8 reports g<sub>1</sub>(θ<sub>0</sub>) = 1.17, 3.04 and 5.28 for θ<sub>0</sub> = 1, 1/10 and 1/100, growing like log(1/θ<sub>0</sub>). The reason is that for small θ the leader takes nearly the whole vote, and dθ/θ puts infinite mass near zero. A positive lower bound is indispensable, and it fixes the leader's weight relative to everyone else. The paper's natural choice is θ<sub>0</sub> = 1, which by N<sub>eff</sub> → 1 + θ admits all lists with at least two effective candidates. This is Example B.</p>
+      <p>For Example B, Eq. (13) is easy to evaluate from the θ = 1 sparse profile computed in the previous animation: ℓ<sub>1</sub>(1) = 0.6243, ℓ<sub>2</sub>(1) = 0.2096, so g<sub>2</sub>(1) = 0.6243, g<sub>3</sub>(1) = (0.6243 + 0.2096)/2 = 0.4170, and with g<sub>1</sub>(1) = 1.171 the ratios are 0.533 and 0.356, matching Table 1. The products k g<sub>k</sub>(1), which would be constant for an exactly harmonic profile, are 1.17, 1.25, 1.25, 1.23 and 1.20 for k = 1 to 5 and tend to 1. The animation below does the averaging over θ explicitly, by integrating ℓ<sub>k</sub>(θ)/θ from 1 up to an increasing cutoff Θ, and then compares the result with the closed forms (13) and (14).</p>
+      <div class="player" id="pHwMix">
+        <div class="ptitle"><span class="label">Animation · averaging over θ with the prior dθ/θ on [1, Θ]</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Mixture weights relative to the leader as the upper cutoff grows, compared with 1/k"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--ok)"></i>mixture, relative to leader</span><span><i class="sw" style="background:var(--accent)"></i>harmonic 1/k</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <div class="fact"><span class="label">Fact · random concentration gives 1/k decay (Theorem 1)</span>
+        <p>If the total concentration has the scale-invariant prior on [θ<sub>0</sub>, ∞), the limiting expected share of position k ≥ 2 is proportional to (1/(k − 1)) Σ<sub>j&lt;k</sub> ℓ<sub>j</sub>(θ<sub>0</sub>), which is 1/(k − 1) up to a geometrically small correction; the leader's weight is finite and set by θ<sub>0</sub>.</p>
+      </div>
+      <p class="short"><b>In short:</b> averaging the sparse profile over θ with dθ/θ turns geometric tails into 1/k decay (Theorem 1, Eq. 13), just as ∫ r<sup>k−1</sup> dr = 1/k; a prior θ<sup>−s</sup> would give k<sup>−s</sup> instead (Eq. 15), and the lower bound θ<sub>0</sub> = 1 sets the leader's weight at g<sub>1</sub> = 1.171.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · How close">
+      <span class="num">8 · HOW CLOSE IS "CLOSE TO HARMONIC"?</span>
+      <h2>Should an analyst just use 1/(kH<sub>n</sub>)?</h2>
+      <p>Theorem 1 gives decay like 1/(k − 1) below the leader, and the harmonic weights decay like 1/k. The practical question is how much weight is misplaced if the analyst uses the simple closed form instead of the mixture. The paper answers with total variation distances after renormalizing both profiles over the top m positions (Table 2). With θ<sub>0</sub> = 1 the distance is between 0.014 and 0.034 for every m from 2 to 100: at most about three percent of the weight is in the wrong place. The best lower bound θ<sub>0</sub>* lies between 0.77 and 1.16, and the distance rises to between 0.02 and 0.09 for θ<sub>0</sub> = 1/2 and to between 0.04 and 0.06 for θ<sub>0</sub> = 2.</p>
+      <p>Remark 9 describes the residual pattern: relative to the leader, the mixture puts up to 7 percent more weight than the harmonic profile on positions 2 to 5 and up to 15 percent less on distant ones, because it follows 1/(k − 1) rather than 1/k.</p>
+      <p>A single well-chosen Dirichlet parameter does not do as well, as Table 3 shows. On a list of exactly n candidates with fixed α, the best-fitting α gives distance 0.028 for n = 3, 0.092 for n = 10 and 0.217 for n = 100, and neither the best α nor the corresponding nα is stable across lengths. For n = 2 alone one parameter suffices, as π<sup>(2)</sup><sub>1</sub>(α) = 2/3 for α ≈ 2.60. (For comparison, the uniform split with n = 2 gives the expected larger share 3/4, the mean of the larger of U and 1 − U for uniform U, against the harmonic 2/3; that example is ours.) The cause is Proposition 2: a concave log-log profile can only touch the harmonic line.</p>
+      <p>Remark 10 adds an honest caveat. Theorem 1 treats the list as the top of an unbounded pool of candidates, so its bottom positions are not squeezed by the end of the list. On a list of exactly n candidates with α log-uniform on [1/n, A], the distance from the harmonic weights depends on the upper bound A: 0.16 to 0.19 for n between 5 and 50 when A = 1, and 0.035 to 0.058 when A is between 8 and 32, that is, when the prior reaches splits much more even than the uniform one. So the approximation rests on the same premise as the harmonic scheme itself: ratios between positions should not depend on list length.</p>
+      <p>For Example A, the uniform model's own expected shares sit at distance 0.071 from the harmonic weights, as computed in Section 4, while Table 3 shows that the best fixed α for n = 3, α* = 1.81, brings this down to 0.028.</p>
+      <p class="short"><b>In short:</b> with θ<sub>0</sub> = 1 the mixture and the harmonic weights differ by 1.4 to 3.4 percent of total weight over any top 2 to 100 positions (Table 2), while no fixed parameter comes close on long lists (Table 3); the agreement requires a prior that reaches nearly even splits when a list is taken in isolation.</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>What the paper reports</h2>
+      <p>Expected share of the k-th candidate relative to the leader (the paper's Table 1):</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Profile</th><th>k=2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>8</th></tr></thead>
+        <tbody>
+          <tr><td>Harmonic, 1/k</td><td class="n">0.500</td><td class="n">0.333</td><td class="n">0.250</td><td class="n">0.200</td><td class="n">0.167</td><td class="n">0.125</td></tr>
+          <tr><td>Uniform, α = 1, n = 30</td><td class="n">0.750</td><td class="n">0.625</td><td class="n">0.541</td><td class="n">0.479</td><td class="n">0.428</td><td class="n">0.351</td></tr>
+          <tr><td>Sparse, θ = 3</td><td class="n">0.507</td><td class="n">0.313</td><td class="n">0.208</td><td class="n">0.144</td><td class="n">0.102</td><td class="n">0.053</td></tr>
+          <tr><td>θ log-uniform on [1, ∞)</td><td class="n">0.533</td><td class="n">0.356</td><td class="n">0.263</td><td class="n">0.206</td><td class="n">0.168</td><td class="n">0.121</td></tr>
+        </tbody>
+      </table></div>
+      <p>Distance between harmonic and mixture weights over the top m positions (Table 2):</p>
+      <div class="tbl"><table>
+        <thead><tr><th>m</th><th>d at θ<sub>0</sub> = 1</th><th>best θ<sub>0</sub>*</th><th>d at θ<sub>0</sub>*</th></tr></thead>
+        <tbody>
+          <tr><td class="n">3</td><td class="n">0.016</td><td class="n">0.77</td><td class="n">0.003</td></tr>
+          <tr><td class="n">5</td><td class="n">0.014</td><td class="n">0.84</td><td class="n">0.007</td></tr>
+          <tr><td class="n">10</td><td class="n">0.016</td><td class="n">0.92</td><td class="n">0.014</td></tr>
+          <tr><td class="n">20</td><td class="n">0.020</td><td class="n">1.00</td><td class="n">0.020</td></tr>
+          <tr><td class="n">30</td><td class="n">0.025</td><td class="n">1.03</td><td class="n">0.023</td></tr>
+          <tr><td class="n">50</td><td class="n">0.030</td><td class="n">1.07</td><td class="n">0.025</td></tr>
+          <tr><td class="n">100</td><td class="n">0.034</td><td class="n">1.16</td><td class="n">0.027</td></tr>
+        </tbody>
+      </table></div>
+      <p>Distance between harmonic weights and a fixed-α Dirichlet profile on n candidates (Table 3):</p>
+      <div class="tbl"><table>
+        <thead><tr><th>n</th><th>α = 1/2</th><th>α = 1</th><th>best α*</th><th>nα*</th><th>d at α*</th></tr></thead>
+        <tbody>
+          <tr><td class="n">3</td><td class="n">0.155</td><td class="n">0.071</td><td class="n">1.81</td><td class="n">5.4</td><td class="n">0.028</td></tr>
+          <tr><td class="n">5</td><td class="n">0.149</td><td class="n">0.067</td><td class="n">1.17</td><td class="n">5.8</td><td class="n">0.053</td></tr>
+          <tr><td class="n">10</td><td class="n">0.126</td><td class="n">0.099</td><td class="n">0.66</td><td class="n">6.6</td><td class="n">0.092</td></tr>
+          <tr><td class="n">20</td><td class="n">0.134</td><td class="n">0.146</td><td class="n">0.59</td><td class="n">11.8</td><td class="n">0.134</td></tr>
+          <tr><td class="n">30</td><td class="n">0.153</td><td class="n">0.175</td><td class="n">0.54</td><td class="n">16.2</td><td class="n">0.152</td></tr>
+          <tr><td class="n">50</td><td class="n">0.185</td><td class="n">0.216</td><td class="n">0.34</td><td class="n">17.2</td><td class="n">0.178</td></tr>
+          <tr><td class="n">100</td><td class="n">0.232</td><td class="n">0.269</td><td class="n">0.19</td><td class="n">19.4</td><td class="n">0.217</td></tr>
+        </tbody>
+      </table></div>
+      <p>Other numbers stated in the text: the leader's mixture weight g<sub>1</sub>(θ<sub>0</sub>) = 1.17, 3.04, 5.28 for θ<sub>0</sub> = 1, 1/10, 1/100 (Remark 8); the hierarchical simulation in the appendix (θ log-uniform on [1, 50], n = 3000, 12,000 draws) gives top-five expected shares (0.277, 0.143, 0.093, 0.066, 0.050) against (0.279, 0.144, 0.093, 0.066, 0.050) from Eqs. (13) and (14); under an independent lognormal model fitted to real elections (log-variance 1.08) the leader's expected share is 0.33, 0.18 and 0.09 on lists of 10, 30 and 100, against harmonic weights 0.34, 0.25 and 0.19 and uniform-split shares 0.29, 0.13 and 0.05 (Section 7).</p>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved.</b> Lemma 1, Propositions 1 to 4 and Theorem 1 are complete proofs built on classical results (the gamma representation of the Dirichlet distribution, Kingman's Poisson–Dirichlet limit, monotonicity of the gamma hazard, and standard bounds on E<sub>1</sub>), each cited. The mathematics is the solid part of the paper. The in-page computations reproduce the paper's Table 1 rows for θ = 3 and for θ log-uniform on [1, ∞), the Table 2 distances at θ<sub>0</sub> = 1 to three decimals, and the values of g<sub>1</sub> in Remark 8; our hand computation for Example A matches Table 3's entry 0.071.</p>
+      <p><b>Numerical, not proved.</b> Tables 2 and 3, the best-fitting parameters, Remark 10 and the u* fractions are numerical results from one-dimensional quadrature; the appendix reports cross-checks (sums to one within 10<sup>−13</sup>, agreement with Monte Carlo within 2 × 10<sup>−4</sup>, recovery of the Golomb–Dickman constant). The statement that "no fixed value of the parameter yields similar weights" rests on these tables plus the qualitative argument from Proposition 2, not on a theorem.</p>
+      <p><b>Modeling choices that carry the conclusion.</b> The harmonic rate is specific to the scale-invariant prior: Proposition 4 shows that θ<sup>−s</sup> would give k<sup>−s</sup>. The leader's weight is fixed by the lower bound θ<sub>0</sub>, chosen as 1 by the "at least two effective candidates" argument; Table 2 shows the agreement is best for θ<sub>0</sub> near 1, so this choice is doing real work. Assumption A1 (perfect sorting) is an idealization, and the authors note that imperfect sorting would flatten the profile by position. Theorem 1 is a long-list limit, and on a single finite list the approximation needs a prior reaching nearly even splits (Remark 10). The symmetric Dirichlet family is only one exchangeable model; the two-parameter Poisson–Dirichlet family gives decay with exponent above one.</p>
+      <p><b>Empirical fit.</b> The paper is theoretical. Its comparison with the empirical lognormal regularity of Fortunato and Castellano finds agreement within about 5 percent of total weight for lists of up to ten candidates but not for long lists, where the lognormal model implies a faster decline of the leaders' shares (distance growing from 0.05 to 0.19), while the uniform profile stays below 0.08. The authors argue that the lognormal regularity was established on pooled data and has been reported to fail on long lists, but no direct test of harmonic weights against list-level electoral returns is carried out. The recommendation to use harmonic weights is therefore an argument from a principled prior, supported by approximation results, rather than an empirically validated finding.</p>
+      <p><b>Our additions.</b> The derivation of E(ΣV<sub>i</sub><sup>2</sup>) and of the variance (n − 1)/(n + 1) via the gamma trick, the memoryless reading of the exponential gaps, all of Example A's hand computations (shares, margins, elasticities, distance 14/198), the n = 2 comparison, the check u* = 1/e, the explanation of the gamma–Poisson identity and of the scale invariance of dθ/θ, and the three animations are ours. The animations evaluate the paper's formulas; the simulation in the first one is our own.</p>
+    </section>
+
+    <!-- further -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>D. Boratyn and D. Stolicki, <a href="https://arxiv.org/abs/2611.26337" target="_blank" rel="noopener">How should candidates be weighted under open-list proportional representation? Harmonic weights and Dirichlet order statistics</a>, arXiv:2611.26337 (2026). The paper itself; numbering in this chapter follows its <a href="https://arxiv.org/html/2611.26337" target="_blank" rel="noopener">HTML version</a>, and its code is provided as an ancillary file.</p>
+        <p>J. R. G. Mendonça and L. J. Negret, <a href="https://arxiv.org/abs/2603.23175" target="_blank" rel="noopener">On the Golomb–Dickman constant under Ewens sampling</a>, arXiv:2603.23175 (2026). Cited in the paper's Remark 6; the source here for the Golomb–Dickman constant 0.624330, the Ewens measure, and the integral ∫ exp(−t − θE<sub>1</sub>(t)) dt for the longest cycle, which is ℓ<sub>1</sub>(θ). It also describes the Hoppe urn (Chinese restaurant process) that generates Ewens permutations.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.26337v1. Definition, lemma, proposition, theorem, remark, table and equation numbers match the paper. All three animations run real computations in the page: the first simulates the uniform three-way split with the gamma trick and averages the ordered shares; the second evaluates Eq. (8) by numerical integration for four values of θ; the third integrates ℓ<sub>k</sub>(θ)/θ over [1, Θ] for growing Θ and compares the result with Eqs. (13) and (14). The running examples, derivations and checks marked as ours are ours.</p>
+  </footer>
+</div>
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-26337',date:'2026-11-21',title:'How Should Candidates Be Weighted under Open-List Proportional Representation? Harmonic Weights and Dirichlet Order Statistics',authors:'Boratyn, Stolicki',field:'math.PR',tags:['order statistics','Dirichlet distribution','Poisson–Dirichlet'],mins:40,
+     dek:'Split a party’s vote among its candidates at random, with no idea how lopsided the split should be, not even its order of magnitude, and the expected share of the k-th candidate falls off like 1/k. The proof runs through gamma variables, order statistics and the Poisson–Dirichlet limit behind the longest cycle of a random permutation, and lands within 1.4 to 3.4 percent of the harmonic weights 1/(kH<sub>n</sub>).'},
     {id:'2611-25102',date:'2026-11-20',title:'Compact Slack-Free Penalty Functions for Inequality Constraints in Higher-Order Unconstrained Binary Optimization',authors:'Mochida, Yasuda',field:'math.OC',tags:['QUBO and HUBO','penalty functions','binary encoding'],mins:35,
      dek:'To forbid a 6-bit number from exceeding 53, the usual penalty lists ten forbidden values, while x<sub>6</sub>x<sub>5</sub>(x<sub>4</sub> + x<sub>3</sub>x<sub>2</sub>) does the same job with no extra bits. Read the threshold’s binary digits upward, add a variable at each 0 and multiply at each 1, and the penalty has at most one term per bit, with sums and products giving intervals and exclusions.'},
     {id:'2611-24574',date:'2026-11-19',title:'The Number of Cycles in a Random 2-Factor of a Random Regular Graph',authors:'Adler, Haber',field:'math.CO',tags:['random graphs','generating functions','Hamilton cycles'],mins:40,
@@ -6692,6 +7101,121 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
         el('text',{x:x+13,y:222,class:'lab',fill:'var(--fg)'}).textContent='X='+X;
         el('text',{x:x+13,y:236,class:'lab'}).textContent=HU.bits(X,3).reverse().join('')});
       el('text',{x:330,y:20,class:'lab',style:'text-anchor:end',fill:'var(--fg)'}).textContent=fr.kind==='obj'?'E = −X':fr.kind==='pen'?'H(X, 4)':'E = −X + '+fr.Pw+'H';});
+  })();
+
+
+  // ================= 2611.26337: shared numerics =================
+  const HW=(function(){
+    const EG=0.5772156649015329;
+    function E1(x){if(x<=0)return Infinity;
+      if(x<=1){let s=0,t=1;for(let m=1;m<60;m++){t*=-x/m;const d=-t/m;s+=d;if(Math.abs(d)<1e-17*Math.abs(s))break}return -EG-Math.log(x)+s}
+      let b=x+1,c=1e300,d=1/b,h=d;for(let i=1;i<300;i++){const a=-i*i;b+=2;d=1/(a*d+b);c=b+a/c;const del=c*d;h*=del;if(Math.abs(del-1)<1e-15)break}return h*Math.exp(-x)}
+    // log-x grid for integrals over x in (0, inf)
+    const NX=4000,U0=-40,U1=4.2,du=(U1-U0)/NX,XS=[],WS=[],ES=[];
+    for(let i=0;i<=NX;i++){const x=Math.exp(U0+i*du);XS.push(x);WS.push((i===0||i===NX?0.5:1)*du*x);ES.push(E1(x))}
+    // sparse profile l_k(theta), k=1..K, Eq. (8)
+    function ell(th,K){const out=Array(K).fill(0);
+      for(let i=0;i<=NX;i++){const e=ES[i],x=XS[i];let t=WS[i]*Math.exp(-th*e-x);if(t===0)continue;out[0]+=t;for(let k=1;k<K;k++){t*=th*e/k;out[k]+=t}}
+      return out}
+    // leader mixture weight g_1(theta0), Eq. (14)
+    function g1(t0){let s=0;for(let i=0;i<=NX;i++)s+=WS[i]*Math.exp(-XS[i])*E1(t0*ES[i]);return s}
+    // mixture weights g_k(theta0) for k=1..K, Eqs. (13) and (14)
+    function mix(t0,K){const l=ell(t0,K),g=[g1(t0)];let ps=0;for(let k=2;k<=K;k++){ps+=l[k-2];g.push(ps/(k-1))}return g}
+    // partial mixture: integral of l_k(theta)/theta over [t0, T], log-theta trapezoid
+    function partial(t0,T,K,steps){const a=Math.log(t0),b=Math.log(T),h=(b-a)/steps,out=Array(K).fill(0);
+      for(let j=0;j<=steps;j++){const w=(j===0||j===steps?0.5:1)*h,l=ell(Math.exp(a+j*h),K);for(let k=0;k<K;k++)out[k]+=w*l[k]}return out}
+    const tv=(p,q)=>{const sp=p.reduce((a,b)=>a+b,0),sq=q.reduce((a,b)=>a+b,0);let s=0;p.forEach((v,i)=>s+=Math.abs(v/sp-q[i]/sq));return s/2};
+    const harm=m=>Array.from({length:m},(_,i)=>1/(i+1));
+    function rng(seed){let a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+    return{E1,ell,g1,mix,partial,tv,harm,rng,EG};
+  })();
+  const hwF=(x,d)=>x.toFixed(d===undefined?3:d);
+  const HWC=['var(--accent)','var(--cool)','var(--deep)'];
+
+  // ================= 2611.26337: uniform three-way split by simulation =================
+  (function(){
+    const root=document.getElementById('pHwSplit');if(!root)return;const P=Player(root);
+    const R=HW.rng(20261121),draw=()=>{const G=[0,1,2].map(()=>-Math.log(1-R()));const S=G[0]+G[1]+G[2];const V=G.map(g=>g/S);return{G,S,V,srt:V.slice().sort((a,b)=>b-a)}};
+    const d1=draw(),d2=draw();const sums=[d1.srt[0]+d2.srt[0],d1.srt[1]+d2.srt[1],d1.srt[2]+d2.srt[2]];let cnt=2;const avgs={};
+    [10,100,1000,100000].forEach(N=>{while(cnt<N){const d=draw();for(let i=0;i<3;i++)sums[i]+=d.srt[i];cnt++}avgs[N]=sums.map(s=>s/N)});
+    const EX=[11/18,5/18,2/18],HWT=[6/11,3/11,2/11];
+    const rankOf=V=>{const o=[0,1,2].sort((a,b)=>V[b]-V[a]);const r=[];o.forEach((i,j)=>r[i]=j);return r};
+    const F=[];
+    [d1,d2].forEach((d,n)=>{const r=rankOf(d.V);
+      F.push({kind:'raw',d,r,t:n?'A second split':'One random split',c:`Draw three independent exponential strengths G = (${d.G.map(g=>hwF(g,2)).join(', ')}), total S = ${hwF(d.S,2)}. Each candidate gets G<sub>i</sub>/S, so the shares are (${d.V.map(v=>hwF(v)).join(', ')}). By the gamma trick, this is a uniformly random point of the triangle.`});
+      F.push({kind:'sorted',d,r,t:n?'Second split, sorted':'Sorted by size',c:`Under Assumption A1 the list is in order of votes, so position 1 gets the largest share: V<sub>(1)</sub> = ${hwF(d.srt[0])}, V<sub>(2)</sub> = ${hwF(d.srt[1])}, V<sub>(3)</sub> = ${hwF(d.srt[2])}.`})});
+    [10,100,1000,100000].forEach(N=>{const a=avgs[N],err=Math.max(...a.map((v,i)=>Math.abs(v-EX[i])));
+      F.push({kind:'avg',a,N,t:`Average of ${N.toLocaleString('en-US')} splits`,c:`Averaging the sorted shares over ${N.toLocaleString('en-US')} splits gives (${a.map(v=>hwF(v)).join(', ')}). The rings mark the exact values 11/18, 5/18, 2/18 ≈ (0.611, 0.278, 0.111) from Eq. (6); the largest gap is ${hwF(err,4)}.${N===100000?' The averages have settled on the exact profile.':''}`})});
+    const a=avgs[100000],mg=[(a[0]-a[1])/a[0],(a[1]-a[2])/a[0],a[2]/a[0]];
+    F.push({kind:'marg',a:mg,t:'Margins over the leader',c:`Take the simulated margins between neighbors, V<sub>(1)</sub> − V<sub>(2)</sub>, V<sub>(2)</sub> − V<sub>(3)</sub> and V<sub>(3)</sub>, and divide by the leader's average share: (${mg.map(v=>hwF(v)).join(', ')}). The rings are the harmonic weights 6/11, 3/11, 2/11 ≈ (0.545, 0.273, 0.182), exactly as Proposition 1(i) predicts.`});
+    F.delay=5200;
+    P.load(F,(fr,el)=>{
+      if(fr.kind==='raw'||fr.kind==='sorted'){const d=fr.d,mx=Math.max(3,Math.ceil(Math.max(...d.G))),base=128,sc=96/mx;
+        el('line',{x1:30,y1:base,x2:320,y2:base,stroke:'var(--line)'});el('text',{x:24,y:base+3,class:'lab',style:'text-anchor:end'}).textContent='0';el('text',{x:24,y:base-mx*sc+3,class:'lab',style:'text-anchor:end'}).textContent=mx;
+        el('text',{x:175,y:16,class:'lab'}).textContent='exponential strengths G₁, G₂, G₃';
+        d.G.forEach((g,i)=>{const x=70+i*90,h=g*sc;el('rect',{x:x,y:base-h,width:40,height:Math.max(h,1),rx:3,fill:HWC[fr.r[i]]});el('text',{x:x+20,y:base-h-5,class:'lab',fill:'var(--fg)'}).textContent=hwF(g,2);el('text',{x:x+20,y:base+14,class:'lab'}).textContent='G'+(i+1)});
+        el('text',{x:175,y:170,class:'lab'}).textContent=fr.kind==='raw'?'shares G/S, in candidate order':'shares sorted: positions 1, 2, 3';
+        const order=fr.kind==='raw'?[0,1,2]:[0,1,2].sort((p,q)=>d.V[q]-d.V[p]);let x0=20;
+        order.forEach(i=>{const w=d.V[i]*300;el('rect',{x:x0,y:180,width:Math.max(w-1,1),height:26,rx:3,fill:HWC[fr.r[i]]});if(w>34)el('text',{x:x0+w/2,y:197,class:'lab',style:'fill:var(--accent-ink);font-weight:600'}).textContent=hwF(d.V[i],2);x0+=w});
+        el('text',{x:20,y:222,class:'lab',style:'text-anchor:start'}).textContent='0';el('text',{x:320,y:222,class:'lab',style:'text-anchor:end'}).textContent='1';
+      }else{const base=190,sc=240,vals=fr.a,ref=fr.kind==='avg'?EX:HWT;
+        el('line',{x1:30,y1:base,x2:320,y2:base,stroke:'var(--line)'});
+        [0.2,0.4,0.6].forEach(v=>{el('line',{x1:30,y1:base-v*sc,x2:320,y2:base-v*sc,stroke:'var(--line)','stroke-dasharray':'2 4'});el('text',{x:26,y:base-v*sc+3,class:'lab',style:'text-anchor:end'}).textContent=v.toFixed(1)});
+        vals.forEach((v,i)=>{const x=70+i*90,h=v*sc;el('rect',{x:x,y:base-h,width:40,height:Math.max(h,1),rx:3,fill:HWC[i]});
+          el('circle',{cx:x+20,cy:base-ref[i]*sc,r:6,fill:'none',stroke:'var(--fg)','stroke-width':1.6});
+          el('text',{x:x+20,y:base-Math.max(h,ref[i]*sc)-11,class:'lab',fill:'var(--fg)'}).textContent=hwF(v);
+          el('text',{x:x+20,y:base+15,class:'lab'}).textContent=fr.kind==='avg'?'V('+(i+1)+')':['lead 1→2','lead 2→3','V(3)'][i]});
+        el('text',{x:175,y:228,class:'lab'}).textContent=fr.kind==='avg'?'average sorted share after '+fr.N.toLocaleString('en-US')+' splits':'margins ÷ leader’s share, vs harmonic weights';}
+    });
+  })();
+
+  // ================= 2611.26337: sparse profile, Eq. (8) =================
+  (function(){
+    const root=document.getElementById('pHwSparse');if(!root)return;const P=Player(root);const K=10,F=[];
+    [0.5,1,3,10].forEach(th=>{const l=HW.ell(th,40),b=l.map((_,k)=>Math.exp(-HW.EG)/th*Math.pow(th/(1+th),k+1)),s10=l.slice(0,K).reduce((x,y)=>x+y,0),sAll=l.reduce((x,y)=>x+y,0);
+      F.push({kind:'abs',th,l:l.slice(0,K),b:b.slice(0,K),t:`θ = ${th}`,c:`Total concentration θ = ${th}, so N<sub>eff</sub> → 1 + θ = ${1+th}. Eq. (8) gives ℓ<sub>1</sub> = ${hwF(l[0],4)}, ℓ<sub>2</sub> = ${hwF(l[1],4)}, ℓ<sub>3</sub> = ${hwF(l[2],4)}; the first ten sum to ${hwF(s10,4)} and the first forty to ${hwF(sAll,4)}. The red marks are the bound (10), with tail ratio θ/(1 + θ) = ${hwF(th/(1+th))}; at k = 10 the ratio ℓ<sub>10</sub>/bound is ${hwF(l[9]/b[9])}.${th===1?' Here ℓ<sub>1</sub>(1) is the Golomb–Dickman constant: the longest cycle of a random permutation of n objects has average length about 0.624 n.':''}`})});
+    const l3=HW.ell(3,8),r3=l3.map(v=>v/l3[0]),d3=HW.tv(l3.slice(0,3),HW.harm(3)),d8=HW.tv(l3,HW.harm(8));
+    F.push({kind:'rel',r:r3,t:'θ = 3 against 1/k',c:`Relative to the leader, θ = 3 gives (${r3.map(v=>hwF(v)).join(', ')}), the paper's Table 1 row. Over the top three positions the distance from the harmonic weights is d = ${hwF(d3)} (the paper reports 0.010), but over the top eight it is already ${hwF(d8)}: the geometric tail falls below 1/k.`});
+    F.delay=5600;
+    P.load(F,(fr,el)=>{const base=196,x0=34,bw=26,gap=3.2;
+      if(fr.kind==='abs'){const mx=fr.l[0]>0.5?0.8:fr.l[0]>0.25?0.4:0.2,sc=160/mx;
+        el('line',{x1:x0-4,y1:base,x2:330,y2:base,stroke:'var(--line)'});
+        [mx/2,mx].forEach(v=>{el('line',{x1:x0-4,y1:base-v*sc,x2:330,y2:base-v*sc,stroke:'var(--line)','stroke-dasharray':'2 4'});el('text',{x:x0-7,y:base-v*sc+3,class:'lab',style:'text-anchor:end'}).textContent=v.toFixed(1)});
+        fr.l.forEach((v,i)=>{const x=x0+i*(bw+gap),h=v*sc;el('rect',{x:x,y:base-h,width:bw,height:Math.max(h,1),rx:2,fill:'var(--cool)'});
+          const by=base-Math.min(fr.b[i],mx)*sc;el('line',{x1:x-1,y1:by,x2:x+bw+1,y2:by,stroke:'var(--bad)','stroke-width':2.4});
+          el('text',{x:x+bw/2,y:base+14,class:'lab'}).textContent=i+1});
+        el('text',{x:182,y:18,class:'lab',fill:'var(--fg)'}).textContent='sparse profile for θ = '+fr.th+', positions 1 to 10';
+        el('text',{x:182,y:230,class:'lab'}).textContent='position k';
+      }else{const sc=160;
+        el('line',{x1:x0-4,y1:base,x2:330,y2:base,stroke:'var(--line)'});
+        [0.5,1].forEach(v=>{el('line',{x1:x0-4,y1:base-v*sc,x2:330,y2:base-v*sc,stroke:'var(--line)','stroke-dasharray':'2 4'});el('text',{x:x0-7,y:base-v*sc+3,class:'lab',style:'text-anchor:end'}).textContent=v.toFixed(1)});
+        fr.r.forEach((v,i)=>{const x=x0+i*36,h=v*sc;el('rect',{x:x,y:base-h,width:28,height:Math.max(h,1),rx:2,fill:'var(--cool)'});
+          el('circle',{cx:x+14,cy:base-sc/(i+1),r:4.5,fill:'var(--accent)'});el('text',{x:x+14,y:base+14,class:'lab'}).textContent=i+1});
+        el('text',{x:182,y:18,class:'lab',fill:'var(--fg)'}).textContent='θ = 3 relative to leader (bars), 1/k (dots)';
+        el('text',{x:182,y:230,class:'lab'}).textContent='position k';}
+    });
+  })();
+
+  // ================= 2611.26337: averaging over theta, Theorem 1 =================
+  (function(){
+    const root=document.getElementById('pHwMix');if(!root)return;const P=Player(root);const K=8,F=[];
+    const g=HW.mix(1,100),gr=g.slice(0,K).map(v=>v/g[0]);let last=null;
+    [2,10,100,1000,1e5].forEach(T=>{const p=HW.partial(1,T,K,Math.ceil(Math.log(T)*25)),r=p.map(v=>v/p[0]);last=r;const lbl=T>=1e5?'100,000':T.toLocaleString('en-US');
+      F.push({r,T,t:`Θ = ${lbl}`,c:`Average the sparse profiles with weight dθ/θ over θ from 1 to ${lbl}. Relative to the leader: (${r.slice(0,5).map(v=>hwF(v)).join(', ')}, …). ${T<=10?'With only small θ included, every profile is steep and the average still falls fast.':T<1000?'Flatter profiles from larger θ fill in the tail.':'Very large θ add little more: the ratios are converging.'}`})});
+    F.push({r:gr,t:'The closed form, Eqs. (13) and (14)',c:`Theorem 1 gives the limit directly: g<sub>1</sub>(1) = ${hwF(g[0])} from Eq. (14), and g<sub>k</sub>(1) = (ℓ<sub>1</sub>(1) + ⋯ + ℓ<sub>k−1</sub>(1))/(k − 1) from Eq. (13). Ratios (${gr.slice(0,5).map(v=>hwF(v)).join(', ')}, …), the last row of Table 1, and within ${hwF(Math.max(...gr.map((v,i)=>Math.abs(v-last[i]))),4)} of the Θ = 100,000 average.`});
+    const kg=g.slice(0,5).map((v,i)=>(i+1)*v),dm=[5,10,100].map(m=>HW.tv(g.slice(0,m),HW.harm(m)));
+    F.push({r:gr,t:'How harmonic is it?',c:`The products k·g<sub>k</sub>(1) are (${kg.map(v=>hwF(v,2)).join(', ')}): not constant, but tending to 1. Renormalized over the top 5, 10 and 100 positions, the distance from the harmonic weights is ${dm.map(v=>hwF(v)).join(', ')}, the values in the paper's Table 2.`});
+    F.delay=5200;
+    P.load(F,(fr,el)=>{const base=196,x0=34,sc=160;
+      el('line',{x1:x0-4,y1:base,x2:330,y2:base,stroke:'var(--line)'});
+      [0.5,1].forEach(v=>{el('line',{x1:x0-4,y1:base-v*sc,x2:330,y2:base-v*sc,stroke:'var(--line)','stroke-dasharray':'2 4'});el('text',{x:x0-7,y:base-v*sc+3,class:'lab',style:'text-anchor:end'}).textContent=v.toFixed(1)});
+      fr.r.forEach((v,i)=>{const x=x0+i*36,h=v*sc;el('rect',{x:x,y:base-h,width:28,height:Math.max(h,1),rx:2,fill:'var(--ok)'});
+        el('circle',{cx:x+14,cy:base-sc/(i+1),r:4.5,fill:'var(--accent)'});
+        if(i>0)el('text',{x:x+14,y:base-Math.max(h,sc/(i+1))-9,class:'lab',fill:'var(--fg)'}).textContent=v.toFixed(2);
+        el('text',{x:x+14,y:base+14,class:'lab'}).textContent=i+1});
+      el('text',{x:182,y:18,class:'lab',fill:'var(--fg)'}).textContent=fr.T?'mixture over θ ∈ [1, '+(fr.T>=1e5?'10⁵':fr.T)+'], relative to leader':'limit from Eqs. (13), (14) (bars), 1/k (dots)';
+      el('text',{x:182,y:230,class:'lab'}).textContent='position k';
+    });
   })();
 
   route();
