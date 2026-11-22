@@ -5523,10 +5523,397 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     <p>Built from a full read of arXiv 2611.26337v1. Definition, lemma, proposition, theorem, remark, table and equation numbers match the paper. All three animations run real computations in the page: the first simulates the uniform three-way split with the gamma trick and averages the ordered shares; the second evaluates Eq. (8) by numerical integration for four values of θ; the third integrates ℓ<sub>k</sub>(θ)/θ over [1, Θ] for growing Θ and compares the result with Eqs. (13) and (14). The running examples, derivations and checks marked as ours are ours.</p>
   </footer>
 </div>
+<div class="wrap" id="view-p-2611-26119" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Sun, Nov 22</span></div>
+  <div class="paperhead">
+    <h1>Feasible Sub-Replicating Portfolios for Basket Options via the Block Rearrangement Algorithm</h1>
+    <p class="meta">Mohamad Hassan Abou Daya, Carole Bernard, Steven Vanduffel · posted Nov 19, 2026 · q-fin.CP · <a href="https://arxiv.org/abs/2611.26119" target="_blank" rel="noopener">arXiv 2611.26119</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">If you know exactly how each of three stocks can end up, but nothing about how they move together, the cheapest possible price of an option on their sum is pinned down by two numbers that squeeze it from both sides, and this paper makes the squeeze tight to within 0.1 percent using only two option strikes per stock. The question is a classic of model-free finance: market prices of ordinary options on each stock reveal each stock's distribution, but they say nothing about the dependence between stocks, so a basket option has a whole interval of prices consistent with the market. The top of that interval has been understood for two decades. The bottom is hard, because for three or more assets nobody knows which dependence makes the basket cheapest. The authors attack it from two directions at once. From above, a numerical method called the block rearrangement algorithm shuffles samples of the stocks into a dependence that makes the basket as cheap as it can find. From below, they build an explicit portfolio of ordinary options and cash whose payoff never exceeds the basket's payoff in any state of the world, so its price is a guaranteed lower bound. When the two numbers agree, a one-line inequality called weak duality proves both are optimal. Along the way the paper uses ideas that run all through optimization and probability: linear programming duality, couplings with fixed marginals, rearrangement inequalities, and the fact that a piecewise linear function attains its minimum at a corner. This chapter builds each of them on a three-stock example small enough to check with a pencil.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what a basket call is, why the market's option prices fix each stock's distribution but not their dependence, and how that turns pricing into an optimization over couplings (problem (1));</li>
+        <li>what a sub-replicating portfolio is, why its price is a lower bound for every dependence at once, and how matching it with an upper bound certifies optimality (weak duality, Corollary 2.6);</li>
+        <li>why, for two assets, pairing large values of one with small values of the other gives the cheapest basket, and why nothing so simple exists for three;</li>
+        <li>how the rearrangement algorithm searches for a cheap dependence one column at a time, and why each step can only lower the price (Remark 2.9);</li>
+        <li>how the paper reads option strikes off the functions φ<sub>i</sub> of Eqs. (2) to (4) by pairing each asset with the sum of the others (Eq. 5);</li>
+        <li>why the cash part of the portfolio can be computed exactly by checking finitely many corner points (Proposition 2.3, Eq. 8);</li>
+        <li>the three cases with closed-form answers: deep in the money, one dominant asset, and jointly mixable marginals (Propositions 3.1, 3.2, 3.4);</li>
+        <li>how the bounds are transferred from discretized samples back to the true distributions (Proposition 2.11, Corollary 2.12), and what the log-normal examples show (Tables 2 to 6).</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>n</dt><dd>the number of assets in the basket (the paper's exposition uses n = 3)</dd>
+        <dt>X<sub>1</sub>, …, X<sub>n</sub></dt><dd>the asset prices at the common maturity T, nonnegative random variables (weighted, so the basket is their plain sum)</dd>
+        <dt>K</dt><dd>the strike of the basket call, whose payoff is (X<sub>1</sub> + ⋯ + X<sub>n</sub> − K)<sup>+</sup></dd>
+        <dt>a<sup>+</sup></dt><dd>the positive part max(a, 0)</dd>
+        <dt>ℚ</dt><dd>the risk-neutral pricing measure; prices are expectations under ℚ, with zero interest rates</dd>
+        <dt>C<sub>X</sub>(k), P<sub>X</sub>(k)</dt><dd>the call and put price functions E[(X − k)<sup>+</sup>] and E[(k − X)<sup>+</sup>]</dd>
+        <dt>C′<sup>+</sup>, C′<sup>−</sup></dt><dd>right and left derivatives of a call price function with respect to the strike</dd>
+        <dt>Π</dt><dd>the set of joint laws (couplings) with the given marginals; in a formula, Π<sup>sub</sup> is instead the sub-replicating portfolio</dd>
+        <dt>μ, μ̂</dt><dd>a coupling in Π, and the coupling returned by the rearrangement algorithm</dd>
+        <dt>Y<sub>i</sub></dt><dd>the sum of all assets other than X<sub>i</sub></dd>
+        <dt>φ<sub>i</sub>, A<sub>i</sub></dt><dd>the auxiliary function of Eqs. (2) to (4) and the set where it is positive</dd>
+        <dt>K<sub>i</sub><sup>j</sup></dt><dd>the option strikes chosen for asset i, in increasing order</dd>
+        <dt>f<sub>i</sub></dt><dd>the piecewise linear payoff held on asset i (Eq. 5)</dd>
+        <dt>Ψ, λ̄</dt><dd>the basket payoff minus Σ f<sub>i</sub>, and its minimum, the cash component (Eq. 7)</dd>
+        <dt>𝓑<sub>i</sub></dt><dd>the breakpoints of f<sub>i</sub> together with 0 and K (Proposition 2.3)</dd>
+        <dt>HV, BV</dt><dd>hedging value (price of the portfolio) and basket value (price of the basket under μ̂)</dd>
+        <dt>HV<sup>ex</sup>, BV<sup>ex</sup></dt><dd>the same two quantities computed for the original, undiscretized marginals</dd>
+        <dt>m<sub>X</sub></dt><dd>the mean of the basket, E[X<sub>1</sub>] + ⋯ + E[X<sub>n</sub>]</dd>
+        <dt>F<sub>i</sub>, F<sub>i</sub><sup>−1</sup></dt><dd>the distribution function of X<sub>i</sub> and its quantile function</dd>
+        <dt>N</dt><dd>the number of equally likely atoms each marginal is discretized into (50,000 in the paper)</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Example A: three toy stocks, four scenarios each.</b> Stocks 1 and 2 each end at 1, 2, 3 or 4, each value with probability 1/4. Stock 3 is a long shot: it ends at 0, 1, 2 or 13, again with probability 1/4 each. The basket call has strike K = 10, above the basket's mean m<sub>X</sub> = 2.5 + 2.5 + 4 = 9. The example is ours, built so that every step of the paper's construction can be done by hand; the page recomputes everything in it.</li>
+        <li><b>Example B: the paper's three log-normal stocks.</b> Three stocks start at 100, have volatilities 35.5%, 20% and 25%, mature in half a year, and enter the basket with weight 1/3 each, so the basket's forward value is 100. The paper's Table 2 reports the lower bound of the basket call at strikes from 100 to 120, and the page reprices the paper's tabulated portfolios from scratch.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · The question">
+      <span class="num">1 · BASKET OPTIONS AND MISSING DEPENDENCE</span>
+      <h2>What can market prices say about an option on a sum of stocks?</h2>
+      <p>A European call option on a stock gives its holder the right to buy the stock at a fixed price k, the strike, on a fixed date T. If the stock ends at X, the holder buys only when X &gt; k, and gains X − k, so the payoff is (X − k)<sup>+</sup>. A put pays (k − X)<sup>+</sup>. A basket call pays the same kind of amount on a sum of stocks: with prices X<sub>1</sub>, …, X<sub>n</sub> at time T (already multiplied by their weights in the basket) and basket strike K, its payoff is</p>
+      <div class="math" data-tex="(X_1+X_2+\cdots+X_n-K)^+."></div>
+      <p>Pricing theory says that, in a market without arbitrage, there is a probability measure ℚ, the risk-neutral measure, under which the price of any payoff is its expected value (after discounting, which disappears because the paper assumes zero interest rates). So the price of a call on stock i at strike k is a function of k alone.</p>
+      <div class="def"><span class="label">Definition · call price function</span>
+        <div class="math" data-tex="C_{X_i}(k):=\mathbb{E}_{\mathbb{Q}}\bigl[(X_i-k)^+\bigr],\qquad k\ge 0."></div>
+        <p>In words: the market price of a call on stock i, viewed as a curve in the strike. The paper assumes that the full curve is known, a continuum of strikes, which is the idealization of a liquid options market.</p>
+      </div>
+      <p>The curve determines the whole distribution of X<sub>i</sub>. The paper's standing assumption records the first step of that fact.</p>
+      <div class="def"><span class="label">Assumption 2.1 · marginals with densities</span>
+        <p>Each X<sub>i</sub> has a density on (0, ∞) with full support and finite mean. Then C<sub>X<sub>i</sub></sub> is strictly positive, strictly decreasing, strictly convex and continuously differentiable, with</p>
+        <div class="math" data-tex="\partial_k C_{X_i}(k)=-\mathbb{Q}(X_i>k)."></div>
+        <p>In words: raising the strike by a small amount h lowers the payoff by h exactly in the states where the option is in the money, so the slope of the price curve is minus the probability of finishing above the strike.</p>
+      </div>
+      <p>Differentiating once more gives the density of X<sub>i</sub> as the second derivative of the call price curve, a classical observation known as the Breeden–Litzenberger formula. That second step is our addition; the paper only needs the first derivative. Either way, the vanilla market fixes each marginal law. What it does not fix is the joint law of (X<sub>1</sub>, …, X<sub>n</sub>), and the basket price depends on it. Any joint law with the right marginals, a <i>coupling</i>, gives a price consistent with every quoted option. The lowest of them is the subject of the paper.</p>
+      <div class="def"><span class="label">Problem (1) · the primal problem</span>
+        <div class="math" data-tex="\inf_{\mu\in\Pi}\int_{\mathbb{R}^{3}_{+}}(x_1+x_2+x_3-K)^+\,\mu(dx_1,dx_2,dx_3),\tag{1}"></div>
+        <p>where Π is the set of probability measures on ℝ<sup>3</sup><sub>+</sub> whose marginals reproduce every call price, ∫(x<sub>i</sub> − k<sub>i</sub>)<sup>+</sup> dμ = C<sub>X<sub>i</sub></sub>(k<sub>i</sub>) for all k<sub>i</sub> ≥ 0 and each i. In words: among all ways the three stocks could depend on each other that the market cannot rule out, find the one that makes the basket call cheapest. The paper writes the problem for n = 3 for ease of exposition and notes that it extends to any n (Remark 2.8).</p>
+      </div>
+      <p>The paper calls (1) a multi-marginal optimal transport problem: the unknown is a joint law with prescribed marginals, and the cost is the basket payoff. The highest price, the matching supremum, is described in the introduction as well understood, with super-replicating portfolios known since the work of Hobson, Laurence and Wang. The infimum is not, and the introduction lists two reasons: earlier methods use finitely many option prices rather than whole marginals, and the dependence that attains the infimum is unknown in closed form for more than two assets.</p>
+      <p>For Example A the call price functions can be read off directly. For stock 1,</p>
+      <div class="math" data-tex="C_{X_1}(0)=\tfrac{10}{4},\quad C_{X_1}(1)=\tfrac{6}{4},\quad C_{X_1}(2)=\tfrac34,\quad C_{X_1}(3)=\tfrac14,\quad C_{X_1}(4)=0,"></div>
+      <p>linear in between. For stock 3 the price falls from C<sub>X<sub>3</sub></sub>(0) = 4 to C<sub>X<sub>3</sub></sub>(2) = 11/4 and then, since only the value 13 lies above, along a straight line of slope −1/4, so C<sub>X<sub>3</sub></sub>(6) = 7/4 and C<sub>X<sub>3</sub></sub>(8) = 5/4. Each slope is minus the probability of finishing above the strike, as Assumption 2.1 says (for discrete stocks the slope jumps at each possible value, which is why the paper later works with one-sided derivatives). The three marginals are fixed, but the basket price is not: if the stocks move together, pairing 1 with 1 with 0, 2 with 2 with 1, and so on, the basket sums are 2, 5, 8 and 21, and the basket call is worth (0 + 0 + 0 + 11)/4 = 11/4. If they are independent, averaging over all 64 combinations gives 2. Section 3 shows that the cheapest coupling gives 5/4.</p>
+      <p class="short"><b>In short:</b> vanilla option prices fix each stock's distribution through the call price curve (Assumption 2.1) but leave the dependence free, so the lowest arbitrage-free basket price is an optimization over couplings (problem 1); in Example A that price can be anywhere from 5/4 up to 11/4.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Sub-replication">
+      <span class="num">2 · PORTFOLIOS THAT NEVER PAY TOO MUCH</span>
+      <h2>How can one number be a lower bound for every possible dependence at once?</h2>
+      <p>Problem (1) minimizes over an enormous set. The way to bound a minimum from below without searching that set is to find something that is cheaper than the basket in every single state of the world. Hold a stock, some calls on single stocks and some cash. If the portfolio's payoff never exceeds the basket's payoff, whatever the three prices turn out to be, then its price is below the basket's price under any coupling. And because each piece of the portfolio depends on only one stock, its price depends only on the marginals, which are known.</p>
+      <p>Written as an optimization, this is the linear programming dual of (1). It maximizes the price of a static position, cash λ plus calls with strike profile ν<sub>i</sub>, over all such positions that stay below the basket payoff pointwise:</p>
+      <div class="math" data-tex="\begin{aligned}&\sup_{\lambda,\nu_1,\nu_2,\nu_3}\ \lambda+\sum_{i=1}^{3}\int_{\mathbb{R}_+}C_{X_i}(k_i)\,\nu_i(dk_i)\\ &\text{s.t.}\ \sum_{i=1}^{3}\int(x_i-k_i)^+\,\nu_i(dk_i)+\lambda\le(x_1+x_2+x_3-K)^+\\ &\qquad\text{for all }(x_1,x_2,x_3)\in\mathbb{R}^3_+.\end{aligned}"></div>
+      <p>The ν<sub>i</sub> are signed measures: a point mass +1 at strike k means one long call at k, −1 a short call. The portfolios the paper builds are all of the following form.</p>
+      <div class="def"><span class="label">Definition · sub-replicating portfolio (Theorem 2.4)</span>
+        <p>A portfolio f<sub>1</sub>(x<sub>1</sub>) + f<sub>2</sub>(x<sub>2</sub>) + f<sub>3</sub>(x<sub>3</sub>) + λ̄ sub-replicates the basket call if</p>
+        <div class="math" data-tex="f_1(x_1)+f_2(x_2)+f_3(x_3)+\overline{\lambda}\le(x_1+x_2+x_3-K)^+\quad\forall\,(x_1,x_2,x_3)\in\mathbb{R}^3_+.\tag{6}"></div>
+        <p>In words: whatever the three prices are at maturity, the portfolio pays at most what the basket pays. Each f<sub>i</sub> is a payoff on stock i alone, and λ̄ is cash.</p>
+      </div>
+      <p>Any continuous piecewise linear payoff with finitely many kinks can be bought with stock and calls: start with the right slope at zero, and at each kink add (x − k)<sup>+</sup> times the change of slope there. The payoff min(x, 2), for example, is x − (x − 2)<sup>+</sup>: one share of stock and one short call at 2. This is the background fact behind the paper's remark that every continuous piecewise linear function of x<sub>i</sub> with finitely many kinks is a static call position.</p>
+      <div class="fact"><span class="label">Fact · weak duality (proof of Corollary 2.6)</span>
+        <p>If (6) holds, then for every coupling μ ∈ Π,</p>
+        <div class="math" data-tex="HV:=\sum_{i=1}^{n}\mathbb{E}[f_i(X_i)]+\overline{\lambda}\ \le\ \inf_{\mu\in\Pi}\mathbb{E}_{\mu}\Bigl[\Bigl(\sum_{i=1}^n X_i-K\Bigr)^+\Bigr]\ \le\ BV:=\mathbb{E}_{\hat\mu}\Bigl[\Bigl(\sum_{i=1}^n X_i-K\Bigr)^+\Bigr]"></div>
+        <p>for any particular coupling μ̂ ∈ Π. If HV = BV, then μ̂ attains the infimum and the portfolio is an optimal sub-replicating portfolio.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why are both inequalities true, and why does equality certify optimality?</span></summary><div class="pfbody">
+        <p>Fix any μ ∈ Π. Taking μ-expectations of both sides of (6) preserves the inequality. The left side's expectation is Σ E<sub>μ</sub>[f<sub>i</sub>(X<sub>i</sub>)] + λ̄, and since each f<sub>i</sub> depends on X<sub>i</sub> alone and every μ ∈ Π has the same marginals, this is the same number HV for every μ. So HV ≤ E<sub>μ</sub>[(ΣX<sub>i</sub> − K)<sup>+</sup>] for all μ, and hence HV is at most the infimum. The second inequality holds because μ̂ is one of the couplings over which the infimum is taken. If HV = BV, the infimum is squeezed between two equal numbers, so it equals both: μ̂ attains it, and no sub-replicating portfolio can be worth more than this one, since by the first inequality every such portfolio is worth at most the infimum.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The paper stresses that only this weak form of duality is used anywhere in its proofs. A deeper theorem of Kellerer (1984), cited in Section 2, says the gap closes in general: the best dual value over integrable functions of single assets equals the infimum. The paper does not claim the same for the restricted class of call positions, and it does not need to.</p>
+      <p>For Example A, take the portfolio</p>
+      <div class="math" data-tex="\Pi^{\mathrm{sub}}(x)=\min(x_1,2)+\min(x_2,2)+(x_3-6)^+-4."></div>
+      <p>It is sub-replicating: if x<sub>3</sub> ≤ 6, it is at most 2 + 2 + 0 − 4 = 0, which is at most the basket payoff; if x<sub>3</sub> &gt; 6, it is min(x<sub>1</sub>, 2) + min(x<sub>2</sub>, 2) + x<sub>3</sub> − 10, which is at most x<sub>1</sub> + x<sub>2</sub> + x<sub>3</sub> − 10, and so again at most the basket payoff. Its price uses only the marginals. Since min(X<sub>1</sub>, 2) takes the values 1, 2, 2, 2, its expectation is 7/4, the same for stock 2, and E[(X<sub>3</sub> − 6)<sup>+</sup>] = 7/4 because only the value 13 exceeds 6. So</p>
+      <div class="math" data-tex="HV=\tfrac74+\tfrac74+\tfrac74-4=\tfrac54."></div>
+      <p>No coupling of the three toy stocks can price the basket below 5/4. Section 3 exhibits one that prices it at exactly 5/4, which by weak duality makes both optimal. Sections 5 and 6 show that this portfolio is exactly what the paper's construction produces.</p>
+      <p class="short"><b>In short:</b> a portfolio of single-stock options and cash that never pays more than the basket (Eq. 6) has a price that depends only on the marginals and bounds the basket price below for every coupling; matching it with the basket price under one coupling proves both optimal (Corollary 2.6). In Example A the portfolio min(x<sub>1</sub>, 2) + min(x<sub>2</sub>, 2) + (x<sub>3</sub> − 6)<sup>+</sup> − 4 is worth 5/4.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Couplings">
+      <span class="num">3 · DEPENDENCE AS A MATRIX</span>
+      <h2>Which coupling makes a sum as cheap as possible?</h2>
+      <p>To search for the cheapest coupling, it helps to see couplings concretely. If every marginal is discretized into N equally likely values, a coupling can be stored as an N × n matrix: column i lists the N values of stock i, each row is one equally likely scenario, and the basket in that scenario is the row sum. Reordering the entries within a column changes the dependence but not the marginal, so searching over couplings means searching over permutations of each column. The basket value is the average of (row sum − K)<sup>+</sup>. This is the representation the rearrangement algorithms use (Section 2.2 of the paper), with N = 50,000 rows in the numerical examples.</p>
+      <p>The basket payoff is a convex function of the sum. Convex functions punish spread: by Jensen's inequality, E[(S − K)<sup>+</sup>] ≥ (E[S] − K)<sup>+</sup>, and the less the sum S varies, the closer the price gets to that floor. So the cheapest coupling should make the row sums as equal as possible, pairing large values of one stock with small values of the others. For two assets this intuition is exactly right.</p>
+      <div class="fact"><span class="label">Fact · two assets (Tchen 1980, Rüschendorf 1983, as cited in Remark 2.9)</span>
+        <p>For two random variables U and V with fixed marginals, the antimonotone coupling, which pairs the k-th largest value of U with the k-th smallest of V, minimizes E[φ(U + V)] over all couplings, for every convex function φ.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof sketch</span><span class="q">Why does pairing large with small help every convex function? (our argument)</span></summary><div class="pfbody">
+        <p>This exchange argument is ours, for the discrete matrix picture; the paper cites the result. Take two rows with u<sub>1</sub> &lt; u<sub>2</sub> and v<sub>1</sub> &lt; v<sub>2</sub>, paired in the same order, so the row sums are s = u<sub>1</sub> + v<sub>1</sub> and t = u<sub>2</sub> + v<sub>2</sub>. Swapping v<sub>1</sub> and v<sub>2</sub> gives sums p = u<sub>1</sub> + v<sub>2</sub> and q = u<sub>2</sub> + v<sub>1</sub>. Both new sums lie between s and t, and p + q = s + t. A convex φ lies below its chord on [s, t], and writing p = (1 − w)s + wt, q = ws + (1 − w)t for some w in [0, 1] gives</p>
+        <div class="math" data-tex="\varphi(p)+\varphi(q)\le\bigl[(1-w)+w\bigr]\varphi(s)+\bigl[w+(1-w)\bigr]\varphi(t)=\varphi(s)+\varphi(t)."></div>
+        <p>So every swap that undoes a same-order pair can only lower Σ φ(row sum), and repeating swaps ends at the antimonotone arrangement.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Hobson, Laurence and Wang used this antimonotone structure, the lower Fréchet copula, to build optimal sub-replicating portfolios for two-asset baskets in 2005. With three or more assets the idea breaks down: no arrangement can make every column antimonotone to every other one, and the formula that would describe such an arrangement, the lower Fréchet bound max(u<sub>1</sub> + ⋯ + u<sub>n</sub> − n + 1, 0), is not a valid copula for n ≥ 3 (the paper cites Nelsen, Section 2.10). The paper adds that the sum has no minimum in convex order in general for n ≥ 3 (Bernard, Jiang and Wang 2014): the coupling that is cheapest at one strike K need not be cheapest at another, and none is known in closed form.</p>
+      <p>The extreme favorable case has its own name. The marginals are <i>jointly mixable</i> if some coupling makes the sum constant. Then, by Jensen's inequality, nothing can beat it, and the basket's lowest price is just (m<sub>X</sub> − K)<sup>+</sup> (Proposition 3.4, Section 7). Three columns each containing 1, 2, 3 are jointly mixable, for instance: the rows (1, 2, 3), (2, 3, 1), (3, 1, 2) all sum to 6.</p>
+      <p>Example A is not mixable, since 13 cannot be balanced by values of at most 4. With N = 4 rows there are 4! × 4! = 576 ways to arrange columns 2 and 3 against a fixed column 1, and the page checks all of them (that brute force is ours, possible only because the example is tiny). The minimum basket value is 5/4, attained for instance by the rows</p>
+      <div class="math" data-tex="(4,4,0),\ (3,3,1),\ (2,2,2),\ (1,1,13)\quad\Rightarrow\quad\text{sums }8,7,6,15,\quad BV=\tfrac{0+0+0+5}{4}=\tfrac54."></div>
+      <p>Stocks 1 and 2 move together here, and stock 3 moves against their sum. All the "excess" is concentrated in a single scenario: the long shot pays off while the other two are at their lowest.</p>
+      <p class="short"><b>In short:</b> a coupling of discretized marginals is a matrix whose columns can be permuted; convexity of the payoff rewards equal row sums, and for two assets the antimonotone pairing is optimal for every strike, but for three or more no such universal arrangement exists. In Example A the cheapest of all 576 arrangements is worth 5/4.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Rearrangement">
+      <span class="num">4 · THE REARRANGEMENT ALGORITHM</span>
+      <h2>How do you search for a cheap coupling when N is 50,000?</h2>
+      <p>Brute force is hopeless beyond toy sizes: with N rows and n columns there are (N!)<sup>n−1</sup> arrangements. The rearrangement algorithm (RA) of Puccetti and Rüschendorf (2012) uses the two-asset fact as a local move. Pick one column, call it U, and let V be the sum of all the other columns, row by row. Rearrange column U to be antimonotone to V: the largest entry of U goes to the row where V is smallest, and so on. By the two-asset fact, this step cannot increase E[φ(U + V)] for any convex φ, and U + V is the full row sum. Cycle through the columns until nothing changes.</p>
+      <div class="def"><span class="label">Remark 2.9 · every step is a descent step</span>
+        <p>Each rearrangement step replaces the coupling of two block sums U and V by their antimonotone coupling, which minimizes E[φ(U + V)] over couplings of U and V for every convex φ. Each step is therefore non-increasing in E[φ(ΣX<sub>i</sub>)] for every convex φ, whichever objective is used to monitor convergence.</p>
+        <p>In words: one rearrangement move never makes any convex function of the basket larger, so it never raises the basket call price at any strike at all.</p>
+      </div>
+      <p>The block rearrangement algorithm (BRA) of Bernard and McLeish and of Boudt, Jakobsons and Vanduffel, which the paper uses, generalizes the move: the columns are split into two blocks, chosen at random, and the coupling of the two block sums U and V is replaced by their antimonotone coupling (Remark 2.9). By default it monitors the variance of the row sums, as a proxy. Because the true target is E[(ΣX<sub>i</sub> − K)<sup>+</sup>], and for n ≥ 3 the two objectives need not have the same minimizer, the authors also run it with this "K-aware" objective. Both RA and BRA are heuristics and can stall in a local minimum, so the paper runs them many times from random starting arrangements and keeps the output whose hedging portfolio is worth the most (Section 2.2; the tables use 64 restarts for the three-asset example and 20 for the six-asset one).</p>
+      <p>The animation runs the plain RA on Example A, starting from the comonotone arrangement in which all three stocks move together (basket value 11/4). At each step it shows the column being rearranged, the sums of the other columns that decide the new order, and the basket value. Starting from any of the 576 arrangements, RA reaches 5/4 on this example (the page checks this); the paper's warning about local minima concerns realistic sizes.</p>
+      <div class="player" id="pBrRA">
+        <div class="ptitle"><span class="label">Animation · rearrangement algorithm on Example A</span><div class="scen"><button class="chip" data-scen="como" aria-pressed="true">comonotone start</button><button class="chip" data-scen="mix" aria-pressed="false">shuffled start</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="A four by three matrix of stock values being rearranged column by column, with row sums and the basket value"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>column being rearranged</span><span><i class="sw" style="background:var(--cool)"></i>sum of other columns</span><span><i class="sw" style="background:var(--bad)"></i>row pays (sum &gt; K)</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>After the first sweep stocks 1 and 2 are sorted the same way and stock 3 is sorted against their sum. That is the coupling Section 3 found by brute force, up to the order of the rows. The algorithm gives an upper bound BV for the infimum, because its output is a genuine coupling of the discretized marginals. Whether that upper bound is the infimum is a separate question, which the next three sections answer from the other side.</p>
+      <p class="short"><b>In short:</b> the rearrangement algorithm makes one column (or block) antimonotone to the sum of the rest, a move that can never raise the price of any convex payoff of the basket (Remark 2.9); it is a fast heuristic for the cheapest coupling, and on Example A it reaches the true minimum 5/4 in one sweep.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Pair decomposition">
+      <span class="num">5 · STRIKES FROM TWO-ASSET PROBLEMS</span>
+      <h2>Where should the options in the lower-bound portfolio be struck?</h2>
+      <p>Weak duality turns any sub-replicating portfolio into a lower bound, but a bad portfolio gives a bad bound. The paper's central idea is how to choose strikes. For each asset i, lump all the other assets into one aggregate,</p>
+      <div class="math" data-tex="Y_1^*:=X_2^*+X_3^*,\qquad Y_2^*:=X_1^*+X_3^*,\qquad Y_3^*:=X_1^*+X_2^*,"></div>
+      <p>computed under the coupling μ̂ from the rearrangement algorithm. The basket is X<sub>i</sub> + Y<sub>i</sub>, a basket of two assets, and for two assets Hobson, Laurence and Wang (2005a) know the optimal sub-replicating portfolio. Its strikes on X<sub>i</sub> are where a certain function changes sign. Define, for each i,</p>
+      <div class="math" data-tex="\phi_i(x_i)=C_{X_i}^{\prime +}(x_i)+C_{Y_i}^{\prime -}(K-x_i)+1,\qquad i=1,2,3.\tag{2\text{ to }4}"></div>
+      <p>Here C<sub>Y<sub>i</sub></sub> is the call price function of Y<sub>i</sub> under μ̂, which is piecewise linear because μ̂ lives on a finite sample (Remark 2.2), so the paper takes the right derivative for X<sub>i</sub> and the left derivative for Y<sub>i</sub>. Using the slope formula of Assumption 2.1, the appendix rewrites this as</p>
+      <div class="math" data-tex="\phi_i(x)=\mathbb{Q}(X_i\le x)-\mathbb{Q}(Y_i^*\ge K-x).\tag{15}"></div>
+      <p>In words: φ<sub>i</sub>(x) compares the probability that stock i finishes at or below x with the probability that the rest of the basket finishes high enough to bring the total to K. Let A<sub>i</sub> = {x : φ<sub>i</sub>(x) &gt; 0}. It is a union of intervals, all inside [0, K), because for x ≥ K the second probability is 1. Its boundary points, in increasing order, are the strikes K<sub>i</sub><sup>1</sup> &lt; K<sub>i</sub><sup>2</sup> &lt; ⋯ &lt; K<sub>i</sub><sup>2n<sub>i</sub></sup>, with the convention K<sub>i</sub><sup>1</sup> = 0 when A<sub>i</sub> starts at 0. The payoff held on stock i is then</p>
+      <div class="math" data-tex="f_i(z)=z^++\sum_{a=1}^{n_i}\Bigl\{(z-K_i^{2a})^+-(z-K_i^{2a-1})^+\Bigr\}.\tag{5}"></div>
+      <div class="def"><span class="label">Definition · the asset leg f<sub>i</sub></span>
+        <p>Equation (5) describes one share of stock i, a short call at each odd-numbered strike and a long call at each even-numbered strike. In words: f<sub>i</sub> rises with slope 1, goes flat across each interval of A<sub>i</sub>, and rises with slope 1 again after it. So f<sub>i</sub>(0) = 0, 0 ≤ f<sub>i</sub>(z) ≤ z, and beyond the last strike f<sub>i</sub>(z) = z − L<sub>i</sub>, where L<sub>i</sub> is the total length of A<sub>i</sub>.</p>
+      </div>
+      <p>The intuition behind the flat stretches, which is our gloss rather than the paper's wording, is that on A<sub>i</sub> stock i is more likely to be low than the rest of the basket is to make up the difference, so a dollar of exposure to stock i there would cost more than it can be guaranteed to deliver. From each two-asset portfolio the paper keeps only the leg on X<sub>i</sub>; the legs on the aggregates Y<sub>i</sub>, which are not traded, are discarded, and a single cash amount λ̄ (Section 6) restores pointwise feasibility. One practical adjustment comes from Algorithm 1, line 16: if the last strike lies above the largest sample value of X<sub>i</sub>, it is moved to K, where the long call is worthless on the sample.</p>
+      <p>Two remarks in the paper temper this. For a discrete Y<sub>i</sub>, as here, optimality of the two-asset triplet is not asserted; and even with the exact optimal coupling the inherited strikes are not guaranteed to be optimal for the three-asset problem (Remark 2.5, Section 4). The paper therefore follows the construction with a derivative-free local search over the strike values (Nelder–Mead alternated with Powell's method), keeping the number of strikes and their pattern fixed. Every candidate it visits is a valid sub-replicator, so the search can only raise a valid lower bound.</p>
+      <p>For Example A, use the coupling from the rearrangement algorithm, rows (4, 4, 0), (3, 3, 1), (2, 2, 2), (1, 1, 13). For stock 1 the aggregate Y<sub>1</sub> = X<sub>2</sub> + X<sub>3</sub> takes the values 4, 4, 4, 14. By Eq. (15), on [2, 3) one gets φ<sub>1</sub> = 1/2 − 1/4 = 1/4 (half the values of X<sub>1</sub> are at most 2, and only Y<sub>1</sub> = 14 reaches 10 − x), on [3, 4) φ<sub>1</sub> = 1/2, and on [4, 6) φ<sub>1</sub> = 3/4; from x = 6 on, every value of Y<sub>1</sub> reaches 10 − x and φ<sub>1</sub> = 0, while on [0, 2) it is −1/4 or 0. So A<sub>1</sub> = [2, 6), with strikes 2 and 6. The strike 6 exceeds the largest value of X<sub>1</sub>, so line 16 moves it to 10, and</p>
+      <div class="math" data-tex="f_1(z)=f_2(z)=\min(z,2)+(z-10)^+."></div>
+      <p>For stock 3, Y<sub>3</sub> = X<sub>1</sub> + X<sub>2</sub> takes the values 8, 6, 4, 2, and φ<sub>3</sub> equals 1/4, 1/2, 1/2, 1/4 on [0, 1), [1, 2), [2, 4), [4, 6), then 0 on [6, 8) and −1/4 after. So A<sub>3</sub> = [0, 6), K<sub>3</sub><sup>1</sup> = 0 and K<sub>3</sub><sup>2</sup> = 6, and f<sub>3</sub>(z) = z + (z − 6)<sup>+</sup> − z = (z − 6)<sup>+</sup>, a single call. These are the legs of the portfolio of Section 2; the call at 10 on stocks 1 and 2 is worthless and changes nothing.</p>
+      <p class="short"><b>In short:</b> pairing each asset with the sum of the others gives n two-asset problems whose solutions place strikes at the boundary points of {φ<sub>i</sub> &gt; 0} (Eqs. 2 to 4 and 15); the resulting leg f<sub>i</sub> alternates slopes 1 and 0 (Eq. 5). In Example A this produces min(z, 2) on stocks 1 and 2 and a call at 6 on stock 3.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Exact cash">
+      <span class="num">6 · THE CASH COMPONENT, EXACTLY</span>
+      <h2>How much cash must be subtracted so the portfolio never overpays?</h2>
+      <p>The legs f<sub>i</sub> come from separate two-asset problems, so their sum may exceed the basket payoff somewhere. The fix is to subtract the largest overshoot. Define</p>
+      <div class="math" data-tex="\Psi(x_1,x_2,x_3):=(x_1+x_2+x_3-K)^+-\bigl(f_1(x_1)+f_2(x_2)+f_3(x_3)\bigr)"></div>
+      <p>and set the cash to its smallest value,</p>
+      <div class="math" data-tex="\overline{\lambda}:=\inf_{(x_1,x_2,x_3)\in\mathbb{R}^3_+}\Psi(x_1,x_2,x_3)\ \in\ [-K,0].\tag{7}"></div>
+      <p>Then (6) holds by definition, whatever strikes were used. The infimum is finite: where the basket is below K, Ψ ≥ −Σf<sub>i</sub>(x<sub>i</sub>) ≥ −Σx<sub>i</sub> ≥ −K, and where it is above, Ψ = Σ(x<sub>i</sub> − f<sub>i</sub>(x<sub>i</sub>)) − K ≥ −K. A simulation-based estimate of this infimum would carry sampling error into the bound, and the paper instead computes it exactly.</p>
+      <div class="def"><span class="label">Proposition 2.3 · exact computation of λ̄</span>
+        <p>Let each asset's strikes be ordered, so f<sub>i</sub> has slopes in {0, 1}, and let 𝓑<sub>i</sub> := {0} ∪ {K<sub>i</sub><sup>1</sup>, …, K<sub>i</sub><sup>2n<sub>i</sub></sup>} ∪ {K}. Then</p>
+        <div class="math" data-tex="\overline{\lambda}=\min_{(x_1,\ldots,x_n)\in\mathcal{B}_1\times\cdots\times\mathcal{B}_n}\Psi(x_1,\ldots,x_n).\tag{8}"></div>
+        <p>In words: to find the worst overshoot over a continuum of price combinations, it is enough to try every combination in which each stock sits at one of its own strikes, at 0, or at K.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is checking a finite grid enough?</span></summary><div class="pfbody">
+        <p>Cut ℝ<sup>n</sup><sub>+</sub> by the hyperplanes {x<sub>i</sub> = b} for every breakpoint b of every f<sub>i</sub> (and b = 0), together with the hyperplane {Σx<sub>i</sub> = K}. These cut the orthant into finitely many closed polyhedral cells, and Ψ is affine on each cell, because each f<sub>i</sub> is affine between its breakpoints and the basket payoff is affine on each side of {Σx<sub>i</sub> = K}. Each cell lies in the orthant, so it contains no full line, and Ψ ≥ −K on it. By the fundamental theorem of linear programming, an affine function bounded below on such a polyhedron attains its minimum at a vertex. So λ̄ is the minimum of Ψ over all cell vertices.</p>
+        <p>A vertex is the intersection of n independent hyperplanes from the family. If all of them have the form {x<sub>i</sub> = b}, each coordinate is a breakpoint, and the vertex is in 𝓑<sub>1</sub> × ⋯ × 𝓑<sub>n</sub>. Otherwise one of them is {Σx<sub>i</sub> = K} and the others fix n − 1 coordinates, leaving one coordinate v<sub>m</sub> = K − Σ<sub>i≠m</sub> v<sub>i</sub> in [0, K]. If v<sub>m</sub> is not a breakpoint, slide it. If f<sub>m</sub> has slope 1 there, moving v<sub>m</sub> up to the next element b of 𝓑<sub>m</sub> (which exists, because K ∈ 𝓑<sub>m</sub>) raises the basket payoff and f<sub>m</sub> by the same amount, so Ψ does not change. If f<sub>m</sub> has slope 0, moving v<sub>m</sub> down to the previous element (which exists, because 0 ∈ 𝓑<sub>m</sub>) keeps the payoff at 0 and f<sub>m</sub> constant, so again Ψ does not change. Either way the slid point lies in the grid and has the same value. Hence the grid minimum is at most λ̄, and it is at least λ̄ because the grid is part of the orthant.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The proof also explains why 0 and K are added to the grid: they are the stopping points of the slide. The paper notes that the ordering assumption can be dropped, with the same sliding argument showing Ψ(v′) ≤ Ψ(v). The grid has at most ∏(2n<sub>i</sub> + 2) points. With one pair of strikes per asset that is 4<sup>n</sup>: 64 for three assets, 4,096 for six, and, the paper reports, 4<sup>9</sup> = 262,144 for nine assets, still under a second. Every row of the paper's tables has one pair of strikes per asset.</p>
+      <div class="def"><span class="label">Theorem 2.4 · feasible sub-replicating portfolio</span>
+        <p>Under Assumption 2.1, with f<sub>1</sub>, f<sub>2</sub>, f<sub>3</sub> from Eq. (5) and λ̄ from Eq. (7), the portfolio Π<sup>sub</sup> = f<sub>1</sub>(x<sub>1</sub>) + f<sub>2</sub>(x<sub>2</sub>) + f<sub>3</sub>(x<sub>3</sub>) + λ̄ sub-replicates the basket call on ℝ<sup>3</sup><sub>+</sub>, and its expected cost under any μ ∈ Π is Σ E<sub>μ</sub>[f<sub>i</sub>(X<sub>i</sub>)] + λ̄, which depends only on the marginals.</p>
+        <p>In words: whatever coupling the strikes came from, even a poor one, the result is a valid lower bound. The coupling affects only how good the bound is.</p>
+      </div>
+      <p>For Example A, 𝓑<sub>1</sub> = 𝓑<sub>2</sub> = {0, 2, 10} and 𝓑<sub>3</sub> = {0, 6, 10}, a grid of 27 points. At (2, 2, 6), for instance, the basket sum is exactly 10, the payoff is 0, and the legs pay 2 + 2 + 0, so Ψ = −4. Checking all 27 points gives λ̄ = −4, attained at six of them (ties of this kind are common; the paper mentions several tied vertices in its own optimal portfolios). This matches Proposition 3.2 below, which predicts λ̄ = −(2 + 2). The hedging value is HV = 7/4 + 7/4 + 7/4 − 4 = 5/4, equal to the basket value of the coupling from Section 4. By Corollary 2.6, both are optimal.</p>
+      <p>The animation builds this certificate step by step, computing φ<sub>i</sub> from the rearranged matrix, reading off the strikes, scanning all 27 grid points for λ̄, and finally comparing the portfolio with the basket scenario by scenario.</p>
+      <div class="player" id="pBrHedge">
+        <div class="ptitle"><span class="label">Animation · building the lower-bound portfolio for Example A</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="The functions phi, the chosen strikes, the grid search for the cash component and the scenario by scenario comparison of portfolio and basket"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>φ &gt; 0, flat leg</span><span><i class="sw" style="background:var(--cool)"></i>portfolio</span><span><i class="sw" style="background:var(--deep)"></i>basket payoff</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>In the final frame the portfolio equals the basket payoff in every row of the optimal coupling. That is no accident: the portfolio is never above the payoff, and the two have the same average, so they must agree wherever the optimal coupling puts mass.</p>
+      <p class="short"><b>In short:</b> the cash component is the minimum of a piecewise linear function, which is attained on the finite grid of breakpoints plus 0 and K (Proposition 2.3, Eq. 8), so it is computed exactly with 4<sup>n</sup> evaluations for one strike pair per asset; in Example A it is −4, giving HV = 5/4 = BV and a certificate of optimality.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Closed forms">
+      <span class="num">7 · THREE CASES WITH CLOSED FORMS</span>
+      <h2>When can the lower bound be written down without any search?</h2>
+      <p>Section 4 of the paper explains why the construction cannot be proved optimal in general: the strikes are inherited from two-asset problems that need not match the n-asset dual, and the optimal coupling has no closed form, so the rearrangement algorithm might miss it. Section 3 of the paper identifies three regimes in which one or both obstructions disappear and the answer is explicit.</p>
+      <p><b>Case 1: deep in the money.</b> The simplest sub-replicating portfolio is the linear one, x<sub>1</sub> + x<sub>2</sub> + x<sub>3</sub> − K, because a ≤ a<sup>+</sup>. It is worth m<sub>X</sub> − K.</p>
+      <div class="def"><span class="label">Proposition 3.1 · no active strikes</span>
+        <p>If A<sub>i</sub> = ∅ for at least one i (computed from any coupling in Π), then the linear portfolio Π<sub>1</sub><sup>sub</sup> = x<sub>1</sub> + x<sub>2</sub> + x<sub>3</sub> − K is optimal, and the lower bound equals m<sub>X</sub> − K. The proposition also holds for discrete marginals.</p>
+        <p>In words: if some stock's φ<sub>i</sub> is never positive, the stocks can be arranged so that the basket always finishes at or above K, and then the call is just a forward contract.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof sketch</span><span class="q">How does an empty A<sub>i</sub> produce a coupling with basket always at least K?</span></summary><div class="pfbody">
+        <p>The appendix argues in two steps. First, A<sub>i</sub> = ∅ means F<sub>i</sub>(x) ≤ ℚ(Y<sub>i</sub> ≥ K − x) for all x ≥ 0 by Eq. (15). Pair X<sub>i</sub> = F<sub>i</sub><sup>−1</sup>(U) antimonotonically with Y′ = G<sup>−1</sup>(1 − U), where G is the distribution function of Y<sub>i</sub> and U is uniform. If some u gave F<sub>i</sub><sup>−1</sup>(u) + G<sup>−1</sup>(1 − u) &lt; K, a chain of inequalities forces G to be constant on a non-degenerate interval at level 1 − u; a monotone function has only countably many such flat levels, so this happens for countably many u, a set of probability zero. Second, the other assets are kept with their joint law, and X<sub>i</sub> is attached to their sum through the distributional transform, so the sum X<sub>i</sub> + Y<sub>i</sub> is at least K almost surely while all marginals are preserved. Under that coupling the call pays exactly ΣX<sub>i</sub> − K, worth m<sub>X</sub> − K, which matches the linear portfolio.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In the paper's log-normal examples this regime covers all strikes below 99.89 (three assets) and below 99.66 (six assets), just under the basket forward of 100. In Example A it does not apply: m<sub>X</sub> − K = −1 &lt; 0, and both A<sub>1</sub> and A<sub>3</sub> are non-empty.</p>
+      <p><b>Case 2: one dominant asset.</b> Suppose stock 3 is spread so widely that it dominates the others. Consider the coupling μ<sup>c</sup> in which stocks 1 and 2 move together (comonotone) and stock 3 moves against their sum. Along it the basket is a function of one uniform variable u,</p>
+      <div class="math" data-tex="S^{\mathrm c}(u):=F_{X_1}^{-1}(u)+F_{X_2}^{-1}(u)+F_{X_3}^{-1}(1-u),\tag{11}"></div>
+      <p>large near u = 0, where the dominant stock is large. For a<sub>1</sub>, a<sub>2</sub>, c ≥ 0 with a<sub>1</sub> + a<sub>2</sub> + c = K, the paper proposes the vanilla portfolio</p>
+      <div class="math" data-tex="\Pi_2^{\mathrm{sub}}(x_1,x_2,x_3):=\min(x_1,a_1)+\min(x_2,a_2)+(x_3-c)^+-a_1-a_2,\tag{12}"></div>
+      <p>long the two small stocks capped by short calls, long a call on the dominant stock, and short cash a<sub>1</sub> + a<sub>2</sub>.</p>
+      <div class="def"><span class="label">Proposition 3.2 · one dominant asset</span>
+        <p>(i) For every such a<sub>1</sub>, a<sub>2</sub>, c, the portfolio (12) is sub-replicating, −(a<sub>1</sub> + a<sub>2</sub>) is its exact cash component, and its cost is C<sub>X<sub>3</sub></sub>(c) − P<sub>X<sub>1</sub></sub>(a<sub>1</sub>) − P<sub>X<sub>2</sub></sub>(a<sub>2</sub>), so</p>
+        <div class="math" data-tex="\inf_{\mu\in\Pi}\mathbb{E}_\mu\bigl[(X_1+X_2+X_3-K)^+\bigr]\ \ge\ \max_{a_1+a_2+c=K}\bigl\{C_{X_3}(c)-P_{X_1}(a_1)-P_{X_2}(a_2)\bigr\}.\tag{13}"></div>
+        <p>(ii) If S<sup>c</sup>(u*) = K, the choice a<sub>i</sub> = F<sub>X<sub>i</sub></sub><sup>−1</sup>(u*), c = F<sub>X<sub>3</sub></sub><sup>−1</sup>(1 − u*) has a<sub>1</sub> + a<sub>2</sub> + c = K and cost ∫<sub>0</sub><sup>u*</sup> (S<sup>c</sup>(u) − K) du.</p>
+        <p>(iii) If moreover S<sup>c</sup> ≥ K on (0, u*] and S<sup>c</sup> ≤ K on [u*, 1), a single crossing from above, then μ<sup>c</sup> is optimal and the portfolio of (ii) is an optimal sub-replicating portfolio.</p>
+        <p>In words: when the basket along μ<sup>c</sup> drops through K exactly once, the cheapest coupling is "small stocks together, big stock against them", and the matching hedge is two capped positions plus one call, struck where the crossing happens.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is portfolio (12) never above the basket payoff?</span></summary><div class="pfbody">
+        <p>Write d<sub>1</sub> = x<sub>1</sub> − a<sub>1</sub>, d<sub>2</sub> = x<sub>2</sub> − a<sub>2</sub>, d<sub>3</sub> = x<sub>3</sub> − c. Since a<sub>1</sub> + a<sub>2</sub> + c = K, the basket payoff is (d<sub>1</sub> + d<sub>2</sub> + d<sub>3</sub>)<sup>+</sup> and the portfolio is min(d<sub>1</sub>, 0) + min(d<sub>2</sub>, 0) + max(d<sub>3</sub>, 0). If d<sub>3</sub> ≤ 0 the portfolio is at most 0, which is at most the payoff. If d<sub>3</sub> &gt; 0 it is min(d<sub>1</sub>, 0) + min(d<sub>2</sub>, 0) + d<sub>3</sub> ≤ d<sub>1</sub> + d<sub>2</sub> + d<sub>3</sub>, again at most the payoff. At (a<sub>1</sub>, a<sub>2</sub>, c) both vanish, so the cash −(a<sub>1</sub> + a<sub>2</sub>) cannot be raised. The cost follows from E[min(X<sub>i</sub>, a<sub>i</sub>)] = a<sub>i</sub> − P<sub>X<sub>i</sub></sub>(a<sub>i</sub>). For (iii), under μ<sup>c</sup> the event u ≤ u* has X<sub>1</sub> ≤ a<sub>1</sub>, X<sub>2</sub> ≤ a<sub>2</sub>, X<sub>3</sub> ≥ c, where the portfolio equals S<sup>c</sup> − K = (S<sup>c</sup> − K)<sup>+</sup>; the event u ≥ u* has the reverse inequalities, where both are 0. So portfolio and payoff agree μ<sup>c</sup>-almost surely, their prices agree, and weak duality finishes the argument.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Example A is a case of this kind. Along μ<sup>c</sup>, ordered from the top of stock 3 down, the basket takes the values 1 + 1 + 13 = 15, then 2 + 2 + 2 = 6, 3 + 3 + 1 = 7 and 4 + 4 + 0 = 8: one crossing of K = 10, from above. With a<sub>1</sub> = a<sub>2</sub> = 2 and c = 6, the bound (13) is C<sub>X<sub>3</sub></sub>(6) − P<sub>X<sub>1</sub></sub>(2) − P<sub>X<sub>2</sub></sub>(2) = 7/4 − 1/4 − 1/4 = 5/4, which is V(μ<sup>c</sup>) = (15 − 10)/4. The general construction of Sections 5 and 6 and the closed form of Case 2 land on the same portfolio, as the paper's identification of (12) with strikes K<sub>1</sub><sup>1</sup> = a<sub>1</sub>, K<sub>3</sub><sup>1</sup> = 0, K<sub>3</sub><sup>2</sup> = c says they should. (Proposition 3.2 is stated for continuous marginals; applying the same choice to our discrete example is our step, and Corollary 2.6 confirms it.)</p>
+      <p>The paper adds that the single-crossing condition is a condition on the marginals alone, and that it requires the two dominated stocks to be bounded. For log-normal marginals, which are unbounded, it holds only up to the small mass near u = 1 where S<sup>c</sup> rises above K again, so the certificate in Table 4 refers to the discretized problem. When S<sup>c</sup> crosses K twice, μ<sup>c</sup> is no longer optimal in general, yet the bound (13) can still be attained by some other coupling, and Table 4 shows an instance. Remark 3.3 explains why the earlier route through the two-asset problem on (X<sub>1</sub> + X<sub>2</sub>, X<sub>3</sub>) does not give a vanilla hedge: it needs calls on the sub-basket X<sub>1</sub> + X<sub>2</sub>, and replacing them with calls on the single stocks destroys pointwise sub-replication.</p>
+      <p><b>Case 3: jointly mixable marginals.</b> If some coupling makes X<sub>1</sub> + X<sub>2</sub> + X<sub>3</sub> constant, the constant must be m<sub>X</sub>.</p>
+      <div class="def"><span class="label">Proposition 3.4 · joint mixability</span>
+        <div class="math" data-tex="\inf_{\mu\in\Pi}\mathbb{E}_\mu\bigl[(X_1+X_2+X_3-K)^+\bigr]=(m_X-K)^+."></div>
+        <p>The optimal portfolio is the linear one when K ≤ m<sub>X</sub> and the zero portfolio when K &gt; m<sub>X</sub>. In words: if the stocks can perfectly offset each other, the cheapest basket call is the one on a sum that never moves.</p>
+      </div>
+      <p>The proof is Jensen's inequality for the convex function z ↦ (z − K)<sup>+</sup>, with equality under the mixing coupling. The appendix also notes a numerical subtlety: in this regime the φ<sub>i</sub> carry no information (the basket is almost constant, so they are dominated by noise), which is why Algorithm 1 first tries the two portfolios without strikes, the linear one and Σ(x<sub>i</sub> − K)<sup>+</sup>, and returns one of them if it already matches BV (Remark 2.10).</p>
+      <p class="short"><b>In short:</b> the lower bound is explicit when the basket can be kept above K (Case 1, linear portfolio), when one asset dominates and the basket along "small together, big against" crosses K once (Case 2, Eqs. 11 to 13), or when the sum can be made constant (Case 3, Jensen). Example A falls in Case 2.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Real marginals">
+      <span class="num">8 · FROM SAMPLES BACK TO REAL DISTRIBUTIONS</span>
+      <h2>Do bounds computed on 50,000 sample points say anything about the true log-normal stocks?</h2>
+      <p>The rearrangement algorithms only work on discretized marginals: each log-normal law is replaced by N = 50,000 equally likely atoms at its mid-point quantiles. The certificate HV = BV of Corollary 2.6 is then a statement about that discrete problem (Remark 2.7). The paper reports that discretization alone moves the values by more than the final precision, by about 11% of the option value at K = 120 in the three-asset example, so the authors carry both bounds back to the original laws.</p>
+      <p><b>Lower bound.</b> The portfolio sub-replicates on all of ℝ<sup>n</sup><sub>+</sub>, not just on the sample, so its price under the true marginals is a valid lower bound for problem (1):</p>
+      <div class="math" data-tex="HV^{\mathrm{ex}}\bigl(\{K_i^j\}\bigr)=\sum_{i=1}^{n}\Bigl\{\mathbb{E}[X_i]+\sum_{j=1}^{2n_i}(-1)^j\,C_{X_i}\bigl(K_i^j\bigr)\Bigr\}+\overline{\lambda}\bigl(\{K_i^j\}\bigr)."></div>
+      <p>For log-normal stocks every call price here comes from the Black formula. The paper does not just evaluate this at the sample-refined strikes; it maximizes it again over the strikes, and it releases long calls that had been parked at K because they were worthless on the sample.</p>
+      <div class="aside"><span class="label">Background · the Black formula</span>In the paper's model S<sub>i,T</sub> = S<sub>i,0</sub> exp(σ<sub>i</sub>W<sub>i,T</sub> − σ<sub>i</sub><sup>2</sup>T/2) with W<sub>i</sub> a Brownian motion, so log S<sub>i,T</sub> is normal and E[S<sub>i,T</sub>] = S<sub>i,0</sub>. For a log-normal X with mean F and log-volatility σ√T, a direct integration against the normal density gives the standard formula C(k) = F Φ(d<sub>1</sub>) − k Φ(d<sub>2</sub>), with d<sub>1</sub> = [ln(F/k) + σ<sup>2</sup>T/2]/(σ√T) and d<sub>2</sub> = d<sub>1</sub> − σ√T, where Φ is the standard normal distribution function. For the weighted stock x<sub>i</sub> = S<sub>i</sub>/3 in Example B, F = 100/3. This formula is textbook background, not a result of the paper.</div>
+      <p><b>Upper bound.</b> The rearranged sample is a coupling of the discretized marginals, not of the true ones, so BV is not yet an upper bound for (1). It becomes one after each atom is spread back over the slice of the true distribution it stands for.</p>
+      <div class="def"><span class="label">Proposition 2.11 · reassembly with the original marginals</span>
+        <p>Let the rearranged rows be (x<sub>1</sub><sup>(π<sub>1</sub>(m))</sup>, …, x<sub>n</sub><sup>(π<sub>n</sub>(m))</sup>), m = 1, …, N, where π<sub>i</sub> are permutations. Let M be uniform on {1, …, N} and T uniform on (0, 1), independent, choose an orientation for each row and asset, put T<sub>i</sub> = T or 1 − T accordingly, and set</p>
+        <div class="math" data-tex="\widetilde{X}_i:=F_i^{-1}\!\left(\frac{\pi_i(M)-1+T_i}{N}\right),\qquad i=1,\ldots,n.\tag{9}"></div>
+        <p>Then (X̃<sub>1</sub>, …, X̃<sub>n</sub>) has exactly the original marginals, so</p>
+        <div class="math" data-tex="BV^{\mathrm{ex}}:=\frac1N\sum_{m=1}^{N}\int_0^1\Bigl(\sum_{i=1}^{n}F_i^{-1}\Bigl(\tfrac{\pi_i(m)-1+t_i}{N}\Bigr)-K\Bigr)^+dt\ \ge\ \inf_{\mu\in\Pi}\mathbb{E}_\mu\Bigl[\Bigl(\sum_{i=1}^n X_i-K\Bigr)^+\Bigr].\tag{10}"></div>
+        <p>In words: each atom of each stock is replaced by the whole slab of the true distribution between two consecutive quantile levels, and within a row all n slabs are traversed together by one uniform variable, forwards or backwards.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does the reassembled vector have the right marginals?</span></summary><div class="pfbody">
+        <p>Fix i. Given M = m, T<sub>i</sub> is uniform on (0, 1) whichever orientation was chosen, so U<sub>i</sub> = (π<sub>i</sub>(M) − 1 + T<sub>i</sub>)/N is uniform on the interval ((π<sub>i</sub>(m) − 1)/N, π<sub>i</sub>(m)/N). Since π<sub>i</sub> is a permutation and M is uniform, each of the N intervals is chosen with probability 1/N, and together they tile (0, 1). So U<sub>i</sub> is uniform on (0, 1), and F<sub>i</sub><sup>−1</sup>(U<sub>i</sub>) has the law of X<sub>i</sub>, the standard inverse-transform fact. Equation (10) is the basket value under this coupling, written row by row.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Each row integral is one-dimensional, so BV<sup>ex</sup> is computed by quadrature rather than simulation (Gauss–Legendre, with adaptive quadrature on the at most 2n rows containing the lowest or highest slab of some asset, where the quantile function or its derivative is unbounded), and the orientation pattern can be chosen per row to make the integral smallest. This construction is the one-dimensional case of the reassembly of Neufeld and Xiang (2022).</p>
+      <div class="fact"><span class="label">Fact · the bracket (Corollary 2.12)</span>
+        <p>For any strikes, any rearranged sample and any orientations,</p>
+        <div class="math" data-tex="HV^{\mathrm{ex}}\ \le\ \inf_{\mu\in\Pi}\mathbb{E}_\mu\Bigl[\Bigl(\sum_{i=1}^n X_i-K\Bigr)^+\Bigr]\ \le\ BV^{\mathrm{ex}}."></div>
+        <p>The width BV<sup>ex</sup> − HV<sup>ex</sup> bounds at once the errors from discretization, from a possibly suboptimal rearrangement and from possibly suboptimal strikes. Its relative size is ε := (BV<sup>ex</sup> − HV<sup>ex</sup>)/BV<sup>ex</sup> (Eq. 14).</p>
+      </div>
+      <p>The animation reprices the paper's tabulated three-asset portfolios (Table 2) from scratch: Black-formula prices for each leg, the exact cash component by enumerating the 64 grid points of Proposition 2.3, and the resulting HV<sup>ex</sup>, compared with the paper's bracket. The computation is ours; the strikes and the bracket are the paper's.</p>
+      <div class="player" id="pBrLogn">
+        <div class="ptitle"><span class="label">Animation · repricing the paper's Table 2 portfolios</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="The three piecewise linear legs of the paper's portfolio, their prices, the cash component and the resulting lower bound for several basket strikes"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>stock 1 leg</span><span><i class="sw" style="background:var(--cool)"></i>stock 2 leg</span><span><i class="sw" style="background:var(--deep)"></i>stock 3 leg</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The repricing recovers the tabulated cash components to all four decimals and the lower bounds 0.10218, 0.01810, 0.00404 and 0.00102 at K = 100 to 115. At K = 120 the strikes as printed give about 0.00018 rather than 0.00028; the paper warns that its strikes are rounded to four decimals, that several tied vertices determine the cash of an optimal portfolio, and that rebuilding from the rounded strikes can lower the value by up to 10<sup>−4</sup>, which is the size of this gap.</p>
+      <p class="short"><b>In short:</b> pricing the portfolio under the true marginals gives a valid lower bound HV<sup>ex</sup>, spreading each rearranged atom back over its quantile slab gives a valid upper bound BV<sup>ex</sup> computed by quadrature (Eqs. 9 and 10), and the two bracket the true answer for the original problem (Corollary 2.12).</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>What the paper reports</h2>
+      <p>All examples use S<sub>i,0</sub> = 100, weights 1/n, T = 0.5 and N = 50,000 atoms per marginal. Volatilities (Table 1): 35.5%, 20%, 25% for three assets; 91.5%, 75.5%, 82.5%, 35.5%, 20%, 15% for six. Lower bound of the basket call, three log-normal assets (Table 2; Case 1 applies below K = 99.89):</p>
+      <div class="tbl"><table>
+        <thead><tr><th>K</th><th>Strikes 1</th><th>Strikes 2</th><th>Strikes 3</th><th>Cash</th><th>HV = BV</th><th>HV<sup>ex</sup></th><th>BV<sup>ex</sup></th></tr></thead>
+        <tbody>
+          <tr><td class="n">100</td><td class="n">13.47; 50.18</td><td class="n">25.76; 62.46</td><td class="n">24.06; 60.77</td><td class="n">−63.2966</td><td class="n">0.10213</td><td class="n">0.10218</td><td class="n">0.10220</td></tr>
+          <tr><td class="n">105</td><td class="n">0; 60.93</td><td class="n">23.08; 105</td><td class="n">20.99; 105</td><td class="n">−44.0676</td><td class="n">0.01807</td><td class="n">0.01810</td><td class="n">0.01811</td></tr>
+          <tr><td class="n">110</td><td class="n">0; 69.40</td><td class="n">21.45; 110</td><td class="n">19.15; 110</td><td class="n">−40.5976</td><td class="n">0.00401</td><td class="n">0.00404</td><td class="n">0.00404</td></tr>
+          <tr><td class="n">115</td><td class="n">0; 76.93</td><td class="n">20.26; 115</td><td class="n">17.81; 115</td><td class="n">−38.0654</td><td class="n">0.00099</td><td class="n">0.00102</td><td class="n">0.00102</td></tr>
+          <tr><td class="n">120</td><td class="n">0; 84.00</td><td class="n">19.26; 120</td><td class="n">16.74; 120</td><td class="n">−36.0032</td><td class="n">0.00025</td><td class="n">0.00028</td><td class="n">0.00028</td></tr>
+        </tbody>
+      </table></div>
+      <p>Strikes refer to the weighted stock S<sub>i</sub>/3 and are shown here to two decimals (the paper gives four). Six log-normal assets (Table 3; Case 1 below K = 99.66; each asset uses one pair of strikes):</p>
+      <div class="tbl"><table>
+        <thead><tr><th>K</th><th>Cash</th><th>HV</th><th>BV</th><th>HV<sup>ex</sup></th><th>BV<sup>ex</sup></th></tr></thead>
+        <tbody>
+          <tr><td class="n">100</td><td class="n">−49.1213</td><td class="n">0.32679</td><td class="n">0.32679</td><td class="n">0.32733</td><td class="n">0.32737</td></tr>
+          <tr><td class="n">110</td><td class="n">−44.0224</td><td class="n">0.14060</td><td class="n">0.14060</td><td class="n">0.14114</td><td class="n">0.14114</td></tr>
+          <tr><td class="n">120</td><td class="n">−40.9348</td><td class="n">0.06928</td><td class="n">0.06930</td><td class="n">0.06983</td><td class="n">0.06984</td></tr>
+          <tr><td class="n">130</td><td class="n">−38.5770</td><td class="n">0.03703</td><td class="n">0.03704</td><td class="n">0.03758</td><td class="n">0.03758</td></tr>
+          <tr><td class="n">140</td><td class="n">−36.8085</td><td class="n">0.02092</td><td class="n">0.02092</td><td class="n">0.02146</td><td class="n">0.02146</td></tr>
+        </tbody>
+      </table></div>
+      <p>The bracket width BV<sup>ex</sup> − HV<sup>ex</sup> is between 2 × 10<sup>−8</sup> and 2 × 10<sup>−5</sup> for three assets and between 1 × 10<sup>−6</sup> and 4 × 10<sup>−5</sup> for six, at most 0.1% and 0.02% of the bound. One dominant asset (Table 4, discretized marginals):</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Marginals</th><th>K</th><th>Crossings of S<sup>c</sup></th><th>V(μ<sup>c</sup>)</th><th>Bound (13)</th><th>BV</th></tr></thead>
+        <tbody>
+          <tr><td>U[0,30], U[0,30], log-normal</td><td class="n">70</td><td>one, from above</td><td class="n">9.723356</td><td class="n">9.723356</td><td class="n">9.723356</td></tr>
+          <tr><td>log-normal, σ = 10%, 10%, 120%</td><td class="n">110</td><td>one, from above</td><td class="n">6.810342</td><td class="n">6.810342</td><td class="n">6.810342</td></tr>
+          <tr><td>log-normal, σ = 20%, 20%, 60%</td><td class="n">105</td><td>two</td><td class="n">1.240672</td><td class="n">1.223466</td><td class="n">1.223466</td></tr>
+          <tr><td>log-normal, σ = 35.5%, 20%, 25%</td><td class="n">100</td><td>one, from below</td><td class="n">2.935512</td><td class="n">n/a</td><td class="n">0.102129</td></tr>
+        </tbody>
+      </table></div>
+      <p>Comparison with the grid-based multi-marginal optimal transport algorithm of Neufeld and Xiang (Table 5; three assets with 256 equal-probability or 64 equally spaced knots per asset):</p>
+      <div class="tbl"><table>
+        <thead><tr><th>K</th><th>LB, eq.-prob.</th><th>UB, eq.-prob.</th><th>LB, eq.-spaced</th><th>UB, eq.-spaced</th><th>HV<sup>ex</sup></th><th>BV<sup>ex</sup></th></tr></thead>
+        <tbody>
+          <tr><td class="n">100</td><td class="n">0.10163</td><td class="n">0.12078</td><td class="n">0.09849</td><td class="n">0.30615</td><td class="n">0.10218</td><td class="n">0.10220</td></tr>
+          <tr><td class="n">105</td><td class="n">0.01549</td><td class="n">0.02557</td><td class="n">0.01707</td><td class="n">0.07611</td><td class="n">0.01810</td><td class="n">0.01811</td></tr>
+          <tr><td class="n">110</td><td class="n">0</td><td class="n">0.01705</td><td class="n">0.00386</td><td class="n">0.03034</td><td class="n">0.00404</td><td class="n">0.00404</td></tr>
+          <tr><td class="n">115</td><td class="n">0</td><td class="n">0.00382</td><td class="n">0.00094</td><td class="n">0.02085</td><td class="n">0.00102</td><td class="n">0.00102</td></tr>
+          <tr><td class="n">120</td><td class="n">0</td><td class="n">0.00633</td><td class="n">0.00028</td><td class="n">0.00572</td><td class="n">0.00028</td><td class="n">0.00028</td></tr>
+        </tbody>
+      </table></div>
+      <p>For six assets (64 and 32 knots) the grid lower bounds are 0.20573 and 0.19288 at K = 100 against 0.32733, and the equal-probability lower bound is zero at every larger strike. On three normal-mixture marginals taken from Neufeld and Xiang's own experiment (Table 6), the paper's lower and upper bounds coincide (for instance 1.693679 at δ = 0), while the grid method gives 1.693471 and 1.69517. Adding the paper's strikes to a coarse grid of four knots per asset and solving the grid problem exactly gives HV<sup>ex</sup> to within 3 × 10<sup>−9</sup>. Run times on a sixteen-core machine: about twenty seconds per strike for three assets (eight restarts) and two and a half minutes for six (four restarts).</p>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved.</b> Every portfolio the method outputs sub-replicates the basket call on all of ℝ<sup>n</sup><sub>+</sub>, for any strikes and any coupling used to pick them (Theorem 2.4, Corollary 2.6). The cash component is computed exactly by a finite enumeration (Proposition 2.3). The reassembled coupling has the original marginals (Proposition 2.11), so HV<sup>ex</sup> and BV<sup>ex</sup> are genuine lower and upper bounds for the original problem (Corollary 2.12). The three closed-form regimes are proved in the appendix (Propositions 3.1, 3.2, 3.4). All of these proofs rest on weak duality and elementary arguments, and they are short enough to check line by line.</p>
+      <p><b>Shown numerically.</b> The tightness of the bracket, at most 0.1% (three assets) and 0.02% (six assets) of the bound, is an outcome observed in the paper's log-normal examples, not a guarantee. The bracket itself is rigorous up to the accuracy of the quadrature for BV<sup>ex</sup>, which the authors check by quadrupling the nodes (a change below 10<sup>−10</sup>). The page's repricing of Table 2 matches the reported lower bounds at four of five strikes, and the fifth differs by the rounding effect the paper describes.</p>
+      <p><b>Not claimed.</b> Section 4 states plainly that optimality cannot be guaranteed in advance for n ≥ 3: the inherited strikes need not be dual optimal, and the rearrangement algorithm is a heuristic. The authors describe the method as "verifiably optimal rather than provably optimal". Its costs grow exponentially with n, through the 4<sup>n</sup> grid and the 2<sup>n−1</sup> orientation patterns, and the examples stop at six assets, with one pair of strikes per asset in every reported row. The comparison with Neufeld and Xiang ran their code with substitute linear programming solvers in place of the commercial one, so their running times are not reported, and the paper notes that their method handles general costs and many more marginals. The pair-decomposition intuition explains where strikes go, but the paper gives no theorem saying why two strikes per asset suffice in these examples.</p>
+      <p><b>Why it matters.</b> The lower end of the arbitrage-free price range for a basket option is what a seller can be sure of collecting without knowing correlations. The paper turns a hard infinite-dimensional problem into a small, checkable object: six options and a cash amount whose validity anyone can verify with a 64-point check, plus an upper bound that shows how much room is left.</p>
+    </section>
+
+    <!-- further reading -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>M. H. Abou Daya, C. Bernard and S. Vanduffel, <a href="https://arxiv.org/abs/2611.26119" target="_blank" rel="noopener">Feasible sub-replicating portfolios for basket options via the block rearrangement algorithm</a>, arXiv:2611.26119 (2026). The paper itself; numbering in this chapter follows its <a href="https://arxiv.org/html/2611.26119" target="_blank" rel="noopener">HTML version</a>.</p>
+        <p>A. Neufeld and Q. Xiang, <a href="https://arxiv.org/abs/2203.01633" target="_blank" rel="noopener">Numerical method for feasible and approximately optimal solutions of multi-marginal optimal transport beyond discrete measures</a>, arXiv:2203.01633 (2022). The grid-based method the paper compares against in Tables 5 and 6, and the source of the reassembly idea used in Proposition 2.11; its abstract describes the relaxation by finitely many linear constraints and the computed upper and lower bounds.</p>
+        <p>T. Koike, L. Lin and R. Wang, <a href="https://arxiv.org/abs/2204.11438" target="_blank" rel="noopener">Joint mixability and notions of negative dependence</a>, arXiv:2204.11438 (2022). Background on joint mixes, random vectors with constant sum, the structure behind Case 3; its abstract describes the joint mix as a concept of extremal negative dependence that minimizes the variance of the sum.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.26119v1. Assumption, remark, proposition, theorem, corollary, table and equation numbers match the paper. Example A is ours. All three animations compute in the page: the first runs the rearrangement algorithm on Example A and checks all 576 arrangements by brute force; the second computes φ<sub>i</sub>, the strikes, the exact cash component by grid enumeration and the scenario-by-scenario comparison; the third reprices the paper's Table 2 portfolios with the Black formula and the 64-point enumeration of Proposition 2.3.</p>
+  </footer>
+</div>
+
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-26119',date:'2026-11-22',title:'Feasible Sub-Replicating Portfolios for Basket Options via the Block Rearrangement Algorithm',authors:'Abou Daya, Bernard, Vanduffel',field:'q-fin.CP',tags:['option pricing','duality','rearrangement algorithm'],mins:40,
+     dek:'When the market fixes how each stock is distributed but not how the stocks move together, the cheapest consistent price of an option on their sum is the minimum of an optimization over all couplings, and nobody knows the minimizing coupling for three or more stocks. This paper squeezes it from below with six vanilla options and some cash that never pay more than the basket, and from above with a shuffled sample of the stocks, closing the gap to 0.1 percent on three log-normal stocks.'},
     {id:'2611-26337',date:'2026-11-21',title:'How Should Candidates Be Weighted under Open-List Proportional Representation? Harmonic Weights and Dirichlet Order Statistics',authors:'Boratyn, Stolicki',field:'math.PR',tags:['order statistics','Dirichlet distribution','Poisson–Dirichlet'],mins:40,
      dek:'Split a party’s vote among its candidates at random, with no idea how lopsided the split should be, not even its order of magnitude, and the expected share of the k-th candidate falls off like 1/k. The proof runs through gamma variables, order statistics and the Poisson–Dirichlet limit behind the longest cycle of a random permutation, and lands within 1.4 to 3.4 percent of the harmonic weights 1/(kH<sub>n</sub>).'},
     {id:'2611-25102',date:'2026-11-20',title:'Compact Slack-Free Penalty Functions for Inequality Constraints in Higher-Order Unconstrained Binary Optimization',authors:'Mochida, Yasuda',field:'math.OC',tags:['QUBO and HUBO','penalty functions','binary encoding'],mins:35,
@@ -7215,6 +7602,158 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
         el('text',{x:x+14,y:base+14,class:'lab'}).textContent=i+1});
       el('text',{x:182,y:18,class:'lab',fill:'var(--fg)'}).textContent=fr.T?'mixture over θ ∈ [1, '+(fr.T>=1e5?'10⁵':fr.T)+'], relative to leader':'limit from Eqs. (13), (14) (bars), 1/k (dots)';
       el('text',{x:182,y:230,class:'lab'}).textContent='position k';
+    });
+  })();
+
+
+  // ================= 2611.26119: shared toy numerics (Example A) =================
+  const BR=(function(){
+    const K=10,COLS=[[1,2,3,4],[1,2,3,4],[0,1,2,13]];
+    const rowsOf=cols=>cols[0].map((_,m)=>cols.map(c=>c[m]));
+    const pay=r=>Math.max(r.reduce((a,b)=>a+b,0)-K,0);
+    const bv=rows=>rows.reduce((s,r)=>s+pay(r),0)/rows.length;
+    const q=v=>{const n=Math.round(v*4);if(Math.abs(v*4-n)>1e-9)return v.toFixed(3);const s=n<0?'−':'';const a=Math.abs(n);if(a%4===0)return s+(a/4);if(a%2===0)return s+(a/2)+'/2';return s+a+'/4'};
+    function perms(a){if(a.length<2)return[a.slice()];const out=[];a.forEach((x,i)=>perms(a.slice(0,i).concat(a.slice(i+1))).forEach(p=>out.push([x].concat(p))));return out}
+    function brute(){let best=Infinity,cnt=0;const P2=perms(COLS[1]),P3=perms(COLS[2]);P2.forEach(p2=>P3.forEach(p3=>{const v=bv(rowsOf([COLS[0],p2,p3]));cnt++;if(v<best-1e-12)best=v}));return{best,cnt}}
+    // one rearrangement step on column j: antimonotone to the sum of the others (stable ties)
+    function step(M,j){const others=M.map(r=>r.reduce((a,b)=>a+b,0)-r[j]);const vals=M.map(r=>r[j]).sort((a,b)=>b-a);
+      const order=M.map((_,i)=>i).sort((a,b)=>others[a]-others[b]||a-b);const N=M.map(r=>r.slice());order.forEach((i,rank)=>N[i][j]=vals[rank]);
+      const changed=N.some((r,i)=>r[j]!==M[i][j]);return{N,others,changed}}
+    function ra(M){const hist=[];M=M.map(r=>r.slice());for(let pass=0;pass<20;pass++){let any=false;
+      for(let j=0;j<M[0].length;j++){const s=step(M,j);hist.push({pass,j,before:M,after:s.N,others:s.others,changed:s.changed});M=s.N;if(s.changed)any=true}
+      if(!any)break}return{M,hist}}
+    function raAll(){let ok=0,tot=0;const P2=perms(COLS[1]),P3=perms(COLS[2]),b=brute().best;P2.forEach(p2=>P3.forEach(p3=>{tot++;if(Math.abs(bv(ra(rowsOf([COLS[0],p2,p3])).M)-b)<1e-12)ok++}));return{ok,tot}}
+    // phi_i(x) = Q(X_i <= x) - Q(Y_i >= K - x), Eq. (15); constant on [p_k, p_{k+1})
+    function phiPieces(X,Y){const n=X.length;const pts=[...new Set([0,...X,...Y.map(y=>K-y),K].filter(p=>p>=0&&p<=K))].sort((a,b)=>a-b);
+      const phi=x=>X.filter(a=>a<=x+1e-12).length/n-Y.filter(b=>b>=K-x-1e-12).length/n;
+      return pts.slice(0,-1).map((p,k)=>({a:p,b:pts[k+1],v:phi(p)}))}
+    function strikesFrom(pieces,X){const ks=[];let inside=false;pieces.forEach(pc=>{const pos=pc.v>1e-12;if(pos&&!inside){ks.push(pc.a);inside=true}else if(!pos&&inside){ks.push(pc.a);inside=false}});if(inside)ks.push(K);
+      const raw=ks.slice();if(ks.length&&ks[ks.length-1]>Math.max(...X))ks[ks.length-1]=K;return{raw,ks}}
+    const f=(z,ks)=>{let v=z;for(let a=0;a<ks.length;a+=2)v+=Math.max(z-ks[a+1],0)-Math.max(z-ks[a],0);return v};
+    function lam(KS,Kb,fn){const B=KS.map(ks=>[...new Set([0,...ks,Kb])].sort((a,b)=>a-b));let best=Infinity,arg=[],pts=[];
+      const rec=(i,x)=>{if(i===B.length){const psi=Math.max(x.reduce((a,b)=>a+b,0)-Kb,0)-x.reduce((s,z,k)=>s+(fn||f)(z,KS[k]),0);pts.push({x:x.slice(),psi});
+        if(psi<best-1e-12){best=psi;arg=[x.slice()]}else if(Math.abs(psi-best)<=1e-12)arg.push(x.slice());return}B[i].forEach(b=>{x.push(b);rec(i+1,x);x.pop()})};
+      rec(0,[]);return{lam:best,arg,pts,B}}
+    return{K,COLS,rowsOf,pay,bv,q,brute,step,ra,raAll,phiPieces,strikesFrom,f,lam};
+  })();
+
+  // ================= 2611.26119: rearrangement algorithm animation =================
+  (function(){
+    const root=document.getElementById('pBrRA');if(!root)return;const P=Player(root);
+    const B=BR.brute(),ALL=BR.raAll();
+    const STARTS={como:BR.rowsOf(BR.COLS),mix:BR.rowsOf([[1,2,3,4],[3,1,4,2],[2,13,0,1]])};
+    const sums=M=>M.map(r=>r[0]+r[1]+r[2]);
+    function load(key){const M0=STARTS[key],R=BR.ra(M0),F=[];
+      F.push({M:M0,t:key==='como'?'Comonotone start':'Shuffled start',c:`${key==='como'?'All three stocks sorted the same way, so they move together.':'An arbitrary arrangement of the same three columns; each column still holds the same four values, so the marginals are unchanged.'} Row sums (${sums(M0).join(', ')}); only rows with sum above K = 10 pay. Basket value ${BR.q(BR.bv(M0))}.`});
+      R.hist.forEach((h,k)=>{const col=h.after.map(r=>r[h.j]);
+        F.push({M:h.after,j:h.j,others:h.others,t:`Pass ${h.pass+1}, column ${h.j+1}`,c:h.changed?
+          `The other two columns sum to (${h.others.join(', ')}) row by row. Column ${h.j+1} is re-sorted against them: its largest value goes where that sum is smallest. New column (${col.join(', ')}), row sums (${sums(h.after).join(', ')}), basket value ${BR.q(BR.bv(h.after))}.`:
+          `The other two columns sum to (${h.others.join(', ')}). Column ${h.j+1} is already sorted against them, so nothing moves. Basket value stays ${BR.q(BR.bv(h.after))}.`})});
+      F.push({M:R.M,done:true,t:'Stopped',c:`A full pass changed nothing, so RA stops at basket value ${BR.q(BR.bv(R.M))}. Checking all ${B.cnt} arrangements by brute force gives the minimum ${BR.q(B.best)}, and RA reaches it from ${ALL.ok} of the ${ALL.tot} possible starting arrangements of this example.`});
+      F.delay=4600;
+      P.load(F,(fr,el)=>{const xs=[42,92,142,200,252,304],ys=[78,112,146,180],M=fr.M;
+        ['X₁','X₂','X₃','others','sum','pays'].forEach((h,i)=>el('text',{x:xs[i],y:44,class:'lab',fill:'var(--fg)'}).textContent=h);
+        if(fr.j!=null)el('rect',{x:xs[fr.j]-21,y:54,width:42,height:144,rx:6,fill:'var(--accent)',opacity:.18});
+        M.forEach((r,m)=>{const y=ys[m],s=r[0]+r[1]+r[2],p=Math.max(s-BR.K,0);
+          r.forEach((v,i)=>{el('rect',{x:xs[i]-17,y:y-14,width:34,height:24,rx:4,fill:'var(--raise)',stroke:fr.j===i?'var(--accent)':'var(--line)'});el('text',{x:xs[i],y:y+3,class:'msg',fill:fr.j===i?'var(--accent)':'var(--fg)'}).textContent=v});
+          if(fr.others)el('text',{x:xs[3],y:y+3,class:'msg',fill:'var(--cool)'}).textContent=fr.others[m];
+          el('text',{x:xs[4],y:y+3,class:'msg',fill:s>BR.K?'var(--bad)':'var(--fg)'}).textContent=s;
+          el('text',{x:xs[5],y:y+3,class:'msg',fill:p>0?'var(--bad)':'var(--muted)'}).textContent=p;});
+        el('line',{x1:20,y1:204,x2:330,y2:204,stroke:'var(--line)'});
+        el('text',{x:170,y:226,class:'msg',fill:fr.done?'var(--ok)':'var(--fg)'}).textContent='basket value = average of pays = '+BR.q(BR.bv(M));
+        el('text',{x:170,y:244,class:'lab'}).textContent='K = 10 · comonotone 11/4 · cheapest possible '+BR.q(B.best);});}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen)}));
+    load('como');
+  })();
+
+  // ================= 2611.26119: building the hedge for Example A =================
+  (function(){
+    const root=document.getElementById('pBrHedge');if(!root)return;const P=Player(root);const K=BR.K;
+    const M=BR.ra(BR.rowsOf(BR.COLS)).M;
+    const X=i=>M.map(r=>r[i]),Y=i=>M.map(r=>r[0]+r[1]+r[2]-r[i]);
+    const PH=[0,1,2].map(i=>BR.phiPieces(X(i),Y(i))),ST=[0,1,2].map(i=>BR.strikesFrom(PH[i],X(i)));
+    const KS=ST.map(s=>s.ks),L=BR.lam(KS,K);
+    const Ef=KS.map((ks,i)=>BR.COLS[i].reduce((s,z)=>s+BR.f(z,ks),0)/4),HV=Ef.reduce((a,b)=>a+b,0)+L.lam,BVv=BR.bv(M);
+    const pieceTxt=i=>PH[i].filter(p=>p.v>1e-12).map(p=>`${BR.q(p.v)} on [${p.a}, ${p.b})`).join(', ');
+    const F=[
+      {k:'phi',i:0,t:'φ₁ from the rearranged matrix',c:`Under the coupling from the rearrangement algorithm, rows (${M.map(r=>r.join(',')).join(') (')}), stock 1 is paired with Y₁ = X₂ + X₃ = (${Y(0).join(', ')}). By Eq. (15), φ₁(x) = Q(X₁ ≤ x) − Q(Y₁ ≥ 10 − x), a step function. It equals ${pieceTxt(0)}, and is never positive elsewhere, so A₁ = [${ST[0].raw.join(', ')}). Stock 2 is identical.`},
+      {k:'phi',i:2,t:'φ₃ for the long shot',c:`Stock 3 is paired with Y₃ = X₁ + X₂ = (${Y(2).join(', ')}). Now φ₃ equals ${pieceTxt(2)}, and is never positive elsewhere, so A₃ = [${ST[2].raw.join(', ')}): the first strike is 0, because A₃ starts at 0.`},
+      {k:'legs',t:'The legs f₁, f₂, f₃',c:`Each leg has slope 1 outside A<sub>i</sub> and slope 0 on it (Eq. 5). For stocks 1 and 2 the end of A<sub>i</sub>, ${ST[0].raw[1]}, lies above the largest value 4, so Algorithm 1 moves it to K = 10. Legs: f₁ = f₂ = min(z, 2) + (z − 10)⁺ and f₃ = (z − 6)⁺. Prices: E f₁ = E f₂ = ${BR.q(Ef[0])}, E f₃ = ${BR.q(Ef[2])}.`},
+      {k:'grid',t:'The exact cash component',c:`By Proposition 2.3 it is enough to check every point with each x<sub>i</sub> in its own breakpoint set: {${L.B[0].join(', ')}} for stocks 1 and 2 and {${L.B[2].join(', ')}} for stock 3, ${L.pts.length} points in all. The smallest value of Ψ = basket payoff − Σ f<sub>i</sub> is ${BR.q(L.lam)}, reached at ${L.arg.length} tied points, including (${L.arg[L.arg.length-2].join(', ')}). So λ̄ = ${BR.q(L.lam)}.`},
+      {k:'cmp',t:'The certificate',c:`The portfolio pays f₁ + f₂ + f₃ − 4 in each scenario. Under the optimal coupling it matches the basket payoff row by row, (${M.map(r=>BR.q(KS.reduce((s,ks,i)=>s+BR.f(r[i],ks),0)+L.lam)).join(', ')}) against (${M.map(BR.pay).join(', ')}). So HV = ${BR.q(Ef[0])} + ${BR.q(Ef[1])} + ${BR.q(Ef[2])} − 4 = ${BR.q(HV)} and BV = ${BR.q(BVv)}. Equal, so by Corollary 2.6 both are optimal.`}];
+    F.delay=6200;
+    P.load(F,(fr,el)=>{
+      if(fr.k==='phi'){const x0=34,x1=320,sx=(x1-x0)/10,y0=120,sy=120;
+        el('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'var(--line)'});[-0.25,0.25,0.5,0.75].forEach(v=>{el('line',{x1:x0,y1:y0-v*sy,x2:x1,y2:y0-v*sy,stroke:'var(--line)','stroke-dasharray':'2 4'});el('text',{x:x0-6,y:y0-v*sy+3,class:'lab',style:'text-anchor:end'}).textContent=BR.q(v)});
+        PH[fr.i].forEach(p=>{const xa=x0+p.a*sx,xb=x0+p.b*sx,yv=y0-p.v*sy;if(p.v>1e-12)el('rect',{x:xa,y:yv,width:xb-xa,height:y0-yv,fill:'var(--accent)',opacity:.35});
+          el('line',{x1:xa,y1:yv,x2:xb,y2:yv,stroke:p.v>1e-12?'var(--accent)':'var(--muted)','stroke-width':2.4});el('circle',{cx:xa,cy:yv,r:2.6,fill:p.v>1e-12?'var(--accent)':'var(--muted)'})});
+        for(let t=0;t<=10;t+=2)el('text',{x:x0+t*sx,y:y0+(t===0?44:14),class:'lab'}).textContent=t;
+        ST[fr.i].raw.forEach(k=>{el('line',{x1:x0+k*sx,y1:y0-0.85*sy,x2:x0+k*sx,y2:y0+18,stroke:'var(--fg)','stroke-dasharray':'3 3'});el('text',{x:x0+k*sx,y:y0-0.85*sy-4,class:'lab',fill:'var(--fg)'}).textContent='strike '+k});
+        el('text',{x:177,y:232,class:'lab'}).textContent='φ'+['₁','₂','₃'][fr.i]+'(x) on [0, K]';}
+      else if(fr.k==='legs'){const x0=34,x1=320,sx=(x1-x0)/14,y0=200,sy=11;
+        el('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'var(--line)'});el('line',{x1:x0,y1:y0,x2:x0,y2:y0-15*sy,stroke:'var(--line)'});
+        el('path',{d:`M${x0} ${y0} L${x0+14*sx} ${y0-14*sy}`,stroke:'var(--line)','stroke-dasharray':'3 4',fill:'none'});
+        [[0,'var(--accent)',0],[2,'var(--deep)',0]].forEach(([i,col])=>{let d='';for(let z=0;z<=14.0001;z+=0.25){const v=BR.f(z,KS[i]);d+=(z?'L':'M')+(x0+z*sx).toFixed(1)+' '+(y0-v*sy).toFixed(1)}el('path',{d,stroke:col,'stroke-width':2.6,fill:'none'})});
+        for(let t=0;t<=14;t+=2)el('text',{x:x0+t*sx,y:y0+14,class:'lab'}).textContent=t;
+        el('text',{x:x0+12.6*sx,y:y0-12.6*sy-8,class:'lab'}).textContent='z';
+        el('text',{x:x0+3.5*sx,y:y0-2*sy-8,class:'lab',fill:'var(--accent)'}).textContent='f₁ = f₂ = min(z, 2)';
+        el('text',{x:x0+10.8*sx,y:y0-6*sy-6,class:'lab',fill:'var(--deep)'}).textContent='f₃ = (z − 6)⁺';
+        el('text',{x:177,y:28,class:'lab'}).textContent='legs on [0, 14], dashed line = holding the stock';}
+      else if(fr.k==='grid'){const vals=L.B[2];
+        vals.forEach((x3,t)=>{const ox=16+t*108,oy=56,cw=30,ch=34;
+          el('text',{x:ox+50,y:oy-24,class:'lab',fill:'var(--fg)'}).textContent='x₃ = '+x3;
+          L.B[0].forEach((x1,a)=>{el('text',{x:ox+20+a*cw+cw/2,y:oy-8,class:'lab'}).textContent=x1;
+            L.B[1].forEach((x2,b)=>{const p=L.pts.find(pt=>pt.x[0]===x1&&pt.x[1]===x2&&pt.x[2]===x3),mn=Math.abs(p.psi-L.lam)<1e-12;
+              if(a===0)el('text',{x:ox+10,y:oy+b*ch+ch/2+3,class:'lab'}).textContent=x2;
+              el('rect',{x:ox+20+a*cw+1,y:oy+b*ch+1,width:cw-2,height:ch-2,rx:3,fill:mn?'var(--accent)':'var(--raise)',stroke:'var(--line)'});
+              el('text',{x:ox+20+a*cw+cw/2,y:oy+b*ch+ch/2+4,class:'msg',fill:mn?'var(--accent-ink)':'var(--fg)'}).textContent=BR.q(p.psi)})})});
+        el('text',{x:170,y:186,class:'lab'}).textContent='columns: x₁ · rows: x₂ · cell: Ψ(x₁, x₂, x₃)';
+        el('text',{x:170,y:212,class:'msg',fill:'var(--fg)'}).textContent='cash = min Ψ = '+BR.q(L.lam)+'  ('+L.pts.length+' points checked)';}
+      else{const x0=40,bw=26,y0=196,sy=24;
+        el('line',{x1:20,y1:y0,x2:330,y2:y0,stroke:'var(--line)'});
+        M.forEach((r,m)=>{const port=KS.reduce((s,ks,i)=>s+BR.f(r[i],ks),0)+L.lam,py=BR.pay(r),cx=x0+m*76;
+          [[port,'var(--cool)',0],[py,'var(--deep)',1]].forEach(([v,col,o])=>{const h=Math.abs(v)*sy;el('rect',{x:cx+o*(bw+4),y:v>=0?y0-h:y0,width:bw,height:Math.max(h,1.5),rx:3,fill:col});el('text',{x:cx+o*(bw+4)+bw/2,y:y0-Math.max(h,0)-5,class:'lab',fill:'var(--fg)'}).textContent=BR.q(v)});
+          el('text',{x:cx+bw+2,y:y0+15,class:'lab'}).textContent='('+r.join(',')+')';});
+        el('text',{x:170,y:30,class:'msg',fill:'var(--ok)'}).textContent='HV = '+BR.q(HV)+' = BV = '+BR.q(BVv);
+        el('text',{x:170,y:236,class:'lab'}).textContent='portfolio vs basket payoff in each row of the optimal coupling';}
+    });
+  })();
+
+  // ================= 2611.26119: repricing the paper's Table 2 (Example B) =================
+  (function(){
+    const root=document.getElementById('pBrLogn');if(!root)return;const P=Player(root);
+    const T=0.5,SIG=[0.355,0.20,0.25],FW=100/3;
+    function Phi(x){if(x<-8)return 0;if(x>8)return 1;let s=x,t=x;for(let k=1;k<200;k++){t*=x*x/(2*k+1);s+=t;if(Math.abs(t)<1e-17*Math.abs(s))break}return 0.5+s*Math.exp(-x*x/2)/Math.sqrt(2*Math.PI)}
+    function C(k,s){if(k<=0)return FW-k;const v=s*Math.sqrt(T),d1=(Math.log(FW/k)+v*v/2)/v;return FW*Phi(d1)-k*Phi(d1-v)}
+    function dens(x,s){const v=s*Math.sqrt(T),mu=Math.log(FW)-v*v/2;return Math.exp(-Math.pow(Math.log(x)-mu,2)/(2*v*v))/(x*v*Math.sqrt(2*Math.PI))}
+    const ROWS=[{K:100,ks:[[13.4746,50.1780],[25.7590,62.4624],[24.0630,60.7664]],cash:-63.2966,hv:0.10218,bv:0.10220},
+      {K:105,ks:[[0,60.9324],[23.0803,105],[20.9873,105]],cash:-44.0676,hv:0.01810,bv:0.01811},
+      {K:110,ks:[[0,69.4024],[21.4482,110],[19.1494,110]],cash:-40.5976,hv:0.00404,bv:0.00404},
+      {K:115,ks:[[0,76.9346],[20.2555,115],[17.8099,115]],cash:-38.0654,hv:0.00102,bv:0.00102},
+      {K:120,ks:[[0,83.9968],[19.2617,120],[16.7414,120]],cash:-36.0032,hv:0.00028,bv:0.00028}];
+    ROWS.forEach(r=>{r.Ef=r.ks.map((ks,i)=>FW+ks.reduce((s,k,j)=>s+(j%2?1:-1)*C(k,SIG[i]),0));r.L=BR.lam(r.ks,r.K);r.HV=r.Ef.reduce((a,b)=>a+b,0)+r.L.lam});
+    const COL=['var(--accent)','var(--cool)','var(--deep)'],mn=t=>String(t).replace('-','−');
+    const F=[{k:'dens',t:'Three log-normal stocks',c:`Each weighted stock x<sub>i</sub> = S<sub>i</sub>/3 has mean 100/3 ≈ 33.33 and log-volatility σ<sub>i</sub>√T with σ = 35.5%, 20%, 25% and T = 0.5. The curves are the three densities; the market fixes them, but not how the stocks move together. The basket's forward is 100.`}];
+    ROWS.forEach(r=>{const lg=r.ks.map((ks,i)=>ks[0]===0?`a call at ${ks[1].toFixed(2)}`:`stock capped at ${ks[0].toFixed(2)}, plus a call at ${ks[1]===r.K?'K (worthless on the sample)':ks[1].toFixed(2)}`);
+      F.push({k:'row',r,t:`K = ${r.K}`,c:`Legs from Table 2: stock 1, ${lg[0]}; stock 2, ${lg[1]}; stock 3, ${lg[2]}. Black prices of the legs: ${r.Ef.map(v=>v.toFixed(4)).join(', ')}. Enumerating ${r.L.pts.length} grid points gives λ̄ = ${mn(r.L.lam.toFixed(4))} (paper: ${mn(r.cash.toFixed(4))}). So HV<sup>ex</sup> = ${r.HV.toFixed(5)}, against the paper's bracket [${r.hv.toFixed(5)}, ${r.bv.toFixed(5)}].${r.K===120?' The paper notes that rebuilding a portfolio from its strikes rounded to four decimals can lower its value by up to 10<sup>−4</sup>, the size of this gap.':''}`})});
+    F.push({k:'sum',t:'Summary',c:`Recomputed from the printed strikes, the lower bounds are ${ROWS.map(r=>r.HV.toFixed(5)).join(', ')} for K = 100 to 120. The basket call's cheapest arbitrage-free price falls fast as K rises above the forward, and the paper's bracket is tight at every strike.`});
+    F.delay=6400;
+    P.load(F,(fr,el)=>{
+      if(fr.k==='dens'){const x0=24,x1=330,lo=5,hi=75,sx=(x1-x0)/(hi-lo),y0=200;let mx=0;const D=SIG.map(s=>{const a=[];for(let x=lo;x<=hi;x+=0.5){const d=dens(x,s);a.push([x,d]);mx=Math.max(mx,d)}return a});
+        el('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'var(--line)'});D.forEach((a,i)=>el('path',{d:a.map(([x,d],j)=>(j?'L':'M')+(x0+(x-lo)*sx).toFixed(1)+' '+(y0-d/mx*160).toFixed(1)).join(''),stroke:COL[i],'stroke-width':2.4,fill:'none'}));
+        [10,20,33.33,50,70].forEach(t=>el('text',{x:x0+(t-lo)*sx,y:y0+14,class:'lab'}).textContent=t===33.33?'100/3':t);
+        el('text',{x:177,y:236,class:'lab'}).textContent='density of x = S/3 at T = 0.5';}
+      else if(fr.k==='row'){const r=fr.r,x0=30,x1=330,hi=r.K*1.1,sx=(x1-x0)/hi,y0=170,sy=120/hi;
+        el('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'var(--line)'});el('path',{d:`M${x0} ${y0} L${x0+hi*sx} ${y0-hi*sy}`,stroke:'var(--line)','stroke-dasharray':'3 4',fill:'none'});
+        r.ks.forEach((ks,i)=>{let d='';for(let j=0;j<=220;j++){const z=hi*j/220,v=BR.f(z,ks);d+=(j?'L':'M')+(x0+z*sx).toFixed(1)+' '+(y0-v*sy-i*1.6).toFixed(1)}el('path',{d,stroke:COL[i],'stroke-width':2.2,fill:'none'})});
+        [0,25,50,75,100].forEach(t=>{if(t<=hi)el('text',{x:x0+t*sx,y:y0+14,class:'lab'}).textContent=t});
+        el('text',{x:x0+r.K*sx,y:y0+28,class:'lab',fill:'var(--fg)'}).textContent='K';el('line',{x1:x0+r.K*sx,y1:y0,x2:x0+r.K*sx,y2:y0+18,stroke:'var(--fg)'});
+        el('text',{x:180,y:24,class:'msg',fill:'var(--fg)'}).textContent='cash = '+mn(r.L.lam.toFixed(4))+'   HVex = '+r.HV.toFixed(5);
+        el('text',{x:180,y:40,class:'lab'}).textContent='paper: cash '+mn(r.cash.toFixed(4))+', bracket ['+r.hv.toFixed(5)+', '+r.bv.toFixed(5)+']';
+        el('text',{x:180,y:226,class:'lab'}).textContent='legs f₁, f₂, f₃ on [0, 1.1K]; dashed = stock';}
+      else{const x0=60,y0=40,rh=30;['K','recomputed','paper HVex','paper BVex'].forEach((h,i)=>el('text',{x:[40,130,215,295][i],y:y0,class:'lab',fill:'var(--fg)'}).textContent=h);
+        ROWS.forEach((r,m)=>{const y=y0+24+m*rh;[r.K,r.HV.toFixed(5),r.hv.toFixed(5),r.bv.toFixed(5)].forEach((v,i)=>el('text',{x:[40,130,215,295][i],y,class:'msg',fill:i===1?'var(--accent)':'var(--fg)'}).textContent=v)});
+        el('text',{x:170,y:226,class:'lab'}).textContent='lower bound of the basket call, three log-normal stocks';}
     });
   })();
 
