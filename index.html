@@ -5908,10 +5908,395 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
   </footer>
 </div>
 
+<!-- ================= PAPER: 2611.27640 ================= -->
+<div class="wrap" id="view-p-2611-27640" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Mon, Nov 23</span></div>
+  <div class="paperhead">
+    <h1>Ancilla-Free Exact Dicke-State Synthesis with Optimal Size and Depth</h1>
+    <p class="meta">Yunqi Huang, Wei Zi, Jianhao He, Zekun Ye, Shenggen Zheng · posted Nov 20, 2026 · quant-ph · <a href="https://arxiv.org/abs/2611.27640" target="_blank" rel="noopener">arXiv 2611.27640</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">Every Dicke state, the equal superposition of all n-bit strings with exactly k ones, can be built exactly from n qubits in their ground state with O(n) gates in O(log n) layers and not one spare qubit, which matches the known lower bounds on both counts and refutes a recent conjecture that the balanced case needs depth proportional to k. The trick is to stop amplifying a weak starting state many times and instead start from one that already overlaps the target by a constant: a layer of tilted qubits, a sign correction that depends only on how many qubits are 1, and a small reverse tilt. A constant number of amplitude amplification steps, finished by one exactly tuned phase step, then lands on the target with probability one. The sign correction needs arithmetic on the Hamming weight, and the paper finds room for that arithmetic inside the output register itself, by squeezing each block of 31 symmetric qubits into a 5-bit count.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what the Dicke state |D<sup>n</sup><sub>k</sub>⟩ is, why the symmetric subspace has the Dicke states as a basis, and what the lower bounds Ω(n) gates and Ω(log n) depth mean (Theorem 1, Table I);</li>
+        <li>why the natural product state has overlap only Θ(k<sup>−1/4</sup>) with the target, from its binomial weight distribution and Stirling's formula (Eq. 7);</li>
+        <li>how amplitude amplification rotates a state in a two-dimensional plane, and how one final phase-matching step with tuned phases u and v makes the result exact (Section V);</li>
+        <li>why a weight-dependent sign correction followed by a small inverse rotation turns the overlap into a sum of absolute values (Eq. 6), and how the signs are computed exactly from an integer recurrence (Eq. 13);</li>
+        <li>why that overlap never falls below the constant η = 1/128, by comparing the rotation with a quantum walk whose amplitudes are Bessel functions (Eqs. 8 to 12, Lemma 2);</li>
+        <li>how a phase depending only on the Hamming weight is applied with no ancillas, by compressing blocks (Eq. 1), adding block weights with carry-save adders (Eq. 2) and counting qubits (Eqs. 3 to 5, Lemma 1);</li>
+        <li>what is proved, what is only asymptotic, and what remains open.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>n, k</dt><dd>the number of qubits and the target Hamming weight; after flipping all bits the paper assumes 1 ≤ k ≤ n/2</dd>
+        <dt>|x|</dt><dd>the Hamming weight of a bit string x, its number of ones</dd>
+        <dt>|D<sup>n</sup><sub>w</sub>⟩</dt><dd>the Dicke state of weight w: all strings of weight w with equal amplitude</dd>
+        <dt>𝒮<sub>n</sub></dt><dd>the symmetric subspace, spanned by the n + 1 Dicke states</dd>
+        <dt>r</dt><dd>min{k, n − k}</dd>
+        <dt>R<sub>y</sub>(α)</dt><dd>the single-qubit rotation with R<sub>y</sub>(α)|0⟩ = cos(α/2)|0⟩ + sin(α/2)|1⟩</dd>
+        <dt>R<sub>a</sub></dt><dd>R<sub>y</sub>(a)<sup>⊗n</sup>, the same rotation on every qubit (a collective rotation)</dd>
+        <dt>p, φ</dt><dd>p = k/n and φ = 2 arcsin √p, the tilt that makes each qubit 1 with probability p</dd>
+        <dt>|P⟩, a<sub>w</sub></dt><dd>the product state R<sub>φ</sub>|0<sup>n</sup>⟩ and its Dicke coefficients</dd>
+        <dt>σ</dt><dd>√(k(1 − k/n)), the standard deviation of the weight in |P⟩</dd>
+        <dt>θ<sub>d</sub>, d</dt><dd>the inverse-rotation angle 2 arctan(d/(2√n)), with d chosen from {0, 1/4, 1, 2}</dd>
+        <dt>q</dt><dd>4n/d², an integer for d ∈ {1/4, 1, 2}</dd>
+        <dt>β<sub>w</sub></dt><dd>⟨D<sup>n</sup><sub>w</sub>|R<sub>θ</sub>|D<sup>n</sup><sub>k</sub>⟩, the Dicke coefficients of the rotated target</dd>
+        <dt>S</dt><dd>the sign correction, multiplying |D<sub>w</sub>⟩ by sgn(β<sub>w</sub>), with sgn(0) = 1</dd>
+        <dt>B, |ψ⟩, F</dt><dd>the preparation circuit R<sub>−θ</sub>SR<sub>φ</sub>, its output, and the overlap ⟨D<sub>k</sub>|ψ⟩</dd>
+        <dt>α, t, β</dt><dd>α = arcsin F, the number of amplification steps, and β = (2t + 1)α</dd>
+        <dt>Z<sub>w</sub>(u)</dt><dd>multiplies |D<sub>w</sub>⟩ by the unit complex number u and fixes the other Dicke states</dd>
+        <dt>H<sub>w</sub></dt><dd>the integer whose sign is the sign of β<sub>w</sub> (Section VI)</dd>
+        <dt>J<sub>j</sub>(z)</dt><dd>the Bessel function of the first kind of integer order j</dd>
+        <dt>Q (Sec. 6)</dt><dd>the number of blocks ⌈n/31⌉; elsewhere Q is the amplification step</dd>
+        <dt>⊕</dt><dd>addition modulo two (XOR); all logarithms are base two</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Example A: four qubits, weight two.</b> The target is |D<sup>4</sup><sub>2</sub>⟩ = (|0011⟩ + |0101⟩ + |0110⟩ + |1001⟩ + |1010⟩ + |1100⟩)/√6. Everything in the construction can be done by hand here: the product state, the signs, the overlaps and the final phases all come out in closed form. The example and its closed forms are ours; the page simulates it on a 16-amplitude state vector.</li>
+        <li><b>Example B: the paper's Figure 2.</b> n = 128 qubits and weight k = 32. The paper reports that the product state alone has overlap F<sub>0</sub> ≈ 0.2850, and that the sign-corrected state at d = 1 has F<sub>1</sub> ≈ 0.8384. The page recomputes both from scratch.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Dicke states">
+      <span class="num">1 · THE TARGET AND THE LIMITS</span>
+      <h2>What is a Dicke state, and how cheaply could one possibly be built?</h2>
+      <p>A register of n qubits has a basis of 2<sup>n</sup> states |x⟩, one for each bit string x = (x<sub>1</sub>, …, x<sub>n</sub>), and a general state is a unit vector of complex amplitudes on those strings. Measuring the register returns string x with probability equal to its squared amplitude. The register starts in |0<sup>n</sup>⟩, all zeros, and a circuit is a sequence of gates applied to it. The model in the paper allows arbitrary single-qubit gates and the two-qubit CNOT, which flips its target qubit when its control qubit is 1. The <span class="term">size</span> of a circuit counts these gates, and its <span class="term">depth</span> counts layers, where each layer consists of gates on disjoint qubits that can run at the same time.</p>
+      <div class="def"><span class="label">Definition · Dicke state</span>
+        <div class="math" data-tex="|D_k^n\rangle:=\binom{n}{k}^{-1/2}\sum_{|x|=k}|x\rangle,\qquad 0\le k\le n."></div>
+        <p>In words: the equal superposition of all n-bit strings that contain exactly k ones. There are C(n, k) such strings, so each gets amplitude C(n, k)<sup>−1/2</sup> and the state has length one.</p>
+      </div>
+      <p>For Example A there are C(4, 2) = 6 strings of weight two, each with amplitude 1/√6. Two Dicke states of different weights share no strings, so they are orthogonal, and each has length one. The n + 1 Dicke states of an n-qubit register are therefore orthonormal. They span the <span class="term">symmetric subspace</span> 𝒮<sub>n</sub>, the states that do not change when the qubits are permuted, because a permutation-invariant state must give equal amplitude to strings that are permutations of each other, and strings are permutations of each other exactly when they have the same weight.</p>
+      <p>The paper cites two uses. In the decoded quantum interferometry algorithm a Dicke state is a uniform superposition over all sets of k error positions in a codeword, and in quantum metrology the balanced state |D<sup>n</sup><sub>n/2</sub>⟩ is a probe for small collective spin rotations. The states at k = 0 and k = n are trivial: |0<sup>n</sup>⟩ is already the target, and n parallel X gates make |1<sup>n</sup>⟩. The paper calls the other weights, 1 ≤ k ≤ n − 1, nontrivial, and for those, two lower bounds are known.</p>
+      <div class="fact"><span class="label">Fact · lower bounds the paper cites</span>
+        <p>For every nontrivial weight, the reduced state of any pair of qubits of |D<sup>n</sup><sub>k</sub>⟩ is entangled (Wang and Mølmer). Huang et al. show that preparing any n-qubit state with this property needs Ω(n) CNOT gates, and Yuan and Zhang show that preparing any nontrivial Dicke state needs depth Ω(log n).</p>
+      </div>
+      <p>The intuition behind the depth bound, in our words rather than the paper's: every pair of qubits ends up correlated, and with two-qubit gates the set of qubits that can influence a given qubit at most doubles with each layer, so information has to spread across all n qubits, which takes about log n layers. Previous constructions met both bounds only when r = min{k, n − k} is a constant. For balanced states, with r near n/2, their bounds give O(n<sup>2</sup>) gates and O(n) depth, and Yuan and Zhang conjectured that depth Ω(k) is necessary. The paper asks the following question.</p>
+      <div class="def"><span class="label">Problem 1 · exact Dicke-state preparation</span>
+        <p>Can every n-qubit Dicke state be prepared exactly using O(n) single-qubit gates and CNOTs, with O(log n) depth and without ancillary qubits? In words: build the target with probability one, no more gates than qubits up to a constant factor, logarithmic time, and no workspace beyond the n output qubits.</p>
+      </div>
+      <div class="fact"><span class="label">Theorem 1 · the main result</span>
+        <p>For every n ≥ 2 and 1 ≤ k ≤ n − 1, there is an ancilla-free circuit that prepares |D<sup>n</sup><sub>k</sub>⟩ exactly using O(n) arbitrary single-qubit gates and CNOTs, with O(log n) depth. For k = ⌊n/2⌋ this rules out the Ω(k) depth lower bound conjectured by Yuan and Zhang.</p>
+      </div>
+      <p>The proof has three parts, and the chapter follows them: a starting state with constant overlap (Sections 2, 4 and 5 here), exact amplitude amplification (Section 3), and a circuit that applies a phase depending only on the Hamming weight, built inside the output register (Section 6).</p>
+      <p class="short"><b>In short:</b> |D<sup>n</sup><sub>k</sub>⟩ is the uniform superposition of the C(n, k) strings of weight k; the Dicke states form an orthonormal basis of the symmetric subspace; any nontrivial one needs Ω(n) gates and Ω(log n) depth, and Theorem 1 meets both bounds with no ancillas.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Product state">
+      <span class="num">2 · A FREE FIRST GUESS</span>
+      <h2>How close does one layer of single-qubit rotations get?</h2>
+      <p>The cheapest possible attempt is to tilt every qubit by the same amount, so that each one reads 1 with probability p = k/n. The number of ones is then a binomial random variable with mean k, which puts the most weight near the target weight. The tilt is a rotation about the y axis of the Bloch sphere,</p>
+      <div class="math" data-tex="R_y(\alpha)=\begin{pmatrix}\cos(\alpha/2)&-\sin(\alpha/2)\\ \sin(\alpha/2)&\cos(\alpha/2)\end{pmatrix},"></div>
+      <p>a real rotation matrix acting on the amplitudes of |0⟩ and |1⟩. Applied to |0⟩ it gives cos(α/2)|0⟩ + sin(α/2)|1⟩, so the angle φ = 2 arcsin √p makes the probability of 1 equal to sin²(φ/2) = p. The paper writes R<sub>a</sub> := R<sub>y</sub>(a)<sup>⊗n</sup> for the same rotation on every qubit, one layer of n gates.</p>
+      <div class="def"><span class="label">Definition · the product state</span>
+        <div class="math" data-tex="|P\rangle:=\bigl(\sqrt{1-p}\,|0\rangle+\sqrt{p}\,|1\rangle\bigr)^{\otimes n}=\sum_{w=0}^{n}a_w|D_w^n\rangle,\qquad a_w:=\sqrt{\binom{n}{w}p^w(1-p)^{n-w}}."></div>
+        <p>In words: every qubit is independently tilted towards 1 by the same amount; grouping strings by weight, the coefficient of the Dicke state of weight w is the square root of the binomial probability of w ones.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why is the Dicke coefficient the square root of a binomial probability?</span></summary><div class="pfbody">
+        <p>Expanding the tensor product, the string x gets amplitude √p for each 1 and √(1 − p) for each 0, so every string of weight w has amplitude p<sup>w/2</sup>(1 − p)<sup>(n−w)/2</sup>. The sum over those C(n, w) strings is C(n, w)<sup>1/2</sup> times |D<sup>n</sup><sub>w</sub>⟩, by the definition of the Dicke state. Multiplying gives a<sub>w</sub> = (C(n, w)p<sup>w</sup>(1 − p)<sup>n−w</sup>)<sup>1/2</sup>, and the squares a<sub>w</sub><sup>2</sup> are the binomial probabilities, which sum to one.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In Example A, p = 1/2 and φ = π/2, so each qubit is (|0⟩ + |1⟩)/√2 and all 16 strings have amplitude 1/4. The Dicke coefficients are a<sub>w</sub> = (C(4, w)/16)<sup>1/2</sup>, that is 1/4, 1/2, √6/4, 1/2, 1/4. The overlap with the target is a<sub>2</sub> = √6/4 ≈ 0.6124, so a measurement of the weight would succeed with probability 6/16.</p>
+      <p>For large n the overlap shrinks. The binomial weight has standard deviation σ := √(k(1 − k/n)), which lies between √(k/2) and √k when k ≤ n/2. The probability mass near the mean spreads over about σ weights, so the central probability a<sub>k</sub><sup>2</sup> is of order 1/σ and the amplitude a<sub>k</sub> is of order σ<sup>−1/2</sup> = Θ(k<sup>−1/4</sup>). The paper makes this quantitative near the centre.</p>
+      <div class="math" data-tex="a_k^2>\frac{1}{3\sigma},\qquad a_{k+j}^2>\frac{1}{3\sigma}\quad(k\ge 16,\ |j|\le\sigma/4).\tag{7}"></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where does the constant 1/3 come from?</span></summary><div class="pfbody">
+        <p>Stirling's formula, n! ≈ √(2πn)(n/e)<sup>n</sup>, comes with explicit error bounds: the ratio of n! to √(2πn)(n/e)<sup>n</sup> lies between 1 and e<sup>1/(12n)</sup>. At w = k the paper uses these bounds to get a<sub>k</sub><sup>2</sup> ≥ e<sup>−1/6</sup>/(√(2π)σ), and e<sup>−1/6</sup>/√(2π) ≈ 0.338 &gt; 1/3.</p>
+        <p>For w = k + j, define the relative-entropy-like function</p>
+        <div class="math" data-tex="g(w):=w\ln(w/k)+(n-w)\ln\bigl((n-w)/(n-k)\bigr)."></div>
+        <p>Applying Stirling's bounds to n!, w! and (n − w)! gives</p>
+        <div class="math" data-tex="a_w^2\ge\frac{\exp[-g(w)-1/(12w)-1/(12(n-w))]}{\sqrt{2\pi w(1-w/n)}}."></div>
+        <p>Because σ ≤ √k and k ≥ 16, a shift of |j| ≤ σ/4 ≤ k/16 keeps w/k and (n − w)/(n − k) in [15/16, 17/16]. Hence w, n − w ≥ 15 and w(1 − w/n) ≤ (17/16)<sup>2</sup>σ<sup>2</sup>. The second derivative is g″(w) = 1/w + 1/(n − w) ≤ 4/(3σ<sup>2</sup>) on this range, and g(k) = g′(k) = 0, so Taylor's theorem gives g(w) ≤ 2(w − k)<sup>2</sup>/(3σ<sup>2</sup>) ≤ 1/24. The two Stirling corrections add up to at most 1/90. Using e<sup>−x</sup> &gt; 1 − x and √(2π) &lt; 8/3, the paper concludes</p>
+        <div class="math" data-tex="a_w^2\ge\frac{e^{-19/360}}{(17/16)\sqrt{2\pi}\,\sigma}>\frac{1}{3\sigma}."></div>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In Example B, σ = √(32 · 3/4) = √24 ≈ 4.90. The page computes a<sub>32</sub> ≈ 0.2850, matching the paper's F<sub>0</sub>, and a<sub>32</sub><sup>2</sup> ≈ 0.0812 is indeed above 1/(3σ) ≈ 0.0680.</p>
+      <div class="fact"><span class="label">Fact · the product state is not enough</span>
+        <p>The overlap of |P⟩ with |D<sup>n</sup><sub>k</sub>⟩ is a<sub>k</sub> = Θ(σ<sup>−1/2</sup>) = Θ(k<sup>−1/4</sup>), so amplifying it directly takes Θ(k<sup>1/4</sup>) steps as k grows. With O(log n) depth per step this would give depth growing like k<sup>1/4</sup> log n, more than the target O(log n).</p>
+      </div>
+      <p class="short"><b>In short:</b> one layer of R<sub>y</sub>(φ) gates makes the binomial state |P⟩, whose Dicke coefficients are square roots of binomial probabilities; its overlap with the target decays like k<sup>−1/4</sup> (Eq. 7), which is 0.6124 in Example A and 0.2850 in Example B.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Amplification">
+      <span class="num">3 · EXACT AMPLITUDE AMPLIFICATION</span>
+      <h2>How does a partial overlap become an exact preparation?</h2>
+      <p>Suppose a circuit B makes a state |ψ⟩ = B|0<sup>n</sup>⟩ whose overlap with the target is a real number F between 0 and 1. Amplitude amplification, the generalization of Grover search due to Brassard, Høyer, Mosca and Tapp, raises that overlap by rotating the state inside a plane. Put α := arcsin F and write</p>
+      <div class="math" data-tex="|\psi\rangle=F\,|D_k^n\rangle+\cos\alpha\,|\perp\rangle,"></div>
+      <p>where |⊥⟩ is a unit vector orthogonal to the target. The two vectors |D<sub>k</sub>⟩ and |⊥⟩ span a plane, and |ψ⟩ sits in it at angle α above the |⊥⟩ axis. Two reflections of that plane are available. The first, Z<sub>k</sub>(−1), flips the sign of the |D<sub>k</sub>⟩ component, a reflection across the |⊥⟩ axis. The second flips the sign of the |ψ⟩ component: since Z<sub>0</sub>(−1) flips the sign of |0<sup>n</sup>⟩ and B maps |0<sup>n</sup>⟩ to |ψ⟩, the operator BZ<sub>0</sub>(−1)B<sup>†</sup> flips the sign of |ψ⟩ and fixes everything orthogonal to it. One amplification step is</p>
+      <div class="math" data-tex="Q:=-B\,Z_0(-1)\,B^{\dagger}\,Z_k(-1)."></div>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why does Q rotate the state by 2α?</span></summary><div class="pfbody">
+        <p>This is the standard argument, in our words. On the plane, Z<sub>k</sub>(−1) is the reflection across the |⊥⟩ axis, and −BZ<sub>0</sub>(−1)B<sup>†</sup> = 2|ψ⟩⟨ψ| − I is the reflection across the line through |ψ⟩. Two reflections across lines meeting at angle α compose to a rotation by 2α. Starting at angle α from |⊥⟩, the state after t steps is at angle (2t + 1)α, and its target component is sin((2t + 1)α).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The paper takes t := ⌊π/(4α) − 1/2⌋ steps, the largest number that does not rotate past the target. With β := (2t + 1)α ≤ π/2,</p>
+      <div class="math" data-tex="Q^{t}|\psi\rangle=\sin\beta\,|D_k^n\rangle+\cos\beta\,|\perp\rangle."></div>
+      <p>Unless β lands exactly on π/2, a residue cos β remains on |⊥⟩. The fix, which the paper takes from Høyer's work on arbitrary phases, replaces the two sign flips of one last step by two general phases. First Z<sub>k</sub>(u) multiplies the target component by a unit complex number u. Then BZ<sub>0</sub>(v)B<sup>†</sup> multiplies the |ψ⟩ component by v, which adds (v − 1)ξ|ψ⟩ to the state, where ξ is the current overlap with |ψ⟩. After Z<sub>k</sub>(u),</p>
+      <div class="math" data-tex="\xi:=Fu\sin\beta+\cos\alpha\cos\beta."></div>
+      <p>The added multiple of |ψ⟩ contributes (v − 1)ξ cos α to the |⊥⟩ coefficient, which was cos β. Cancelling it requires</p>
+      <div class="math" data-tex="v\,\xi=\xi-\frac{\cos\beta}{\cos\alpha}."></div>
+      <div class="def"><span class="label">Phase matching · the two conditions</span>
+        <div class="math" data-tex="2\cos\alpha\,\operatorname{Re}\xi=\cos\beta,\qquad \operatorname{Re}u=-\cot(2\alpha)\cot\beta."></div>
+        <p>In words: choose u on the upper unit semicircle with this real part, then set v = −ξ̄/ξ. The |⊥⟩ coefficient vanishes, and the target coefficient becomes u sin β − tan α cos β, a complex number of modulus one, which a single-qubit gate proportional to the identity turns into exactly 1.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where do the two conditions come from?</span></summary><div class="pfbody">
+        <p>Write c := cos β/cos α, a real number. Since |v| = 1, the right side ξ − c must have the same modulus as ξ. Squaring, |ξ − c|<sup>2</sup> = |ξ|<sup>2</sup> − 2c Re ξ + c<sup>2</sup>, so the condition is c<sup>2</sup> = 2c Re ξ, that is 2 cos α Re ξ = cos β (when c ≠ 0). Then v = (ξ − c)/ξ, and since Re ξ = c/2 the number ξ − c is −ξ̄, giving v = −ξ̄/ξ.</p>
+        <p>For u, substitute ξ. Its real part is F sin β Re u + cos α cos β, which must equal cos β/(2 cos α). Rearranging (this algebra is ours),</p>
+        <div class="math" data-tex="F\sin\beta\,\operatorname{Re}u=\cos\beta\,\frac{1-2\cos^2\alpha}{2\cos\alpha}=-\frac{\cos\beta\cos 2\alpha}{2\cos\alpha},"></div>
+        <p>and since 2F cos α = 2 sin α cos α = sin 2α, Re u = −cot(2α) cot β.</p>
+        <p>The paper then checks that this is a legitimate real part. For α &lt; π/4 the choice of t gives β &gt; π/2 − 2α, which puts Re u in (−1, 0). For α ≥ π/4, t = 0 and β = α, so Re u = −cos 2α/(2 sin<sup>2</sup>α) = 1 − 1/(2F<sup>2</sup>), which lies in [0, 1/2). With u in the upper half plane, Re ξ &gt; 0, so ξ ≠ 0 and v is well defined.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Example A, starting from the product state alone, needs no full steps. Here F = √6/4, so F<sup>2</sup> = 3/8 and α ≈ 37.76°, below 45°, and t = ⌊45/37.76 − 1/2⌋ = 0, so β = α. In closed form (our calculation), cos 2α = 1 − 2F<sup>2</sup> = 1/4, sin 2α = √15/4 and cot α = √(5/3), so Re u = −(1/√15)√(5/3) = −1/3. Then u = −1/3 + (2√2/3)i, ξ = 1/2 + (√2/4)i ≈ 0.5 + 0.354i, and v = −ξ̄/ξ comes out equal to u. The animation below carries this out on the full 16-amplitude state of four qubits.</p>
+      <div class="player" id="pDkAmp">
+        <div class="ptitle"><span class="label">Animation · exact preparation of |D⁴₂⟩</span><div class="scen"><button class="chip" data-scen="0" aria-pressed="true">product start (d = 0)</button><button class="chip" data-scen="1" aria-pressed="false">sign-corrected start (d = 1)</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Sixteen amplitude bars of a four-qubit state grouped by Hamming weight, and five phasors for its Dicke coefficients, as the circuit runs"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>weight 2 (target)</span><span><i class="sw" style="background:var(--cool)"></i>other weights</span><span>bars: |amplitude| of each string · arrows: Dicke coefficients c<sub>w</sub> in the complex plane</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The second chip uses the starting state of the next section, whose overlap 0.9853 is so large that again t = 0 and only the phase-matching step is needed, now with Re u = 1 − 1/(2F<sup>2</sup>) ≈ 0.4850. In both runs the state never leaves the symmetric subspace: every operation used is either a collective rotation or a phase that depends only on the weight.</p>
+      <p>The step count is what matters for the main theorem. If F is at least a constant η, then α ≥ arcsin η and t ≤ π/(4 arcsin η), a constant. For Example B starting from the product state, F<sub>0</sub> ≈ 0.2850 gives α ≈ 16.56° and t = 2 full steps before phase matching, which is what the paper reports in its Figure 2.</p>
+      <p class="short"><b>In short:</b> amplification rotates by 2α per step in the plane of target and residue; t = ⌊π/(4α) − 1/2⌋ steps plus one step with tuned phases u and v (Re u = −cot 2α cot β, v = −ξ̄/ξ) reach the target exactly, and a constant lower bound on F makes the number of steps constant.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Sign correction">
+      <span class="num">4 · SIGN CORRECTION AND A SMALL REVERSE TILT</span>
+      <h2>How can a cheap circuit raise the starting overlap to a constant?</h2>
+      <p>The product state's overlap is small because its weight distribution is spread over about σ weights while the target sits on one. The paper's idea is to compare |P⟩ not with the target itself but with a slightly rotated copy of it, R<sub>θ</sub>|D<sub>k</sub>⟩, whose weight distribution is also spread out, and then to undo the rotation. The coefficients of the rotated target are</p>
+      <div class="math" data-tex="\beta_w:=\langle D_w^n|R_\theta|D_k^n\rangle,\qquad S|D_w^n\rangle:=\operatorname{sgn}(\beta_w)|D_w^n\rangle,"></div>
+      <p>with the sign at zero set to +1. The collective rotation keeps the symmetric subspace in place, because applying the same gate to every qubit commutes with permuting the qubits, so R<sub>θ</sub>|D<sub>k</sub>⟩ is a combination of Dicke states with real coefficients β<sub>w</sub>. The operator S multiplies each Dicke component by the sign of the matching β<sub>w</sub>, a phase that depends only on the weight.</p>
+      <div class="def"><span class="label">Definition · the starting circuit (Eq. 6)</span>
+        <div class="math" data-tex="B:=R_{-\theta}\,S\,R_{\varphi},\qquad |\psi\rangle:=B|0^n\rangle=R_{-\theta}S|P\rangle,\qquad F:=\langle D_k^n|\psi\rangle=\sum_w a_w|\beta_w|.\tag{6}"></div>
+        <p>In words: make the product state, fix the sign of each weight component to agree with the rotated target, then rotate every qubit back by θ. The overlap with the target is the sum of a<sub>w</sub> times |β<sub>w</sub>|, every term nonnegative.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the overlap a sum of absolute values?</span></summary><div class="pfbody">
+        <p>R<sub>y</sub>(θ) is a real orthogonal matrix, so R<sub>−θ</sub> = R<sub>θ</sub><sup>†</sup> = R<sub>θ</sub><sup>T</sup> and ⟨D<sub>k</sub>|R<sub>−θ</sub>|D<sub>w</sub>⟩ = ⟨D<sub>w</sub>|R<sub>θ</sub>|D<sub>k</sub>⟩ = β<sub>w</sub>. Expanding S|P⟩ = Σ<sub>w</sub> a<sub>w</sub> sgn(β<sub>w</sub>)|D<sub>w</sub>⟩,</p>
+        <div class="math" data-tex="\langle D_k|R_{-\theta}S|P\rangle=\sum_w a_w\operatorname{sgn}(\beta_w)\,\beta_w=\sum_w a_w|\beta_w|."></div>
+        <p>A remark of ours: for any other choice of signs s<sub>w</sub> = ±1, the overlap would be Σ a<sub>w</sub>s<sub>w</sub>β<sub>w</sub> ≤ Σ a<sub>w</sub>|β<sub>w</sub>|, so S is the best weight-dependent sign pattern for this rotation. Without S, the overlap is Σ a<sub>w</sub>β<sub>w</sub>, and terms of opposite signs cancel.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Why a rotation helps, informally: rotating |D<sub>k</sub>⟩ spreads it over neighbouring weights, so R<sub>θ</sub>|D<sub>k</sub>⟩ has many coefficients of size about σ<sup>−1/2</sup> near k, matching the spread of |P⟩, but with oscillating signs. The sign correction aligns them, and the inner product of two spread-out vectors with aligned signs can be of order one. Section 5 makes this precise.</p>
+      <p>The algorithm tries four angles, θ<sub>d</sub> := 2 arctan(d/(2√n)) for d ∈ {0, 1/4, 1, 2}, and keeps the one with the largest F<sub>d</sub> (Algorithm 1). At d = 0 there is no rotation, all signs are +1 and F<sub>0</sub> = a<sub>k</sub>. The angle is chosen so that tan(θ/2) = d/(2√n), which makes cos<sup>2</sup>(θ/2) = q/(q + 1) and sin<sup>2</sup>(θ/2) = 1/(q + 1) with q := 4n/d<sup>2</sup>, an integer for the three positive candidates. That is what lets the paper compute every sign exactly with integers (Section VI).</p>
+      <div class="def"><span class="label">Exact signs · Section VI</span>
+        <div class="math" data-tex="\beta_w=\sqrt{\frac{\binom{n}{w}}{\binom{n}{k}}}\,\frac{q^{(n-w-k)/2}}{(q+1)^{n/2}}\,H_w,\qquad H_w:=\sum_{j=\max\{0,\,k-(n-w)\}}^{\min\{w,k\}}(-1)^{k-j}\binom{w}{j}\binom{n-w}{k-j}q^{j}."></div>
+        <p>In words: β<sub>w</sub> is a positive factor times an integer H<sub>w</sub>, so sgn(β<sub>w</sub>) = sgn(H<sub>w</sub>). The sum runs over j, the number of positions where a weight-k input string and a weight-w output string both have a 1.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where do the binomials and the sign (−1)<sup>k−j</sup> come from?</span></summary><div class="pfbody">
+        <p>Each qubit is rotated by R<sub>y</sub>(θ), whose entries are ⟨0|R|0⟩ = ⟨1|R|1⟩ = cos(θ/2), ⟨1|R|0⟩ = sin(θ/2) and ⟨0|R|1⟩ = −sin(θ/2). The amplitude from an input string to an output string is the product of one entry per qubit. Fix an output string of weight w. Among the weight-k input strings, exactly C(w, j)C(n − w, k − j) share j ones with it. Such an input has k − j transitions 1 → 0, each contributing −sin(θ/2), giving the sign (−1)<sup>k−j</sup>; it has w − j transitions 0 → 1, each contributing sin(θ/2); and n − w − k + 2j unchanged bits, each contributing cos(θ/2). Factoring out (q + 1)<sup>−n/2</sup>, each unchanged bit contributes √q and each changed bit contributes 1, which produces the factor q<sup>j</sup> inside H<sub>w</sub> and the prefactor q<sup>(n−w−k)/2</sup>. Normalizing the two Dicke states gives the square root of binomials.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Computing H<sub>w</sub> term by term would be slow, so the paper uses a three-term recurrence. Starting from H<sub>0</sub> = (−1)<sup>k</sup>C(n, k),</p>
+      <div class="math" data-tex="(n-w)H_{w+1}=[\,n-w+qw-k(q+1)\,]H_w-qwH_{w-1}\quad(0\le w<n),\tag{13}"></div>
+      <p>with the last term omitted at w = 0. The H<sub>w</sub> are values of Krawtchouk polynomials, a classical family of orthogonal polynomials, and (13) is their difference relation.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does the recurrence follow from a generating function?</span></summary><div class="pfbody">
+        <p>The paper observes that H<sub>w</sub> is the coefficient of t<sup>k</sup> in P<sub>w</sub>(t) := (1 + qt)<sup>w</sup>(1 − t)<sup>n−w</sup>: choosing j of the w factors to contribute qt and k − j of the n − w factors to contribute −t gives exactly the j-th term of H<sub>w</sub>. Differentiating P<sub>w</sub> and comparing gives the polynomial identity</p>
+        <div class="math" data-tex="(n-w)P_{w+1}+qwP_{w-1}=(n-w+qw)P_w-(q+1)tP'_w,"></div>
+        <p>and taking the coefficient of t<sup>k</sup>, where tP′<sub>w</sub> contributes k times the coefficient of t<sup>k</sup> in P<sub>w</sub>, gives (13).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In Example A with d = 1, q = 16 and θ = 2 arctan(1/4) ≈ 0.4900, so cos(θ/2) = 4/√17 and sin(θ/2) = 1/√17. The recurrence (13), started at H<sub>0</sub> = 6, gives H = (6, −45, 193, 720, 1536), so only the weight-1 component changes sign. The prefactors make (our closed form) β = (16√6, −60√6, 193, 60√6, 16√6)/289 ≈ (0.1356, −0.5085, 0.6678, 0.5085, 0.1356). Pairing with a = (1/4, 1/2, √6/4, 1/2, 1/4),</p>
+      <div class="math" data-tex="F_1=\frac{\sqrt6}{289}\Bigl(8+60+\tfrac{193}{4}\Bigr)=\frac{465\sqrt6}{1156}\approx 0.9853,"></div>
+      <p>whereas without the sign correction the middle term enters with a minus sign and the overlap is (8 − 60 + 193/4)√6/289 ≈ −0.0318, almost nothing. For the other candidates the page computes F<sub>1/4</sub> ≈ 0.7542 and F<sub>2</sub> ≈ 0.8083 in Example A, so the algorithm picks d = 1.</p>
+      <p>Example B is the paper's own illustration. The animation below computes the rotated target twice, by the exact integer formula above (using big-integer arithmetic for the H<sub>w</sub>) and by applying the rotation directly to the symmetric subspace, and then forms both overlaps.</p>
+      <div class="player" id="pDkSign">
+        <div class="ptitle"><span class="label">Animation · sign correction at n = 128, k = 32 (paper's Fig. 2)</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Bar charts of product-state coefficients, rotated-target coefficients and overlap contributions for weights 18 to 46"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--cool)"></i>a<sub>w</sub></span><span><i class="sw" style="background:var(--accent)"></i>β<sub>w</sub> or a<sub>w</sub>|β<sub>w</sub>|</span><span><i class="sw" style="background:var(--bad)"></i>a<sub>w</sub>β<sub>w</sub>, no signs fixed</span><span><i class="sw" style="background:var(--deep)"></i>|J<sub>j</sub>(z)|</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p class="short"><b>In short:</b> B = R<sub>−θ</sub>SR<sub>φ</sub> aligns the signs of the product state with those of a slightly rotated target, which makes the overlap Σ a<sub>w</sub>|β<sub>w</sub>| (Eq. 6); the signs are exact integer signs from recurrence (13); the overlap rises from 0.6124 to 0.9853 in Example A and from 0.2850 to 0.8384 in Example B.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Constant overlap">
+      <span class="num">5 · WHY THE OVERLAP STAYS CONSTANT</span>
+      <h2>Why does the sign-corrected overlap not decay as n grows?</h2>
+      <p>The numbers above are for particular sizes. The theorem needs a single constant that works for all n and k. The paper proves one.</p>
+      <div class="fact"><span class="label">Lemma 2 · constant overlap</span>
+        <p>There is a constant η &gt; 0 such that max{F<sub>0</sub>, F<sub>1/4</sub>} ≥ η for all 1 ≤ k ≤ n/2. The proof gives η = 1/128.</p>
+      </div>
+      <p>The plan of the proof is a product of two estimates. Near weight k, on a window of width of order σ, every a<sub>w</sub> is at least of order σ<sup>−1/2</sup> by (7). If the absolute values |β<sub>w</sub>| on the same window add up to at least of order σ<sup>1/2</sup>, the sum Σ a<sub>w</sub>|β<sub>w</sub>| is at least a constant. The second estimate is the hard one, and the paper gets it by comparing the rotation with a simpler process whose amplitudes are known in closed form.</p>
+      <p><b>The rotation as a walk on weights.</b> In the Dicke basis the generator of R<sub>θ</sub> only connects neighbouring weights: a small rotation of every qubit moves a weight-w state to weights w ± 1. After a diagonal change of phases, the paper writes the generator as −iH, where H is a real symmetric tridiagonal matrix indexed by j = w − k with off-diagonal entries</p>
+      <div class="math" data-tex="h_j:=\tfrac12\sqrt{(k+j+1)(n-k-j)}\qquad(-k\le j<n-k)."></div>
+      <p>A particle hopping along the integers with these rates is a continuous-time quantum walk. Near j = 0 the rates are almost constant, equal to h := √(k(n − k))/2, so the paper compares H with the walk K := h(T + T<sup>†</sup>) on all of ℤ, where T shifts j to j + 1. Its Figure 3 draws the two chains side by side.</p>
+      <p><b>The walk with constant rates is solved by Bessel functions.</b> For integer j the Bessel function of the first kind has the integral representation</p>
+      <div class="math" data-tex="J_j(z):=\frac1\pi\int_0^\pi\cos(jt-z\sin t)\,dt.\tag{8}"></div>
+      <p>Starting at j = 0, the walk K run for time s has amplitudes</p>
+      <div class="math" data-tex="\langle j|\phi(s)\rangle=\frac{1}{2\pi}\int_{-\pi}^{\pi}e^{-i2hs\cos t}e^{ijt}\,dt=(-i)^{j}J_j(2hs).\tag{10}"></div>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why does a Fourier transform solve the walk?</span></summary><div class="pfbody">
+        <p>Represent a sequence (v<sub>j</sub>) on ℤ by its Fourier series v(t) = Σ v<sub>j</sub>e<sup>−ijt</sup>. The shift T multiplies the series by e<sup>−it</sup> and T<sup>†</sup> by e<sup>it</sup>, so K acts by multiplication by h(e<sup>−it</sup> + e<sup>it</sup>) = 2h cos t. The walk e<sup>−isK</sup> therefore multiplies by e<sup>−i2hs cos t</sup>, and the starting point j = 0 has Fourier series 1. The j-th amplitude is the j-th Fourier coefficient of e<sup>−i2hs cos t</sup>, which the Jacobi–Anger expansion identifies as (−i)<sup>j</sup>J<sub>j</sub>(2hs). Parseval's identity, the statement that the squared lengths of a sequence and of its Fourier series agree, then gives Σ<sub>j</sub> J<sub>j</sub>(z)<sup>2</sup> = 1 and, applied to the derivative in t, Σ<sub>j</sub> j<sup>2</sup>J<sub>j</sub>(z)<sup>2</sup> = z<sup>2</sup>/2.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p><b>The two walks stay close.</b> With z := 2hθ and β<sub>w</sub> extended by zero outside 0 ≤ w ≤ n, the paper proves</p>
+      <div class="math" data-tex="\Bigl(\sum_{j\in\mathbb Z}\bigl(|\beta_{k+j}|-|J_j(z)|\bigr)^2\Bigr)^{1/2}\le\frac{n\theta^2}{2\sqrt2}+\frac{3\sqrt n\,\theta}{2\sigma}.\tag{9}"></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How is the gap between the two walks controlled?</span></summary><div class="pfbody">
+        <p>First the rates are compared: for every integer j, |h<sub>j</sub> − h| ≤ λ(|j| + 1) with λ := n/(2√(k(n − k))). Inside the range this follows from (k + j + 1)(n − k − j) − k(n − k) = (n − 2k − j)j + (n − k − j) and the bounds |n − 2k − j| ≤ n and 0 &lt; n − k − j ≤ n; outside, |j| + 1 ≥ k and λk ≥ h.</p>
+        <p>Next, the walk φ(s) = e<sup>−isK</sup>|0⟩ stays concentrated: ‖φ(s)‖ = 1 and ‖Mφ(s)‖ = √2 hs, where M multiplies the j-th entry by j (both from Parseval, as above). Shifting indices and the triangle inequality give</p>
+        <div class="math" data-tex="\lVert(H-K)\phi(s)\rVert_2\le2\lambda\lVert M\phi(s)\rVert_2+3\lambda\lVert\phi(s)\rVert_2=\lambda(2\sqrt2\,hs+3)."></div>
+        <p>Duhamel's formula, the quantum analogue of variation of constants for differential equations, bounds the difference of two evolutions by the integral of the generator difference along one of them:</p>
+        <div class="math" data-tex="\lVert(e^{-i\theta H}-e^{-i\theta K})|0\rangle\rVert_2\le\int_0^\theta\lVert(H-K)\phi(s)\rVert_2\,ds\le\lambda(\sqrt2\,h\theta^2+3\theta)."></div>
+        <p>Substituting h and λ gives the right side of (9), and taking absolute values entry by entry cannot increase the distance.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In Example B with d = 1/4 (our computation, shown in the animation above), θ ≈ 0.02210, h ≈ 27.71 and z ≈ 1.225. The left side of (9) is about 0.0104 and the right side about 0.0986, so the bound holds with room to spare.</p>
+      <p><b>Bessel amplitudes spread like σ<sup>−1/2</sup>.</b> The paper sets τ := 11/12 and K<sub>τ</sub> := √(2/π)(1 − τ<sup>2</sup>)<sup>−1/4</sup>. A bound of Krasikov, together with |J<sub>0</sub>(z)| ≤ √(2/(πz)) and |J<sub>−j</sub>| = |J<sub>j</sub>|, gives</p>
+      <div class="math" data-tex="|J_j(z)|\le K_\tau/\sqrt z\qquad(|j|\le\tau z).\tag{11}"></div>
+      <p>By a Chebyshev-type step (our name for it) applied to Σ j<sup>2</sup>J<sub>j</sub><sup>2</sup> = z<sup>2</sup>/2, the window |j| ≤ τz holds probability at least 1 − 1/(2τ<sup>2</sup>) = 49/121. A sum of squares that is at least 49/121, with each term at most K<sub>τ</sub>/√z in absolute value, forces the sum of absolute values to be large:</p>
+      <div class="math" data-tex="\sum_{|j|\le\tau z}|J_j(z)|\ge\frac{49\sqrt z}{121K_\tau}.\tag{12}"></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How do these pieces give η = 1/128?</span></summary><div class="pfbody">
+        <p>If σ &lt; 48, then (7) gives F<sub>0</sub> = a<sub>k</sub> &gt; (1/(3 · 48))<sup>1/2</sup> = 1/12. The w = k part of (7) comes from the Stirling bound a<sub>k</sub><sup>2</sup> ≥ e<sup>−1/6</sup>/(√(2π)σ), which holds for every k, small or large.</p>
+        <p>Otherwise σ ≥ 48, so k ≥ 16; take θ = θ<sub>1/4</sub>. Since x/2 ≤ arctan x ≤ x on [0, 1], the paper gets 1/8 ≤ z/σ = √n θ ≤ 1/4, so the window |j| ≤ τz lies inside |j| ≤ σ/4 where (7) applies. Multiplying (7), (12) and using K<sub>τ</sub> &lt; √2,</p>
+        <div class="math" data-tex="\sum_j a_{k+j}|J_j(z)|\ge\frac{49}{121\sqrt3\,K_\tau}\sqrt{\frac z\sigma}>\frac{1}{16\sqrt2}."></div>
+        <p>By the Cauchy–Schwarz inequality, (9) and ‖a‖ = 1, this sum differs from F<sub>1/4</sub> by at most 1/(32√2) + 3/(8σ). Hence F<sub>1/4</sub> &gt; 1/(32√2) − 3/(8σ) &gt; 1/128, and the two cases give η = 1/128.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The constant 1/128 is far below the overlaps in the examples, 0.8384 and 0.9853; it is a proof constant, not a performance figure.</p>
+      <p class="short"><b>In short:</b> near the target weight the collective rotation is a quantum walk with almost constant hopping rates, whose amplitudes are Bessel functions (Eqs. 8, 10); the two walks differ by little (Eq. 9), Bessel amplitudes are spread evenly over a window of width of order σ (Eqs. 11, 12), and multiplying by the product-state coefficients (Eq. 7) gives F ≥ 1/128 for every n and k (Lemma 2).</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Phases in place">
+      <span class="num">6 · WEIGHT-DEPENDENT PHASES WITHOUT ANCILLAS</span>
+      <h2>Where does the arithmetic happen if there are no spare qubits?</h2>
+      <p>Everything so far needs one primitive: multiply each Dicke component |D<sub>w</sub>⟩ by a phase e<sup>if(w)</sup> that depends on the weight. The sign correction S uses f(w) ∈ {0, π}, and Z<sub>k</sub>(u) and Z<sub>0</sub>(v) put a phase on a single weight. The natural way to do this is to compute the Hamming weight into a fresh register, apply the phase, and uncompute, but fresh registers are ancillas. The paper's observation is that on the symmetric subspace the register is far from full: a symmetric state of s qubits is a combination of only s + 1 Dicke states, so its information fits in ⌈log(s + 1)⌉ qubits.</p>
+      <div class="fact"><span class="label">Lemma 1 · phases on the symmetric subspace</span>
+        <p>For every function f : {0, …, n} → ℝ there is an n-qubit circuit U<sub>f</sub> with O(n) gates and O(log(n + 1)) depth satisfying U<sub>f</sub>|D<sup>n</sup><sub>w</sub>⟩ = e<sup>if(w)</sup>|D<sup>n</sup><sub>w</sub>⟩ for 0 ≤ w ≤ n.</p>
+      </div>
+      <p><b>Step 1: compress blocks.</b> For n ≤ 31 a constant-size circuit exists by exact synthesis. For n ≥ 32, split the qubits into Q := ⌈n/31⌉ blocks, all of size 31 except possibly the last. For each block size s there is a unitary V<sub>s</sub> that writes the block's weight in binary and empties the rest:</p>
+      <div class="math" data-tex="V_s|D_j^s\rangle=|\operatorname{bin}_{\lceil\log(s+1)\rceil}(j)\rangle\,|0^{s-\lceil\log(s+1)\rceil}\rangle\tag{1}"></div>
+      <p>for every block weight j ∈ {0, …, s}. One V<sub>s</sub> acts coherently on all the weights at once. Since s ≤ 31, five qubits hold the count and the other 26 return to |0⟩, and each V<sub>s</sub> has constant size; the paper builds it from the coherent Dicke transform of Bärtschi and Eidenbenz followed by a unary-to-binary conversion.</p>
+      <p>Compression works on the whole symmetric state because a Dicke state of the full register splits into Dicke states of the blocks,</p>
+      <div class="math" data-tex="|D_w^n\rangle=\sum_{\sum_i j_i=w}\sqrt{\frac{\prod_i\binom{s_i}{j_i}}{\binom{n}{w}}}\;\bigotimes_i|D_{j_i}^{s_i}\rangle,"></div>
+      <p>so after compression each block holds a superposition of binary counts j<sub>i</sub>, and the counts add up to w. As a small check of ours with Example A, split four qubits into two blocks of two: |D<sup>4</sup><sub>2</sub>⟩ = √(1/6)|D<sup>2</sup><sub>0</sub>⟩|D<sup>2</sup><sub>2</sub>⟩ + √(4/6)|D<sup>2</sup><sub>1</sub>⟩|D<sup>2</sup><sub>1</sub>⟩ + √(1/6)|D<sup>2</sup><sub>2</sub>⟩|D<sup>2</sup><sub>0</sub>⟩, and the squared weights 1/6 + 4/6 + 1/6 add to one. A block of two qubits holds three Dicke states, which still need two qubits, so the saving only appears for larger blocks; at s = 31 it is 26 qubits per block.</p>
+      <p><b>Step 2: add the block counts with carry-save adders.</b> The Q counts are five-bit rows to be added. The basic gadget is the full adder, which uses one fresh qubit for the carry:</p>
+      <div class="math" data-tex="(a,b,c,0)\longmapsto(a,\,b,\,a\oplus b\oplus c,\,ab\oplus ac\oplus bc).\tag{2}"></div>
+      <p>The sum bit a ⊕ b ⊕ c and the carry bit ab ⊕ ac ⊕ bc (the majority of the three) satisfy a + b + c = (a ⊕ b ⊕ c) + 2(ab ⊕ ac ⊕ bc). For a = b = c = 1 the sum bit is 1 and the carry is 1, and 3 = 1 + 2. The paper implements the carry with the identity ab ⊕ ac ⊕ bc = a ⊕ (a ⊕ b)(a ⊕ c), which needs one Toffoli gate; checking it by cases (our check), a = 0 gives bc, the majority of 0, b, c, and a = 1 gives 1 ⊕ (¬b)(¬c) = b ∨ c, the majority of 1, b, c.</p>
+      <p>Applied column by column to three rows, full adders produce two rows, a sum row and a carry row shifted one place left, with the same total. Repeating on disjoint triples in parallel shrinks M<sub>t</sub> rows to M<sub>t+1</sub> = M<sub>t</sub> − ⌊M<sub>t</sub>/3⌋ rows, about two thirds as many, so about log<sub>3/2</sub> Q rounds bring Q rows down to two. This is the Wallace-tree idea from classical hardware. Each round has constant depth, and the paper counts the total cost:</p>
+      <div class="math" data-tex="\sum_t(5+t)g_t\le7(Q-2),\tag{3}"></div>
+      <p>where g<sub>t</sub> = ⌊M<sub>t</sub>/3⌋ is the number of triples in round t and round t has at most 5 + t columns. So the carry-save stage uses O(Q) gates, O(Q) fresh qubits, and O(log Q) depth.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the total number of carry qubits only linear in Q?</span></summary><div class="pfbody">
+        <p>Each round turns g<sub>t</sub> triples into pairs, so the rows drop by g<sub>t</sub> and Σ<sub>t</sub> g<sub>t</sub> = Q − 2. Since M<sub>t+1</sub> − 2 ≤ (2/3)(M<sub>t</sub> − 2), the remaining excess shrinks geometrically. Summing from round u onward gives Σ<sub>t≥u</sub> g<sub>t</sub> = M<sub>u</sub> − 2, and summing that over u,</p>
+        <div class="math" data-tex="\sum_{t=0}^{T-1}t\,g_t=\sum_{u=1}^{T-1}(M_u-2)\le(Q-2)\sum_{u=1}^{\infty}(2/3)^u=2(Q-2)."></div>
+        <p>Therefore Σ(5 + t)g<sub>t</sub> ≤ 5(Q − 2) + 2(Q − 2) = 7(Q − 2).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The two remaining rows A and B are added by an ordinary ripple-carry adder into an m-qubit register W, with m := ⌈log(n + 1)⌉, using m − 1 temporary carries that are uncomputed afterwards. The paper checks that the register is large enough to hold all of this at once:</p>
+      <div class="math" data-tex="5Q+7(Q-2)+(2m-1)\le14Q-7\le n.\tag{4}"></div>
+      <p>The first inequality uses m ≤ Q + 4, which follows from n + 1 ≤ 32Q.</p>
+      <div class="player" id="pDkCsa">
+        <div class="ptitle"><span class="label">Animation · carry-save addition of eight block weights</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Rows of binary numbers being combined three at a time into two rows, until two rows remain"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>rows in a triple this round</span><span><i class="sw" style="background:var(--cool)"></i>new sum and carry rows</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The block weights in the animation are our choice, eight blocks of 31 qubits (n = 248); the rounds, the bits and the carry count are computed in the page with equation (2).</p>
+      <p><b>Step 3: apply the phase and undo everything.</b> With the total weight w held in W, the phase e<sup>if(w)</sup> is applied by a tree of flags. The paper splits W into its three high-order bits and ℓ := m − 3 low-order bits, sets L := 2<sup>ℓ</sup>, and makes 2<sup>j</sup> − 1 extra copies of low-order bit j with CNOT trees. For each of the eight high-order values it raises a flag when the high bits match, then splits the flag down a binary tree, one level per low-order bit, using a Toffoli gate and a CNOT to replace (p, 0) by (p ∧ ¬y, p ∧ y). Exactly one leaf is marked, the leaf for the actual weight, and a single-qubit gate diag(1, e<sup>if(w)</sup>) on leaf w applies the phase; leaves with w &gt; n get angle zero. The tree is then reversed. The space count is</p>
+      <div class="math" data-tex="12Q-14+m+2L+1-\ell=12Q+2L-10\le n,\tag{5}"></div>
+      <p>using 2L = 2<sup>m−2</sup> ≤ n/2 and n ≥ 31Q − 30 ≥ 24Q − 20 for Q ≥ 2. This stage uses O(L) = O(n) gates and depth O(ℓ + 1) = O(log n). Finally the arithmetic is uncomputed and the blocks are decompressed, leaving e<sup>if(w)</sup>|D<sub>w</sub>⟩.</p>
+      <p>For a phase on a single weight, as in Z<sub>k</sub>(u), it is enough to test whether W equals that weight, put one phase gate on the test flag and reverse the test. For weight zero, as in Z<sub>0</sub>(v), the paper skips the summation entirely and tests that every block count is zero with a balanced AND tree, which needs B<sub>0</sub> − 1 free qubits, where B<sub>0</sub> is the number of bits holding the block counts, and 2B<sub>0</sub> − 1 ≤ 10Q − 1 ≤ n.</p>
+      <p class="short"><b>In short:</b> symmetric blocks of 31 qubits compress into 5-bit counts (Eq. 1), freeing 26 qubits each; carry-save adders (Eq. 2) sum the counts in O(log Q) rounds with O(Q) carries (Eq. 3); a flag tree applies the phase; the space bounds (Eqs. 4, 5) show it all fits in n qubits, giving any weight-dependent phase with O(n) gates and O(log n) depth (Lemma 1).</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · The full circuit">
+      <span class="num">7 · ASSEMBLY AND COMPILATION</span>
+      <h2>How do the pieces add up to O(n) gates and O(log n) depth?</h2>
+      <p>The proof of Theorem 1 in Section V of the paper assembles the parts. After complementing bits, assume 1 ≤ k ≤ n/2. The circuit B = R<sub>−θ</sub>SR<sub>φ</sub> consists of two layers of single-qubit rotations and one phase circuit from Lemma 1. By Lemma 2, F ≥ η, so the number of amplification steps t is bounded by a constant. Each step uses B, B<sup>†</sup> and two single-weight phase circuits, and the final phase-matching step uses the same ingredients with tuned phases. Every collective rotation and every weight-dependent phase keeps the state in 𝒮<sub>n</sub>, which is the only place Lemma 1 has to work. A constant number of pieces, each with O(n) gates and O(log n) depth, gives O(n) gates and O(log n) depth in total. For k &gt; n/2 a final layer of X gates flips every bit.</p>
+      <p>The paper also shows how to produce the circuit as an explicit list of gates.</p>
+      <div class="def"><span class="label">Algorithm 1 · generating the circuit</span>
+        <p>For 0 &lt; k &lt; n, set r = min{k, n − k} and p = r/n. Start with d<sub>⋆</sub> = 0 and F = a<sub>r</sub>. For d = 1/4, 1, 2, compute H<sub>0</sub>, …, H<sub>n</sub> by (13) with q = 4n/d<sup>2</sup>, compute F<sub>d</sub> by (14), and keep d if F<sub>d</sub><sup>2</sup> is strictly larger. Build S from the signs of H<sub>w</sub>, form B from R<sub>φ</sub>, S and R<sub>−θ</sub>, append the amplification steps if F &lt; 1, and append X<sup>⊗n</sup> if k &gt; n/2. In words: try four angles, keep the best overlap, and wire up the circuit around it.</p>
+      </div>
+      <p>The overlaps are compared exactly, not in floating point. Splitting even and odd weights in (6) gives</p>
+      <div class="math" data-tex="F_d=\sqrt A\,(E_0+E_1\sqrt b),\qquad E_j:=\sum_{h=0}^{\lfloor(n-j)/2\rfloor}\binom{n}{2h+j}|H_{2h+j}|\,b^h\quad(j=0,1),\tag{14}"></div>
+      <p>where b := p/(q(1 − p)) and A := (1 − p)<sup>n</sup>q<sup>n−k</sup>/(C(n, k)(q + 1)<sup>n</sup>) are rational. Since √b = dσ/(2(n − k)), every F<sub>d</sub><sup>2</sup> lies in the field ℚ(σ) of numbers x + yσ with x, y rational (σ<sup>2</sup> is rational), and comparing them is exact. The paper bounds the integers involved by |H<sub>w</sub>| ≤ q<sup>k</sup>C(n, k) ≤ q<sup>k</sup>2<sup>n</sup>, so all numbers have O(n log(n + 1)) bits and the whole computation takes Õ(n<sup>2</sup>) bit operations.</p>
+      <div class="fact"><span class="label">Proposition 1 · classical generation</span>
+        <p>Algorithm 1 generates the circuits of Theorem 1 in time polynomial in n. The gate matrices have algebraic entries described exactly; adjoining cos α, √(1 − (Re u)<sup>2</sup>) and i to ℚ(F) gives a field of degree at most 32, in which the amplification parameters are computed.</p>
+      </div>
+      <p>The number of full amplification steps is also found exactly, without computing α. Starting from (x, y) = (F, cos α), each application of the rotation matrix with entries 1 − 2F<sup>2</sup> and ±2F cos α adds 2α to the angle; updates are accepted while y stays nonnegative, and the final pair is (sin β, cos β).</p>
+      <p class="short"><b>In short:</b> a constant number of blocks, each one O(n) gates and O(log n) depth, proves Theorem 1; Algorithm 1 picks the best of four angles by exact arithmetic in ℚ(σ) (Eq. 14) and emits the gates in polynomial time (Proposition 1).</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>The numbers</h2>
+      <p>The paper is a theory paper; its results are asymptotic bounds, one worked instance, and proof constants. Table I of the paper, for deterministic exact preparation of |D<sup>n</sup><sub>k</sub>⟩ with 1 ≤ k ≤ n − 1 and r = min{k, n − k}:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Construction</th><th>Gates</th><th>Depth</th><th>Ancillas</th></tr></thead>
+        <tbody>
+          <tr><td>Bärtschi–Eidenbenz</td><td class="n">O(nr)</td><td class="n">O(r log(n/r))</td><td class="n">0</td></tr>
+          <tr><td>Yuan–Zhang</td><td class="n">O(nr)</td><td class="n">O(r + log(r+1) log(n/r))</td><td class="n">0</td></tr>
+          <tr><td>TreeRLSP</td><td class="n">O(n(r+1)⁶)</td><td class="n">O((r+1)⁶ log(n+1))</td><td class="n">0</td></tr>
+          <tr><td>Zi–Yuan–Nie</td><td class="n">O(n r<sup>1/4</sup> log(n+1))</td><td class="n">O(r<sup>1/4</sup> log(n+1))</td><td class="n">⌈log(n+1)⌉</td></tr>
+          <tr><td>Liu–Childs–Gottesman</td><td class="n">O(n log⁴(n+1) log log(n+1))</td><td class="n">O(log³(n+1) log log(n+1))</td><td class="n">O(n log(n+1))</td></tr>
+          <tr><td><b>This work</b></td><td class="n"><b>O(n)</b></td><td class="n"><b>O(log(n+1))</b></td><td class="n"><b>0</b></td></tr>
+        </tbody>
+      </table></div>
+      <p>Two entries (Yuan–Zhang and Liu–Childs–Gottesman) are gate counts the paper derives by multiplying width and depth. The worked instance, Figure 2 of the paper, together with our recomputation and Example A:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Instance</th><th>F₀</th><th>F₁/₄</th><th>F₁</th><th>F₂</th><th>Chosen d</th><th>t</th></tr></thead>
+        <tbody>
+          <tr><td>n = 128, k = 32 (paper)</td><td class="n">≈ 0.2850</td><td class="n">not given</td><td class="n">≈ 0.8384</td><td class="n">not given</td><td class="n">1</td><td class="n">0</td></tr>
+          <tr><td>n = 128, k = 32 (page)</td><td class="n">0.2850</td><td class="n">0.5858</td><td class="n">0.8384</td><td class="n">0.8130</td><td class="n">1</td><td class="n">0</td></tr>
+          <tr><td>n = 4, k = 2 (page)</td><td class="n">0.6124</td><td class="n">0.7542</td><td class="n">0.9853</td><td class="n">0.8083</td><td class="n">1</td><td class="n">0</td></tr>
+        </tbody>
+      </table></div>
+      <p>The paper states that starting from the product state at n = 128, k = 32 would require two standard amplification steps before phase matching, and that at d = 1 only the phase-matching step is needed. The proof constants are: blocks of 31 qubits compressed to 5; overlap bound η = 1/128 (Lemma 2); carry qubits at most 7(Q − 2) (Eq. 3); and the inequalities (4), (5) that fit the arithmetic inside n qubits for n ≥ 32.</p>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved.</b> Theorem 1: every nontrivial Dicke state has an exact, ancilla-free circuit with O(n) gates and O(log n) depth, which is optimal on both counts given the cited lower bounds. The constant overlap (Lemma 2, η = 1/128), the weight-dependent phase circuit (Lemma 1) and the exact phase-matching formulas are proved in full, and Proposition 1 shows that the circuits can be generated in polynomial time with exact algebraic gate entries. The balanced case refutes the Ω(k) depth conjecture of Yuan and Zhang. The proofs are short and checkable; this chapter recomputed the paper's two Figure 2 overlaps and checked bound (9) at one instance.</p>
+      <p><b>Not reported.</b> The constants hidden in O(n) and O(log n) are never computed, and the paper gives no gate counts or depths for any concrete n. The constants are likely large: each Lemma 1 call compresses blocks of 31 qubits with exactly synthesized 31-qubit unitaries, runs a carry-save tree and a flag tree, and undoes all of it, and B is used several times per amplification step. For the sizes of current hardware, the older O(nr) circuits may well be shorter in practice; the paper does not compare. The authors list reducing the gate count, by optimizing the phase circuits and the rotation angle, as future work.</p>
+      <p><b>Model assumptions.</b> The gate set allows arbitrary single-qubit rotations with exact algebraic angles and CNOTs between any two qubits. Adapting the construction to finite gate sets, as used in fault-tolerant computing, and to restricted qubit connectivity is stated as future work; the Yuan–Zhang paper, by contrast, also treats grid connectivity.</p>
+      <p><b>A note on authorship.</b> The paper states that OpenAI ChatGPT (Codex) assisted with all sections, including proof development and checking, and that the authors take responsibility for all claims. The arguments followed in this chapter are short enough to check line by line, and the two numbers in Figure 2 reproduce.</p>
+      <p><b>Why it matters.</b> Dicke states are a basic resource for symmetric algorithms, metrology and decoded quantum interferometry, and the paper closes their asymptotic circuit complexity in the standard model. The method, a good starting state plus a constant number of exact amplification steps, with arithmetic done in space freed by compression, looks reusable for other symmetric states.</p>
+    </section>
+
+    <!-- further reading -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>Y. Huang, W. Zi, J. He, Z. Ye and S. Zheng, <a href="https://arxiv.org/abs/2611.27640" target="_blank" rel="noopener">Ancilla-free exact Dicke-state synthesis with optimal size and depth</a>, arXiv:2611.27640 (2026). The paper itself; numbering in this chapter follows its <a href="https://arxiv.org/html/2611.27640" target="_blank" rel="noopener">HTML version</a>.</p>
+        <p>G. Brassard, P. Høyer, M. Mosca and A. Tapp, <a href="https://arxiv.org/abs/quant-ph/0005055" target="_blank" rel="noopener">Quantum amplitude amplification and estimation</a>, arXiv:quant-ph/0005055 (2000). The general amplification framework behind Section 3; its abstract describes finding a good element with a number of applications proportional to 1/√a instead of 1/a.</p>
+        <p>A. Bärtschi and S. Eidenbenz, <a href="https://arxiv.org/abs/1904.07358" target="_blank" rel="noopener">Deterministic preparation of Dicke states</a>, arXiv:1904.07358 (2019). The O(kn)-gate, linear-depth, ancilla-free construction that the new paper improves on, and the source of the coherent compression used in Eq. (1).</p>
+        <p>P. Yuan and S. Zhang, <a href="https://arxiv.org/abs/2505.15413" target="_blank" rel="noopener">Depth-efficient quantum circuit synthesis for deterministic Dicke state preparation</a>, arXiv:2505.15413 (2025). The source of the Ω(log n) depth lower bound and of the conjecture the paper refutes; it also handles grid connectivity.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.27640v1. Theorem, lemma, proposition, table, figure and equation numbers match the paper. Example A and its closed forms are ours. All three animations compute in the page: the first simulates the four-qubit circuit on 16 complex amplitudes; the second evaluates the paper's exact sign formula with big integers, cross-checks it against a direct rotation of the symmetric subspace, and evaluates Bessel functions from Eq. (8); the third runs carry-save addition with Eq. (2).</p>
+  </footer>
+</div>
+
+
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-27640',date:'2026-11-23',title:'Ancilla-Free Exact Dicke-State Synthesis with Optimal Size and Depth',authors:'Huang, Zi, He, Ye, Zheng',field:'quant-ph',tags:['state preparation','amplitude amplification','reversible arithmetic'],mins:40,
+     dek:'The equal superposition of all n-bit strings with exactly k ones can be built exactly with O(n) gates in O(log n) layers and no spare qubits, matching both known lower bounds and refuting a conjecture that balanced states need depth proportional to k. The key is a cheap starting state with constant overlap, made by a sign flip that depends only on the Hamming weight and computed in space freed by squeezing blocks of 31 qubits into 5-bit counts.'},
     {id:'2611-26119',date:'2026-11-22',title:'Feasible Sub-Replicating Portfolios for Basket Options via the Block Rearrangement Algorithm',authors:'Abou Daya, Bernard, Vanduffel',field:'q-fin.CP',tags:['option pricing','duality','rearrangement algorithm'],mins:40,
      dek:'When the market fixes how each stock is distributed but not how the stocks move together, the cheapest consistent price of an option on their sum is the minimum of an optimization over all couplings, and nobody knows the minimizing coupling for three or more stocks. This paper squeezes it from below with six vanilla options and some cash that never pay more than the basket, and from above with a shuffled sample of the stocks, closing the gap to 0.1 percent on three log-normal stocks.'},
     {id:'2611-26337',date:'2026-11-21',title:'How Should Candidates Be Weighted under Open-List Proportional Representation? Harmonic Weights and Dirichlet Order Statistics',authors:'Boratyn, Stolicki',field:'math.PR',tags:['order statistics','Dirichlet distribution','Poisson–Dirichlet'],mins:40,
@@ -7756,6 +8141,154 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
         el('text',{x:170,y:226,class:'lab'}).textContent='lower bound of the basket call, three log-normal stocks';}
     });
   })();
+
+
+  // ================= 2611.27640: Dicke states =================
+  const DK={
+    // integers H_0..H_n from recurrence (13), exact with BigInt
+    H(n,k,q){const Q=BigInt(q),K=BigInt(k),Nn=BigInt(n);let c=1n;for(let i=0;i<k;i++)c=c*BigInt(n-i)/BigInt(i+1);
+      const H=[k%2?-c:c];for(let w=0;w<n;w++){const W=BigInt(w);let num=(Nn-W+Q*W-K*(Q+1n))*H[w];if(w>0)num-=Q*W*H[w-1];H.push(num/(Nn-W))}return H},
+    l10(x){if(x<0n)x=-x;if(x===0n)return -Infinity;const s=x.toString(),L=Math.min(17,s.length);return Math.log10(Number(s.slice(0,L)))+(s.length-L)},
+    lf(n){let s=0;for(let i=2;i<=n;i++)s+=Math.log10(i);return s},
+    lc(n,k){return DK.lf(n)-DK.lf(k)-DK.lf(n-k)},
+    // a_w = sqrt(C(n,w) p^w (1-p)^(n-w))
+    a(n,k){const p=k/n,r=[];for(let w=0;w<=n;w++)r.push(Math.pow(10,0.5*(DK.lc(n,w)+w*Math.log10(p)+(n-w)*Math.log10(1-p))));return r},
+    // beta_w by the exact formula of Section VI
+    betaExact(n,k,q){const H=DK.H(n,k,q);return H.map((h,w)=>{if(h===0n)return 0;const l=0.5*(DK.lc(n,w)-DK.lc(n,k))+(n-w-k)/2*Math.log10(q)-n/2*Math.log10(q+1)+DK.l10(h);return (h<0n?-1:1)*Math.pow(10,l)})},
+    // beta_w by applying exp(theta*A) to e_k directly (Taylor series), A = collective R_y generator in the Dicke basis
+    betaDirect(n,k,th){const hh=w=>0.5*Math.sqrt((w+1)*(n-w));let t=new Array(n+1).fill(0);t[k]=1;const s=t.slice();
+      for(let m=1;m<400;m++){const u=new Array(n+1).fill(0);for(let w=0;w<n;w++){const h=hh(w);u[w+1]+=h*t[w];u[w]-=h*t[w+1]}
+        let nr=0;for(let w=0;w<=n;w++){u[w]*=th/m;s[w]+=u[w];nr+=u[w]*u[w]}t=u;if(m>5&&nr<1e-34)break}return s},
+    J(j,z){const M=600,hS=Math.PI/M;let s=0;for(let i=0;i<=M;i++){const x=i*hS,f=Math.cos(j*x-z*Math.sin(x));s+=f*(i===0||i===M?1:(i%2?4:2))}return s*hS/3/Math.PI},
+    steps(F){const al=Math.asin(F);return Math.max(0,Math.floor(Math.PI/(4*al)-0.5))},
+    fx(x,d){return (x<0?'−':'')+Math.abs(x).toFixed(d)},
+    cx(c,d){return DK.fx(c[0],d)+(c[1]<0?' − ':' + ')+Math.abs(c[1]).toFixed(d)+'i'}
+  };
+
+  // ---- Animation 1: exact preparation of D^4_2 on 16 amplitudes ----
+  (function(){
+    const root=document.getElementById('pDkAmp');if(!root)return;const P=Player(root);
+    const n=4,N=16,k=2,C=[1,4,6,4,1];
+    const W=[...Array(N).keys()].map(x=>{let c=0;while(x){c+=x&1;x>>=1}return c});
+    const cm=(a,b)=>[a[0]*b[0]-a[1]*b[1],a[0]*b[1]+a[1]*b[0]];
+    function ry(st,ang){const c=Math.cos(ang/2),s=Math.sin(ang/2);for(let q=0;q<n;q++){const m=1<<q;for(let x=0;x<N;x++)if(!(x&m)){const a=st[x],b=st[x|m];st[x]=[c*a[0]-s*b[0],c*a[1]-s*b[1]];st[x|m]=[s*a[0]+c*b[0],s*a[1]+c*b[1]]}}}
+    function ph(st,f){for(let x=0;x<N;x++){const u=f(W[x]);if(u)st[x]=cm(st[x],u)}}
+    const dk=st=>C.map((c,w)=>{let r=[0,0];for(let x=0;x<N;x++)if(W[x]===w){r[0]+=st[x][0];r[1]+=st[x][1]}return[r[0]/Math.sqrt(c),r[1]/Math.sqrt(c)]});
+    const outside=st=>{const c=dk(st);let s=0;c.forEach(z=>s+=z[0]*z[0]+z[1]*z[1]);return Math.max(0,1-s)};
+    function build(d){
+      const phi=2*Math.asin(Math.sqrt(k/n)),th=d?2*Math.atan(d/(2*Math.sqrt(n))):0;
+      const Hs=d?DK.H(n,k,Math.round(4*n/(d*d))):null,sg=Hs?Hs.map(h=>h<0n?-1:1):[1,1,1,1,1];
+      const S=st=>ph(st,w=>sg[w]<0?[-1,0]:null);
+      const Bf=st=>{ry(st,phi);if(d){S(st);ry(st,-th)}},Bi=st=>{if(d){ry(st,th);S(st)}ry(st,-phi)};
+      const st=Array.from({length:N},(_,x)=>x?[0,0]:[1,0]),F=[],snap=(t,cap)=>F.push({amp:st.map(z=>z.slice()),dc:dk(st),t,c:cap});
+      snap('Start: |0000⟩','All four qubits are 0. In the Dicke basis the state is |D⁴₀⟩, so only the weight-0 arrow is drawn, at full length.');
+      ry(st,phi);let c=dk(st);
+      snap('Product state',`One layer of R<sub>y</sub>(π/2) gates, since φ = 2 arcsin √(1/2) = π/2. Every string has amplitude 1/4, and the Dicke coefficients are a<sub>w</sub> = ${c.map(z=>z[0].toFixed(4)).join(', ')}. Overlap with the target: a<sub>2</sub> = ${c[2][0].toFixed(4)} = √6/4.`);
+      if(d){S(st);c=dk(st);
+        snap('Sign correction S',`Recurrence (13) with q = 16 gives H = (${Hs.map(h=>h<0n?'−'+(-h):String(h)).join(', ')}), so S flips the sign of the weight-1 component only. The four weight-1 bars keep their height; their amplitudes are now −1/4, and the w = 1 arrow points left.`);
+        ry(st,-th);c=dk(st);
+        snap('Inverse rotation by −θ',`Rotating every qubit back by θ = 2 arctan(1/4) = ${th.toFixed(4)} gives |ψ⟩ = B|0000⟩. Its target coefficient is F = ${c[2][0].toFixed(4)} (465√6/1156), and the target strings now hold ${(c[2][0]**2*100).toFixed(1)}% of the probability.`)}
+      const Fv=c[k][0],al=Math.asin(Fv),t=DK.steps(Fv);
+      for(let i=0;i<t;i++){ph(st,w=>w===k?[-1,0]:null);Bi(st);ph(st,w=>w===0?[-1,0]:null);Bf(st);st.forEach((z,x)=>st[x]=[-z[0],-z[1]]);c=dk(st);snap(`Amplification step ${i+1}`,`One step Q rotates by 2α. Target coefficient ${DK.cx(c[k],4)}.`)}
+      const be=(2*t+1)*al,reu=be<Math.PI/2-1e-12?-1/Math.tan(2*al)/Math.tan(be):1,u=[reu,Math.sqrt(Math.max(0,1-reu*reu))];
+      const xi=[Fv*u[0]*Math.sin(be)+Math.cos(al)*Math.cos(be),Fv*u[1]*Math.sin(be)],den=xi[0]*xi[0]+xi[1]*xi[1],v=[-(xi[0]*xi[0]-xi[1]*xi[1])/den,2*xi[0]*xi[1]/den];
+      ph(st,w=>w===k?u:null);c=dk(st);
+      snap('Phase Z₂(u)',`F = ${Fv.toFixed(4)}, so α = arcsin F = ${(al*180/Math.PI).toFixed(2)}° and t = ⌊π/(4α) − 1/2⌋ = ${t}: no full step is needed. Phase matching sets Re u = ${d?'1 − 1/(2F²)':'−cot(2α) cot β'} = ${DK.fx(reu,4)}, so u = ${DK.cx(u,4)}. Only the weight-2 arrow turns, by arg u = ${(Math.atan2(u[1],u[0])*180/Math.PI).toFixed(1)}°; the bar heights do not change.`);
+      Bi(st);c=dk(st);
+      snap('Undo the preparation: B†',`B<sup>†</sup> maps |ψ⟩ back to |0000⟩, so the weight-0 coefficient is now the overlap ξ = ⟨ψ|state⟩ = ${DK.cx(c[0],4)} (formula: F u sin β + cos α cos β, real part 1/2).`);
+      ph(st,w=>w===0?v:null);c=dk(st);
+      snap('Phase Z₀(v)',`v = −ξ̄/ξ = ${DK.cx(v,4)} multiplies the |0000⟩ amplitude, turning the weight-0 arrow. Together with B and B<sup>†</sup> this adds (v − 1)ξ|ψ⟩ to the state.`);
+      Bf(st);c=dk(st);
+      snap('Redo the preparation: B',`After B the residue is gone: the target coefficient is ${DK.cx(c[2],4)}, of modulus ${Math.hypot(c[2][0],c[2][1]).toFixed(6)}. Every other Dicke coefficient is ${Math.max(...c.filter((_,w)=>w!==2).map(z=>Math.hypot(z[0],z[1])))<1e-12?'zero up to rounding (below 10<sup>−12</sup>)':'nonzero'}, and the state never left the symmetric subspace (weight outside it: ${outside(st)<1e-12?'zero up to rounding':outside(st).toExponential(1)}).`);
+      const g=c[2],m=Math.hypot(g[0],g[1]),gc=[g[0]/m,-g[1]/m];st.forEach((z,x)=>st[x]=cm(z,gc));c=dk(st);
+      snap('Global phase: exactly |D⁴₂⟩',`A gate proportional to the identity removes the leftover phase. All six weight-2 strings have amplitude ${st[3][0].toFixed(4)} = 1/√6 and every other string has amplitude 0: the circuit has prepared |D⁴₂⟩ exactly, with ${t?t+' full amplification step'+(t===1?'':'s')+' and':'no full amplification step, only'} one phase-matching step.`);
+      F.delay=5600;return F}
+    const order=[...Array(N).keys()].sort((x,y)=>W[x]-W[y]||x-y);
+    function draw(fr,el){
+      const B0=118,Hh=92;let x=22,last=-1;
+      order.forEach(s=>{if(W[s]!==last){if(last>=0)x+=10;el('text',{x:x+((C[W[s]]*16)-2)/2,y:B0+14,class:'lab'}).textContent='w = '+W[s];last=W[s]}
+        const a=fr.amp[s],m=Math.hypot(a[0],a[1]);el('rect',{x,y:B0-m*Hh,width:14,height:Math.max(m*Hh,0.8),rx:1.5,fill:W[s]===2?'var(--accent)':'var(--cool)'});x+=16});
+      el('line',{x1:18,y1:B0,x2:322,y2:B0,stroke:'var(--line)'});
+      const t2=fr.dc[2],pr=t2[0]*t2[0]+t2[1]*t2[1];
+      el('text',{x:170,y:16,class:'msg',fill:'var(--fg)'}).textContent='|⟨D⁴₂|state⟩|² = '+pr.toFixed(4);
+      fr.dc.forEach((z,w)=>{const cx=40+w*65,cy=190,R=26;
+        el('circle',{cx,cy,r:R,fill:'none',stroke:'var(--line)'});el('line',{x1:cx-R,y1:cy,x2:cx+R,y2:cy,stroke:'var(--line)','stroke-width':0.6});el('line',{x1:cx,y1:cy-R,x2:cx,y2:cy+R,stroke:'var(--line)','stroke-width':0.6});
+        const ex=cx+R*z[0],ey=cy-R*z[1],col=w===2?'var(--accent)':'var(--cool)';
+        if(Math.hypot(z[0],z[1])>0.004){el('line',{x1:cx,y1:cy,x2:ex,y2:ey,stroke:col,'stroke-width':2.4});el('circle',{cx:ex,cy:ey,r:2.8,fill:col})}
+        el('text',{x:cx,y:cy+R+14,class:'lab'}).textContent='c'+['₀','₁','₂','₃','₄'][w]+' '+Math.hypot(z[0],z[1]).toFixed(3)});
+    }
+    const chips=[...root.querySelectorAll('.chip')];
+    function sel(i){chips.forEach((c,j)=>c.setAttribute('aria-pressed',i===j));P.load(build(i?1:0),draw)}
+    chips.forEach((c,i)=>c.addEventListener('click',()=>sel(i)));sel(0);
+  })();
+
+  // ---- Animation 2: sign correction at n = 128, k = 32 ----
+  (function(){
+    const root=document.getElementById('pDkSign');if(!root)return;const P=Player(root);
+    const n=128,k=32,lo=18,hi=46,a=DK.a(n,k),sig=Math.sqrt(k*(1-k/n)),h=Math.sqrt(k*(n-k))/2,F=[];
+    const F0=a[k],t0=DK.steps(F0),res=[{d:0,F:F0,t:t0}];
+    F.push({k:'a',t:'Product state, d = 0',c:`The coefficients a<sub>w</sub> = (C(128, w)(1/4)<sup>w</sup>(3/4)<sup>128−w</sup>)<sup>1/2</sup>, shown for |w − 32| ≤ 14. With no rotation, F<sub>0</sub> = a<sub>32</sub> = ${F0.toFixed(4)} (paper: ≈ 0.2850). Then α = ${(Math.asin(F0)*180/Math.PI).toFixed(2)}° and amplification would need t = ${t0} full steps before phase matching. Here σ = √24 ≈ ${sig.toFixed(2)}, and a<sub>32</sub><sup>2</sup> = ${(F0*F0).toFixed(4)} &gt; 1/(3σ) = ${(1/(3*sig)).toFixed(4)}, as Eq. (7) says.`});
+    [[0.25,'1/4'],[1,'1'],[2,'2']].forEach(([d,ds])=>{
+      const q=Math.round(4*n/(d*d)),th=2*Math.atan(d/(2*Math.sqrt(n))),be=DK.betaExact(n,k,q),bd=DK.betaDirect(n,k,th);
+      let md=0,Fd=0,Fn=0,neg=0;for(let w=0;w<=n;w++){md=Math.max(md,Math.abs(be[w]-bd[w]));Fd+=a[w]*Math.abs(be[w]);Fn+=a[w]*be[w];if(be[w]<0)neg++}
+      const z=2*h*th,J=[];let L=0;for(let j=-k;j<=n-k;j++){const Jj=Math.abs(DK.J(j,z));J[j+k]=Jj;L+=(Math.abs(be[j+k])-Jj)**2}L=Math.sqrt(L);
+      const Rb=n*th*th/(2*Math.SQRT2)+3*Math.sqrt(n)*th/(2*sig),t=DK.steps(Fd);res.push({d:ds,F:Fd,t});
+      F.push({k:'b',be,J,t:`Rotated target, d = ${ds}`,c:`θ = 2 arctan(d/(2√128)) = ${th.toFixed(5)} and q = 4n/d² = ${q}. The integers H<sub>w</sub> from recurrence (13) have ${neg} negative signs among the 129 weights. The exact formula and a direct rotation of the symmetric subspace agree to ${md.toExponential(1)}. The violet dots are the walk amplitudes |J<sub>j</sub>(z)| at z = 2hθ = ${z.toFixed(3)}; Eq. (9) bounds their distance from |β| by ${Rb.toFixed(4)}, and the actual distance is ${L.toFixed(4)}.`});
+      F.push({k:'c',be,t:`Overlap with and without S, d = ${ds}`,c:`Red: a<sub>w</sub>β<sub>w</sub>, whose sum ${DK.fx(Fn,4)} is the overlap without sign correction. Gold: a<sub>w</sub>|β<sub>w</sub>|, whose sum is F<sub>${ds}</sub> = ${Fd.toFixed(4)}${d===1?' (paper: ≈ 0.8384)':''}. ${Fd>Math.SQRT1_2?'This exceeds 1/√2, so α &gt; 45° and t = 0: only the phase-matching step is needed.':`Here α = ${(Math.asin(Fd)*180/Math.PI).toFixed(1)}° and t = ${t}.`}`});
+    });
+    const best=res.reduce((b,r)=>r.F>b.F?r:b,res[0]);
+    F.push({k:'s',res,t:'Algorithm 1 picks the best',c:`Comparing the four overlaps, the algorithm keeps d = ${best.d} with F = ${best.F.toFixed(4)}, as in the paper's Figure 2. Lemma 2 only guarantees max{F<sub>0</sub>, F<sub>1/4</sub>} ≥ 1/128; the larger candidates d = 1 and d = 2 are there because they do better in practice.`});
+    F.delay=6400;
+    P.load(F,(fr,el)=>{
+      const x0=24,x1=330,nb=hi-lo+1,bw=(x1-x0)/nb,mid=fr.k==='a'?190:120;
+      if(fr.k==='s'){const xs=[60,150,240];['d','F_d','steps t'].forEach((s,i)=>el('text',{x:xs[i],y:44,class:'lab',fill:'var(--fg)'}).textContent=s);
+        fr.res.forEach((r,m)=>{const y=74+m*30,on=r===best;[String(r.d),r.F.toFixed(4),String(r.t)].forEach((v,i)=>el('text',{x:xs[i],y,class:'msg',fill:on?'var(--accent)':'var(--fg)'}).textContent=v)});
+        el('text',{x:170,y:226,class:'lab'}).textContent='n = 128, k = 32';return}
+      let vals=[];for(let w=lo;w<=hi;w++){if(fr.k==='a')vals.push(a[w]);else if(fr.k==='b')vals.push(a[w],fr.be[w]);else vals.push(a[w]*fr.be[w])}
+      const mx=Math.max(...vals.map(Math.abs)),sc=(fr.k==='a'?160:92)/mx;
+      el('line',{x1:x0,y1:mid,x2:x1,y2:mid,stroke:'var(--line)'});
+      for(let w=lo;w<=hi;w++){const i=w-lo,x=x0+i*bw;
+        const bar=(xx,ww,v,col)=>el('rect',{x:xx,y:v>=0?mid-v*sc:mid,width:ww,height:Math.max(Math.abs(v)*sc,0.6),fill:col,rx:1});
+        if(fr.k==='a')bar(x+1,bw-2,a[w],w===k?'var(--accent)':'var(--cool)');
+        else if(fr.k==='b'){bar(x+0.5,bw/2-0.5,a[w],'var(--cool)');bar(x+bw/2,bw/2-0.5,fr.be[w],'var(--accent)');
+          const jv=fr.J[w];el('circle',{cx:x+bw*0.75,cy:mid-jv*sc,r:1.8,fill:'var(--deep)'})}
+        else{const v=a[w]*fr.be[w];bar(x+0.5,bw/2-0.5,v,'var(--bad)');bar(x+bw/2,bw/2-0.5,Math.abs(v),'var(--accent)')}
+        if(w%4===0)el('text',{x:x+bw/2,y:fr.k==='a'?mid+14:236,class:'lab'}).textContent=w;}
+      el('text',{x:177,y:16,class:'lab'}).textContent=fr.k==='a'?'a_w, weights 18 to 46':fr.k==='b'?'a_w (blue), β_w (gold), |J_{w−32}(z)| (dots)':'a_w β_w (red) and a_w |β_w| (gold)';
+    });
+  })();
+
+  // ---- Animation 3: carry-save addition of eight block weights ----
+  (function(){
+    const root=document.getElementById('pDkCsa');if(!root)return;const P=Player(root);
+    const blocks=[17,9,30,4,22,13,26,11],Q=blocks.length,n=31*Q,m=Math.ceil(Math.log2(n+1)),total=blocks.reduce((s,x)=>s+x,0);
+    let rows=blocks.map(v=>({v,lo:0,hi:5,nw:false})),F=[],used=0,round=0;
+    const bits=r=>{let s='';for(let i=r.hi-1;i>=0;i--)s+=i<r.lo?'·':((r.v>>i)&1);return s};
+    F.push({rows:rows.map(r=>({...r})),g:0,t:'Eight compressed blocks',c:`Each block of 31 qubits has been compressed by Eq. (1) into a five-bit count of its ones: ${blocks.join(', ')}. The total weight is ${total}, and the 26 qubits per block that returned to |0⟩ are the workspace. n = ${n}, so the final register needs m = ⌈log(n + 1)⌉ = ${m} bits.`});
+    while(rows.length>2){
+      const M=rows.length,g=Math.floor(M/3);let addersR=0;const out=[];
+      for(let i=0;i<g;i++){const [x,y,z]=rows.slice(3*i,3*i+3),hiM=Math.max(x.hi,y.hi,z.hi);
+        for(let c=0;c<hiM;c++){const cnt=[x,y,z].filter(r=>c>=r.lo&&c<r.hi).length;if(cnt>=2)addersR++}
+        const s=x.v^y.v^z.v,cy=((x.v&y.v)|(x.v&z.v)|(y.v&z.v))<<1;
+        out.push({v:s,lo:0,hi:hiM,nw:true},{v:cy,lo:1,hi:hiM+1,nw:true})}
+      F.push({rows:rows.map(r=>({...r})),g,t:`Round ${round}: ${M} rows, ${g} triple${g>1?'s':''}`,c:`M<sub>${round}</sub> = ${M}, so g<sub>${round}</sub> = ⌊${M}/3⌋ = ${g} triple${g>1?'s are':' is'} reduced in parallel. In each column a full adder (Eq. 2) writes the XOR of the three bits as the sum bit and their majority as a carry one column to the left. Columns where at least two rows have bits need an adder: ${addersR} this round.`});
+      used+=addersR;rows=out.concat(rows.slice(3*g).map(r=>({...r,nw:false})));round++;
+    }
+    const A=rows[0].v,Bv=rows[1].v;
+    F.push({rows:rows.map(r=>({...r})),g:0,t:`After ${round} rounds: two rows`,c:`Rows went 8 → 6 → 4 → 3 → 2, as M<sub>t+1</sub> = M<sub>t</sub> − ⌊M<sub>t</sub>/3⌋ predicts. The two rows are ${A} and ${Bv}, still summing to ${A+Bv} = ${total}: carry-save addition never changes the total. By our count the rounds used ${used} carry qubits, within the paper's bound 7(Q − 2) = ${7*(Q-2)} from Eq. (3).`});
+    F.push({rows:[{v:A+Bv,lo:0,hi:m,nw:true}],g:0,fin:true,t:'Ripple-carry into W',c:`An ordinary ripple-carry adder with m − 1 = ${m-1} temporary carries writes W = ${(A+Bv).toString(2).padStart(m,'0')} = ${A+Bv}, the total Hamming weight. The phase e<sup>if(${A+Bv})</sup> is applied by the flag tree, and then every step here is run backwards to clear the workspace.`});
+    F.delay=5600;
+    P.load(F,(fr,el)=>{
+      const y0=30,rh=fr.rows.length>6?24:26,cw=11,xr=236;
+      fr.rows.forEach((r,i)=>{const y=y0+i*rh,inT=i<3*fr.g;
+        if(inT&&i%3===0)el('rect',{x:30,y:y-15,width:296,height:3*rh-4,rx:8,fill:'none',stroke:'var(--accent)','stroke-width':1.2});
+        const s=bits(r);for(let j=0;j<s.length;j++)el('text',{x:xr-(s.length-1-j)*cw,y,class:'msg',fill:s[j]==='·'?'var(--muted)':r.nw?'var(--cool)':inT?'var(--accent)':'var(--fg)'}).textContent=s[j];
+        el('text',{x:290,y,class:'msg',fill:'var(--fg)'}).textContent=r.v;
+        el('text',{x:48,y,class:'lab'}).textContent=fr.fin?'W':(r.lo?'carry':'row '+(i+1))});
+      el('text',{x:170,y:240,class:'lab'}).textContent='total = '+fr.rows.reduce((s,r)=>s+r.v,0);
+    });
+  })();
+
 
   route();
 })();
