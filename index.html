@@ -6291,10 +6291,447 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
 </div>
 
 
+<!-- ================= PAPER: 2611.28063 ================= -->
+<div class="wrap" id="view-p-2611-28063" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Tue, Nov 24</span></div>
+  <div class="paperhead">
+    <h1>The Rotation Strategy Wins Penney's Game for Permutations</h1>
+    <p class="meta">Himaghna Roy Choudhury · submitted Nov 11, announced Nov 24, 2026 · math.CO · <a href="https://arxiv.org/abs/2611.28063" target="_blank" rel="noopener">arXiv 2611.28063</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">Watch a stream of random numbers and wait for three consecutive ones to fall in a chosen up-and-down shape: if your opponent picks a shape, you can always pick one that is more likely to show up first, by taking the opponent's shape and moving its last entry to the front. Elizalde and Lin conjectured this rotation rule for shapes of every length k; this paper proves it for every k ≥ 3 and shows that for k ≥ 8 the edge is at least about 0.0053/(k + 1). The proof rewrites the winning margin as a positive number times a difference of two signed sums over chains of overlapping occurrences, called clusters, proves that the clusters living on any single ordering cancel down to −1, 0 or 1, and then shows that the first nonzero term of the difference favors the rotation and outweighs everything after it. For k ≥ 8 that comparison is a page of inequalities; for 3 ≤ k ≤ 7 it is finished by exact rational arithmetic on a computer.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what Penney's game for permutations is, why the answer does not depend on the distribution of the numbers, and what the rotation R(A) does (Theorem 1.3, Conjecture 1.2);</li>
+        <li>how first-occurrence probabilities become counts of orderings and exponential generating functions, and why the margin equals F(1)D, the expected game length times a difference of cluster series (Lemma 2.2, Proposition 3.4, Eqs. 1 to 3 and 6);</li>
+        <li>why the signed clusters on any one ordering add up to −1, 0 or 1, through a telescoping partial-sum trick (Lemma 3.1), and how that tames the infinite tail (Lemmas 3.2, 3.3, Eq. 5);</li>
+        <li>how to count orderings with two overlapping occurrences by shuffling chains inside gaps (Lemma 4.1, Eq. 9), and why the first nonzero term d<sub>k+1</sub> is at least 1 for the rotation (Lemma 4.2);</li>
+        <li>how a geometric majorant proves D &gt; 0 for every k ≥ 8 (Proposition 5.1, Eqs. 12 to 14), and how exact certificates finish k = 3 to 7 (Section 6, Table 1);</li>
+        <li>what is proved, what is computed, and which questions remain open (Questions 7.1 and 7.2).</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>X₁, X₂, …</dt><dd>independent random numbers with a common continuous distribution (no ties)</dd>
+        <dt>𝔖<sub>k</sub></dt><dd>the k! permutations of {1, …, k}, written as words such as 312</dd>
+        <dt>st(x₁⋯x<sub>m</sub>)</dt><dd>the standardization: replace each entry by its rank, so st(0.7, 0.2, 0.5) = 312</dd>
+        <dt>k, A, B</dt><dd>the pattern length, the first player's pattern A = a₁⋯a<sub>k</sub>, and the reply B</dd>
+        <dt>R(A)</dt><dd>the rotation a<sub>k</sub>a₁⋯a<sub>k−1</sub>: move the last entry to the front</dd>
+        <dt>T<sub>π</sub></dt><dd>the first time the last k observations have pattern π</dd>
+        <dt>start i</dt><dd>the window X<sub>i+1</sub>⋯X<sub>i+k</sub>; starts are numbered from zero</dd>
+        <dt>target, p</dt><dd>a window whose pattern is A or B; p = 2/k! is the chance that a given window is a target</dd>
+        <dt>α<sub>n</sub></dt><dd>the number of orderings of length n with no target (α₀ = 1)</dd>
+        <dt>u<sup>A</sup><sub>n</sub>, u<sup>B</sup><sub>n</sub></dt><dd>the number of orderings of length n whose only target is the last window, with pattern A or B</dd>
+        <dt>c<sup>A</sup><sub>n</sub>, c<sup>B</sup><sub>n</sub></dt><dd>signed cluster sums of length n, split by the pattern of the last mark</dd>
+        <dt>d<sub>n</sub></dt><dd>c<sup>A</sup><sub>n</sub> − c<sup>B</sup><sub>n</sub></dd>
+        <dt>F, C<sub>A</sub>, C<sub>B</sub>, U<sub>A</sub>, U<sub>B</sub></dt><dd>exponential generating functions of α, c<sup>A</sup>, c<sup>B</sup>, u<sup>A</sup>, u<sup>B</sup></dd>
+        <dt>D</dt><dd>C<sub>A</sub>(1) − C<sub>B</sub>(1), the quantity whose sign decides the game</dd>
+        <dt>N<sub>d</sub>(U, V)</dt><dd>orderings of length k + d with pattern U at start 0 and V at start d</dd>
+        <dt>w<sub>j</sub>, S<sub>j</sub></dt><dd>cluster weights and their partial sums on one ordering (Lemma 3.1)</dd>
+        <dt>C(n, j)</dt><dd>the binomial coefficient n!/(j!(n − j)!)</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Example A: 123 against 312.</b> The first player waits for three increasing numbers; the reply is R(123) = 312, a high number followed by a low and a middle one. This is the paper's Example 1.1. Elizalde and Lin computed that 123 comes first with probability about 0.342, so the rotation wins about 0.658 of the time.</li>
+        <li><b>Example B: 213 against 321.</b> The reply R(213) = 321 is monotone, and for k = 3 this is the closest race among the rotation pairs: Elizalde and Lin's table gives 0.450 for 213 coming first. In the paper's Table 2 it is the pair with the smallest certified bound. All counts for Example B below were computed by us by listing permutations.</li>
+      </ul>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · The game">
+      <span class="num">1 · THE GAME</span>
+      <h2>What is Penney's game for permutations, and what does the conjecture claim?</h2>
+      <p>The original game, proposed by Penney in 1969, uses a fair coin. Each player names a word of three letters over {H, T}, the coin is tossed until one of the two words shows up as three consecutive tosses, and the owner of that word wins. The surprise is that the second player can always choose a word that wins more than half the time, so the relation "beats" is not transitive: there are words X, Y, Z with Y beating X, Z beating Y and X beating Z. Conway found a formula for the odds, Li proved a general version with martingales, and Guibas and Odlyzko showed from the overlap structure of words that the second player always has a winning reply. As Elizalde and Lin recount, Guibas and Odlyzko and, later, Felix showed that the winning reply can be taken of the form b a₁⋯a<sub>k−1</sub>: drop the opponent's last letter and put a suitable letter in front.</p>
+      <p>The permutation version replaces coin tosses by real numbers. A sequence X₁, X₂, … of independent random variables with a common continuous distribution is observed, so no two are equal, and each player names a permutation of length k. What matters about k consecutive numbers is only their relative order, recorded by the <span class="term">standardization</span>: replace each entry by its rank among the k. For instance st(0.62, 0.30, 0.45) = 312, since 0.62 is the largest, 0.30 the smallest and 0.45 in the middle.</p>
+      <div class="def"><span class="label">Definition · consecutive occurrence and waiting time</span>
+        <div class="math" data-tex="T_\pi=\min\{\,n\ge k:\ \operatorname{st}(X_{n-k+1}\cdots X_n)=\pi\,\},\qquad \pi\in\mathfrak S_k."></div>
+        <p>In words: T<sub>π</sub> is the first time at which the last k observations are in the same relative order as π. A window of k adjacent observations with that order is a <span class="term">consecutive occurrence</span> of π; in this paper every occurrence is consecutive.</p>
+      </div>
+      <p>The game between patterns A and B ends at min(T<sub>A</sub>, T<sub>B</sub>), and A wins if T<sub>A</sub> &lt; T<sub>B</sub>. The two times are never equal, because a single window has only one pattern.</p>
+      <div class="fact"><span class="label">Fact · the distribution does not matter</span>
+        <p>For independent observations with a common continuous law, the relative order of X₁, …, X<sub>n</sub> is a uniformly random permutation: each of the n! orderings has probability 1/n!. Every first-occurrence probability is therefore a sum of counts of permutations divided by factorials, and is the same for uniform, normal or any other continuous law.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why is every ordering equally likely?</span></summary><div class="pfbody">
+        <p>This is the standard argument, not specific to the paper. The joint distribution of (X₁, …, X<sub>n</sub>) is unchanged when the variables are permuted, because they are independent with the same law. Permuting the variables maps the event "the ordering is σ" onto the event "the ordering is τ" for any pair σ, τ, so all n! orderings have the same probability. Ties have probability zero for a continuous law, so these n! events cover everything and each has probability 1/n!.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The second player's proposed reply is a rotation.</p>
+      <div class="def"><span class="label">Definition · the rotation</span>
+        <div class="math" data-tex="B=R(A)=a_k\,a_1\,a_2\cdots a_{k-1}\qquad\text{for }A=a_1a_2\cdots a_k\in\mathfrak S_k."></div>
+        <p>In words: move the last entry of A to the front. For A = 123 this gives B = 312, and for A = 213 it gives B = 321.</p>
+      </div>
+      <p>Here is the intuition, which is ours and not the paper's. The last k − 1 entries of B are a₁⋯a<sub>k−1</sub>, so they have the same relative order as the first k − 1 entries of A. Whenever an occurrence of A at some window is preceded by the right observation, B has already occurred one step earlier, ending the game before A gets its turn. The rotation copies the coin-game reply: drop the last symbol of A and put something in front.</p>
+      <div class="fact"><span class="label">Conjecture 1.2 (Elizalde and Lin) and Theorem 1.3</span>
+        <p>For every k ≥ 3 and every A ∈ 𝔖<sub>k</sub>,</p>
+        <div class="math" data-tex="\Pr\bigl(T_{R(A)}<T_A\bigr)>\tfrac12."></div>
+        <p>Elizalde and Lin verified the conjecture for k = 3 and supported it numerically for k = 4; this paper proves it for every k ≥ 3. The theorem does not say the rotation is the best reply. Elizalde and Lin give cases where another reply does better: 2134 beats 2341 by more than 1234 does, and finding an optimal reply is their open Problem 6.2.</p>
+      </div>
+      <p>Example A can be started by hand. At n = 3 the game ends with A for the single ordering 123 and with B for 312, each with probability 1/6. At n = 4 the game must not have ended at n = 3, and the last three of four numbers must form a target. The paper lists them: the game ends with A only for 2134, and with B for 1423, 2413, 3412 and 4312. The orderings 1234, 3124 and 4123 also end with an occurrence of 123, but their first three entries already form 123 or 312, so the game was over earlier. Hence</p>
+      <div class="math" data-tex="\Pr(T_B<T_A,\ T_B\le4)-\Pr(T_A<T_B,\ T_A\le4)=\Bigl(\tfrac16+\tfrac4{24}\Bigr)-\Bigl(\tfrac16+\tfrac1{24}\Bigr)=\tfrac18."></div>
+      <p>The ordering 4123 shows the rotation at work: 412 is an occurrence of B and 123 follows one step later, too late. For Example B the same count (ours) gives 1 ordering for each player at n = 3, and 2 orderings ending with A against 3 ending with B at n = 4.</p>
+      <p>The animation plays the game on actual numbers. Each step draws one observation, standardizes the last three, and stops at the first target. The first preset is built so that B appears one step before an increasing run would have completed A; the second lets A win; the third draws fresh random numbers.</p>
+      <div class="player" id="pPnRace">
+        <div class="ptitle"><span class="label">Animation · one game, 123 against 312</span><div class="scen"><button class="chip" data-scen="pre" aria-pressed="true">B pre-empts A</button><button class="chip" data-scen="awin" aria-pressed="false">A wins</button><button class="chip" data-scen="rand" aria-pressed="false">random</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 230" role="img" aria-label="Bars for each observation, with the current window of three highlighted and its pattern written below"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>current window</span><span><i class="sw" style="background:var(--cool)"></i>earlier observations</span><span>number under a bar: its rank inside the window</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>For k = 3, Elizalde and Lin computed every pairwise probability exactly as a convergent series. Their table gives, for the six rotation pairs, Pr(A first) = 0.342 for 123 against 312 and for 321 against 132, 0.461 for 132 against 213 and for 312 against 231, and 0.450 for 213 against 321 and for 231 against 123. All six are below one half, which is the case k = 3 of the conjecture.</p>
+      <p>For words, Conway's formula gives the odds from how the two words overlap themselves and each other. For example (our evaluation of the formula as stated by Elizalde and Lin), the coin word 100 comes before 000 with probability 7/8. No such formula is known for permutations, because an overlap between two occurrences fixes only the relative order of the shared entries, not their values, and the race depends on arbitrarily long chains of overlapping occurrences.</p>
+      <p class="short"><b>In short:</b> the game waits for the first window of k consecutive observations whose relative order is A or B; every ordering of n observations has probability 1/n!, so the problem is counting permutations; the conjecture, now Theorem 1.3, says the rotation B = a<sub>k</sub>a₁⋯a<sub>k−1</sub> wins with probability above 1/2 for every A.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Counting orderings">
+      <span class="num">2 · FROM PROBABILITIES TO COUNTS</span>
+      <h2>How do the winning probabilities become sums over permutations?</h2>
+      <p>Because each ordering of the first n observations has probability 1/n!, the probability that the game ends at time n with pattern A is a count divided by n!. The paper names three counts. Call a window a <span class="term">target</span> if its pattern is A or B, and number window starts from zero, so start i is the window X<sub>i+1</sub>⋯X<sub>i+k</sub>.</p>
+      <div class="def"><span class="label">Definition · the three counts</span>
+        <p>α<sub>n</sub> counts permutations of length n that contain no target, with α₀ = 1. The numbers u<sup>A</sup><sub>n</sub> and u<sup>B</sup><sub>n</sub> count permutations of length n whose only target is the final window, with pattern A or B respectively. In words: α<sub>n</sub> counts orderings where the game is still running after n observations, and u<sup>A</sup><sub>n</sub> counts orderings where it ends at exactly time n with A winning.</p>
+      </div>
+      <p>So Pr(T > n) = α<sub>n</sub>/n! with T = min(T<sub>A</sub>, T<sub>B</sub>), and</p>
+      <div class="math" data-tex="\Pr(T_A<T_B)=\sum_{n\ge k}\frac{u^A_n}{n!},\qquad \Pr(T_B<T_A)=\sum_{n\ge k}\frac{u^B_n}{n!}."></div>
+      <p>Sums of the form Σ a<sub>n</sub> z<sup>n</sup>/n! are <span class="term">exponential generating functions</span>. They are the natural bookkeeping device here for two reasons. Setting z = 1 turns counts into probabilities, as above. And multiplying two of them corresponds to splitting a permutation into a left part and a right part: if b<sub>m</sub> and c<sub>j</sub> count two kinds of structure, then the coefficient of z<sup>n</sup>/n! in the product is Σ<sub>j</sub> C(n, j) b<sub>n−j</sub> c<sub>j</sub>, where C(n, j) chooses which j of the n values go to the right part. The paper defines</p>
+      <div class="math" data-tex="F(z)=\sum_{n\ge0}\alpha_n\frac{z^n}{n!},\qquad U_A(z)=\sum_{n\ge k}u^A_n\frac{z^n}{n!},\qquad U_B(z)=\sum_{n\ge k}u^B_n\frac{z^n}{n!}."></div>
+      <p>Then U<sub>A</sub>(1) = Pr(T<sub>A</sub> &lt; T<sub>B</sub>) and U<sub>B</sub>(1) = Pr(T<sub>B</sub> &lt; T<sub>A</sub>), and F(1) = Σ<sub>n</sub> Pr(T &gt; n) = E[T], the expected length of the game, a fact the paper uses at the end.</p>
+      <p>For Example A, listing all permutations up to length 8 (our computation) gives</p>
+      <div class="tbl"><table>
+        <thead><tr><th>n</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
+        <tbody>
+          <tr><td>α<sub>n</sub></td><td class="n">4</td><td class="n">11</td><td class="n">39</td><td class="n">161</td><td class="n">784</td><td class="n">4368</td></tr>
+          <tr><td>u<sup>A</sup><sub>n</sub> (123)</td><td class="n">1</td><td class="n">1</td><td class="n">5</td><td class="n">21</td><td class="n">94</td><td class="n">550</td></tr>
+          <tr><td>u<sup>B</sup><sub>n</sub> (312)</td><td class="n">1</td><td class="n">4</td><td class="n">11</td><td class="n">52</td><td class="n">249</td><td class="n">1354</td></tr>
+        </tbody>
+      </table></div>
+      <p>and α₀, α₁, α₂ = 1, 1, 2. The columns n = 3 and n = 4 are the counts of Example 1.1. B leads at every n in this table, which is the pattern behind Question 7.1 at the end of the chapter.</p>
+      <p>Listing every permutation becomes slow beyond about n = 11, where there are almost 40 million, but the probabilities can be computed exactly by building orderings one observation at a time, which is also how the paper's Section 6 computes its certificates. To append an observation to an ordering of length n, insert it at a rank r ∈ {0, …, n} and raise every existing rank that is at least r by one. Every permutation of length n + 1 arises exactly once, from the ordering of its first n entries and the rank of its last entry. For k = 3 the only thing needed to recognize the next window is the ranks of the last two entries, so the state of a still-running game is that pair of ranks, and each of the n + 1 insertion ranks has probability 1/(n + 1).</p>
+      <p>The animation runs this recursion in the page for both running examples. Each step adds one observation and shows the probability that the game ends at that time with each pattern, together with the running totals. The method is the paper's; the run on these two examples is ours.</p>
+      <div class="player" id="pPnFirst">
+        <div class="ptitle"><span class="label">Animation · exact first-occurrence probabilities</span><div class="scen"><button class="chip" data-scen="A" aria-pressed="true">Example A: 123 vs 312</button><button class="chip" data-scen="B" aria-pressed="false">Example B: 213 vs 321</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 240" role="img" aria-label="Bar chart of the probability that the game ends at each time with each pattern, with running totals"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--bad)"></i>ends now with A</span><span><i class="sw" style="background:var(--ok)"></i>ends now with B</span><span>bars: u<sub>n</sub>/n! · totals at top</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>For Example A the totals settle at 0.3421 and 0.6579, and for Example B at 0.4497 and 0.5503, matching Elizalde and Lin's table to its three digits. The recursion also gives E[T] = F(1) ≈ 5.18 for both examples; these values are ours.</p>
+      <p class="short"><b>In short:</b> Pr(T &gt; n) = α<sub>n</sub>/n! and Pr(game ends at n with A) = u<sup>A</sup><sub>n</sub>/n!; exponential generating functions F, U<sub>A</sub>, U<sub>B</sub> package these counts, evaluate to probabilities at z = 1, and multiply when permutations are split into a left and a right part.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Clusters">
+      <span class="num">3 · SIGNED CLUSTERS</span>
+      <h2>How can "the only target is the last one" be counted without tracking everything before it?</h2>
+      <p>The direct count u<sup>A</sup><sub>n</sub> asks that no earlier window be a target, and conditions of the form "nothing happens" are hard to count. Inclusion and exclusion trades them for conditions of the form "these things happen", which are easier, at the price of signs. The basic identity is that for any finite set of size r,</p>
+      <div class="math" data-tex="\sum_{M\subseteq\{1,\dots,r\}}(-1)^{|M|}=(1-1)^r=\begin{cases}1,&r=0,\\0,&r\ge1.\end{cases}"></div>
+      <p>by the binomial theorem. So if every ordering is counted once for each set M of its target occurrences that it chooses to "mark", with sign (−1)<sup>|M|</sup>, then orderings with no targets count 1 and all others cancel to 0. The clusters of Goulden and Jackson organize these marked sets, and Elizalde and Noy adapted them to consecutive patterns.</p>
+      <div class="def"><span class="label">Definition 2.1 · marked occurrences and clusters</span>
+        <p>A marked occurrence of σ ∈ 𝔖<sub>n</sub> is a target occurrence whose start has been selected. A <span class="term">cluster</span> of length n is a permutation σ ∈ 𝔖<sub>n</sub> together with a set of marked occurrences such that the first marked start is 0, the last marked start is n − k, and successive marked starts differ by less than k. A cluster with s marks has weight (−1)<sup>s</sup>.</p>
+        <p>In words: a cluster is a chain of marked windows covering the whole permutation, each overlapping the next, with sign + for an even number of marks and − for an odd number.</p>
+      </div>
+      <p>The paper's example: for A = 123 and B = 312, the permutation 4123 has B at start 0 and A at start 1. Marking both gives a cluster of length 4 with weight (−1)² = 1 whose last mark is A. Marking only start 1 is not a cluster, because a cluster's first mark is at start 0. Because A and B are distinct patterns of the same length, each marked start carries exactly one of the two labels.</p>
+      <p>Let c<sup>A</sup><sub>n</sub> and c<sup>B</sup><sub>n</sub> be the total weights of clusters of length n whose last marked occurrence is A or B, and form</p>
+      <div class="math" data-tex="C_A(z)=\sum_{n\ge k}c^A_n\frac{z^n}{n!},\qquad C_B(z)=\sum_{n\ge k}c^B_n\frac{z^n}{n!}.\tag{1}"></div>
+      <p>The single-mark clusters are A and B themselves, each with weight −1, so c<sup>A</sup><sub>k</sub> = c<sup>B</sup><sub>k</sub> = −1. For Example A at length 4, the clusters with last mark A are 1234 (marks at 0 and 1) and 4123 and 3124 (B at 0, A at 1), all with weight +1, so c<sup>A</sup><sub>4</sub> = 3. No ordering of length 4 has a target at start 0 followed by B at start 1, since both 123 and 312 end with a rise while 312 begins with a fall, so their shared entries can never agree, and c<sup>B</sup><sub>4</sub> = 0. Our enumeration continues:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>n</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
+        <tbody>
+          <tr><td>c<sup>A</sup><sub>n</sub></td><td class="n">−1</td><td class="n">3</td><td class="n">0</td><td class="n">−31</td><td class="n">88</td><td class="n">356</td></tr>
+          <tr><td>c<sup>B</sup><sub>n</sub></td><td class="n">−1</td><td class="n">0</td><td class="n">9</td><td class="n">−26</td><td class="n">−60</td><td class="n">750</td></tr>
+          <tr><td>d<sub>n</sub> = c<sup>A</sup><sub>n</sub> − c<sup>B</sup><sub>n</sub></td><td class="n">0</td><td class="n">3</td><td class="n">−9</td><td class="n">−5</td><td class="n">148</td><td class="n">−394</td></tr>
+        </tbody>
+      </table></div>
+      <p>The differences change sign and grow, so whatever argument decides the sign of their weighted sum has to control the whole tail, not just the first terms. The link between clusters and the game is Lemma 2.2.</p>
+      <div class="fact"><span class="label">Lemma 2.2 · first occurrences from clusters</span>
+        <p>For every n ≥ k,</p>
+        <div class="math" data-tex="u^A_n=-\sum_{j=k}^{n}\binom{n}{j}\alpha_{n-j}\,c^A_j,\qquad u^B_n=-\sum_{j=k}^{n}\binom{n}{j}\alpha_{n-j}\,c^B_j.\tag{2}"></div>
+        <p>Equivalently, as formal power series,</p>
+        <div class="math" data-tex="U_A(z)=-F(z)\,C_A(z),\qquad U_B(z)=-F(z)\,C_B(z).\tag{3}"></div>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does a first occurrence factor as "anything avoiding" times "a cluster"?</span></summary><div class="pfbody">
+        <p>The paper proves the identity for A; B is the same with labels exchanged. Consider pairs (σ, M) where σ ∈ 𝔖<sub>n</sub> ends with A and M is a set of target occurrences of σ containing the final one, with weight (−1)<sup>|M|−1</sup>. If σ has r earlier target occurrences, its weights sum to (1 − 1)<sup>r</sup>, which is 1 if r = 0 and 0 otherwise. So the total weight of all pairs is u<sup>A</sup><sub>n</sub>.</p>
+        <p>Now cut each pair. List the marked starts in increasing order, and let s be the smallest marked start from which all successive marked starts differ by less than k. Every marked start before s is at most s − k, so its window lies inside the first s positions. Let π = st(σ₁⋯σ<sub>s</sub>) carry the marks before s, and γ = st(σ<sub>s+1</sub>⋯σ<sub>n</sub>) carry the rest, shifted by s. Standardization preserves the relative order inside each window, so all marks remain target occurrences. Then γ is a cluster of length j = n − s with last pattern A, and π is any permutation of length n − j with any set of marked occurrences.</p>
+        <p>Conversely, choose which n − j of the values {1, …, n} go to the left (C(n, j) ways), a marked permutation π of length n − j and a cluster γ of length j. Arranging the chosen values in the order of π followed by the others in the order of γ gives a unique pair (σ, M), and cutting it returns π and γ because the marks of π end at least k starts before the first mark of γ. The weight factors as</p>
+        <div class="math" data-tex="(-1)^{|M|-1}=-(-1)^{|M_\pi|}\,(-1)^{|M_\gamma|}."></div>
+        <p>For a fixed π, the weights (−1)<sup>|M<sub>π</sub>|</sup> sum to 1 if π avoids both targets and 0 otherwise, so the total over all π of length n − j is α<sub>n−j</sub>. Summing over j gives (2), and multiplying by z<sup>n</sup>/n! and summing over n gives (3).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>As a check at n = 4 for Example A, with α₁ = 1 and α₀ = 1, Eq. (2) gives u<sup>A</sup><sub>4</sub> = −(C(4,3)·1·(−1) + 1·1·3) = −(−4 + 3) = 1 and u<sup>B</sup><sub>4</sub> = −(−4 + 0) = 4, the two counts of Example 1.1. We checked (2) the same way through n = 8, and the paper reports the same check against direct counts for every pattern of length 3 and 4.</p>
+      <p>Setting z = 1 in (3) turns the identity into a statement about the game. Subtracting the two halves gives the paper's central reduction.</p>
+      <div class="fact"><span class="label">Proposition 3.4 · the margin as a product</span>
+        <p>Let D = C<sub>A</sub>(1) − C<sub>B</sub>(1). Then</p>
+        <div class="math" data-tex="\Pr(T_B<T_A)-\Pr(T_A<T_B)=F(1)\,D,\qquad 1\le F(1)<\infty.\tag{6}"></div>
+        <p>So B wins with probability above 1/2 exactly when D &gt; 0.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can the power series be evaluated at z = 1?</span></summary><div class="pfbody">
+        <p>The windows at starts 0, k, 2k, … use disjoint observations, so they are independent, and avoiding all targets requires each of the first ⌊n/k⌋ of them to miss, giving</p>
+        <div class="math" data-tex="\frac{\alpha_n}{n!}\le(1-p)^{\lfloor n/k\rfloor},\qquad p=\frac{2}{k!}."></div>
+        <p>Hence F(1) is finite, and F(1) ≥ α₀ = 1. The same estimate shows that some target appears with probability one. The event that the game ends at time n with A has probability u<sup>A</sup><sub>n</sub>/n!, so U<sub>A</sub>(1) = Pr(T<sub>A</sub> &lt; T<sub>B</sub>) and U<sub>B</sub>(1) = Pr(T<sub>B</sub> &lt; T<sub>A</sub>). Section 4 shows that C<sub>A</sub>(1) and C<sub>B</sub>(1) converge absolutely (Lemma 3.3). For absolutely convergent series, Mertens' theorem says the Cauchy product (2) converges to the product of the sums, so evaluating (3) at 1 is legitimate, and subtracting gives (6).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For Example A, the recursion of Section 2 gives F(1) ≈ 5.1838 and a margin of 0.6579 − 0.3421 ≈ 0.3157, so D ≈ 0.0609 and 3!·D ≈ 0.365 (our numbers). The paper certifies 3!·D ≥ 0.3018 for this pair (Table 2), consistent with that value.</p>
+      <p class="short"><b>In short:</b> signed clusters, chains of overlapping marked occurrences with weight (−1)<sup>marks</sup>, turn "the last window is the first target" into U = −F·C (Lemma 2.2); evaluated at 1 this says the rotation's margin is E[T] times D = C<sub>A</sub>(1) − C<sub>B</sub>(1) (Eq. 6), so the whole theorem is the inequality D &gt; 0.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Cancellation">
+      <span class="num">4 · CANCELLATION ON ONE ORDERING</span>
+      <h2>Why can the cluster series be controlled at all, when its terms grow?</h2>
+      <p>The cluster counts in the table above grow, and the number of marked sets on a long ordering grows exponentially. The paper's key observation is that on any one ordering almost all of them cancel. Fix an ordering σ ∈ 𝔖<sub>k+d</sub> whose first and last windows are targets, and list its actual target starts as 0 = t₁ &lt; t₂ &lt; ⋯ &lt; t<sub>r</sub> = d. For 1 ≤ j ≤ r, let w<sub>j</sub> be the total weight of the marked sets that contain t₁ and t<sub>j</sub>, lie inside {t₁, …, t<sub>j</sub>}, and have successive differences less than k. Then w<sub>r</sub> is the total weight of all clusters on σ.</p>
+      <div class="fact"><span class="label">Lemma 3.1 · near-total cancellation</span>
+        <p>For each ordering, w<sub>r</sub> ∈ {−1, 0, 1}. Moreover w<sub>r</sub> = 0 unless the actual target starts connect 0 to d with successive differences less than k.</p>
+      </div>
+      <p>The proof sorts marked sets by their second-to-last mark t<sub>i</sub>, which must lie within k − 1 of t<sub>j</sub>. Adding one more mark flips the sign, so</p>
+      <div class="math" data-tex="w_1=-1,\qquad w_j=-\sum_{\substack{i<j\\ t_j-t_i<k}}w_i\quad(j>1)."></div>
+      <p>The sum runs over a contiguous block of indices, which makes it a difference of partial sums. Set S₀ = 0 and S<sub>j</sub> = w₁ + ⋯ + w<sub>j</sub>, and let ℓ(j) be the largest index with t<sub>ℓ(j)</sub> ≤ t<sub>j</sub> − k, or 0 if there is none. Then w<sub>j</sub> = −(S<sub>j−1</sub> − S<sub>ℓ(j)</sub>), and therefore</p>
+      <div class="math" data-tex="S_1=-1,\qquad S_j=S_{j-1}+w_j=S_{\ell(j)}\quad(j>1)."></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does S<sub>j</sub> = S<sub>ℓ(j)</sub> force every weight into {−1, 0, 1}?</span></summary><div class="pfbody">
+        <p>Each S<sub>j</sub> with j &gt; 1 equals an earlier partial sum, because ℓ(j) &lt; j. Starting from S₀ = 0 and S₁ = −1, induction on j shows S<sub>j</sub> ∈ {0, −1} for every j. Then w<sub>j</sub> = S<sub>j</sub> − S<sub>j−1</sub> is a difference of two numbers in {0, −1}, so it lies in {−1, 0, 1}. If two consecutive actual starts differ by at least k, no admissible marked set can cross that gap, so no marked set reaches t<sub>r</sub> and w<sub>r</sub> = 0.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The animation applies the recurrence to three orderings of length 10 for Example A, chosen by us so that all three outcomes appear: σ₁ has a target at every start and 21 clusters, σ₂ has six targets and 3 clusters, σ₃ has seven targets and 8 clusters. Each step adds one start, computes w<sub>j</sub> from the window of earlier starts within distance 2, and updates S<sub>j</sub>. The last frame checks the answer by listing every admissible marked set, which the page does by brute force.</p>
+      <div class="player" id="pPnClus">
+        <div class="ptitle"><span class="label">Animation · clusters on one ordering cancel</span><div class="scen"><button class="chip" data-scen="0" aria-pressed="true">σ₁</button><button class="chip" data-scen="1" aria-pressed="false">σ₂</button><button class="chip" data-scen="2" aria-pressed="false">σ₃</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="An ordering of ten numbers drawn as bars, its target windows marked as brackets, and a table of weights and partial sums"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--bad)"></i>window with pattern A = 123</span><span><i class="sw" style="background:var(--ok)"></i>window with pattern B = 312</span><span><i class="sw" style="background:var(--accent)"></i>current start</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>Write d<sub>n</sub> = c<sup>A</sup><sub>n</sub> − c<sup>B</sup><sub>n</sub>. An ordering of length k + d contributes ±w<sub>r</sub> to d<sub>k+d</sub>, with the sign set by the pattern of its last window. Let G<sub>d</sub> be the event that targets occur at starts 0 and d and that the actual occurrences between them have successive differences less than k. By Lemma 3.1 the contribution is 0 outside G<sub>d</sub> and at most 1 in absolute value on G<sub>d</sub>, so dividing by the number of orderings,</p>
+      <div class="math" data-tex="\frac{|d_{k+d}|}{(k+d)!}\le\Pr(G_d).\tag{4}"></div>
+      <p>The same bound holds for |c<sup>A</sup><sub>k+d</sub>| and |c<sup>B</sup><sub>k+d</sub>| separately. A signed sum over exponentially many marked sets has become a probability, and probabilities of long connected chains of targets are small. To make that precise the paper puts</p>
+      <div class="math" data-tex="L=2k-2,\qquad q=\frac{2(k-1)}{k!}."></div>
+      <p>A block of k − 1 consecutive starts uses L observations, and by the union bound it contains a target with probability at most (k − 1)p = q. Since 2(k − 1) &lt; k! for k ≥ 3, q &lt; 1.</p>
+      <div class="fact"><span class="label">Lemma 3.2 · a connected chain hits every block</span>
+        <p>If the actual target starts connect 0 to d with successive differences less than k, then every block {a, a + 1, …, a + k − 2} with 0 &lt; a and a + k − 2 &lt; d contains a target start.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can a chain with short steps not jump over k − 1 consecutive starts?</span></summary><div class="pfbody">
+        <p>Let x be the smallest start of the chain with x ≥ a; it exists because d ≥ a. Its predecessor y in the chain satisfies y &lt; a and x − y &lt; k, so x ≤ y + k − 1 ≤ a + k − 2. Thus x lies in the block.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Lemma 3.3 · the tail is small</span>
+        <p>The two cluster series converge absolutely at 1, and</p>
+        <div class="math" data-tex="\sum_{d\ge k}\frac{|d_{k+d}|}{(k+d)!}\le\frac{8(k-1)}{k!\,\bigl[k!-2(k-1)\bigr]}.\tag{5}"></div>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where do the factors p², L and 1/(1 − q) come from?</span></summary><div class="pfbody">
+        <p>Fix d ≥ k, so the windows at starts 0 and d are disjoint. Between them, place blocks of L observations starting at observations k, k + L, k + 2L, …, keeping only blocks that end before observation d; there are m = ⌊(d − k)/L⌋ of them. In each block, the first k − 1 window starts have their windows inside the block. By Lemma 3.2, G<sub>d</sub> requires a target among those starts in every block. The two end windows and the m blocks use disjoint observations, so independence gives Pr(G<sub>d</sub>) ≤ p²q<sup>m</sup>.</p>
+        <p>Each value of m comes from exactly L values of d ≥ k, so</p>
+        <div class="math" data-tex="\sum_{d\ge k}\Pr(G_d)\le p^2L\sum_{m\ge0}q^m=\frac{p^2L}{1-q}=\frac{8(k-1)}{k!\,[k!-2(k-1)]}."></div>
+        <p>Equation (4) turns this into (5), and the same argument for c<sup>A</sup> and c<sup>B</sup> gives absolute convergence.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The bound (5) is tiny for large k and useless for small k. Evaluating it (our arithmetic) gives 4/3 at k = 3, 1/18 at k = 4 and 1/420 at k = 5, while the first nonzero term of D is only d<sub>k+1</sub>/(k + 1)!, which is 3/24 for Example A. That is why the small cases need the sharper, computed tail bound of Section 7.</p>
+      <p class="short"><b>In short:</b> on one ordering, the cluster weights obey w<sub>j</sub> = −(S<sub>j−1</sub> − S<sub>ℓ(j)</sub>), so the partial sums only ever copy earlier values and every total is −1, 0 or 1 (Lemma 3.1); hence |d<sub>k+d</sub>|/(k + d)! is at most the probability of a connected chain of targets, which decays geometrically (Lemmas 3.2, 3.3, Eq. 5).</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Two overlaps">
+      <span class="num">5 · TWO OVERLAPPING OCCURRENCES</span>
+      <h2>How many orderings carry one pattern and then another, d steps later?</h2>
+      <p>With the tail under control, the head of D, the terms with d &lt; k, decides the sign. For d &lt; k the clusters of length k + d are simple, so the head reduces to counting orderings with two overlapping prescribed windows. For 1 ≤ d &lt; k and U, V ∈ 𝔖<sub>k</sub>, let N<sub>d</sub>(U, V) be the number of permutations of length k + d with pattern U at start 0 and pattern V at start d. The two windows share the k − d positions d + 1, …, k.</p>
+      <p>First, the two patterns must agree on the shared positions: st(u<sub>d+1</sub>⋯u<sub>k</sub>) = st(v₁⋯v<sub>k−d</sub>). If they do, the shared entries form a chain c₁ &lt; ⋯ &lt; c<sub>k−d</sub> that cuts the remaining values into k − d + 1 <span class="term">gaps</span>. Let α<sub>j</sub> be the number of the first window's exclusive entries (the first d) that lie in gap j, and β<sub>j</sub> the number of the second window's exclusive entries (the last d) in gap j. These are read off from U and V alone: α<sub>j</sub> counts i ≤ d with u<sub>i</sub> between the j-th and (j + 1)-th smallest of u<sub>d+1</sub>, …, u<sub>k</sub>, and β<sub>j</sub> is defined in the same way from V. (These α<sub>j</sub> are not the avoidance counts α<sub>n</sub>; the paper reuses the letter.)</p>
+      <div class="fact"><span class="label">Lemma 4.1 · overlap counts</span>
+        <p>If the orders of U and V on the shared positions are incompatible, N<sub>d</sub>(U, V) = 0. Otherwise</p>
+        <div class="math" data-tex="N_d(U,V)=\prod_{j=0}^{k-d}\binom{\alpha_j+\beta_j}{\alpha_j},\qquad \sum_j\alpha_j=\sum_j\beta_j=d.\tag{9}"></div>
+        <p>Moreover (α<sub>j</sub>) = (β<sub>j</sub>) if and only if {u₁, …, u<sub>d</sub>} = {v<sub>k−d+1</sub>, …, v<sub>k</sub>}.</p>
+        <p>In words: inside each gap, the entries from the left window and those from the right window can be interleaved in any way that keeps each side's own order, and different gaps do not interact.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the count a product of binomial coefficients?</span></summary><div class="pfbody">
+        <p>A permutation is determined by all the pairwise comparisons among its entries. The first window fixes every comparison among its own entries, and the second window fixes every comparison among its own. The only comparisons left are between an entry exclusive to the first window and an entry exclusive to the second. If the two lie in different gaps, the shared chain already orders them. Inside gap j, the α<sub>j</sub> left entries come in an order fixed by U and the β<sub>j</sub> right entries in an order fixed by V, so a total order of the gap is a shuffle of two chains, and there are C(α<sub>j</sub> + β<sub>j</sub>, α<sub>j</sub>) shuffles. Every choice of shuffles, one per gap, gives a total order restricting to U and V. If the shared orders conflict, no total order exists.</p>
+        <p>For the last statement, encode a vector γ = (γ₀, …, γ<sub>k−d</sub>) with sum d as a word of length k: γ₀ letters x, one s, γ₁ letters x, one s, and so on, ending with γ<sub>k−d</sub> letters x. Let ρ(γ) be the set of positions of the letters x. Counting x's between consecutive s's recovers γ, so ρ is injective. Listing the values 1, …, k of U in increasing order and marking each as exclusive (x) or shared (s) produces exactly this word for γ = (α<sub>j</sub>), so ρ(α) = {u₁, …, u<sub>d</sub>}; likewise ρ(β) = {v<sub>k−d+1</sub>, …, v<sub>k</sub>}. Injectivity of ρ gives the claim.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For d = 1 each window has a single exclusive entry, in gap u₁ − 1 for the first and v<sub>k</sub> − 1 for the second, so N₁(U, V) is 2 when u₁ = v<sub>k</sub> and 1 otherwise, provided the shared orders agree. For Example A at d = 2 (our worked case of Eq. 9), take U = 123 and V = 312. The single shared entry is the third, the largest in 123 and the largest in 312, so both exclusive pairs lie below it: α = β = (2, 0), and N₂(123, 312) = C(4, 2)·C(0, 0) = 6. Listing them confirms it: 12534, 13524, 14523, 23514, 24513, 34512.</p>
+      <p>Now the rotation enters. An ordering of length k + 1 with targets at both starts carries exactly one two-mark cluster, of weight +1, and the single-mark clusters live at length k. So</p>
+      <div class="math" data-tex="d_{k+1}=N_1(A,A)+N_1(B,A)-N_1(A,B)-N_1(B,B)."></div>
+      <div class="fact"><span class="label">Lemma 4.2 · the first nonzero term favors the rotation</span>
+        <p>Let B = R(A). Then d<sub>k+1</sub> ≥ 1.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does B-then-A count twice while A-then-B counts at most once?</span></summary><div class="pfbody">
+        <p>For (U, V) = (B, A), both shared orders are st(a₁⋯a<sub>k−1</sub>), and u₁ = a<sub>k</sub> = v<sub>k</sub>, so N₁(B, A) = 2. For (U, V) = (A, B), u₁ = a₁ and v<sub>k</sub> = a<sub>k−1</sub>, which differ because k ≥ 3, so N₁(A, B) ≤ 1.</p>
+        <p>A pattern overlaps itself in k − 1 positions only if it is monotone: compatibility of st(u₂⋯u<sub>k</sub>) with st(u₁⋯u<sub>k−1</sub>) says that u<sub>i+1</sub> &gt; u<sub>i</sub> exactly when u<sub>i+2</sub> &gt; u<sub>i+1</sub>, so all adjacent comparisons go the same way. Thus N₁(B, B) ≤ 1, with equality only for monotone B. If B = 12⋯k, then A = 23⋯k1; the last two entries of a₂⋯a<sub>k</sub> decrease while the last two of b₁⋯b<sub>k−1</sub> increase, so N₁(A, B) = 0. The case B = k⋯21 is symmetric.</p>
+        <p>So either B is not monotone, N₁(B, B) = 0 and N₁(A, B) ≤ 1, or B is monotone, N₁(B, B) = 1 and N₁(A, B) = 0. With N₁(A, A) ≥ 0 and N₁(B, A) = 2, in both cases d<sub>k+1</sub> ≥ 1.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For Example A the paper computes N₁(A, A) = 1, N₁(B, A) = 2 and N₁(A, B) = N₁(B, B) = 0, so d₄ = 3, agreeing with u<sup>B</sup><sub>4</sub> − u<sup>A</sup><sub>4</sub> = 4 − 1 = 3. For Example B, where B = 321 is monotone, our count gives N₁(A, A) = 0, N₁(B, A) = 2, N₁(A, B) = 0 and N₁(B, B) = 1, so d₄ = 1, the value in the paper's Table 2. A monotone reply pays for overlapping itself, which is why these pairs are the closest races.</p>
+      <p>The next terms, 2 ≤ d &lt; k, can be negative, and the paper bounds how negative.</p>
+      <div class="fact"><span class="label">Lemma 4.3 · the middle terms</span>
+        <p>Let B = R(A). For 2 ≤ d &lt; k,</p>
+        <div class="math" data-tex="d_{k+d}\ge-N_d(A,B)-N_d(B,B),\tag{10}"></div>
+        <div class="math" data-tex="N_d(A,B)+N_d(B,B)\le\begin{cases}\binom{2d}{d},&d<k-1,\\[4pt]\tfrac32\binom{2k-2}{k-1},&d=k-1.\end{cases}\tag{11}"></div>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where do the central binomial coefficients come from?</span></summary><div class="pfbody">
+        <p>For d &lt; k, every start between 0 and d is within k − 1 of both ends, so every set of marks containing 0 and d is a cluster. If an ordering has r interior targets, its optional marks contribute (1 − 1)<sup>r</sup>. So an ordering contributes only if its only targets are the two ends, and then with weight +1. A negative contribution to d<sub>k+d</sub> therefore needs last pattern B, which gives (10).</p>
+        <p>For (11), put n<sub>j</sub> = α<sub>j</sub> + β<sub>j</sub>, so Σ n<sub>j</sub> = 2d. Vandermonde's identity, which counts d-element subsets of a 2d-set split into blocks of sizes n<sub>j</sub>, says</p>
+        <div class="math" data-tex="\binom{2d}{d}=\sum_{\gamma}\prod_j\binom{n_j}{\gamma_j},"></div>
+        <p>over vectors γ with 0 ≤ γ<sub>j</sub> ≤ n<sub>j</sub> and Σ γ<sub>j</sub> = d. Both γ = (α<sub>j</sub>) and γ = (β<sub>j</sub>) appear, and since C(n<sub>j</sub>, β<sub>j</sub>) = C(n<sub>j</sub>, α<sub>j</sub>), each term equals N<sub>d</sub>(U, V). So N<sub>d</sub>(U, V) ≤ C(2d, d) always, and ≤ ½C(2d, d) when (α<sub>j</sub>) ≠ (β<sub>j</sub>).</p>
+        <p>By Lemma 4.1 the vectors differ exactly when the rank sets of the exclusive entries differ. For (B, B) these are the values of B on its first d and on its last d positions, different position sets when d &lt; k, so different value sets. For (A, B) they are the values of A on positions 1, …, d and on k − d, …, k − 1, which differ when d &lt; k − 1. Applying the half bound to both pairs when d &lt; k − 1, and only to (B, B) when d = k − 1, gives (11).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Example A shows that (11) can be tight and that the middle terms can outweigh the first (our check). At d = 2 = k − 1, N₂(A, B) = 6 and N₂(B, B) = 3, and the bound is (3/2)·C(4, 2) = 9. Our cluster enumeration gives d₅ = −9 exactly: all nine orderings with 312 at start 2 and a target at start 0 have no target at start 1, while every ordering with 123 at start 2 and a target at start 0 does. Weighted by 1/n!, the first two terms are 3/24 − 9/120 = 0.05 &gt; 0, so the first term still wins, but not by much.</p>
+      <p class="short"><b>In short:</b> two overlapping windows determine every comparison except those inside the gaps of the shared chain, so N<sub>d</sub> is a product of shuffle counts (Eq. 9); the rotation's overlap B-then-A counts 2 at d = 1, which makes d<sub>k+1</sub> ≥ 1 (Lemma 4.2), and Vandermonde's identity caps the negative middle terms by central binomial coefficients (Eqs. 10, 11).</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · k ≥ 8">
+      <span class="num">6 · EVERY LENGTH FROM EIGHT ON</span>
+      <h2>How do one positive term, a few bounded terms and a small tail combine into D &gt; 0?</h2>
+      <p>Multiply D by k! and split k!D = Σ<sub>d≥1</sub> k! d<sub>k+d</sub>/(k + d)! into three pieces: the term d = 1, the terms 2 ≤ d ≤ k − 1, and the tail d ≥ k. Lemma 4.2 makes the first at least k!/(k + 1)! = 1/(k + 1). Lemma 4.3 bounds each middle term below by −C(2d, d) k!/(k + d)!, with an extra factor 3/2 at d = k − 1. Lemma 3.3 bounds the tail. With</p>
+      <div class="math" data-tex="f_d=\binom{2d}{d}\frac{k!}{(k+d)!},\qquad S_k=\sum_{d=2}^{k-2}f_d+\tfrac32f_{k-1},\qquad H_k=\frac{8(k-1)}{k!-2(k-1)},"></div>
+      <p>the three lemmas give</p>
+      <div class="math" data-tex="k!\,D\ge\frac1{k+1}-S_k-H_k.\tag{12}"></div>
+      <div class="fact"><span class="label">Proposition 5.1 · the uniform estimate</span>
+        <p>For k ≥ 8 and A ∈ 𝔖<sub>k</sub>,</p>
+        <div class="math" data-tex="D\ge\frac{138690478}{3245660803\,(k+1)\,k!}>0.\tag{13}"></div>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why do S<sub>k</sub> and H<sub>k</sub> together stay below 1/(k + 1)?</span></summary><div class="pfbody">
+        <p>From (d + 1)C(2d + 2, d + 1) = 2(2d + 1)C(2d, d), consecutive terms satisfy</p>
+        <div class="math" data-tex="\frac{f_{d+1}}{f_d}=\frac{2(2d+1)}{(d+1)(k+d+1)}."></div>
+        <p>For d ≥ 2 this is at most 4/(k + 3), because 4(d + 1)(k + d + 1) − 2(2d + 1)(k + 3) = 4d(d − 1) + 2(k − 1) ≥ 0. So f<sub>d</sub> ≤ f₂(4/(k + 3))<sup>d−2</sup> with f₂ = 6/((k + 1)(k + 2)). Writing S<sub>k</sub> = Σ<sub>d=2</sub><sup>k−1</sup> f<sub>d</sub> + ½f<sub>k−1</sub> and summing the geometric majorant,</p>
+        <div class="math" data-tex="(k+1)S_k\le\frac{6(k+3)}{(k+2)(k-1)}+\frac{3}{k+2}\Bigl(\frac4{k+3}\Bigr)^{k-3}."></div>
+        <p>Both pieces decrease for k ≥ 8: the derivative of (x + 3)/((x + 2)(x − 1)) has numerator −x² − 6x − 5 &lt; 0, and in the second the prefactor and the base decrease while the exponent increases with the base in (0, 1). Also (k + 1)H<sub>k</sub> = 8(k² − 1)/(k! − 2(k − 1)) decreases for k ≥ 8, because the denominator at k + 1 exceeds k + 1 times the denominator at k (since 2k &lt; 2(k + 1)(k − 1)), while the numerator grows by the factor k(k + 2)/((k − 1)(k + 1)) &lt; k + 1. Evaluating all three at k = 8,</p>
+        <div class="math" data-tex="(k+1)(S_k+H_k)\le\frac{33}{35}+\frac3{10}\Bigl(\frac4{11}\Bigr)^5+\frac{504}{40306}=\frac{3106970325}{3245660803}<1.\tag{14}"></div>
+        <p>Combining with (12), k!D ≥ (1 − 3106970325/3245660803)/(k + 1), which is (13).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>We recomputed (14) in exact rational arithmetic and it holds as stated; the difference 1 − 3106970325/3245660803 is exactly 138690478/3245660803. Evaluating the right side of (12) directly, without the geometric majorant (our computation), shows why the cutoff is 8: it is −8.2, −1.48, −0.356, −0.081 and −0.0083 for k = 3 to 7, then +0.0147 at k = 8 and +0.0247 at k = 9. At k = 7 the worst-case bounds fail by 0.0083, about 7 percent of 1/(k + 1), so the small lengths need exact counts instead of bounds.</p>
+      <p>The margin itself follows from (6). For n ≥ k the first n observations contain n − k + 1 windows, so by the union bound Pr(T &gt; n) ≥ 1 − (n − k + 1)p. Summing with M = 1/p = k!/2,</p>
+      <div class="math" data-tex="F(1)\ge k+\sum_{m=1}^{M}\Bigl(1-\frac mM\Bigr)=k+\frac{M-1}2\ge\frac{k!}4."></div>
+      <div class="fact"><span class="label">Corollary 6.3 · how big the edge is</span>
+        <p>For every k ≥ 8 and every A ∈ 𝔖<sub>k</sub>,</p>
+        <div class="math" data-tex="\Pr\bigl(T_{R(A)}<T_A\bigr)-\frac12\ge\frac{69345239}{12982643212\,(k+1)}."></div>
+        <p>The constant is about 0.00534, the 0.0053/(k + 1) of the abstract. It comes from F(1)D/2 with F(1) ≥ k!/4 and (13).</p>
+      </div>
+      <p class="short"><b>In short:</b> k!D ≥ 1/(k + 1) − S<sub>k</sub> − H<sub>k</sub> (Eq. 12); the middle terms shrink geometrically with ratio at most 4/(k + 3), the tail is O(k²/k!), and at k = 8 their total is 3106970325/3245660803 of 1/(k + 1) (Eq. 14), which proves D &gt; 0 for every k ≥ 8 and an edge of at least about 0.0053/(k + 1).</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · k = 3 to 7">
+      <span class="num">7 · LENGTHS THREE TO SEVEN</span>
+      <h2>How are the five remaining lengths certified exactly?</h2>
+      <p>For 3 ≤ k ≤ 7 the paper replaces bounds by exact integers and rational numbers, and checks every pattern. Two reductions shrink the work. The <span class="term">complement</span> Ā = (k + 1 − a₁)⋯(k + 1 − a<sub>k</sub>) turns the picture upside down; it commutes with rotation and preserves all cluster counts and first-occurrence probabilities, and no permutation of length k ≥ 2 is its own complement. So it suffices to check the k!/2 patterns that come before their complements in lexicographic order: 3, 12, 60, 360 and 2520 representatives.</p>
+      <p>For k = 6 and 7 the exact overlap counts (9) replace their upper bounds in (12):</p>
+      <div class="math" data-tex="J(A)=\frac{d_{k+1}}{k+1}-\sum_{d=2}^{k-1}\bigl(N_d(A,B)+N_d(B,B)\bigr)\frac{k!}{(k+d)!}-H_k,\tag{15}"></div>
+      <p>and Lemmas 3.3, 4.2 and 4.3 give k!D ≥ J(A). For k = 3, 4 and 5, J(A) is negative for 3, 12 and 18 of the representatives respectively, so a finer certificate is used. For h ≥ 1, let Q<sub>h</sub> be the event that a target occurs at start 0 and its connected chain of actual occurrences reaches a start at least h, and let r<sub>h</sub> = Pr(Q<sub>h</sub>). By the argument of Lemma 3.2, Q<sub>h</sub> depends only on the first R = h + 2k − 2 observations.</p>
+      <div class="fact"><span class="label">Lemma 3.5 · a computed tail bound</span>
+        <p>For h ≥ 1 and R = h + 2k − 2,</p>
+        <div class="math" data-tex="\sum_{d\ge R}\frac{|d_{k+d}|}{(k+d)!}\le\frac{4(k-1)\,r_h}{k!-2(k-1)},\tag{7}"></div>
+        <p>and consequently</p>
+        <div class="math" data-tex="D\ge\sum_{d=1}^{R-1}\frac{d_{k+d}}{(k+d)!}-\frac{4(k-1)\,r_h}{k!-2(k-1)}.\tag{8}"></div>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does r<sub>h</sub> replace one factor of p in Lemma 3.3?</span></summary><div class="pfbody">
+        <p>For d ≥ R, the event G<sub>d</sub> implies Q<sub>h</sub>, a target at start d, and a target among the first k − 1 starts of every block of L observations beginning at observations R, R + L, … and ending before observation d. These involve disjoint sets of observations, so Pr(G<sub>d</sub>) ≤ r<sub>h</sub> p q<sup>⌊(d−R)/L⌋</sup>. Summing over d ≥ R gives r<sub>h</sub>pL/(1 − q), the right side of (7). Since c<sup>A</sup><sub>k</sub> = c<sup>B</sup><sub>k</sub> = −1, d<sub>k</sub> = 0, and (8) follows from (4) and (7).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The coefficients d<sub>k+i</sub> and the probability r<sub>h</sub> come from the insertion recurrence of Section 2, started from the two orderings A and B, so that every ordering with a target at start 0 is produced exactly once. The state of an ordering records the ranks of its last k − 1 entries among all n, the distance back to its latest target start, and the last k values of a bit b<sub>i</sub> = −S<sub>i</sub>, where S<sub>i</sub> is the partial sum of Lemma 3.1 indexed by start position (constant between targets and zero at negative indices). By the proof of Lemma 3.1, a target at start i gives</p>
+      <div class="math" data-tex="b_i=b_{i-k},\qquad w_i=b_{i-1}-b_i,\tag{16}"></div>
+      <p>and a non-target start gives b<sub>i</sub> = b<sub>i−1</sub> and w<sub>i</sub> = 0, so each b<sub>i</sub> is 0 or 1. A final A contributes w<sub>i</sub> to d<sub>k+i</sub> and a final B contributes −w<sub>i</sub>. The starting orderings A and B have distance zero, b₀ = 1 and b<sub>−1</sub> = ⋯ = b<sub>1−k</sub> = 0. After k − 1 starts in a row with no target, nothing later can reconnect to start 0, so such states are dropped. If M<sub>i,g</sub> counts retained orderings with a target at start i whose preceding target is at i − g, then (Lemma 6.1)</p>
+      <div class="math" data-tex="r_h=\sum_{i=h}^{h+k-2}\ \sum_{g=i-h+1}^{k-1}\frac{M_{i,g}}{(k+i)!}.\tag{17}"></div>
+      <p>The sum splits Q<sub>h</sub> by the first chain start i ≥ h; its predecessor is below h, so the gap g exceeds i − h, and connectivity forces g &lt; k, hence i ≤ h + k − 2.</p>
+      <div class="fact"><span class="label">Proposition 6.2 · the certificates</span>
+        <p>For 3 ≤ k ≤ 7 and every A ∈ 𝔖<sub>k</sub>, D &gt; 0. For k = 3, 4, 5 the paper evaluates k! times the right side of (8) with h = 13, 4, 1 and r<sub>h</sub> from (17), using permutations up to length 19, 13 and 13. For k = 6, 7 it evaluates J(A). The minimum certified values of k!D are</p>
+        <div class="math" data-tex="\frac{10651931797}{200559744000},\quad\frac{8812049}{129729600},\quad\frac{98321}{1235520},\quad\frac{5539}{89460},\quad\frac{4332253}{51768288}"></div>
+        <p>for k = 3, 4, 5, 6, 7, all strictly positive.</p>
+      </div>
+      <p>For 3 ≤ k ≤ 6 the smallest bound occurs when B is monotone, where d<sub>k+1</sub> = 1; for k = 7 the monotone case is second smallest, behind A = 1526374. At k = 3 the minimum belongs to Example B (213 against 321), certified at 0.0531, against Example A's 0.3018. The whole computation over 3 + 12 + 60 + 360 + 2520 representatives took about one minute on a laptop. The paper cross-checked it three ways: the coefficients d<sub>n</sub> from the recurrence agree with direct cluster sums over all permutations through n = 8 for every pattern of length 3 and 4; Eq. (2) agrees with direct first-occurrence counts through n = 8 for the same patterns; and the product formula (9) agrees with direct counts for every pair U, V with k ≤ 5 and every 1 ≤ d &lt; k.</p>
+      <p>The proof of Theorem 1.3 is now complete: Proposition 5.1 gives D &gt; 0 for k ≥ 8, Proposition 6.2 for 3 ≤ k ≤ 7, Proposition 3.4 converts D &gt; 0 into Pr(T<sub>B</sub> &lt; T<sub>A</sub>) &gt; Pr(T<sub>A</sub> &lt; T<sub>B</sub>), and since a target occurs almost surely and the two patterns cannot first occur together, the two probabilities sum to one.</p>
+      <p class="short"><b>In short:</b> complements halve the work; for k = 6, 7 exact overlap counts (J(A), Eq. 15) suffice, and for k = 3, 4, 5 exact cluster coefficients from an insertion recurrence carrying one bit per start (Eq. 16) plus a computed tail bound (Eqs. 7, 8, 17) certify k!D &gt; 0 for every pattern.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Open questions">
+      <span class="num">8 · WHAT REMAINS OPEN</span>
+      <h2>Does the rotation lead at every single time step, and how big is its edge?</h2>
+      <p>The proof compares the two players only after summing over all stopping times. A stronger statement would compare them time by time. Write a<sub>n</sub> = u<sup>A</sup><sub>n</sub> and b<sub>n</sub> = u<sup>B</sup><sub>n</sub>. The argument of Lemma 4.2 gives b<sub>k</sub> = a<sub>k</sub> = 1 and b<sub>k+1</sub> − a<sub>k+1</sub> = 2 + N₁(A, A) − N₁(A, B) − N₁(B, B) ∈ {1, 2, 3}. The paper computed min<sub>A</sub>(b<sub>n</sub> − a<sub>n</sub>) by enumerating all permutations of length n for every 3 ≤ k &lt; n ≤ 11, and the minimum was always positive (Table 5).</p>
+      <div class="def"><span class="label">Question 7.1</span>
+        <p>Is b<sub>n</sub> &gt; a<sub>n</sub> for every k ≥ 3, every A ∈ 𝔖<sub>k</sub> and every n &gt; k? In words: at every fixed time after the first, are there more orderings on which the rotation wins exactly then? A yes would give a second proof of Theorem 1.3.</p>
+      </div>
+      <p>The obvious injection fails. For A = 132 and B = 213, the ordering 1243 first meets a target at its final window, 243, which has pattern 132. Rotating its last three entries gives 1324, which ends with 213 but already begins with 132.</p>
+      <p>The second question is about size. Corollary 6.3 shows the edge is at least of order 1/k. The leading term of D suggests that order is attained: when B is monotone, d<sub>k+1</sub> = 1 and the first term of (12) is only 1/(k + 1).</p>
+      <div class="def"><span class="label">Question 7.2</span>
+        <p>Is min<sub>A∈𝔖<sub>k</sub></sub> Pr(T<sub>R(A)</sub> &lt; T<sub>A</sub>) − 1/2 of order 1/k as k → ∞?</p>
+      </div>
+      <p class="short"><b>In short:</b> exhaustive enumeration up to n = 11 supports a time-by-time version of the theorem (Question 7.1), the worst-case edge may really shrink like 1/k (Question 7.2), and the optimal reply (Elizalde and Lin's Problem 6.2) is still unknown.</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>The numbers</h2>
+      <p>The main result is Theorem 1.3, proved for all k ≥ 3. The certificates of Proposition 6.2, from the paper's Table 1, with decimals as the paper gives them:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>k</th><th>Representatives</th><th>Certificate</th><th>Largest length</th><th>Minimum bound for k!D</th></tr></thead>
+        <tbody>
+          <tr><td class="n">3</td><td class="n">3</td><td>Eq. (8), h = 13</td><td class="n">19</td><td class="n">10651931797/200559744000 ≈ 0.0531</td></tr>
+          <tr><td class="n">4</td><td class="n">12</td><td>Eq. (8), h = 4</td><td class="n">13</td><td class="n">8812049/129729600 ≈ 0.0679</td></tr>
+          <tr><td class="n">5</td><td class="n">60</td><td>Eq. (8), h = 1</td><td class="n">13</td><td class="n">98321/1235520 ≈ 0.0795</td></tr>
+          <tr><td class="n">6</td><td class="n">360</td><td>J(A), Eq. (15)</td><td class="n">n/a</td><td class="n">5539/89460 ≈ 0.0619</td></tr>
+          <tr><td class="n">7</td><td class="n">2520</td><td>J(A), Eq. (15)</td><td class="n">n/a</td><td class="n">4332253/51768288 ≈ 0.0836</td></tr>
+          <tr><td class="n">≥ 8</td><td>all</td><td>Prop. 5.1</td><td class="n">n/a</td><td class="n">138690478/(3245660803(k+1))</td></tr>
+        </tbody>
+      </table></div>
+      <p>Selected rows of the paper's Tables 2 and 4, where the bound is a certified lower bound for k!D (decimals truncated):</p>
+      <div class="tbl"><table>
+        <thead><tr><th>A</th><th>B = R(A)</th><th>d<sub>k+1</sub></th><th>Bound</th></tr></thead>
+        <tbody>
+          <tr><td class="n">123</td><td class="n">312</td><td class="n">3</td><td class="n">0.3018</td></tr>
+          <tr><td class="n">132</td><td class="n">213</td><td class="n">1</td><td class="n">0.0784</td></tr>
+          <tr><td class="n">213</td><td class="n">321</td><td class="n">1</td><td class="n">0.0531</td></tr>
+          <tr><td class="n">1234</td><td class="n">4123</td><td class="n">3</td><td class="n">0.3852</td></tr>
+          <tr><td class="n">2341</td><td class="n">1234</td><td class="n">1</td><td class="n">0.0679</td></tr>
+          <tr><td class="n">234561</td><td class="n">123456</td><td class="n">n/a</td><td class="n">0.0619</td></tr>
+          <tr><td class="n">1526374</td><td class="n">4152637</td><td class="n">n/a</td><td class="n">0.0836</td></tr>
+          <tr><td class="n">2345671</td><td class="n">1234567</td><td class="n">n/a</td><td class="n">0.0992</td></tr>
+        </tbody>
+      </table></div>
+      <p>From the paper's Table 5, the minimum over A of b<sub>n</sub> − a<sub>n</sub> is 1 at n = k + 1 for every k from 3 to 10, and for k = 3 runs 1, 2, 5, 22, 102, 587, 4120, 30624 for n = 4 to 11. The edge for k ≥ 8 is at least 69345239/(12982643212(k + 1)) ≈ 0.00534/(k + 1) (Corollary 6.3). For comparison, Elizalde and Lin's exact k = 3 probabilities give edges of 0.158, 0.039 and 0.050 above one half for the three complement classes of rotation pairs.</p>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved by hand.</b> The reduction of the margin to F(1)D (Lemma 2.2, Proposition 3.4), the cancellation Lemma 3.1, the tail bounds (Lemmas 3.2, 3.3, 3.5), the overlap formula (Lemma 4.1), the positivity of the first term (Lemma 4.2), the middle-term bounds (Lemma 4.3) and the uniform estimate for k ≥ 8 (Proposition 5.1, Corollary 6.3). These are short and elementary, and each step can be checked with binomial coefficients, inclusion and exclusion, and a geometric series. In preparing this chapter we checked Example 1.1, Lemma 2.2 through n = 8, the values d₄ = 3 and d₄ = 1 for the two examples, the overlap counts N₂ in Example A, and the exact arithmetic of (13), (14) and Corollary 6.3; all agree with the paper.</p>
+      <p><b>Proved by computer.</b> The cases 3 ≤ k ≤ 7 (Proposition 6.2) rest on exact rational computations over 2955 representatives, cross-checked against independent enumerations as described in Section 6.3. The paper states that the data and code are in a public repository; this chapter did not rerun them. The case k = 3 was already settled by Elizalde and Lin's exact formulas, which agree with the certificates.</p>
+      <p><b>Not claimed.</b> The rotation is not claimed to be the best reply, and for some A it is not. The size of the edge is bounded below only; the constant 0.0053 comes from deliberately crude estimates (for instance F(1) ≥ k!/4 from the union bound), and whether the true minimum edge is of order 1/k is open (Question 7.2). The time-by-time statement b<sub>n</sub> &gt; a<sub>n</sub> is supported by enumeration through n = 11 but not proved.</p>
+      <p><b>Context.</b> The paper is by a single independent researcher and appeared as an arXiv preprint; it has not yet been through peer review. The argument is self-contained and its finite computations are small, so independent verification is practical.</p>
+      <p><b>Why it matters.</b> For words, the second player's advantage follows from Conway's closed formula. For permutations no such formula is known, and this paper shows that a sign question can still be settled by controlling an alternating cluster series: cancel on each ordering, bound the head with exact overlap counts, and bound the tail by a probability. That template applies to other questions about first occurrences of consecutive patterns.</p>
+    </section>
+
+    <!-- further reading -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>H. Roy Choudhury, <a href="https://arxiv.org/abs/2611.28063" target="_blank" rel="noopener">The rotation strategy wins Penney's game for permutations</a>, arXiv:2611.28063 (2026). The paper itself; numbering in this chapter follows its <a href="https://arxiv.org/html/2611.28063" target="_blank" rel="noopener">HTML version</a>.</p>
+        <p>S. Elizalde and Y. Lin, <a href="https://arxiv.org/abs/2404.06585" target="_blank" rel="noopener">Penney's game for permutations</a>, arXiv:2404.06585, published in Discrete Mathematics &amp; Theoretical Computer Science 28:1 (2026). The source of the game, the conjecture, the exact k = 3 probabilities used in Section 1, and Conway's formula for words.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.28063v1. Lemma, proposition, corollary, question, table and equation numbers match the paper; section numbers in this chapter are our own. Example B, the tables of α<sub>n</sub>, u<sub>n</sub> and c<sub>n</sub>, the value d₅ = −9 and the k ≤ 7 evaluation of Eq. (12) are our computations. All three animations compute in the page: the first standardizes windows of actual numbers; the second runs the exact insertion recursion for first-occurrence probabilities; the third applies the recurrence of Lemma 3.1 and checks it against a brute-force sum over marked sets.</p>
+  </footer>
+</div>
+
+
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-28063',date:'2026-11-24',title:"The Rotation Strategy Wins Penney's Game for Permutations",authors:'Roy Choudhury',field:'math.CO',tags:['consecutive patterns','cluster method','probability'],mins:40,
+     dek:'Two players wait for the first run of k random numbers whose up-and-down shape matches their pick, and the second player wins more than half the time by moving the last entry of the first player\u2019s pattern to the front. The proof turns the margin into an alternating series over chains of overlapping occurrences, shows these cancel to \u22121, 0 or 1 on every ordering, and finishes with a page of inequalities for k \u2265 8 and exact rational certificates for k from 3 to 7.'},
     {id:'2611-27640',date:'2026-11-23',title:'Ancilla-Free Exact Dicke-State Synthesis with Optimal Size and Depth',authors:'Huang, Zi, He, Ye, Zheng',field:'quant-ph',tags:['state preparation','amplitude amplification','reversible arithmetic'],mins:40,
      dek:'The equal superposition of all n-bit strings with exactly k ones can be built exactly with O(n) gates in O(log n) layers and no spare qubits, matching both known lower bounds and refuting a conjecture that balanced states need depth proportional to k. The key is a cheap starting state with constant overlap, made by a sign flip that depends only on the Hamming weight and computed in space freed by squeezing blocks of 31 qubits into 5-bit counts.'},
     {id:'2611-26119',date:'2026-11-22',title:'Feasible Sub-Replicating Portfolios for Basket Options via the Block Rearrangement Algorithm',authors:'Abou Daya, Bernard, Vanduffel',field:'q-fin.CP',tags:['option pricing','duality','rearrangement algorithm'],mins:40,
@@ -8288,6 +8725,149 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
       el('text',{x:170,y:240,class:'lab'}).textContent='total = '+fr.rows.reduce((s,r)=>s+r.v,0);
     });
   })();
+
+
+  // ================= 2611.28063: shared helpers =================
+  const pnPat=a=>{const s=[...a].sort((x,y)=>x-y);return a.map(v=>s.indexOf(v)+1).join('')};
+  const pnName=(p,A,B)=>p===A?'A':p===B?'B':null;
+
+  // ---- Animation 1: one game, 123 against 312 ----
+  (function(){
+    const root=document.getElementById('pPnRace');if(!root)return;const P=Player(root);const A='123',B='312';
+    const SC={pre:{x:[.55,.31,.12,.64,.27,.40],ghost:.80},awin:{x:[.70,.45,.20,.52,.66]}};
+    function rnd(){const x=[];for(let i=0;i<40;i++){let v;do{v=Math.round(Math.random()*98+1)/100}while(x.includes(v));x.push(v);
+      if(x.length>=3){const p=pnPat(x.slice(-3));if(p===A||p===B)break}}return{x}}
+    const f2=v=>v.toFixed(2);
+    function load(sc){
+      const X=sc.x,F=[];let end=-1,win=null;
+      for(let n=3;n<=X.length;n++){const p=pnPat(X.slice(n-3,n));if(p===A||p===B){end=n;win=pnName(p,A,B);break}}
+      const T=end<0?X.length:end;
+      F.push({n:0,t:'The setup',c:`Player one waits for A = 123, three increasing numbers in a row. Player two answers with the rotation B = R(123) = 312: high, then low, then middle. Numbers between 0 and 1 arrive one at a time, and only the relative order of the last three matters.`});
+      for(let n=1;n<=T;n++){const fr={n};
+        if(n<3){fr.t=`Observation ${n}`;fr.c=`The observation X<sub>${n}</sub> is ${f2(X[n-1])}. With fewer than three observations there is no window yet.`}
+        else{const w=X.slice(n-3,n),p=pnPat(w),nm=pnName(p,A,B);fr.pat=p;fr.nm=nm;
+          fr.t=nm?`Time ${n}: ${nm} occurs`:`Time ${n}: no target`;
+          fr.c=`The new observation is X<sub>${n}</sub> = ${f2(X[n-1])}. The window ${w.map(f2).join(', ')} has ranks ${p.split('').join(', ')}, so it standardizes to ${p}. `+
+            (nm?`That is pattern ${nm}, so ${nm==='B'?'the rotation':'the first player'} wins at T = ${n}. `+(nm==='A'?`The window one step earlier was ${pnPat(X.slice(n-4,n-1))}, not 312, so B had no chance to cut in.`:``)
+              :`It is neither 123 nor 312, so the game continues.`)}
+        F.push(fr)}
+      if(sc.ghost!=null&&win==='B'){const g=X.slice(T-2).concat([sc.ghost]),gp=pnPat(g);
+        F.push({n:T,ghost:sc.ghost,pat:pnPat(X.slice(T-3,T)),nm:'B',t:'One step too late',c:`Had the game gone on and X<sub>${T+1}</sub> been ${f2(sc.ghost)}, the window ${g.map(f2).join(', ')} would standardize to ${gp}, an occurrence of A. This is the overlap N<sub>1</sub>(B, A): the last two entries of 312 have the order of the first two of 123, so B often appears exactly one step before an A would.`})}
+      F.delay=3600;
+      P.load(F,(fr,el)=>{const n=fr.n,show=Math.min(n,11),first=n-show,bw=24,gap=5,x0=20,base=168,H=140;
+        el('line',{x1:10,y1:base,x2:330,y2:base,stroke:'var(--line)','stroke-width':1});
+        if(n===0){el('text',{x:170,y:100,class:'lab'}).textContent='A = 123   vs   B = 312';return}
+        for(let i=first;i<n+(fr.ghost!=null?1:0);i++){const v=i<n?X[i]:fr.ghost,x=x0+(i-first)*(bw+gap),inW=fr.ghost!=null?(i>=n-2):(n>=3&&i>=n-3);
+          const r=el('rect',{x,y:base-v*H,width:bw,height:v*H,rx:3,fill:inW?(fr.ghost!=null?'var(--bad)':'var(--accent)'):'var(--cool)',opacity:inW?1:.45});
+          if(i>=n){r.setAttribute('fill','none');r.setAttribute('stroke','var(--bad)');r.setAttribute('stroke-dasharray','4 3');r.setAttribute('stroke-width','1.5')}
+          el('text',{x:x+bw/2,y:base-v*H-4,class:'lab'}).textContent=(v).toFixed(2).slice(1);
+          el('text',{x:x+bw/2,y:base+13,class:'lab'}).textContent=i+1;}
+        if(n>=3&&fr.pat){const wst=fr.ghost!=null?n-2:n-3,win=fr.ghost!=null?X.slice(n-2).concat([fr.ghost]):X.slice(n-3,n),pp=pnPat(win);
+          win.forEach((v,j)=>{const x=x0+(wst+j-first)*(bw+gap)+bw/2;el('text',{x,y:base+30,class:'msg',fill:'var(--fg)'}).textContent=pp[j]});
+          const nm=pnName(pp,A,B);el('text',{x:170,y:222,class:'msg',fill:nm==='A'?'var(--bad)':nm==='B'?'var(--ok)':'var(--muted)'}).textContent=`window ${pp}`+(nm?` = ${nm}`+(fr.ghost!=null?' (too late)':' wins'):' · no target');}
+        el('text',{x:170,y:14,class:'lab'}).textContent=first>0?`last ${show} observations of ${n}`:'observations';
+      });
+    }
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen==='rand'?rnd():SC[b.dataset.scen])}));
+    load(SC.pre);
+  })();
+
+  // ---- Animation 2: exact first-occurrence probabilities by insertion ----
+  function pnFirst(A,B,N){
+    // state: ranks (0-based among n) of the last two entries; weight = probability the game is still running
+    const M=N+2;let st=new Float64Array(M*M);st[0*M+1]=.5;st[1*M+0]=.5;
+    const out=[];let run=1;
+    for(let n=2;n<N;n++){const nx=new Float64Array(M*M);let a=0,b=0;
+      for(let x=0;x<n;x++)for(let y=0;y<n;y++){const w=st[x*M+y];if(!w)continue;const ww=w/(n+1);
+        for(let r=0;r<=n;r++){const x2=x+(x>=r?1:0),y2=y+(y>=r?1:0),p=pnPat([x2,y2,r]);
+          if(p===A)a+=ww;else if(p===B)b+=ww;else nx[y2*M+r]+=ww}}
+      st=nx;run-=a+b;out.push({n:n+1,a,b,run})}
+    return out}
+  (function(){
+    const root=document.getElementById('pPnFirst');if(!root)return;const P=Player(root);
+    const PAIRS={A:['123','312'],B:['213','321']};const show=[3,4,5,6,7,8,10,12,16,24,40];
+    const fact=n=>{let f=1;for(let i=2;i<=n;i++)f*=i;return f};
+    function load(key){const [A,B]=PAIRS[key],R=pnFirst(A,B,41);let ca=0,cb=0;const cum=R.map(r=>{ca+=r.a;cb+=r.b;return{...r,ca,cb}});
+      const F=show.map(n=>{const r=cum.find(z=>z.n===n),ia=Math.round(r.a*fact(n)),ib=Math.round(r.b*fact(n)),lead=r.cb>r.ca;
+        let c;
+        if(n===3)c=`Of the 3! = 6 orderings of three numbers, exactly one is ${A} and one is ${B}, so each player wins at time 3 with probability 1/6 ≈ 0.1667.`;
+        else if(n<=8)c=`At time ${n}, u<sup>A</sup><sub>${n}</sub> = ${ia} and u<sup>B</sup><sub>${n}</sub> = ${ib} of the ${n}! = ${fact(n)} orderings end the game with ${A} and with ${B}. Dividing by ${n}! gives ${r.a.toFixed(4)} and ${r.b.toFixed(4)}. Running totals: ${r.ca.toFixed(4)} for ${A}, ${r.cb.toFixed(4)} for ${B}, and the game is still running with probability ${r.run.toFixed(4)}.`;
+        else c=`By time ${n} the totals are ${r.ca.toFixed(4)} for ${A} and ${r.cb.toFixed(4)} for ${B}; the game is still running with probability ${r.run<1e-4?r.run.toExponential(1):r.run.toFixed(4)}.`+(n===40?` The limits are Pr(${A} first) ≈ ${r.ca.toFixed(4)} and Pr(${B} first) ≈ ${r.cb.toFixed(4)}, so the rotation's margin is ${(r.cb-r.ca).toFixed(4)}.`:` Each further step multiplies the remaining mass by roughly ${(cum.find(z=>z.n===n).run/cum.find(z=>z.n===n-1).run).toFixed(2)}.`);
+        return{n,r,t:n===40?`Time ${n}: the limit`:`Time ${n}`,c}});
+      F.delay=4200;
+      P.load(F,(fr,el)=>{const base=200,H=820,x0=28,bw=18;
+        el('line',{x1:20,y1:base,x2:330,y2:base,stroke:'var(--line)','stroke-width':1});
+        for(let m=3;m<=16;m++){const x=x0+(m-3)*21.5;el('text',{x:x+bw/2,y:base+13,class:'lab'}).textContent=m;
+          if(m>fr.n)continue;const r=cum.find(z=>z.n===m);
+          el('rect',{x,y:base-r.a*H,width:bw/2,height:Math.max(r.a*H,.5),fill:'var(--bad)',rx:1});
+          el('rect',{x:x+bw/2,y:base-r.b*H,width:bw/2,height:Math.max(r.b*H,.5),fill:'var(--ok)',rx:1});}
+        el('text',{x:170,y:228,class:'lab'}).textContent='time n';
+        const r=fr.r,W=290,xs=25;
+        el('rect',{x:xs,y:14,width:W*r.ca,height:12,fill:'var(--bad)'});
+        el('rect',{x:xs+W*r.ca,y:14,width:W*r.run,height:12,fill:'var(--raise)'});
+        el('rect',{x:xs+W*(r.ca+r.run),y:14,width:W*r.cb,height:12,fill:'var(--ok)'});
+        el('line',{x1:xs+W/2,y1:10,x2:xs+W/2,y2:30,stroke:'var(--fg)','stroke-width':1,'stroke-dasharray':'2 2'});
+        el('text',{x:xs,y:42,class:'lab',style:'text-anchor:start'}).textContent=`${A} first: ${r.ca.toFixed(4)}`;
+        el('text',{x:xs+W,y:42,class:'lab',style:'text-anchor:end'}).textContent=`${B} first: ${r.cb.toFixed(4)}`;
+        el('text',{x:xs+W/2,y:56,class:'lab'}).textContent=`still running: ${r.run<1e-4?r.run.toExponential(1):r.run.toFixed(4)}`;
+      });}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen)}));
+    load('A');
+  })();
+
+  // ---- Animation 3: Lemma 3.1 on one ordering ----
+  (function(){
+    const root=document.getElementById('pPnClus');if(!root)return;const P=Player(root);const A='123',B='312',k=3;
+    const SIG=[[4,1,2,3,5,6,7,8,9,10],[6,7,10,2,4,1,3,5,8,9],[5,9,10,1,2,3,4,6,7,8]];
+    const sg=v=>v>0?'+'+v:v<0?'−'+(-v):'0';
+    function load(idx){const s=SIG[idx],n=s.length,d=n-k;const t=[],lab=[];
+      for(let i=0;i<=d;i++){const p=pnPat(s.slice(i,i+k));if(p===A||p===B){t.push(i);lab.push(p===A?'A':'B')}}
+      const r=t.length,w=[],S=[0];
+      for(let j=0;j<r;j++){if(j===0)w.push(-1);else{let sum=0;for(let i=0;i<j;i++)if(t[j]-t[i]<k)sum+=w[i];w.push(-sum)}S.push(S[j]+w[j])}
+      // brute force over admissible marked sets
+      const inner=t.slice(1,-1);let pos=0,neg=0;
+      for(let m=0;m<(1<<inner.length);m++){const mk=[0];inner.forEach((x,i)=>{if(m>>i&1)mk.push(x)});mk.push(d);
+        let ok=true;for(let i=1;i<mk.length;i++)if(mk[i]-mk[i-1]>=k)ok=false;if(!ok)continue;if(mk.length%2)neg++;else pos++}
+      const F=[{j:-1,t:'The ordering and its targets',c:`The ordering is σ = ${s.join(' ')}. Its windows of three with pattern 123 (A) or 312 (B) start at ${t.join(', ')}: r = ${r} targets, the first at 0 and the last at d = ${d}, with patterns ${lab.join(', ')}. A cluster on σ is any set of these starts containing 0 and ${d} whose consecutive marks are less than 3 apart. There are ${pos+neg} of them.`}];
+      for(let j=0;j<r;j++){
+        const near=[];for(let i=0;i<j;i++)if(t[j]-t[i]<k)near.push(i);
+        let l=0;for(let i=0;i<j;i++)if(t[i]<=t[j]-k)l=i+1;
+        let c;
+        if(j===0)c=`The first start t<sub>1</sub> = 0 alone is one mark, so w<sub>1</sub> = −1 and S<sub>1</sub> = −1.`;
+        else c=`Start t<sub>${j+1}</sub> = ${t[j]} (pattern ${lab[j]}). Earlier starts less than 3 before it: ${near.map(i=>`t<sub>${i+1}</sub> = ${t[i]} with w = ${sg(w[i])}`).join(' and ')}. Adding the mark flips the sign, so w<sub>${j+1}</sub> = −(${near.map(i=>sg(w[i])).join(' + ')}) = ${sg(w[j])}. The partial sum is S<sub>${j+1}</sub> = ${sg(S[j+1])}, a copy of S<sub>${l}</sub> = ${sg(S[l])}, since ℓ(${j+1}) = ${l}`+(l?`, the last start at or before ${t[j]} − 3 = ${t[j]-3}.`:`: no start lies at or before ${t[j]} − 3.`);
+        F.push({j,near,l,t:`Start ${j+1} of ${r}`,c})}
+      const sign=lab[r-1]==='A'?1:-1;
+      F.push({j:r,fin:true,t:'Check by brute force',c:`Listing all ${1<<inner.length} subsets of the ${inner.length} interior starts, ${pos+neg} ${pos+neg===1?'gives an admissible cluster':'give admissible clusters'}: ${pos} with an even number of marks (+1) and ${neg} with an odd number (−1). Total ${sg(pos-neg)}, equal to w<sub>${r}</sub> = ${sg(w[r-1])}. The last window is ${lab[r-1]}, so σ adds ${sg(sign*w[r-1])} to d<sub>10</sub>. Every ordering, however many targets it has, contributes −1, 0 or +1.`});
+      F.delay=5200;
+      P.load(F,(fr,el)=>{const x0=26,bw=25,gp=4,base=96,Hh=7.2,X=i=>x0+i*(bw+gp);
+        el('line',{x1:16,y1:base,x2:330,y2:base,stroke:'var(--line)','stroke-width':1});
+        const cur=fr.j>=0&&fr.j<r?t[fr.j]:null;
+        s.forEach((v,i)=>{const inC=cur!=null&&i>=cur&&i<cur+k;el('rect',{x:X(i),y:base-v*Hh,width:bw,height:v*Hh,rx:3,fill:inC?'var(--accent)':'var(--cool)',opacity:inC?1:.5});
+          el('text',{x:X(i)+bw/2,y:base-v*Hh-4,class:'lab'}).textContent=v});
+        // start axis
+        const ay=122;
+        for(let i=0;i<=d;i++){const x=X(i)+bw/2,ti=t.indexOf(i);
+          if(ti<0){el('circle',{cx:x,cy:ay,r:3,fill:'var(--line)'});continue}
+          const col=lab[ti]==='A'?'var(--bad)':'var(--ok)',on=fr.j===ti,nr=fr.near&&fr.near.includes(ti);
+          el('circle',{cx:x,cy:ay,r:9,fill:col,stroke:on?'var(--accent)':nr?'var(--fg)':'none','stroke-width':on?3:nr?1.5:0,opacity:fr.j>=0&&ti>fr.j&&!fr.fin?.35:1});
+          el('text',{x,y:ay+3.5,class:'lab',style:'fill:var(--bg);font-weight:600'}).textContent=lab[ti]}
+        el('text',{x:X(0)+bw/2,y:ay+22,class:'lab'}).textContent='start 0';el('text',{x:X(d)+bw/2,y:ay+22,class:'lab'}).textContent='start '+d;
+        // table
+        const ty=168,cx0=86,cw=(320-cx0)/r;
+        ['t','w','S'].forEach((h,ri)=>el('text',{x:40,y:ty+ri*24,class:'msg',fill:'var(--muted)'}).textContent=h==='t'?'t_j':h==='w'?'w_j':'S_j');
+        for(let j=0;j<r;j++){const x=cx0+j*cw+cw/2,vis=fr.fin||j<=fr.j,on=fr.j===j;
+          if(on)el('rect',{x:x-cw/2+2,y:ty-14,width:cw-4,height:66,rx:6,fill:'none',stroke:'var(--accent)','stroke-width':1.5});
+          if(fr.near&&fr.near.includes(j))el('rect',{x:x-cw/2+2,y:ty+10,width:cw-4,height:18,rx:4,fill:'var(--raise)'});
+          el('text',{x,y:ty,class:'msg',fill:'var(--fg)'}).textContent=t[j];
+          if(vis){el('text',{x,y:ty+24,class:'msg',fill:w[j]>0?'var(--ok)':w[j]<0?'var(--bad)':'var(--muted)'}).textContent=sg(w[j]);
+            el('text',{x,y:ty+48,class:'msg',fill:'var(--fg)'}).textContent=sg(S[j+1])}}
+        if(fr.fin)el('text',{x:170,y:244,class:'msg',fill:'var(--accent)'}).textContent=`total cluster weight = ${sg(w[r-1])}`;
+        else el('text',{x:170,y:244,class:'lab'}).textContent='S_j only ever copies an earlier value: 0 or −1';
+      });}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(+b.dataset.scen)}));
+    load(0);
+  })();
+
 
 
   route();
