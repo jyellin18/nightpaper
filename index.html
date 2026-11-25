@@ -6726,10 +6726,429 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
 </div>
 
 
+<!-- ================= PAPER: 2611.32528 ================= -->
+<div class="wrap" id="view-p-2611-32528" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Wed, Nov 25</span></div>
+  <div class="paperhead">
+    <h1>The Min-Cut Formulation of Ollivier-Ricci Curvature</h1>
+    <p class="meta">Giorgio Micaletto · submitted Nov 24, announced Nov 25, 2026 · cs.DS · <a href="https://arxiv.org/abs/2611.32528" target="_blank" rel="noopener">arXiv 2611.32528</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">The curvature of an edge in a network, a number that says whether the neighbourhoods of its two ends huddle together or splay apart, can be computed exactly with one minimum cut and without ever building a table of distances. The standard definition asks for the cheapest way to move one random-walk distribution onto another, which is a linear program whose costs are graph distances, so software either builds the distance table and calls a solver for every edge or settles for an approximation. This paper observes that for one-step walks only three distances occur, that the dual of the transport problem then has an optimal solution using only three price levels, and that writing those levels in unary turns the dual into a maximum-weight closure problem, which is a minimum cut. Adjacency lists alone decide every arc of the cut network, the network has size linear in the adjacency lists read, and the method is a median 6 times faster than the usual pipeline on 20 real networks while matching it to rounding error. A converse construction shows that no exact method can be faster than bipartite matching.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what Ollivier-Ricci curvature κ(i, j) = 1 − 𝒲₁(m<sub>i</sub>, m<sub>j</sub>) measures, and how to compute it by hand on a small graph;</li>
+        <li>the transport problem behind 𝒲₁, its dual in Eq. (1), and why a feasible dual solution certifies the answer;</li>
+        <li>why only the distances 1, 2 and 3 occur, decided by adjacency and common neighbours (Lemma 2);</li>
+        <li>why the dual has an integral optimum with three price levels, and how unary encoding turns it into a closure problem and then a minimum cut, giving 𝒲₁ = DA − F (Theorem 1, Corollary 3);</li>
+        <li>how to read off optimal prices and an optimal transport plan from the cut (Proposition 5), and the min-max formula of Corollary 4;</li>
+        <li>how relay nodes at common neighbours make the network linear in size (Proposition 6, Theorem 7), and why exact curvature is as hard as bipartite matching (Theorem 9);</li>
+        <li>what the experiments measure, and what they leave open.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>G = (V, E)</dt><dd>a finite, simple, connected, undirected graph</dd>
+        <dt>dist(x, y)</dt><dd>hop distance: the number of edges on a shortest path</dd>
+        <dt>𝒩(u), 𝒩[u]</dt><dd>the neighbours of u, and the closed neighbourhood 𝒩(u) ∪ {u}</dd>
+        <dt>d<sub>u</sub></dt><dd>the degree |𝒩(u)|</dd>
+        <dt>(i, j)</dt><dd>the edge whose curvature is computed</dd>
+        <dt>𝒞, 𝒰<sub>i</sub>, 𝒰<sub>j</sub></dt><dd>common neighbours 𝒩(i) ∩ 𝒩(j); neighbours of i only, 𝒩(i) ∖ 𝒩[j]; neighbours of j only, 𝒩(j) ∖ 𝒩[i]</dd>
+        <dt>m<sub>u</sub></dt><dd>a probability distribution attached to u; one-step if it lives on 𝒩[u]</dd>
+        <dt>𝒲₁</dt><dd>the Wasserstein-1 (earth mover's) distance between two distributions</dd>
+        <dt>κ(i, j)</dt><dd>the curvature 1 − 𝒲₁(m<sub>i</sub>, m<sub>j</sub>)</dd>
+        <dt>μ, P, N, ν, A</dt><dd>μ = m<sub>i</sub> − m<sub>j</sub>; P where μ &gt; 0; N where μ &lt; 0; ν = −μ on N; A = μ(P) = ν(N), the mass that must move</dd>
+        <dt>π<sub>xy</sub></dt><dd>a transport plan: mass sent from x ∈ P to y ∈ N</dd>
+        <dt>u<sub>x</sub>, v<sub>y</sub></dt><dd>dual potentials (prices) on P and on N</dd>
+        <dt>D</dt><dd>the largest distance between a point of P and a point of N; D = 3 for one-step measures</dd>
+        <dt>a<sub>x,τ</sub>, b<sub>y,σ</sub></dt><dd>nodes of the cut network, meaning "u<sub>x</sub> ≥ τ" and "v<sub>y</sub> ≥ σ"</dd>
+        <dt>s, t, F</dt><dd>source, sink, and the maximum flow value</dd>
+        <dt>e₁, e₂</dt><dd>the numbers of pairs in P × N at distance 1 and 2</dd>
+        <dt>Ω, h<sub>w</sub></dt><dd>witnesses (vertices with neighbours in both P and N) and their relay nodes</dd>
+        <dt>ℓ<sub>ij</sub></dt><dd>the local input d<sub>i</sub> + d<sub>j</sub> + Σ<sub>x∈P∪N</sub> d<sub>x</sub>, the number of adjacency entries read</dd>
+        <dt>Λ</dt><dd>a common denominator that makes all masses integers</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Example 1: a square with a tail.</b> Five vertices i, j, x₁, x₂, y with edges ij, ix₁, ix₂, jy and x₁y. The edge (i, j) lies on the square i, x₁, y, j, and x₂ hangs off i. The two endpoints have different degrees, d<sub>i</sub> = 3 and d<sub>j</sub> = 2, which makes the transport problem lopsided enough to need all three price levels. Its curvature turns out to be 1/4.</li>
+        <li><b>Example 2: a shared middle vertex.</b> Eight vertices. The edge (i, j) has a common neighbour c; i also has neighbours x₁, x₂, and j has neighbours y₁, y₂. The remaining edges are x₁y₁ and three edges from an outside vertex w to x₁, x₂ and y₂. Both endpoints have degree 4. This example has a vertex w outside both neighbourhoods that still matters, which is the situation the relays of Section 6 handle. Its curvature turns out to be 2/5.</li>
+      </ul>
+      <p class="note">Both examples are ours, built to be checked by hand; the paper works with general graphs and real networks. Every number we state for them was also checked by a short program, and the animation in Section 5 recomputes them.</p>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Curvature">
+      <span class="num">1 · CURVATURE ON A GRAPH</span>
+      <h2>What does it mean for an edge to be curved?</h2>
+      <p>On a sphere, two travellers who start side by side and walk "straight ahead" drift together; on a saddle they drift apart. Ricci curvature measures this: positive curvature pulls nearby neighbourhoods together, negative curvature pushes them apart. Ollivier's idea, from his 2009 paper, was to define the same thing for any space where one can take a random step. Put a small cloud of probability around each endpoint of an edge, measure how far apart the two clouds are, and compare that with the distance between the endpoints. If the clouds are closer than the points, the edge is positively curved.</p>
+      <p>For a graph the clouds are random-walk distributions. Each vertex u gets a probability distribution m<sub>u</sub>, and the paper calls m<sub>u</sub> <span class="term">one-step</span> if it puts all its mass on the closed neighbourhood 𝒩[u], meaning u itself and its neighbours. The most common choice is the p-lazy walk: stay at u with probability p and otherwise move to a uniformly random neighbour.</p>
+      <div class="def"><span class="label">Definition · lazy walks (the paper's footnote 1)</span>
+        <div class="math" data-tex="m_u(u)=p,\qquad m_u(x)=\frac{1-p}{d_u}\quad\text{for }x\in\mathcal N(u)."></div>
+        <p>In words: with probability p the walker stays put, and otherwise it picks one of the d<sub>u</sub> neighbours at random. The choice p = 0 is the non-lazy walk, and p = 1/(d<sub>u</sub> + 1) is the <span class="term">lazy walk</span>, which is simply the uniform distribution on 𝒩[u]. Unless stated otherwise, this chapter and the paper's experiments use the lazy walk.</p>
+      </div>
+      <p>The paper also covers weighted walks and the Lin-Lu-Yau (LLY) curvature, which is the limit of κ<sub>p</sub>/(1 − p) as p → 1 and satisfies κ<sub>p</sub> = (1 − p)κ<sub>LLY</sub> once p ≥ 1/(max{d<sub>i</sub>, d<sub>j</sub>} + 1). The default of the popular GraphRicciCurvature package is half the LLY curvature.</p>
+      <div class="def"><span class="label">Definition · Ollivier-Ricci curvature</span>
+        <div class="math" data-tex="\kappa(i,j)=1-\mathcal W_1(m_i,m_j)\qquad\text{for }(i,j)\in E."></div>
+        <p>In words: the curvature of an edge is one minus the cost of reshaping the walk distribution at i into the walk distribution at j, where moving a unit of probability by one hop costs one. Since the endpoints are one hop apart, κ &gt; 0 says the clouds are closer than the endpoints and κ &lt; 0 says they are further apart.</p>
+      </div>
+      <p>The cost 𝒲₁ is defined carefully in the next section, but three cases can already be done by eye. These three computations are ours.</p>
+      <p>In the complete graph on four vertices, 𝒩[i] and 𝒩[j] are both the whole vertex set, so the two lazy distributions are identical, nothing has to move, 𝒲₁ = 0 and κ = 1. That is the most positive value possible, and it reflects that the edge sits inside a dense cluster.</p>
+      <p>Take instead a tree edge whose ends both have two further neighbours: i is joined to x₁, x₂ and j, and j is joined to y₁, y₂ and i. The lazy distributions put 1/4 on each of i, j, x₁, x₂ and on each of j, i, y₁, y₂. The mass on i and j is the same in both and can stay. What must move is 1/4 from x₁ and 1/4 from x₂ onto y₁ and y₂, and every such trip, for example x₁, i, j, y₁, takes three hops. So 𝒲₁ = 2 · (1/4) · 3 = 3/2 and κ = −1/2. Bridges between otherwise separate regions are negatively curved, which is why curvature is used to find bottlenecks.</p>
+      <p>In Example 1 the lazy distribution at i puts 1/4 on each of i, j, x₁, x₂, and the one at j puts 1/3 on each of j, i, y. Section 2 shows that the cheapest reshaping costs 3/4, so κ(i, j) = 1/4: the square through x₁ and y helps, but the tail x₂ hurts.</p>
+      <div class="fact"><span class="label">Fact · where curvature is used</span>
+        <p>The paper lists uses in studying over-squashing in message-passing neural networks, structural encodings, pooling, evaluating generative models and detecting communities. Many of these algorithms recompute curvature repeatedly or need it on every edge of a large graph, so the cost per edge matters.</p>
+      </div>
+      <p class="short"><b>In short:</b> give each vertex a one-step random-walk distribution; the curvature of an edge is one minus the cheapest cost of moving one endpoint's distribution onto the other's, so dense clusters give κ near 1 and bridges give negative κ.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Transport">
+      <span class="num">2 · THE EARTH MOVER'S DISTANCE</span>
+      <h2>What exactly is the cost of reshaping one distribution into another?</h2>
+      <p>Picture the distribution m<sub>i</sub> as piles of sand on the vertices and m<sub>j</sub> as holes of the same total volume. A <span class="term">transport plan</span> says how much sand goes from each pile to each hole, and moving an amount π along distance dist costs π · dist. The earth mover's distance, or Wasserstein-1 distance, is the cheapest plan.</p>
+      <p>Much of the sand needs no moving. If a vertex carries mass under both distributions, that common part can stay where it is. The paper therefore works with the net mass</p>
+      <div class="math" data-tex="\mu=m_i-m_j,\qquad P=\{\mu>0\},\qquad N=\{\mu<0\},\qquad \nu=-\mu\ \text{on }N,\qquad A=\mu(P)=\nu(N)."></div>
+      <p>In words: P is where m<sub>i</sub> has extra mass, N is where m<sub>j</sub> has extra mass, ν records the shortfall on N as positive numbers, and A is the total amount that must travel. The two totals agree because both distributions have total mass one. The paper's statement, citing Villani, is that 𝒲₁(m<sub>i</sub>, m<sub>j</sub>) is the optimal cost of moving μ<sup>+</sup> onto μ<sup>−</sup>, the positive and negative parts of μ.</p>
+      <div class="def"><span class="label">Definition · the transportation problem (Appendix A.1)</span>
+        <div class="math" data-tex="\mathcal W_1(\mu^+,\mu^-)=\min\Bigl\{\sum_{x,y}\operatorname{dist}(x,y)\,\pi_{xy}\ :\ \pi\ge0,\ \ \sum_y\pi_{xy}=\mu(x),\ \ \sum_x\pi_{xy}=\nu(y)\Bigr\}."></div>
+        <p>In words: choose nonnegative amounts π<sub>xy</sub> to send from each surplus vertex x ∈ P to each deficit vertex y ∈ N, so that every surplus is emptied and every deficit is filled, and minimize total mass times distance. This is a linear program: a linear objective, linear equality constraints, and nonnegativity.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why can the common mass stay put without loss?</span></summary><div class="pfbody">
+        <p>This argument is ours, a standard one. Take any plan from m<sub>i</sub> to m<sub>j</sub> and suppose some mass leaves a vertex z while some mass arrives at z. If a unit goes a → z and another unit goes z → b, replace the two trips by a single trip a → b. By the triangle inequality dist(a, b) ≤ dist(a, z) + dist(z, b), so the cost does not increase. Repeating this until no vertex both sends and receives leaves a plan that only sends out of P and only receives into N, and the amounts are exactly μ<sup>+</sup> and μ<sup>−</sup>. So the cheapest plan for the full distributions costs the same as the cheapest plan for the net masses.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Example 1 in numbers. Work in units of 1/12, the paper's common denominator Λ = (d<sub>i</sub> + 1)(d<sub>j</sub> + 1) = 12 for the lazy walk. Then m<sub>i</sub> is 3 on each of i, j, x₁, x₂, and m<sub>j</sub> is 4 on each of i, j, y. The net mass is +3 on x₁ and on x₂, −1 on i, −1 on j and −4 on y. So P = {x₁, x₂} with μ = 3, 3; N = {i, j, y} with ν = 1, 1, 4; and A = 6, which is 1/2 of the total probability. The distances from P to N are</p>
+      <div class="tbl"><table>
+        <thead><tr><th></th><th>i (ν = 1)</th><th>j (ν = 1)</th><th>y (ν = 4)</th></tr></thead>
+        <tbody>
+          <tr><td>x₁ (μ = 3)</td><td class="n">1</td><td class="n">2</td><td class="n">1</td></tr>
+          <tr><td>x₂ (μ = 3)</td><td class="n">1</td><td class="n">2</td><td class="n">3</td></tr>
+        </tbody>
+      </table></div>
+      <p>The hole at y needs 4 units but x₁ has only 3, so at least one unit must come from x₂, three hops away. A good plan is: x₁ sends 3 to y (cost 3), x₂ sends 1 to y (cost 3), 1 to i (cost 1) and 1 to j (cost 2). The total is 9 units, so 𝒲₁ = 9/12 = 3/4 and κ(i, j) = 1/4. Nothing yet proves that no plan is cheaper; Section 3 supplies a certificate.</p>
+      <p>Example 2 is simpler because both degrees are 4. In units of 1/5, μ is +1 on x₁ and x₂ and −1 on y₁ and y₂, while i, j and c cancel. The distances are dist(x₁, y₁) = 1 (an edge), dist(x₁, y₂) = 2 and dist(x₂, y₂) = 2 (both through w), and dist(x₂, y₁) = 3. Pairing x₁ with y₁ and x₂ with y₂ costs 1 + 2 = 3, the other pairing costs 2 + 3 = 5, so 𝒲₁ = 3/5 and κ = 2/5.</p>
+      <p>The obstacle is visible already. A standard solver needs the |P| × |N| table of distances before it can start. GraphRicciCurvature, the usual tool, computes the distances by shortest paths and solves one linear program per edge with the POT library, and for large neighbourhoods it switches to an approximate method called Sinkhorn iteration and keeps at most 3,000 neighbours per vertex. DasGupta, Grigorescu and Mukherjee (2023) proved that exact local algorithms that query a distance table need n²/6 expected queries in the worst case on neighbourhoods of size n, even when the degrees are equal.</p>
+      <p class="short"><b>In short:</b> 𝒲₁ is the cheapest way to move the surplus μ<sup>+</sup> on P into the deficit μ<sup>−</sup> on N; it is a linear program whose costs are distances, and the table of distances is what makes the standard approach expensive.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Three distances">
+      <span class="num">3 · ONLY THREE DISTANCES</span>
+      <h2>Which distances can actually occur, and what do they depend on?</h2>
+      <p>For one-step walks, surplus lives near i and deficit lives near j, and i and j are adjacent. That leaves very little room. Split the vertices that matter, S = 𝒩[i] ∪ 𝒩[j], into four disjoint groups: the endpoints {i, j}, the common neighbours 𝒞 = 𝒩(i) ∩ 𝒩(j), the private neighbours of i, 𝒰<sub>i</sub> = 𝒩(i) ∖ 𝒩[j], and the private neighbours of j, 𝒰<sub>j</sub> = 𝒩(j) ∖ 𝒩[i].</p>
+      <div class="fact"><span class="label">Lemma 2 · local distances</span>
+        <p>Let (i, j) ∈ E, x ∈ 𝒩[i], y ∈ 𝒩[j] and x ≠ y. Then dist(x, y) ≤ 2 unless x ∈ 𝒰<sub>i</sub> and y ∈ 𝒰<sub>j</sub>. In that case dist(x, y) = 1 if xy ∈ E, dist(x, y) = 2 if xy ∉ E and x and y have a common neighbour, and dist(x, y) = 3 otherwise.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is three always enough, and why is nothing more than adjacency needed?</span></summary><div class="pfbody">
+        <p>This is the paper's proof in Appendix A.2. If y ∈ 𝒩[i], then x and y are both in 𝒩[i] and the path through i has at most two edges. If x ∈ 𝒩[j], the path through j works the same way. Otherwise x is in 𝒩[i] but not 𝒩[j], so x ∈ 𝒰<sub>i</sub>, and likewise y ∈ 𝒰<sub>j</sub>. The path x, i, j, y gives dist(x, y) ≤ 3. Finally, dist(x, y) = 1 exactly when xy is an edge, and dist(x, y) ≤ 2 exactly when xy is an edge or the two have a common neighbour.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For one-step measures P ⊆ 𝒩[i] and N ⊆ 𝒩[j], and P and N are disjoint, so Lemma 2 says every cost in the transport problem is 1, 2 or 3. More importantly, deciding which one only takes two kinds of question: "is xy an edge?" and "do x and y share a neighbour?". The second question sounds like it needs a search, but it can be answered for all pairs at once by going through each candidate middle vertex w and noting which surplus and deficit vertices it touches. That observation drives Section 6.</p>
+      <p>In Example 1, x₁ and x₂ are private neighbours of i and y is the only private neighbour of j. The pairs (x₁, i), (x₂, i) and (x₁, j), (x₂, j) fall under the first case of the lemma, with distances 1, 1, 2, 2 through i. The pair (x₁, y) is an edge, distance 1. The pair (x₂, y) has no edge and no common neighbour, since x₂'s only neighbour is i and y's neighbours are j and x₁, so its distance is 3. These are the entries of the table in Section 2.</p>
+      <p>In Example 2 all four pairs are private-private. Only x₁y₁ is an edge; x₁ and y₂ share w, as do x₂ and y₂; x₂ and y₁ share nothing, so their distance is 3. The vertex w lies outside S, but it decides two of the four costs.</p>
+      <p class="short"><b>In short:</b> for one-step walks every cost is 1, 2 or 3 (Lemma 2), and which one is decided by adjacency and by common neighbours, never by a general shortest-path search.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Duality">
+      <span class="num">4 · PRICES INSTEAD OF PLANS</span>
+      <h2>How can one prove that a transport plan is cheapest?</h2>
+      <p>Every linear program that minimizes has a partner program that maximizes, its <span class="term">dual</span>, and the two have the same optimal value. For transport the dual has a pleasant reading. Assign a height u<sub>x</sub> to each surplus vertex and a height v<sub>y</sub> to each deficit vertex, with the rule that no shipment may drop by more than its length. Then the total drop, weighted by mass, can never exceed the total distance travelled.</p>
+      <div class="def"><span class="label">Definition · the Kantorovich dual</span>
+        <div class="math" data-tex="\mathcal W_1(m_i,m_j)=\max\Bigl\{\sum_{x\in P}\mu(x)u_x-\sum_{y\in N}\nu(y)v_y\ :\ u_x-v_y\le\operatorname{dist}(x,y)\ \ \forall (x,y)\in P\times N\Bigr\}.\tag{1}"></div>
+        <p>In words: choose prices u on P and v on N so that every price difference u<sub>x</sub> − v<sub>y</sub> is at most the corresponding distance; among all such choices, the largest value of "mass-weighted price at the sources minus mass-weighted price at the sinks" equals the earth mover's distance.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why can a feasible choice of prices never exceed the cost of a plan?</span></summary><div class="pfbody">
+        <p>This is weak duality, a standard argument written out by us. Let π be any feasible plan and (u, v) any prices satisfying the constraint of (1). Then</p>
+        <div class="math" data-tex="\sum_{x,y}\operatorname{dist}(x,y)\pi_{xy}\ \ge\ \sum_{x,y}(u_x-v_y)\pi_{xy}=\sum_x u_x\sum_y\pi_{xy}-\sum_y v_y\sum_x\pi_{xy}=\sum_x\mu(x)u_x-\sum_y\nu(y)v_y."></div>
+        <p>The inequality uses π ≥ 0 and u<sub>x</sub> − v<sub>y</sub> ≤ dist(x, y) term by term, and the last step uses the two marginal constraints. So every dual value is at most every plan's cost. That equality is attained, strong duality, is a theorem of linear programming; the paper cites it for the transport problem, which is feasible and bounded.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The practical consequence is a certificate. If someone hands over a plan and prices with equal values, both are optimal, since no plan can cost less than the prices' value and no prices can beat the plan's cost.</p>
+      <p>Example 1 again, in units of 1/12. Try u<sub>x₁</sub> = 1, u<sub>x₂</sub> = 3, v<sub>i</sub> = 2, v<sub>j</sub> = 1, v<sub>y</sub> = 0. The six constraints read</p>
+      <div class="math" data-tex="\begin{aligned}u_{x_1}-v_i&=-1\le1, & u_{x_1}-v_j&=0\le2, & u_{x_1}-v_y&=1\le1,\\ u_{x_2}-v_i&=1\le1, & u_{x_2}-v_j&=2\le2, & u_{x_2}-v_y&=3\le3,\end{aligned}"></div>
+      <p>so the prices are feasible, and their value is 3 · 1 + 3 · 3 − (1 · 2 + 1 · 1 + 4 · 0) = 12 − 3 = 9. This matches the plan of Section 2, so both are optimal and 𝒲₁ = 9/12 = 3/4 is now proved. Notice also which constraints hold with equality: (x₁, y), (x₂, i), (x₂, j) and (x₂, y). These are exactly the routes the plan used. That is no coincidence. In an optimal pair, mass only travels along <span class="term">tight</span> routes where u<sub>x</sub> − v<sub>y</sub> = dist(x, y), a fact called complementary slackness that the paper uses in Proposition 5.</p>
+      <p>For Example 2, in units of 1/5, the prices u<sub>x₁</sub> = 1, u<sub>x₂</sub> = 2, v<sub>y₁</sub> = v<sub>y₂</sub> = 0 are feasible (the differences 1, 1, 2, 2 against distances 1, 2, 3, 2) and have value 1 + 2 = 3, matching the plan cost 3.</p>
+      <p class="short"><b>In short:</b> the dual (1) assigns prices with u<sub>x</sub> − v<sub>y</sub> ≤ dist(x, y), its optimum equals 𝒲₁, and a plan and prices with the same value certify each other; in Example 1, prices (1, 3) and (2, 1, 0) certify 𝒲₁ = 3/4.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · The cut">
+      <span class="num">5 · FROM PRICES TO A MINIMUM CUT</span>
+      <h2>Why does the dual become a single minimum cut?</h2>
+      <p>The prices that certified Example 1 were whole numbers between 0 and 3. The heart of the paper is that this always happens when distances are small integers, and that once prices are known to take only a few values, the whole dual can be solved by one minimum cut. The argument has four steps: integrality, a small range, unary encoding, and Picard's closure theorem. The paper states it for any finite metric space (X, dist) with a signed measure μ of total zero and dist(x, y) ∈ {1, …, D} on P × N, and then specializes to D = 3.</p>
+
+      <h3>Step 1: whole-number prices</h3>
+      <p>A matrix is <span class="term">totally unimodular</span> if every square submatrix has determinant 0, 1 or −1. The constraint matrix of (1) has one row per pair (x, y), with a +1 in the column of u<sub>x</sub>, a −1 in the column of v<sub>y</sub>, and zeros elsewhere. The paper notes that this is the transpose of the incidence matrix of the complete bipartite graph on P ⊔ N, which is totally unimodular, and since the right-hand sides dist(x, y) are integers, (1) has an integral optimal solution.</p>
+      <details class="pf"><summary><span class="tagd">background</span><span class="q">Why does total unimodularity force whole-number answers?</span></summary><div class="pfbody">
+        <p>This sketch is standard background, not from the paper. When a linear program has an optimum, it has one at a corner of the feasible region, and a corner is the solution of a square system M′z = b′ formed by some of the constraints holding with equality. By Cramer's rule each coordinate is a ratio det(M′ with one column replaced by b′)/det(M′). The numerator is an integer because b′ is, and the denominator is ±1 by total unimodularity, so the coordinate is an integer. (For (1), adding the same constant to all prices changes nothing, so one fixes one price first; the same reasoning then applies.)</p>
+        <p class="qed">∎</p>
+      </div></details>
+
+      <h3>Step 2: only D price levels</h3>
+      <p>Whole-number prices could still be large. The paper squeezes them into a window of D values.</p>
+      <div class="fact"><span class="label">Range normalization (proof of Theorem 1)</span>
+        <p>Problem (1) has an optimal solution with u ∈ {1, …, D}<sup>P</sup> and v ∈ {0, …, D − 1}<sup>N</sup>. For one-step measures that means surplus prices in {1, 2, 3} and deficit prices in {0, 1, 2}.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can every price be pushed into a window of width D without losing value?</span></summary><div class="pfbody">
+        <p>From Appendix A.1. Start from an integral optimum (u, v) and let v₀ = min<sub>y</sub> v<sub>y</sub>. First raise every surplus price as far as the constraints allow: ū<sub>x</sub> = min<sub>y</sub>{v<sub>y</sub> + dist(x, y)}. Feasibility gives ū ≥ u, the new pair is feasible by construction, and the value does not drop because μ(x) &gt; 0. Since every distance is at least 1 and every v<sub>y</sub> ≥ v₀, ū<sub>x</sub> ≥ v₀ + 1; taking y at the minimizer of v gives ū<sub>x</sub> ≤ v₀ + D.</p>
+        <p>Next lower any deficit price that is too high: v̄<sub>y</sub> = min{v<sub>y</sub>, v₀ + D − 1}. If nothing changed for y, its constraints are as before; otherwise ū<sub>x</sub> − v̄<sub>y</sub> ≤ (v₀ + D) − (v₀ + D − 1) = 1 ≤ dist(x, y). Lowering a deficit price cannot lower the value, because it enters with the sign −ν(y) &lt; 0.</p>
+        <p>Finally subtract v₀ from every price. Differences are unchanged, and the value is unchanged because μ(P) − ν(N) = 0. Now ū ∈ {1, …, D} and v̄ ∈ {0, …, D − 1}.</p>
+        <p class="qed">∎</p>
+      </div></details>
+
+      <h3>Step 3: unary encoding</h3>
+      <p>A price in {1, 2, 3} can be stored as a staircase of yes/no answers: "is u<sub>x</sub> ≥ 2?" and "is u<sub>x</sub> ≥ 3?". The paper writes α<sub>x,τ</sub> = [u<sub>x</sub> ≥ τ] for τ ∈ {2, …, D} and β<sub>y,σ</sub> = [v<sub>y</sub> ≥ σ] for σ ∈ {1, …, D − 1}, where [·] is 1 if the statement is true and 0 if not. These bits are non-increasing in τ and in σ, every non-increasing pattern comes from exactly one price, and u<sub>x</sub> = 1 + Σ<sub>τ</sub> α<sub>x,τ</sub>, v<sub>y</sub> = Σ<sub>σ</sub> β<sub>y,σ</sub>.</p>
+      <p>The useful surprise is what happens to a constraint. With d = dist(x, y),</p>
+      <div class="math" data-tex="u_x-v_y\le d\quad\Longleftrightarrow\quad \alpha_{x,\tau}\le\beta_{y,\tau-d}\ \ \text{for all }\tau\in\{d+1,\dots,D\}."></div>
+      <p>In words: "the surplus price is at most d above the deficit price" is the same as the list of implications "if u<sub>x</sub> ≥ τ then v<sub>y</sub> ≥ τ − d". For D = 3 this gives two implications when d = 1 (u<sub>x</sub> ≥ 2 forces v<sub>y</sub> ≥ 1, and u<sub>x</sub> ≥ 3 forces v<sub>y</sub> ≥ 2), one when d = 2 (u<sub>x</sub> ≥ 3 forces v<sub>y</sub> ≥ 1), and none when d = 3, because the constraint u<sub>x</sub> − v<sub>y</sub> ≤ 3 always holds within the window.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is the inequality the same as the implications?</span></summary><div class="pfbody">
+        <p>From Appendix A.1. Suppose u<sub>x</sub> − v<sub>y</sub> ≤ d and α<sub>x,τ</sub> = 1, so u<sub>x</sub> ≥ τ. Then v<sub>y</sub> ≥ u<sub>x</sub> − d ≥ τ − d, so β<sub>y,τ−d</sub> = 1. Conversely, if u<sub>x</sub> ≤ d the inequality holds because v<sub>y</sub> ≥ 0. Otherwise τ = u<sub>x</sub> lies in {d + 1, …, D} and has α<sub>x,τ</sub> = 1, so the implication gives β<sub>y,u<sub>x</sub>−d</sub> = 1, which says v<sub>y</sub> ≥ u<sub>x</sub> − d.</p>
+        <p class="qed">∎</p>
+      </div></details>
+
+      <h3>Step 4: closures and cuts</h3>
+      <p>Draw one node for every bit: a<sub>x,τ</sub> for "u<sub>x</sub> ≥ τ" and b<sub>y,σ</sub> for "v<sub>y</sub> ≥ σ", and one arrow for every implication, including the staircase arrows a<sub>x,τ+1</sub> → a<sub>x,τ</sub> and b<sub>y,σ+1</sub> → b<sub>y,σ</sub> that say "≥ 3 implies ≥ 2". A choice of bits is then a set Z of nodes (those set to 1), and the choice is feasible exactly when Z is <span class="term">closed</span>: every arrow that starts in Z ends in Z.</p>
+      <p>The objective also splits over nodes. Give each a<sub>x,τ</sub> the weight μ(x) and each b<sub>y,σ</sub> the weight −ν(y). Then the dual value of the prices encoded by Z is</p>
+      <div class="math" data-tex="\sum_x\mu(x)\Bigl(1+\sum_\tau\alpha_{x,\tau}\Bigr)-\sum_y\nu(y)\sum_\sigma\beta_{y,\sigma}=A+w(Z),"></div>
+      <p>where w(Z) is the total weight of the nodes in Z. So the dual is a <span class="term">maximum-weight closure problem</span>: pick a closed set of nodes of largest weight. Picard showed in 1976 that this is a minimum cut problem.</p>
+      <p>Two prerequisites first. A <span class="term">network</span> is a directed graph with a source s, a sink t, and a capacity on every arc. A <span class="term">flow</span> sends material from s to t without exceeding any capacity and without creating or destroying material at any other node. An <span class="term">s-t cut</span> splits the nodes into a side containing s and a side containing t, and its capacity is the total capacity of arcs crossing from the s side to the t side. The max-flow min-cut theorem says that the largest flow value equals the smallest cut capacity. The classical way to find both is to keep finding <span class="term">augmenting paths</span>, paths from s to t along which more flow can be pushed (possibly by cancelling earlier flow on an arc), until none remains; the nodes still reachable from s then form the s side of a minimum cut.</p>
+      <div class="def"><span class="label">Definition 1 · layered closure network 𝖦<sub>D</sub>(μ)</span>
+        <p>Nodes s, t, a<sub>x,τ</sub> for x ∈ P and τ ∈ {2, …, D}, and b<sub>y,σ</sub> for y ∈ N and σ ∈ {1, …, D − 1}. Arcs s → a<sub>x,τ</sub> of capacity μ(x) and b<sub>y,σ</sub> → t of capacity ν(y); and, with infinite capacity, the chains a<sub>x,τ+1</sub> → a<sub>x,τ</sub> and b<sub>y,σ+1</sub> → b<sub>y,σ</sub>, and the implications a<sub>x,τ</sub> → b<sub>y,τ−dist(x,y)</sub> for τ ∈ {dist(x, y) + 1, …, D}.</p>
+        <p>In words: one source arc per surplus bit carrying its surplus, one sink arc per deficit bit carrying its deficit, and an uncuttable arc for every implication.</p>
+      </div>
+      <div class="fact"><span class="label">Theorem 1</span>
+        <p>If F is the value of a maximum s-t flow in 𝖦<sub>D</sub>(μ), then</p>
+        <div class="math" data-tex="\mathcal W_1(\mu^+,\mu^-)=D\,A-F."></div>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does a closed set correspond to a cut, and where does DA come from?</span></summary><div class="pfbody">
+        <p>The correspondence is Picard's theorem; the short argument below is ours, following the shape of the paper's Appendix A.1. Let W<sup>+</sup> be the sum of all positive weights. For a closed set Z, cut the network between {s} ∪ Z and the rest. No infinite arc crosses, because Z is closed. The crossing arcs are s → a for nodes a outside Z, with total capacity equal to the positive weight left out of Z, and b → t for nodes b inside Z, with total capacity equal to the negative weight taken into Z, in absolute value. Their sum is W<sup>+</sup> − w(Z). Conversely, every cut of finite capacity has a closed s side, by the same reasoning. So the minimum cut capacity is W<sup>+</sup> − max w(Z), and by the max-flow min-cut theorem it equals F.</p>
+        <p>Every a-node of a surplus vertex x carries weight μ(x), and there are D − 1 of them, so W<sup>+</sup> = (D − 1)A. Combining with the previous display, 𝒲₁ = A + max w(Z) = A + (D − 1)A − F = DA − F.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For one-step measures D = 3, and the paper trims the network a little further.</p>
+      <div class="fact"><span class="label">Corollary 3 · one-step measures</span>
+        <p>For one-step measures m<sub>i</sub>, m<sub>j</sub>, 𝒲₁(m<sub>i</sub>, m<sub>j</sub>) = 3A − F, where F is the maximum flow value of 𝖦̃₃, obtained from 𝖦₃(μ) by dropping the arcs b<sub>y,2</sub> → b<sub>y,1</sub>. If dist(x, y) ≤ 2 on P × N, then 𝒲₁ = 2A − F₁ for the maximum flow F₁ of the bipartite network 𝖦₂(μ), and 𝒲₁ = 2A if no pair is adjacent.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why may the deficit staircase arc be dropped?</span></summary><div class="pfbody">
+        <p>From Appendix A.2. Every set closed with the arcs is closed without them. Conversely, take a maximum-weight closed set Z of the trimmed network and suppose b<sub>y,2</sub> ∈ Z. The only arcs into b<sub>y,2</sub> come from nodes a<sub>x,3</sub> with xy ∈ E (distance 1). If no such a<sub>x,3</sub> were in Z, removing b<sub>y,2</sub> would keep Z closed and increase its weight, since that weight is negative, contradicting maximality. So some a<sub>x,3</sub> with xy ∈ E is in Z; then a<sub>x,2</sub> ∈ Z by the chain, and b<sub>y,1</sub> ∈ Z by the distance-1 arc a<sub>x,2</sub> → b<sub>y,1</sub>. So the dropped arc is satisfied anyway, and the two networks have the same maximum closure weight and the same minimum cut.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The trimmed network 𝖦̃₃ has 2(|P| + |N|) + 2 nodes and 3|P| + 2|N| + 2e₁ + e₂ arcs, where e₁ and e₂ count the pairs in P × N at distance 1 and 2. Pairs at distance 3 cost nothing at all. No distance is stored anywhere: the network only needs to know which pairs are at distance 1 and which at distance 2.</p>
+      <p>For Example 1 the network has 12 nodes. The source arcs give 3 to each of a<sub>x₁,2</sub>, a<sub>x₁,3</sub>, a<sub>x₂,2</sub>, a<sub>x₂,3</sub>; the sink arcs take 1 from each b<sub>i,σ</sub>, 1 from each b<sub>j,σ</sub> and 4 from each b<sub>y,σ</sub>. The distance-1 pairs (x₁, i), (x₁, y), (x₂, i) give two arcs each, the distance-2 pairs (x₁, j), (x₂, j) give one arc each from a<sub>x,3</sub> to b<sub>j,1</sub>, and the distance-3 pair (x₂, y) gives none. With e₁ = 3 and e₂ = 2 that is 6 + 6 + 6 + 2 = 20 arcs. Here 3A = 18, so Theorem 1 predicts a maximum flow of 18 − 9 = 9.</p>
+      <p>The animation below builds 𝖦̃₃ from the graph using only the adjacency tests of Lemma 2, finds augmenting paths one at a time by breadth-first search, and stops when none remains. It then marks the nodes still reachable from s, decodes them into prices as in Proposition 5 below, and finally checks the answer against an independent solver that computes true distances by breadth-first search and solves the transport problem directly by successive shortest paths. The third button draws a random small graph and repeats everything.</p>
+      <div class="player" id="pOrcCut">
+        <div class="ptitle"><span class="label">Animation · one edge, one cut</span><div class="scen"><button class="chip" data-scen="ex1" aria-pressed="true">Example 1</button><button class="chip" data-scen="ex2" aria-pressed="false">Example 2</button><button class="chip" data-scen="rand" aria-pressed="false">random graph</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 300" role="img" aria-label="The cut network: source on the left, surplus nodes, deficit nodes, sink on the right, with flow on the arcs"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>current path or reachable set</span><span><i class="sw" style="background:var(--cool)"></i>infinite arc</span><span><i class="sw" style="background:var(--ok)"></i>arc carrying flow</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The cut also hands back an optimal solution, not just the value.</p>
+      <div class="fact"><span class="label">Proposition 5 · certificates</span>
+        <p>Let Z be the set of nodes reachable from s in the residual network of a maximum flow on 𝖦<sub>D</sub>(μ). Then u<sub>x</sub> = 1 + |{τ : a<sub>x,τ</sub> ∈ Z}| and v<sub>y</sub> = |{σ : b<sub>y,σ</sub> ∈ Z}| solve (1). A maximum flow on the bipartite network with arcs s → x of capacity μ(x), y → t of capacity ν(y), and x → y of infinite capacity for the tight pairs u<sub>x</sub> − v<sub>y</sub> = dist(x, y) yields an optimal transport plan.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does the reachable set decode to optimal prices, and the tight routes to an optimal plan?</span></summary><div class="pfbody">
+        <p>From Appendix A.3. The reachable set Z is the s side of a minimum cut. It cannot contain the tail of an infinite arc whose head lies outside, since that cut would be infinite, so Z without s is closed, and by the proof of Theorem 1 it has maximum weight. The chains make each set {τ : a<sub>x,τ</sub> ∈ Z} an initial segment, so decoding by counting inverts the unary encoding, and the decoded prices are feasible and optimal. By complementary slackness every optimal plan uses only tight pairs, and an optimal plan exists, so transport restricted to tight pairs is feasible; a maximum flow on the stated bipartite network therefore saturates the source arcs, giving a plan with the right marginals whose cost is Σπ<sub>xy</sub>(u<sub>x</sub> − v<sub>y</sub>) = Σμ(x)u<sub>x</sub> − Σν(y)v<sub>y</sub>, the optimal dual value.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In Example 1 the maximum flow leaves spare capacity only on the source arcs of x₂ (one unit used of three on a<sub>x₂,2</sub>, two of three on a<sub>x₂,3</sub>). Searching from s therefore reaches a<sub>x₂,2</sub> and a<sub>x₂,3</sub>, and through their infinite arcs b<sub>i,1</sub>, b<sub>i,2</sub> and b<sub>j,1</sub>, and nothing else. Decoding gives u<sub>x₁</sub> = 1, u<sub>x₂</sub> = 3, v<sub>i</sub> = 2, v<sub>j</sub> = 1, v<sub>y</sub> = 0: exactly the prices that certified Example 1 in Section 4. The tight pairs are (x₁, y), (x₂, i), (x₂, j), (x₂, y), and routing the masses along them recovers the plan of Section 2. The weight of Z is 3 + 3 − 1 − 1 − 1 = 3, and A + w(Z) = 6 + 3 = 9.</p>
+      <p>The paper notes that checking such a certificate needs the plan's marginals, the distances on its support, and the constraints of (1), and that for one-step measures only the pairs with u<sub>x</sub> − v<sub>y</sub> ≥ 2 need checking, again by adjacency and common-neighbour queries. Graph-rewiring algorithms need such plans.</p>
+      <p>Reading the closure in terms of the two sets X₂ = {x : u<sub>x</sub> ≥ 2} and X₃ = {x : u<sub>x</sub> ≥ 3} gives a formula with no flows in it.</p>
+      <div class="fact"><span class="label">Corollary 4 · a min-max formula</span>
+        <p>For one-step measures and X ⊆ P, let N<sub>k</sub>(X) be the set of y ∈ N with dist(x, y) ≤ k for some x ∈ X. Then</p>
+        <div class="math" data-tex="\mathcal W_1(m_i,m_j)=A+\max_{X_3\subseteq X_2\subseteq P}\Bigl[\mu(X_2)-\nu\bigl(N_1(X_2)\cup N_2(X_3)\bigr)+\mu(X_3)-\nu\bigl(N_1(X_3)\bigr)\Bigr]."></div>
+        <p>In words: choose which surplus vertices get price at least 2 and which get price 3; each choice earns its surplus but forces certain deficit vertices to have price at least 1 or 2, which costs their deficit; the best trade-off, plus A, is the transport cost.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Which deficit nodes does a choice of X₂ and X₃ force into the closed set?</span></summary><div class="pfbody">
+        <p>From Appendix A.2. Put X₃ = {x : a<sub>x,3</sub> ∈ Z} and X₂ = {x : a<sub>x,2</sub> ∈ Z}; the chains give X₃ ⊆ X₂. Closedness forces b<sub>y,1</sub> ∈ Z for y ∈ N₁(X₂) (arcs a<sub>x,2</sub> → b<sub>y,1</sub>) and for y ∈ N₂(X₃) (arcs a<sub>x,3</sub> → b<sub>y,1</sub> at distance 2, and a<sub>x,3</sub> → a<sub>x,2</sub> → b<sub>y,1</sub> at distance 1), and forces b<sub>y,2</sub> ∈ Z for y ∈ N₁(X₃). These b-nodes already form a closed set together with the a-nodes, and since b-nodes have negative weight a maximum-weight Z contains no others. Its weight is the bracket.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>In Example 1 the best choice is X₂ = X₃ = {x₂}. Then N₁(X₂) = {i}, N₂(X₃) = {i, j} and N₁(X₃) = {i}, so the bracket is 3 − (1 + 1) + 3 − 1 = 3 and 𝒲₁ = 6 + 3 = 9 twelfths. Adding x₁ to X₂ would earn 3 but force y, which costs 4, so it does not pay. The paper remarks that for equal degrees, matchings were already known to determine curvature, and Corollary 4 is the dual form for every one-step measure.</p>
+      <p>The same layered network handles longer walks: if every m<sub>u</sub> lives on the ball of radius r around u, distances on P × N are at most 2r + 1 and 𝖦<sub>2r+1</sub> applies. The paper notes that its implementation still builds distances for r ≥ 2.</p>
+      <p class="short"><b>In short:</b> integral prices (total unimodularity) in a window of D levels, written in unary, turn the dual into a maximum-weight closure, which Picard's theorem makes a minimum cut: 𝒲₁ = DA − F (Theorem 1), with D = 3 and a trimmed network 𝖦̃₃ for one-step walks (Corollary 3); the reachable set of the final residual network decodes into optimal prices and an optimal plan (Proposition 5).</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Linear size">
+      <span class="num">6 · RELAYS AND WITNESSES</span>
+      <h2>How can the network avoid one arc per distance-2 pair?</h2>
+      <p>The network 𝖦̃₃ never stores a distance, but it still has one arc a<sub>x,3</sub> → b<sub>y,1</sub> for each pair at distance 2, and e₂ can be as large as |P| · |N|. The paper's observation is that distance-2 pairs come in blocks. If a vertex w has k neighbours in P and l neighbours in N, all kl pairs between them are within distance 2 through w. A single extra node can stand in for all of those implications.</p>
+      <div class="fact"><span class="label">Proposition 6 · relays</span>
+        <p>Let P′ ⊆ P and N′ ⊆ N with dist(x, y) ≤ 2 for all (x, y) ∈ P′ × N′. Adding a node h of weight 0 with infinite-capacity arcs a<sub>x,3</sub> → h for x ∈ P′ and h → b<sub>y,1</sub> for y ∈ N′, and deleting the arcs a<sub>x,3</sub> → b<sub>y,1</sub> for (x, y) ∈ P′ × N′, does not change the maximum flow value, also when relays are added one after another.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does routing implications through a hub change nothing?</span></summary><div class="pfbody">
+        <p>From Appendix A.4. The idea is that the closed sets, restricted to the original nodes, stay exactly the same. If Z′ is closed in the new network and a<sub>x,3</sub> ∈ Z′ for some x ∈ P′, then h ∈ Z′ and so every b<sub>y,1</sub> with y ∈ N′ is in Z′; hence the deleted arcs are still respected and Z′ without h is closed in the old network. Conversely, let Z be closed in the old network. If Z contains no a<sub>x,3</sub> with x ∈ P′, it is closed in the new one. Otherwise add h. This is closed because every b<sub>y,1</sub> with y ∈ N′ is already in Z: the old network has the arc a<sub>x,3</sub> → b<sub>y,1</sub> if dist(x, y) = 2 and the path a<sub>x,3</sub> → a<sub>x,2</sub> → b<sub>y,1</sub> if dist(x, y) = 1. The relay has weight 0, so closed sets keep their weights, and the maximum closure weight, hence the maximum flow, is unchanged. The argument applies again for each further relay.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The natural hubs are the middle vertices of distance-2 paths.</p>
+      <div class="def"><span class="label">Definition 2 · witnesses and the witness network 𝖦<sup>w</sup></span>
+        <p>A vertex w ∈ V, inside or outside S, is a <span class="term">witness</span> of (i, j) if it has neighbours in both P and N; Ω is the set of witnesses. The network 𝖦<sup>w</sup> has the nodes of 𝖦̃₃ plus one node h<sub>w</sub> per witness, and the arcs of 𝖦̃₃ except those a<sub>x,3</sub> → b<sub>y,1</sub> of pairs at distance 2, which are replaced by a<sub>x,3</sub> → h<sub>w</sub> for x ∈ P ∩ 𝒩(w) and h<sub>w</sub> → b<sub>y,1</sub> for y ∈ N ∩ 𝒩(w), all of infinite capacity.</p>
+        <p>In words: every vertex that touches both a surplus and a deficit vertex becomes a hub, and all distance-2 implications pass through hubs.</p>
+      </div>
+      <p>Example 2 shows a witness at work. Its only witness is w: it touches x₁, x₂ ∈ P and y₂ ∈ N, while i touches only P, j touches only N, x₁ touches no other surplus vertex, and y₁ touches no other deficit vertex. The two distance-2 arcs a<sub>x₁,3</sub> → b<sub>y₂,1</sub> and a<sub>x₂,3</sub> → b<sub>y₂,1</sub> are replaced by a<sub>x₁,3</sub> → h<sub>w</sub>, a<sub>x₂,3</sub> → h<sub>w</sub> and h<sub>w</sub> → b<sub>y₂,1</sub>. On a toy this saves nothing, but a witness with k surplus and l deficit neighbours turns kl arcs into k + l. In units of 1/5 the maximum flow is 3 (x₁ to y₁ on both levels, and x₂ to y₂ through the relay), and 3A − F = 6 − 3 = 3 gives 𝒲₁ = 3/5 again. In Example 1 the witnesses are i, which touches x₁, x₂ and j, and y, which touches x₁ and j.</p>
+      <div class="fact"><span class="label">Theorem 7 · a network linear in the local input</span>
+        <p>For one-step measures, (i) 𝒲₁(m<sub>i</sub>, m<sub>j</sub>) = 3A − F<sup>w</sup>, where F<sup>w</sup> is the maximum flow value of 𝖦<sup>w</sup>; (ii) 𝖦<sup>w</sup> has at most 3ℓ<sub>ij</sub> + 2 nodes and 5ℓ<sub>ij</sub> arcs; (iii) given the adjacency lists, 𝖦<sup>w</sup> is built in O(ℓ<sub>ij</sub>) time, with O(|V|) workspace initialized once and reused for every edge. Here ℓ<sub>ij</sub> = d<sub>i</sub> + d<sub>j</sub> + Σ<sub>x∈P∪N</sub> d<sub>x</sub>.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why is every distance-2 pair covered, and why is the count linear?</span></summary><div class="pfbody">
+        <p>From Appendix A.5. For (i): a pair (x, y) ∈ P × N at distance 2 is not adjacent and has a common neighbour w, which touches x ∈ P and y ∈ N and is therefore a witness. Conversely every pair joined through a witness is within distance 2. So adding the relays h<sub>w</sub> one at a time by Proposition 6 removes every distance-2 arc of 𝖦̃₃ without changing the flow, and the result is 𝖦<sup>w</sup>.</p>
+        <p>For (ii), let Σ = Σ<sub>x∈P∪N</sub> d<sub>x</sub> ≤ ℓ<sub>ij</sub>. Every vertex of P ∪ N has degree at least 1, so |P| + |N| ≤ Σ. Each relay arc corresponds to an adjacency entry (x, w) with x ∈ P ∪ N and w a witness, so there are at most Σ of them; every witness has at least one arc in and one out, so |Ω| ≤ Σ/2. Each adjacent pair (x, y) uses two adjacency entries, so 2e₁ ≤ Σ. Nodes: 2(|P| + |N|) + |Ω| + 2 ≤ (5/2)Σ + 2 ≤ 3ℓ<sub>ij</sub> + 2. Arcs: 2|P| + 2|N| + |P| + 2e₁ + (relay arcs) ≤ 3Σ + Σ + Σ ≤ 5ℓ<sub>ij</sub>.</p>
+        <p>For (iii), the paper keeps a few integer arrays over V, each initialized once, and marks a vertex by writing the current edge's counter into it, so old marks become void without clearing. One scan of 𝒩(i) and 𝒩(j) splits them into 𝒰<sub>i</sub>, 𝒰<sub>j</sub> and 𝒞; scanning the lists of P records adjacent pairs and marks vertices "seen from P"; scanning the lists of N finds the witnesses and their arcs into b-nodes; a final scan of P adds the arcs into relays. Every list is read at most twice.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For Example 1, ℓ<sub>ij</sub> = 3 + 2 + (2 + 1 + 3 + 2 + 2) = 15, counting the degrees of x₁, x₂, i, j and y. For Example 2, ℓ<sub>ij</sub> = 4 + 4 + (3 + 2 + 2 + 2) = 17.</p>
+      <p>Once the network is linear, the best known maximum-flow algorithms finish the job. With integer masses (common denominator Λ) and infinite capacities capped at 2A + 1, the paper notes that maximum flow on 𝖦<sup>w</sup> takes ℓ<sub>ij</sub><sup>1+o(1)</sup> log Λ time by the almost-linear-time algorithms of Chen et al. (2025, randomized) or van den Brand et al. (2023, deterministic), hence ℓ<sub>ij</sub><sup>1+o(1)</sup> for lazy, non-lazy, LLY and fixed-idleness walks, where Λ is polynomial in ℓ<sub>ij</sub>. Pairs at distance 2 or 3 are never listed.</p>
+      <p>This also explains the lower bound of DasGupta et al. Their n²/6 queries are queries to a black-box distance table for an edge with |𝒰<sub>i</sub>| = |𝒰<sub>j</sub>| = n. Their own construction realizes any table with entries in {1, 2, 3} as a graph G<sub>H</sub>, and on that graph the witness network is small.</p>
+      <div class="fact"><span class="label">Proposition 8 · the lower-bound instances</span>
+        <p>(i) For G<sub>H</sub> and the lazy walk, 𝖦<sup>w</sup> has 4n + e₂ + 2 nodes and 5n + 2e₁ + 2e₂ arcs and is built in O(n + e₁ + e₂) time from adjacency lists; with unit masses, the minimum weight of a perfect matching of the table H is 3n minus the maximum flow of 𝖦<sup>w</sup>. (ii) On the instances of their lower-bound proofs, at most one phase of Dinic's algorithm finds the maximum flow, and exact curvature takes O(n) time.</p>
+      </div>
+      <p>The quadratic bound, in the paper's words, reflects the cost of querying a black-box distance matrix: from adjacency lists, the same instances take linear time.</p>
+      <p class="short"><b>In short:</b> every distance-2 pair shares a witness, so one relay node per witness carries all distance-2 implications (Proposition 6), the resulting network 𝖦<sup>w</sup> has at most 3ℓ<sub>ij</sub> + 2 nodes and 5ℓ<sub>ij</sub> arcs (Theorem 7), and the instances that force n²/6 distance queries take O(n) time from adjacency lists (Proposition 8).</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Hardness">
+      <span class="num">7 · A MATCHING LOWER BOUND</span>
+      <h2>Could some cleverer formula make curvature even cheaper?</h2>
+      <p>The cut network is linear in size, but maximum flow itself is not free. The paper shows that this remaining cost is unavoidable, by hiding an arbitrary bipartite matching problem inside the curvature of one edge. A <span class="term">matching</span> in a graph is a set of edges no two of which share a vertex, and α′(B) denotes the size of a largest matching in B.</p>
+      <div class="fact"><span class="label">Theorem 9 · curvature is at least as hard as bipartite matching</span>
+        <p>Let B = (L, R, E<sub>B</sub>) be a bipartite graph with |L| = |R| = n, and let G<sub>B</sub> consist of the edge (i, j), edges from i to every vertex of L, edges from j to every vertex of R, and the edges E<sub>B</sub>. For the lazy walk,</p>
+        <div class="math" data-tex="\mathcal W_1(m_i,m_j)=\frac{3n-2\,\alpha'(B)}{n+2},"></div>
+        <p>and ℓ<sub>ij</sub> = 4n + 2 + 2|E<sub>B</sub>|.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does the transport cost count the matching?</span></summary><div class="pfbody">
+        <p>From Appendix A.7. Both endpoints have degree n + 1 and no common neighbour, so the lazy distributions put 1/(n + 2) on each closed-neighbourhood vertex, μ vanishes on i and j, P = L and N = R. A vertex of L touches only i and vertices of R, and a vertex of R touches only j and vertices of L, so no pair in L × R has a common neighbour, and by Lemma 2 the distance is 1 on edges of B and 3 otherwise. With equal masses the transport problem is an assignment problem, which has an optimal solution equal to 1/(n + 2) times a perfect pairing of L with R. A pairing that uses k edges of B costs k + 3(n − k) = 3n − 2k, and every matching of B extends to a pairing, so the minimum is 3n − 2α′(B), divided by n + 2.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>A small check of ours: take n = 2, L = {a₁, a₂}, R = {b₁, b₂}, and E<sub>B</sub> = {a₁b₁, a₂b₁}. The largest matching has one edge, since both edges use b₁. The formula gives 𝒲₁ = (6 − 2)/4 = 1, so κ = 0. Directly: send a₁ to b₁ at cost 1 and a₂ to b₂ at cost 3, each carrying 1/4, total 1.</p>
+      <p>So an algorithm computing curvature in time T(ℓ<sub>ij</sub>) finds a maximum bipartite matching in time T(O(n + |E<sub>B</sub>|)) + O(n + |E<sub>B</sub>|). The ℓ<sub>ij</sub><sup>1+o(1)</sup> bound of Theorem 7 matches the best known bound for bipartite matching, and the paper concludes that no formula computable in linear time can equal the curvature on every edge unless bipartite matching takes linear time. The graph G<sub>B</sub> is the graph G<sub>H</sub> of DasGupta et al. with weights in {1, 3}.</p>
+      <p>The implementation uses Dinic's algorithm rather than the almost-linear-time theory algorithms. Dinic's algorithm works in phases, each of which pushes flow along all currently shortest augmenting paths at once, and the paper bounds the number of phases using the fact that, apart from relays, every node carries at most twice the mass of its vertex and no two relays are adjacent.</p>
+      <div class="fact"><span class="label">Proposition 10 · phases</span>
+        <p>Let A be the total net mass in the smallest integer scaling. On 𝖦̃₃, on 𝖦<sup>w</sup>, and on every network built by the solver, Dinic's algorithm takes at most 2√(24A) + 1 phases and O(√A · m + A log A) time, where m is the number of arcs. For the lazy walk with d<sub>i</sub> = d<sub>j</sub>, A = |𝒰<sub>i</sub>|, and the computation takes O(ℓ<sub>ij</sub> √|𝒰<sub>i</sub>|) time on 𝖦<sup>w</sup>.</p>
+      </div>
+      <p>The bound O(ℓ<sub>ij</sub> √|𝒰<sub>i</sub>|) matches the classical Hopcroft-Karp bound for bipartite matching, as Theorem 9 suggests it should. In Example 2, A = |𝒰<sub>i</sub>| = 2 in units of 1/5, and in the smallest scaling of Example 1, A = 6.</p>
+      <p>One more structural fact makes curvature cheap to maintain when a graph is edited, as graph-rewiring methods do.</p>
+      <div class="fact"><span class="label">Lemma 11 · locality</span>
+        <p>Let G′ be obtained from G by inserting or deleting vertex pairs (a<sub>l</sub>, b<sub>l</sub>), l = 1, …, k, and let each vertex's distribution depend only on its neighbourhood. The curvature of an edge (i, j) of G′ can differ from its value in G only if i or j lies in U = ⋃<sub>l</sub>(𝒩[a<sub>l</sub>] ∪ 𝒩[b<sub>l</sub>]), taken in G′.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can a far-away edit not change the curvature?</span></summary><div class="pfbody">
+        <p>From Appendix A.9. If i, j ∉ U, no changed pair contains i or j, so their neighbourhoods, S and both distributions are unchanged. No a<sub>l</sub> or b<sub>l</sub> lies in S either: for instance a<sub>l</sub> ∈ 𝒩[i] in G′ would put i in 𝒩[a<sub>l</sub>] ⊆ U. By Lemma 2 and Theorem 1 the curvature depends only on the distributions and, for pairs in S, on adjacency and on having a common neighbour. A changed pair alters adjacency only for itself and common neighbours only for pairs containing a<sub>l</sub> or b<sub>l</sub>, and neither is in S.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> one edge's curvature can encode any bipartite maximum matching (Theorem 9), so the remaining max-flow cost cannot be removed without a faster matching algorithm; Dinic's algorithm needs O(√A) phases here (Proposition 10), and an edit only affects edges near it (Lemma 11).</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · The solver">
+      <span class="num">8 · THE SOLVER</span>
+      <h2>What does the implementation add on top of the theory?</h2>
+      <p>Theorem 7 bounds the network, but on most real neighbourhoods a smaller one is available, and the solver (the paper's Algorithm 1, released as the orcut code and the PyPI package faster-or-curvature) combines several reductions.</p>
+      <p><b>Exact masses.</b> Rows are the vertices of 𝒩[i] and columns those of 𝒩[j], with d<sub>i</sub> ≥ d<sub>j</sub>. Masses are scaled to integers by a common denominator Λ, for example (d<sub>i</sub> + 1)(d<sub>j</sub> + 1) for the lazy walk, so flows are integral and 𝒲₁ = (3A − F)/Λ is an exact rational number. Edges with Λ &gt; 2<sup>50</sup> are skipped and flagged.</p>
+      <p><b>Bitsets and block relays.</b> Each row x gets a bitset of the columns it touches and a bitset Cov(x) of the columns within distance 2, accumulated word by word from its neighbours' column bitsets; by Lemma 2 these give every distance. Most distance-2 pairs form blocks known in advance: every row is within distance 2 of every column in {i, j} ∪ 𝒞, every row in {i, j} ∪ 𝒞 is within distance 2 of every column, a full row (one whose Cov contains all of 𝒰<sub>j</sub>) reaches all of 𝒰<sub>j</sub>, and a full column reaches all of 𝒰<sub>i</sub>. Four relays H₁, …, H₄ from Proposition 6 serve these blocks, and only the remaining pairs need individual arcs.</p>
+      <p><b>Witness relays and a cap.</b> When many remaining distance-2 pairs exist, they go through witness relays whenever this shrinks the network at least 4 times. Bitset work is capped at 4 machine words per adjacency entry; if that is exceeded while most rows are not full, the solver falls back to 𝖦<sup>w</sup>.</p>
+      <p><b>Twins.</b> Rows with the same successors are merged and their capacities added (Proposition 12, proved in Appendix A.4 by showing some maximum-weight closed set contains both twins or neither). All leaves of a hub collapse into one row.</p>
+      <p><b>Fast path and warm start.</b> If every row of 𝒰<sub>i</sub> is full, no pair is at distance 3 and one bipartite flow suffices (Corollary 3). Otherwise a maximum flow of the one-layer adjacency network, routed along both layers, gives a feasible starting flow for Dinic's algorithm on 𝖦̃₃. Edges run in parallel over threads with no memory allocation per edge.</p>
+      <p class="short"><b>In short:</b> exact integer masses, bitsets with four block relays, witness relays where they pay, twin merging, a one-layer fast path and a warm-started Dinic's algorithm make up the solver; each is a direct application of the propositions above.</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>The numbers</h2>
+      <p>Unless noted, the experiments use the lazy walk with 32 threads on one cluster node. Baselines are POT's network simplex given precomputed distances, OR-Tools' integer min-cost flow, HiGHS, min-cost flow on the graph itself (Beckmann's formulation, Lemma 13), GraphRicciCurvature 0.6.1 (GRC) with defaults, and entropic transport (Sinkhorn).</p>
+      <p><b>Exactness (E1).</b> On 19 graphs and 5 measures (lazy, non-lazy, LLY, idleness 1/2 and a weighted lazy walk), the solver agrees with OR-Tools' integer min-cost flow on all 390,548 edges checked and with POT up to 3.6 × 10<sup>−14</sup>, and all 56,880 certificates were verified.</p>
+      <p><b>One edge (E2).</b> At |𝒰<sub>i</sub>| = |𝒰<sub>j</sub>| = 16,384 the solver is 6,603 to 14,492 times faster than POT given the distances (up to 15,131 times counting their construction), up to 2.33 × 10<sup>5</sup> times faster than OR-Tools, and 5.8 to 16 times faster than graph min-cost flow. On all controlled edges the witness network has at most 1.7 arcs per unit of local input, against the bound 5 of Theorem 7. On real graphs the median gain over 18 graphs is 2.4 times against POT given the distances (7 times counting their construction) and 19 times against graph min-cost flow.</p>
+      <p>Selected rows of Table 1, the lower-bound instances of DasGupta et al. and related families, at n = 1,048,576 for the solver and graph flow and at n = 65,536 for the comparison with POT; k is the fitted exponent of the solver's time in n:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Family</th><th>Solver (largest n)</th><th>Graph flow (largest n)</th><th>Solver (n = 65,536)</th><th>POT + distances</th><th>k</th></tr></thead>
+        <tbody>
+          <tr><td>one pair at distance 1</td><td class="n">232 ms</td><td class="n">2.40 s</td><td class="n">12.2 ms</td><td class="n">500 s</td><td class="n">1.0</td></tr>
+          <tr><td>perfect matching at distance 1</td><td class="n">1.58 s</td><td class="n">4.43 s</td><td class="n">59.1 ms</td><td class="n">482 s</td><td class="n">1.2</td></tr>
+          <tr><td>bounded weighted degrees</td><td class="n">158 s</td><td class="n">83.9 min</td><td class="n">770 ms</td><td class="n">9.71 h</td><td class="n">1.6</td></tr>
+          <tr><td>√n blocks at distance 2</td><td class="n">1.18 s</td><td class="n">32.3 s</td><td class="n">35.9 ms</td><td class="n">5.14 h</td><td class="n">1.1</td></tr>
+        </tbody>
+      </table></div>
+      <p><b>Whole graphs (E3).</b> Selected rows of Table 2, lazy curvature of every edge on 32 threads, against a lower-bound estimate for distances plus POT:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Graph</th><th>Edges</th><th>Max degree</th><th>Solver</th><th>POT (est.)</th><th>Speedup</th></tr></thead>
+        <tbody>
+          <tr><td>Deezer</td><td class="n">92,752</td><td class="n">172</td><td class="n">57.4 ms</td><td class="n">274 ms</td><td class="n">4.8×</td></tr>
+          <tr><td>Crocodile</td><td class="n">1.71 × 10⁵</td><td class="n">3,546</td><td class="n">2.30 s</td><td class="n">303 s</td><td class="n">131×</td></tr>
+          <tr><td>Facebook</td><td class="n">1.71 × 10⁵</td><td class="n">709</td><td class="n">1.29 s</td><td class="n">4.83 s</td><td class="n">3.7×</td></tr>
+          <tr><td>Squirrel</td><td class="n">1.98 × 10⁵</td><td class="n">1,903</td><td class="n">22.2 s</td><td class="n">21.6 min</td><td class="n">59×</td></tr>
+          <tr><td>Coauthor-Physics</td><td class="n">2.48 × 10⁵</td><td class="n">382</td><td class="n">514 ms</td><td class="n">1.66 s</td><td class="n">3.2×</td></tr>
+          <tr><td>roadNet-CA</td><td class="n">2.76 × 10⁶</td><td class="n">12</td><td class="n">355 ms</td><td class="n">4.16 s</td><td class="n">12×</td></tr>
+          <tr><td>YouTube</td><td class="n">2.99 × 10⁶</td><td class="n">28,754</td><td class="n">182 s</td><td class="n">3.10 h</td><td class="n">61×</td></tr>
+          <tr><td>Skitter</td><td class="n">1.11 × 10⁷</td><td class="n">35,455</td><td class="n">43.4 min</td><td class="n">15.3 d</td><td class="n">506×</td></tr>
+          <tr><td>LiveJournal</td><td class="n">3.47 × 10⁷</td><td class="n">14,815</td><td class="n">42.9 min</td><td class="n">3.58 h</td><td class="n">5.0×</td></tr>
+          <tr><td>Orkut</td><td class="n">1.17 × 10⁸</td><td class="n">33,313</td><td class="n">49.6 h</td><td class="n">7.91 d</td><td class="n">3.8×</td></tr>
+        </tbody>
+      </table></div>
+      <p>Over all 20 networks the speedup is 3.2 to 506 times (median 6), largest on graphs with hubs, where twin merging compresses up to 33,375 rows into one, and smallest on dense, clustered neighbourhoods. A median 10.4% of edges take the one-layer fast path and at most 3.7% use witness relays. Non-lazy and LLY curvature cost at most 1.1 times the lazy one on 19 of the networks.</p>
+      <p><b>Ablation (E4).</b> The two-layer cut on bitsets alone is a median 1.7 times slower than the full solver (up to 3.1), the witness network alone a median 3 times slower, graph min-cost flow 10 to 39 times (median 23) and distances plus POT 3.8 to 127 times on the 8 graphs that fit in memory.</p>
+      <p><b>Approximations (E5).</b> Table 4, over 15 graphs; MAE is the median over graphs of the mean absolute error, "sign" the share of edges whose sign is wrong, ρ the Spearman rank correlation, and "rec." the share of the 1% most negatively curved edges recovered. Proxies are compared by rank against LLY curvature.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Method</th><th>MAE</th><th>Max</th><th>Sign</th><th>ρ</th><th>Rec.</th></tr></thead>
+        <tbody>
+          <tr><td>GRC default</td><td class="n">1.0 × 10⁻¹⁴</td><td class="n">0.40</td><td class="n">0.0%</td><td class="n">1.00</td><td class="n">100%</td></tr>
+          <tr><td>GRC OTD</td><td class="n">4.1 × 10⁻¹⁵</td><td class="n">0.34</td><td class="n">0.0%</td><td class="n">1.00</td><td class="n">100%</td></tr>
+          <tr><td>GRC OTD, all neighbours</td><td class="n">1.3 × 10⁻¹⁴</td><td class="n">0.037</td><td class="n">0.0%</td><td class="n">1.00</td><td class="n">100%</td></tr>
+          <tr><td>GRC Sinkhorn</td><td class="n">9.6 × 10⁻³</td><td class="n">0.40</td><td class="n">1.3%</td><td class="n">0.998</td><td class="n">99%</td></tr>
+          <tr><td>GRC ATD</td><td class="n">2.8 × 10⁻¹</td><td class="n">0.98</td><td class="n">17.6%</td><td class="n">0.755</td><td class="n">45%</td></tr>
+          <tr><td>JL mean</td><td class="n">2.9 × 10⁻¹</td><td class="n">0.99</td><td class="n">5.9%</td><td class="n">0.734</td><td class="n">12%</td></tr>
+          <tr><td>Balanced Forman (BF)</td><td class="n">n/a</td><td class="n">n/a</td><td class="n">14.3%</td><td class="n">0.696</td><td class="n">15%</td></tr>
+          <tr><td>AF₃</td><td class="n">n/a</td><td class="n">n/a</td><td class="n">14.2%</td><td class="n">0.388</td><td class="n">4%</td></tr>
+        </tbody>
+      </table></div>
+      <p>GRC with its defaults is exact up to floating point on most edges, but it keeps only 3,000 neighbours per vertex and switches to Sinkhorn when both endpoints have degree above 2,000, so on graphs with such hubs its error reaches 0.40; it is a median 441 times slower than the solver with the same threads. On the local problems at GRC's idleness 1/2, entropic transport with GRC's regularization ε = 0.1 has a median MAE of 6.4 × 10<sup>−3</sup> at 12 times the solver's time, and at ε = 0.01 a negligible error at 5,565 times. The cheap proxy AF₃ is 4 − d<sub>i</sub> − d<sub>j</sub> + 3|𝒞|, the triangle-augmented Forman curvature, and the JL mean is the midpoint of the Jost-Liu bounds.</p>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved.</b> The reduction 𝒲₁ = DA − F (Theorem 1), its one-step form (Corollary 3), Lemma 2, the certificates (Proposition 5), the min-max formula (Corollary 4), the relay and witness constructions with their size bounds (Proposition 6, Theorem 7), the lower-bound instances (Proposition 8), the matching reduction (Theorem 9), the phase bound (Proposition 10) and locality (Lemma 11) all have complete proofs in Appendix A. The paper is explicit that the reduction itself is an instance of a classical technique: integer programs with difference constraints and bounded variables reduce to closures on layered graphs (Hochbaum 2001, Ishikawa 2003), integral potentials and the {0, 1, 2, 3} local distances were known, and Picard's theorem dates from 1976. Its stated contribution is the distance-free network that is linear in the adjacency lists read, and the matching lower bound. We checked the running examples, including Theorem 1, Proposition 5 and Corollary 4 on Example 1 and Theorem 9 on a small instance, against brute-force computations.</p>
+      <p><b>Measured.</b> The speedups and accuracy figures are experimental, on one cluster, with the code released (orcut tag v1.4.4). Some comparisons are against lower-bound estimates of the competitor's time: on whole graphs, POT is timed on a stratified sample of edges, extrapolated, and divided by the number of threads. Transport solvers are given distances built by the author's fastest code, timed separately. The median whole-graph speedup of 6 times is real but modest on dense, clustered graphs (3.2 to 4.8 times on several), and large on graphs with hubs.</p>
+      <p><b>Not covered.</b> The reduction needs integer distances in a small range, so real-valued edge lengths, as used in Ricci flow, are not covered by this paper; a later package version handles them with a network simplex, which the paper describes but leaves out. The local input ℓ<sub>ij</sub> can exceed |P| · |N| when neighbours have large degrees, the implementation's Dinic's algorithm grows with the square root of the total mass rather than almost linearly, and for walks of radius r ≥ 2 the implementation still builds distances. The paper does not measure whether exact curvature improves downstream tasks such as graph rewiring, noting that those gains are contested; what it shows is that cheap proxies change which edges are flagged, recovering only 15%, 4% and 12% of the most negatively curved 1% (BF, AF₃, JL mean).</p>
+      <p><b>Context.</b> The paper is a single-author arXiv preprint and has not yet been peer reviewed. Its Appendix E states that a generative AI assistant was used to help implement the experiment pipeline and to copy-edit the text, with the author verifying every statement and proof.</p>
+      <p><b>Why it matters.</b> A quantity that the field had come to treat as too expensive, and replaced by proxies, turns out to be one maximum-flow computation per edge on a network no larger than the adjacency lists. The chain of ideas, from small integer costs to integral duals to unary staircases to closures to cuts, is a reusable template for optimization problems with difference constraints, and the same reduction is, as a connection of ours rather than the paper's, the one behind image segmentation by graph cuts.</p>
+    </section>
+
+    <!-- further reading -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>G. Micaletto, <a href="https://arxiv.org/abs/2611.32528" target="_blank" rel="noopener">The min-cut formulation of Ollivier-Ricci curvature</a>, arXiv:2611.32528 (2026). The paper itself; numbering in this chapter follows its <a href="https://arxiv.org/html/2611.32528" target="_blank" rel="noopener">HTML version</a>. The code is at <a href="https://github.com/GiorgioMB/orcut" target="_blank" rel="noopener">github.com/GiorgioMB/orcut</a> (we did not run it).</p>
+        <p>Y. Ollivier, <a href="https://arxiv.org/abs/math/0701886" target="_blank" rel="noopener">Ricci curvature of Markov chains on metric spaces</a>, Journal of Functional Analysis 256 (2009). The original definition of curvature as a contraction of random-walk distributions in Wasserstein distance, with the discrete cube as a positively curved example.</p>
+        <p>The paper's other key references, which we did not open for this chapter: J. Picard, "Maximal closure of a graph and applications to combinatorial problems" (Management Science, 1976), for closures and cuts; Y. Lin, L. Lu and S.-T. Yau, "Ricci curvature of graphs" (Tohoku Mathematical Journal, 2011); and B. DasGupta, E. Grigorescu and T. Mukherjee, "On computing discretized Ricci curvatures of graphs" (Theoretical Computer Science, 2023), for the n²/6 query lower bound.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.32528v1. Lemma, proposition, theorem, corollary, definition, table and equation numbers match the paper; section numbers in this chapter are our own. Examples 1 and 2, the complete-graph and tree-edge curvatures, and the n = 2 instance of Theorem 9 are ours. The animation computes in the page: it builds the network of Corollary 3 from adjacency and common-neighbour tests alone, runs breadth-first augmenting paths, decodes prices from the final reachable set, and checks the result with a separate transport solver that uses breadth-first-search distances.</p>
+  </footer>
+</div>
+
+
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-32528',date:'2026-11-25',title:'The Min-Cut Formulation of Ollivier-Ricci Curvature',authors:'Micaletto',field:'cs.DS',tags:['graph curvature','optimal transport','max-flow min-cut'],mins:40,
+     dek:'The curvature of a network edge compares the random-walk neighbourhoods of its two ends, and computing it exactly was thought to need a table of distances and a linear program per edge. This paper shows that one minimum cut on a network built from adjacency lists alone gives the exact value with a certificate, and that nothing faster than bipartite matching is possible.'},
     {id:'2611-28063',date:'2026-11-24',title:"The Rotation Strategy Wins Penney's Game for Permutations",authors:'Roy Choudhury',field:'math.CO',tags:['consecutive patterns','cluster method','probability'],mins:40,
      dek:'Two players wait for the first run of k random numbers whose up-and-down shape matches their pick, and the second player wins more than half the time by moving the last entry of the first player\u2019s pattern to the front. The proof turns the margin into an alternating series over chains of overlapping occurrences, shows these cancel to \u22121, 0 or 1 on every ordering, and finishes with a page of inequalities for k \u2265 8 and exact rational certificates for k from 3 to 7.'},
     {id:'2611-27640',date:'2026-11-23',title:'Ancilla-Free Exact Dicke-State Synthesis with Optimal Size and Depth',authors:'Huang, Zi, He, Ye, Zheng',field:'quant-ph',tags:['state preparation','amplitude amplification','reversible arithmetic'],mins:40,
@@ -8868,6 +9287,117 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     load(0);
   })();
 
+
+  // ================= 2611.32528: one edge, one cut =================
+  (function(){
+    const root=document.getElementById('pOrcCut');if(!root)return;const P=Player(root);const svgR=root.querySelector('svg');
+    const SUB={'1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆'};
+    const nm=v=>v.replace(/(\d)/g,d=>SUB[d]||d);
+    const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a};
+    function graph(edges){const adj={};edges.forEach(([a,b])=>{(adj[a]=adj[a]||new Set()).add(b);(adj[b]=adj[b]||new Set()).add(a)});return adj}
+    const EX={
+      ex1:[['i','j'],['i','x1'],['i','x2'],['j','y'],['x1','y']],
+      ex2:[['i','j'],['i','c'],['j','c'],['i','x1'],['i','x2'],['j','y1'],['j','y2'],['x1','y1'],['x1','w'],['x2','w'],['y2','w']]};
+    function randEdges(){const R=Math.random;const ni=1+Math.floor(R()*3),nj=1+Math.floor(R()*3),E=[['i','j']];
+      const X=[],Y=[];for(let k=1;k<=ni;k++){X.push('x'+k);E.push(['i','x'+k])}for(let k=1;k<=nj;k++){Y.push('y'+k);E.push(['j','y'+k])}
+      if(R()<0.45){E.push(['i','c'],['j','c'])}
+      X.forEach(x=>Y.forEach(y=>{if(R()<0.3)E.push([x,y])}));
+      ['w','z'].forEach(w=>{let k=0;X.concat(Y).forEach(v=>{if(R()<0.35){E.push([w,v]);k++}});});
+      // drop isolated outside vertices implicitly (they only appear if they have an edge)
+      return E}
+    // Lemma 2 distances: adjacency and common neighbours only
+    function lemma2(adj,i,j,x,y){const Ni=new Set([...adj[i],i]),Nj=new Set([...adj[j],j]);
+      if(adj[x].has(y))return 1;
+      if(Ni.has(y)||Nj.has(x))return 2;
+      for(const w of adj[x])if(adj[y].has(w))return 2;return 3}
+    function bfs(adj,s){const d={[s]:0},q=[s];while(q.length){const u=q.shift();for(const v of adj[u])if(!(v in d)){d[v]=d[u]+1;q.push(v)}}return d}
+    function setup(adj){
+      const di=adj.i.size,dj=adj.j.size,mi={},mj={};
+      [...adj.i,'i'].forEach(v=>mi[v]=dj+1);[...adj.j,'j'].forEach(v=>mj[v]=di+1);
+      const keys=[...new Set([...Object.keys(mi),...Object.keys(mj)])];let mu={};keys.forEach(k=>mu[k]=(mi[k]||0)-(mj[k]||0));
+      let g=0;keys.forEach(k=>g=gcd(g,mu[k]));if(!g)g=1;let Lam=(di+1)*(dj+1);const g2=gcd(g,Lam);keys.forEach(k=>mu[k]/=g2);Lam/=g2;
+      const order=['i','j','c','x1','x2','x3','y','y1','y2','y3'];const srt=a=>a.sort((p,q)=>order.indexOf(p)-order.indexOf(q));
+      const Pv=srt(keys.filter(k=>mu[k]>0)),Nv=srt(keys.filter(k=>mu[k]<0));
+      const A=Pv.reduce((s,x)=>s+mu[x],0);
+      const dist={};Pv.forEach(x=>Nv.forEach(y=>dist[x+'|'+y]=lemma2(adj,'i','j',x,y)));
+      // network G~3
+      const nodes=['s','t'],cap={},arcs=[];const add=(a,b,c,kind)=>{arcs.push({a,b,c,kind});};
+      Pv.forEach(x=>{nodes.push('a:'+x+':3','a:'+x+':2');add('s','a:'+x+':3',mu[x],'src');add('s','a:'+x+':2',mu[x],'src');add('a:'+x+':3','a:'+x+':2',Infinity,'chain')});
+      Nv.forEach(y=>{nodes.push('b:'+y+':2','b:'+y+':1');add('b:'+y+':2','t',-mu[y],'snk');add('b:'+y+':1','t',-mu[y],'snk')});
+      let e1=0,e2=0;
+      Pv.forEach(x=>Nv.forEach(y=>{const d=dist[x+'|'+y];if(d===1){e1++;add('a:'+x+':2','b:'+y+':1',Infinity,'imp');add('a:'+x+':3','b:'+y+':2',Infinity,'imp')}else if(d===2){e2++;add('a:'+x+':3','b:'+y+':1',Infinity,'imp')}}));
+      return{adj,di,dj,mu,Lam,Pv,Nv,A,dist,nodes,arcs,e1,e2}}
+    // Edmonds-Karp with recorded paths
+    function maxflow(S){const n=S.nodes,ix={};n.forEach((v,k)=>ix[v]=k);const R=[];// residual edges
+      const G=n.map(()=>[]);S.arcs.forEach((e,k)=>{const f={to:ix[e.b],c:e.c,rev:null,arc:k,fw:true},b={to:ix[e.a],c:0,rev:null,arc:k,fw:false};f.rev=b;b.rev=f;G[ix[e.a]].push(f);G[ix[e.b]].push(b)});
+      const flow=S.arcs.map(()=>0),paths=[];let F=0;
+      for(let it=0;it<100;it++){const prev=new Array(n.length).fill(null);prev[0]={};const q=[0];
+        while(q.length&&!prev[1]){const u=q.shift();for(const e of G[u])if(e.c>0&&!prev[e.to]){prev[e.to]={u,e};q.push(e.to)}}
+        if(!prev[1])break;let b=Infinity,v=1;const pe=[];while(v!==0){const p=prev[v];b=Math.min(b,p.e.c);pe.push(p.e);v=p.u}
+        pe.forEach(e=>{e.c-=b;e.rev.c+=b;flow[e.arc]+=e.fw?b:-b});F+=b;
+        paths.push({b,F,nodes:[0,...pe.slice().reverse().map(e=>e.to)].map(k=>n[k]),arcs:pe.map(e=>e.arc),flow:flow.slice(),back:pe.some(e=>!e.fw)})}
+      const seen=new Set([0]),q=[0];while(q.length){const u=q.shift();for(const e of G[u])if(e.c>0&&!seen.has(e.to)){seen.add(e.to);q.push(e.to)}}
+      const Z=new Set([...seen].map(k=>n[k]));return{F,paths,Z,flow}}
+    // independent check: BFS distances + successive shortest paths (Bellman-Ford) on the transport problem
+    function transport(S){const Pv=S.Pv,Nv=S.Nv,D={};Pv.forEach(x=>{const d=bfs(S.adj,x);Nv.forEach(y=>D[x+'|'+y]=d[y])});
+      const n=2+Pv.length+Nv.length,G=Array.from({length:n},()=>[]);const ad=(a,b,c,w)=>{const f={to:b,c,w},r={to:a,c:0,w:-w};f.r=r;r.r=f;G[a].push(f);G[b].push(r);return f};
+      Pv.forEach((x,k)=>ad(0,2+k,S.mu[x],0));Nv.forEach((y,k)=>ad(2+Pv.length+k,1,-S.mu[y],0));
+      const M={};Pv.forEach((x,a)=>Nv.forEach((y,b)=>M[x+'|'+y]=ad(2+a,2+Pv.length+b,1e9,D[x+'|'+y])));
+      let cost=0;for(let it=0;it<200;it++){const dist=new Array(n).fill(Infinity),pr=new Array(n).fill(null);dist[0]=0;
+        for(let r=0;r<n;r++)for(let u=0;u<n;u++)if(dist[u]<Infinity)for(const e of G[u])if(e.c>0&&dist[u]+e.w<dist[e.to]){dist[e.to]=dist[u]+e.w;pr[e.to]={u,e}}
+        if(dist[1]===Infinity)break;let b=Infinity,v=1;while(v!==0){b=Math.min(b,pr[v].e.c);v=pr[v].u}v=1;while(v!==0){pr[v].e.c-=b;pr[v].e.r.c+=b;v=pr[v].u}cost+=b*dist[1]}
+      const plan=[];Pv.forEach(x=>Nv.forEach(y=>{const f=M[x+'|'+y].r.c;if(f>0)plan.push({x,y,f,d:D[x+'|'+y]})}));
+      return{cost,plan,D}}
+    const frac=(a,b)=>{if(a===0)return '0';const g=gcd(a,b);a/=g;b/=g;return b===1?(a<0?'−':'')+Math.abs(a):(a<0?'−':'')+Math.abs(a)+'/'+b};
+    function run(key){
+      const adj=graph(key==='rand'?randEdges():EX[key]);const S=setup(adj);const M=maxflow(S);const T=transport(S);
+      const u={},v={};S.Pv.forEach(x=>u[x]=1+['2','3'].filter(t=>M.Z.has('a:'+x+':'+t)).length);S.Nv.forEach(y=>v[y]=['1','2'].filter(t=>M.Z.has('b:'+y+':'+t)).length);
+      const dual=S.Pv.reduce((s,x)=>s+S.mu[x]*u[x],0)-S.Nv.reduce((s,y)=>s+(-S.mu[y])*v[y],0);
+      const feas=S.Pv.every(x=>S.Nv.every(y=>u[x]-v[y]<=T.D[x+'|'+y]));
+      const W=3*S.A-M.F;const unit=S.Lam===1?'':` (units of 1/${S.Lam})`;
+      const edgesTxt=Object.keys(adj).flatMap(a=>[...adj[a]].filter(b=>a<b).map(b=>nm(a)+nm(b))).join(', ');
+      const F=[];const base={paths:null};
+      const dl=S.Pv.flatMap(x=>S.Nv.map(y=>`${nm(x)}${nm(y)}:${S.dist[x+'|'+y]}`)).join(', ');
+      F.push({st:'net',t:'The edge, its masses, its network',c:`Edges: ${edgesTxt}. Lazy masses${unit}: surplus ${S.Pv.map(x=>nm(x)+' '+S.mu[x]).join(', ')}; deficit ${S.Nv.map(y=>nm(y)+' '+(-S.mu[y])).join(', ')}; A = ${S.A}. Lemma 2 distances from adjacency and common neighbours: ${dl}. That gives e₁ = ${S.e1}, e₂ = ${S.e2}, so 𝖦̃₃ has ${S.nodes.length} nodes and ${S.arcs.length} arcs.`});
+      M.paths.forEach((p,k)=>F.push({st:'path',p,t:`Augmenting path ${k+1}`,c:`Breadth-first search finds s → ${p.nodes.slice(1,-1).map(lbl).join(' → ')} → t with spare capacity ${p.b}${p.back?', using an arc backwards to reroute earlier flow':''}. Flow so far: F = ${p.F}.`}));
+      if(!M.paths.length)F.push({st:'path',p:{nodes:[],arcs:[],flow:S.arcs.map(()=>0),F:0},t:'No path at all',c:'No surplus node reaches a deficit node, because every pair is at distance 3. The maximum flow is F = 0.'});
+      const last=M.paths.length?M.paths[M.paths.length-1].flow:S.arcs.map(()=>0);
+      const Zl=[...M.Z].filter(z=>z!=='s').map(lbl);
+      F.push({st:'cut',flow:last,t:'No more paths: the minimum cut',c:`Search from s along arcs with spare capacity now reaches ${Zl.length?Zl.join(', '):'no node'}, and not t. The arcs leaving this set are all finite and saturated, so their total ${M.F} is a cut equal to the flow: F = ${M.F} is maximum.`});
+      F.push({st:'cut',flow:last,t:'Decode prices (Proposition 5)',c:`Count reachable levels: ${S.Pv.map(x=>'u('+nm(x)+') = '+u[x]).join(', ')}; ${S.Nv.map(y=>'v('+nm(y)+') = '+v[y]).join(', ')}. Dual value Σμu − Σνv = ${dual}, and 3A − F = ${3*S.A} − ${M.F} = ${W}. So 𝒲₁ = ${frac(W,S.Lam)} and κ = ${frac(S.Lam-W,S.Lam)}.`});
+      F.push({st:'check',flow:last,t:'Independent check',c:`A separate solver computes true distances by breadth-first search and solves the transport problem by successive shortest paths. Cheapest plan: ${T.plan.map(q=>nm(q.x)+'→'+nm(q.y)+' '+q.f+'×'+q.d).join(', ')}, cost ${T.cost}${T.cost===W?', equal to 3A − F':' (mismatch)'}. The decoded prices are ${feas?'feasible against these distances, so they certify the answer':'not feasible (mismatch)'}.`});
+      F.delay=5600;
+      const rows=Math.max(2*S.Pv.length,2*S.Nv.length,4),H=rows*26+40;svgR.setAttribute('viewBox',`0 0 340 ${H}`);
+      const pos={},ax=120,bx=232,top=24;
+      const aN=S.Pv.flatMap(x=>['a:'+x+':3','a:'+x+':2']),bN=S.Nv.flatMap(y=>['b:'+y+':2','b:'+y+':1']);
+      const offA=(rows-aN.length)*13,offB=(rows-bN.length)*13;
+      aN.forEach((k,r)=>pos[k]=[ax,top+offA+r*26+10]);bN.forEach((k,r)=>pos[k]=[bx,top+offB+r*26+10]);
+      pos.s=[22,top+rows*13];pos.t=[318,top+rows*13];
+      P.load(F,(fr,el)=>{
+        const fl=fr.st==='net'?null:(fr.p?fr.p.flow:fr.flow),onPath=new Set(fr.p?fr.p.arcs:[]),Zs=fr.st==='cut'||fr.st==='check'?M.Z:null;
+        el('text',{x:ax,y:14,class:'lab'}).textContent='u ≥ τ';el('text',{x:bx,y:14,class:'lab'}).textContent='v ≥ σ';
+        S.arcs.forEach((e,k)=>{const [x1,y1]=pos[e.a],[x2,y2]=pos[e.b];const f=fl?fl[k]:0;
+          let col=e.kind==='imp'||e.kind==='chain'?'var(--cool)':'var(--line)',w=1.2,op=e.kind==='imp'||e.kind==='chain'?.55:1;
+          if(f>0){col='var(--ok)';w=2;op=1}
+          if(onPath.has(k)){col='var(--accent)';w=2.6;op=1}
+          if(Zs&&Zs.has(e.a)&&!Zs.has(e.b)&&e.a!=='s'||Zs&&e.a==='s'&&!Zs.has(e.b)||Zs&&Zs.has(e.a)&&e.b==='t'){col='var(--bad)';w=2;op=1}
+          const pth=e.kind==='chain'?`M${x1-8} ${y1}Q${x1-22} ${(y1+y2)/2} ${x2-8} ${y2}`:`M${x1+(e.a==='s'?8:9)} ${y1}L${x2-9} ${y2}`;
+          el('path',{d:pth,fill:'none',stroke:col,'stroke-width':w,opacity:op,'stroke-dasharray':Zs&&col==='var(--bad)'?'4 3':''});
+          if(e.kind==='src'||e.kind==='snk'){const fr2=e.kind==='src'?0.4:0.6,mx=x1+(x2-x1)*fr2,my=y1+(y2-y1)*fr2;
+            el('text',{x:mx,y:my-3,class:'lab',style:'font-size:8.5px'}).textContent=fl?f+'/'+e.c:e.c}});
+        const dot=(k,lab)=>{const [x,y]=pos[k];const inZ=Zs&&Zs.has(k);
+          el('circle',{cx:x,cy:y,r:9,fill:inZ?'var(--accent)':'var(--raise)',stroke:inZ?'var(--accent)':'var(--line)','stroke-width':1.5});
+          el('text',{x,y:y+3.5,class:'lab',style:`font-size:8px;fill:${inZ?'var(--accent-ink)':'var(--fg)'}`}).textContent=lab};
+        aN.forEach(k=>dot(k,k.split(':')[2]));bN.forEach(k=>dot(k,k.split(':')[2]));
+        aN.forEach((k,r)=>{if(r%2===0){const [x,y]=pos[k];el('rect',{x:x-14,y:y-12,width:28,height:50,rx:7,fill:'none',stroke:'var(--line)','stroke-dasharray':'3 3'});el('text',{x:x-24,y:y+17,class:'lab',style:'font-size:10px;fill:var(--fg)'}).textContent=nm(k.split(':')[1])}});
+        bN.forEach((k,r)=>{if(r%2===0){const [x,y]=pos[k];el('rect',{x:x-14,y:y-12,width:28,height:50,rx:7,fill:'none',stroke:'var(--line)','stroke-dasharray':'3 3'});el('text',{x:x+24,y:y+17,class:'lab',style:'font-size:10px;fill:var(--fg)'}).textContent=nm(k.split(':')[1])}});
+        dot('s','s');dot('t','t');
+        el('text',{x:170,y:H-6,class:'msg',fill:'var(--accent)'}).textContent=fr.st==='net'?`3A = ${3*S.A}`:`F = ${fr.p?fr.p.F:M.F}   ·   3A − F = ${3*S.A-(fr.p?fr.p.F:M.F)}`;
+      });}
+    function lbl(k){if(k==='s'||k==='t')return k;const [t,x,l]=k.split(':');return (t==='a'?'a':'b')+'('+nm(x)+','+l+')'}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));run(b.dataset.scen)}));
+    run('ex1');
+  })();
 
 
   route();
