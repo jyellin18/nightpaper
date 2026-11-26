@@ -7143,10 +7143,377 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
 </div>
 
 
+<div class="wrap" id="view-p-2611-33494" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Thu, Nov 26</span></div>
+  <div class="paperhead">
+    <h1>On the Cluster Duration Distribution of the Markovian Hawkes Process</h1>
+    <p class="meta">Andrew Daw and Amer Goel · submitted Nov 24, announced Nov 26, 2026 · math.PR · <a href="https://arxiv.org/abs/2611.33494" target="_blank" rel="noopener">arXiv 2611.33494</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">A cascade of self-exciting events, in which each event raises the rate of further events, lasts on average exactly ∫<sub>0</sub><sup>ρ</sup> (e<sup>−u</sup> − e<sup>−ρ</sup>)/(ρe<sup>−ρ</sup> − ue<sup>−u</sup>) du, where ρ is the expected number of direct offspring per event. This is the mean duration of a cluster of the Markovian Hawkes process, the most widely used model of self-excitement, and until this paper even that mean had no closed form, although the size of a cluster has been known exactly for decades. The authors get there by building the cluster backwards: first its size, then a combinatorial skeleton counting how many children each point has, and only then the waiting times, which given the skeleton are independent exponentials. The skeleton is a random "preference count" inherited from uniformly random parking functions, and two short lemmas about it turn the mean duration into an expectation of a harmonic number of a Borel random variable, which a Lambert W substitution turns into the integral above.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what a Hawkes cluster is, how the intensity in Eq. (1) generates it, and why its size N has the Borel distribution;</li>
+        <li>why the size is easy and the duration τ is hard, and what was known before (an unsolvable ODE and upper bounds);</li>
+        <li>what parking functions and preference counts are, and why there are (n + 1)<sup>n−1</sup> of the first and a Catalan number of the second;</li>
+        <li>the backwards construction of Definition 2.3, and why, given the skeleton, the gaps between points are exponential with rates κ<sup>+</sup><sub>i</sub> − i + 1;</li>
+        <li>how Lemma 3.1 samples the skeleton one count at a time as a binomial plus a coin flip, and how Lemma 3.3 and Corollary 3.5 give the expected reciprocal rates;</li>
+        <li>how summing over sizes collapses to E[τ] = (1 − ρ)E[B·H<sub>B</sub>] − 1 (Theorem 1.1, Eq. (2)), and how the Lambert W function turns this into the integral of Corollary 1.2, Eq. (3);</li>
+        <li>what the result says numerically and asymptotically, and what it leaves open.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>ρ</dt><dd>the branching ratio, 0 &lt; ρ &lt; 1: the expected number of direct offspring of one point</dd>
+        <dt>g(t)</dt><dd>the excitation kernel; here g(t) = ρe<sup>−t</sup></dd>
+        <dt>τ<sub>0</sub> &lt; τ<sub>1</sub> &lt; ⋯</dt><dd>the times of the cluster's points, with τ<sub>0</sub> = 0 the first (the immigrant)</dd>
+        <dt>λ<sub>t</sub>, N<sub>t</sub></dt><dd>the intensity (instantaneous rate of new points) and the number of points in [0, t)</dd>
+        <dt>N</dt><dd>the cluster size, the total number of points, including τ<sub>0</sub></dd>
+        <dt>τ</dt><dd>the cluster duration τ<sub>N−1</sub>, the time of the last point</dd>
+        <dt>Exp(r)</dt><dd>exponential distribution with rate r, density re<sup>−rt</sup>, mean 1/r</dd>
+        <dt>Bin(m, p), Bern(p)</dt><dd>binomial and Bernoulli distributions</dd>
+        <dt>Borel(ρ)</dt><dd>the distribution P(B = j) = e<sup>−ρj</sup>(ρj)<sup>j−1</sup>/j! for j = 1, 2, …</dd>
+        <dt>π</dt><dd>a parking function (a list of preferred spaces), with sorted entries π<sub>(1)</sub> ≤ ⋯ ≤ π<sub>(m)</sub></dd>
+        <dt>κ, κ<sup>+</sup></dt><dd>a preference count (κ<sub>1</sub>, …, κ<sub>n</sub>) and its running sums κ<sup>+</sup><sub>i</sub> = κ<sub>1</sub> + ⋯ + κ<sub>i</sub>, with κ<sup>+</sup><sub>0</sub> = 0</dd>
+        <dt>Z<sub>i</sub></dt><dd>the gap τ<sub>i</sub> − τ<sub>i−1</sub> between consecutive points</dd>
+        <dt>H<sub>j</sub></dt><dd>the harmonic number 1 + 1/2 + ⋯ + 1/j</dd>
+        <dt>C<sub>n</sub></dt><dd>the Catalan number (2n)!/((n + 1)! n!)</dd>
+        <dt>W<sub>0</sub></dt><dd>the principal branch of the Lambert W function, the inverse of w ↦ we<sup>w</sup> on w ≥ −1</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Example 1: a three-point cluster.</b> Condition on N = 3, so besides the first point there are two more. There are only two possible skeletons: the first point has both children, or it has one child which has one child. The expected duration turns out to be 11/6, and every step of the paper can be checked on it with pencil and paper.</li>
+        <li><b>Example 2: a four-point cluster.</b> Condition on N = 4. Now there are five skeletons, matching the Catalan number C<sub>3</sub> = 5, and the expected duration is 245/96 ≈ 2.552. The first animation enumerates them.</li>
+      </ul>
+      <p>For the unconditional quantities we use ρ = 1/2 throughout, where each point has on average half a child, the mean cluster size is 2, and the paper's formula gives E[τ] ≈ 0.8036.</p>
+      <p class="note">Both examples and every number computed for them are ours. We checked them against brute-force enumeration and, at ρ = 1/2, against a simulation of 200,000 clusters.</p>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · Self-excitement">
+      <span class="num">1 · SELF-EXCITING POINTS</span>
+      <h2>What is a Hawkes cluster?</h2>
+      <p>Many streams of events feed on themselves. An earthquake raises the chance of aftershocks, a large trade prompts other traders to react, and a viral post produces reposts that produce more reposts. The Hawkes process, introduced by Hawkes in 1971, models this by letting every past event push up the rate at which new events arrive, with a push that fades over time. The paper's introduction lists applications from seismology and neuroscience to financial trading, pricing and public health.</p>
+      <p>Hawkes and Oakes (1974) showed that the process splits into two parts: outside events that arrive as an ordinary Poisson stream, and clusters of descendants that each outside event sets off. All the self-excitement lives inside a cluster, so the paper studies a single cluster. It starts with one point at time 0, and from then on new points arrive with the <span class="term">intensity</span> λ<sub>t</sub>, meaning that in a short interval [t, t + dt) a new point appears with probability about λ<sub>t</sub> dt.</p>
+      <div class="def"><span class="label">Definition · the Hawkes cluster, Eq. (1)</span>
+        <div class="math" data-tex="\lambda_t=\int_0^t g(t-u)\,\mathrm dN_u=\sum_{i=0}^{N_t-1}g(t-\tau_i),\qquad g(t)=\rho e^{-t},\ \ 0<\rho<1."></div>
+        <p>In words: every point that has already happened, at time τ<sub>i</sub>, contributes ρe<sup>−(t−τ<sub>i</sub>)</sup> to the current rate, a jump of size ρ at the moment it occurs which then decays exponentially. Nothing else drives the cluster. With this exponential kernel the model is the cluster of the Markovian Hawkes process, which the paper calls likely the most widely used and well-studied form of self-excitement.</p>
+      </div>
+      <p>A small illustration of our own: take ρ = 1/2 and suppose points have occurred at times 0, 0.4 and 1.1. Just before time 0.4 the rate is 0.5e<sup>−0.4</sup> ≈ 0.335; the point at 0.4 lifts it by 0.5 to about 0.835. At time 1.5 the three points contribute 0.5(e<sup>−1.5</sup> + e<sup>−1.1</sup> + e<sup>−0.4</sup>) ≈ 0.613. If no further point arrives the rate decays toward 0, and the cluster is over. Its <span class="term">duration</span> is the time of the last point, here 1.1.</p>
+      <p>The Hawkes-Oakes view turns this into a family tree. Each point is a parent whose own contribution ρe<sup>−s</sup>, at time s after its birth, makes it produce children as a Poisson process. The total expected number of children is ∫<sub>0</sub><sup>∞</sup> ρe<sup>−s</sup> ds = ρ, which is why ρ is called the branching ratio.</p>
+      <div class="fact"><span class="label">Fact · the branching picture</span>
+        <p>Each point independently has a Poisson(ρ) number of children, and given that number, the children are born after independent Exp(1) delays, since their birth-time density is proportional to e<sup>−s</sup>. The size of the cluster is the total size of this family tree.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why does a decaying rate ρe<sup>−s</sup> give a Poisson number of children at exponential delays?</span></summary><div class="pfbody">
+        <p>This explanation is ours, a standard property of Poisson processes. A Poisson process with rate function r(s) puts a Poisson-distributed number of points in a set, with mean equal to the integral of r over that set, and given the number of points, they are independent with density r(s)/∫r. For r(s) = ρe<sup>−s</sup> on s ≥ 0, the integral is ρ and the normalized density is e<sup>−s</sup>, the Exp(1) density. Because the intensity in Eq. (1) is a sum of such terms, one per existing point, the cluster is exactly the superposition of every point's own Poisson stream of children.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Two facts about exponential random variables do most of the work later, and they are worth having in hand. The proofs are standard and ours.</p>
+      <div class="fact"><span class="label">Fact · two exponential facts</span>
+        <p><b>Memorylessness.</b> If W ~ Exp(1), then given W &gt; a, the leftover W − a is again Exp(1): P(W &gt; a + t | W &gt; a) = e<sup>−(a+t)</sup>/e<sup>−a</sup> = e<sup>−t</sup>.</p>
+        <p><b>Races.</b> The minimum of r independent Exp(1) variables is Exp(r), with mean 1/r: P(min &gt; t) = (e<sup>−t</sup>)<sup>r</sup> = e<sup>−rt</sup>.</p>
+      </div>
+      <p class="short"><b>In short:</b> a Hawkes cluster starts with one point, and every point raises the rate of new points by ρ, decaying like e<sup>−t</sup>; equivalently, each point has Poisson(ρ) children born after Exp(1) delays, and the duration τ is the birth time of the last descendant.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Size and duration">
+      <span class="num">2 · SIZE IS EASY, DURATION IS HARD</span>
+      <h2>Why was the size of a cluster known for decades but not its length?</h2>
+      <p>The family-tree picture forgets time, and once time is forgotten the cluster is a Galton-Watson branching process with Poisson(ρ) offspring. Because ρ &lt; 1 the tree is finite with probability one, and its total size has a known law.</p>
+      <div class="def"><span class="label">Definition · the Borel distribution</span>
+        <div class="math" data-tex="\mathrm P(N=j)=\frac{e^{-\rho j}(\rho j)^{j-1}}{j!},\qquad j=1,2,3,\dots"></div>
+        <p>In words: this is the probability that a Poisson(ρ) family tree has exactly j members in total. The paper writes N ~ Borel(ρ), citing the connection to branching processes.</p>
+      </div>
+      <p>For small sizes the formula can be checked by listing trees, a check of ours. A cluster of one point needs the first point to be childless, probability e<sup>−ρ</sup>, and the formula gives e<sup>−ρ</sup>. A cluster of two needs exactly one child, who is childless, with probability ρe<sup>−ρ</sup> · e<sup>−ρ</sup> = ρe<sup>−2ρ</sup>, again matching. For Example 1, a cluster of three arises in two ways. The first point can have two children, both childless, with probability (ρ<sup>2</sup>/2)e<sup>−ρ</sup> · e<sup>−2ρ</sup>; or it can have one child, who has one childless child, with probability ρe<sup>−ρ</sup> · ρe<sup>−ρ</sup> · e<sup>−ρ</sup>. The total is (3/2)ρ<sup>2</sup>e<sup>−3ρ</sup>, and the formula gives (3ρ)<sup>2</sup>e<sup>−3ρ</sup>/3! = (3/2)ρ<sup>2</sup>e<sup>−3ρ</sup>. At ρ = 1/2 the probabilities of sizes 1, 2 and 3 are 0.607, 0.184 and 0.084. Notice that the two shapes of Example 1 have probabilities in the ratio 1 : 2; that ratio returns in Section 4.</p>
+      <p>The mean size follows from an argument of ours: generation k of the tree has expected size ρ<sup>k</sup>, so E[N] = 1 + ρ + ρ<sup>2</sup> + ⋯ = 1/(1 − ρ). At ρ = 1/2 that is 2.</p>
+      <p>Duration is a different matter. The time of the last point depends on the whole tree and on every delay along every branch, and the maximum over branches of sums of delays does not simplify. The paper quotes Møller and Rasmussen (2005): the distribution of the duration "is unknown even for the simplest examples of Hawkes processes." What was available before is the following.</p>
+      <div class="def"><span class="label">Known before · an ODE for the distribution function</span>
+        <div class="math" data-tex="F'(t)=F(t)\bigl(\rho F(t)-\rho-\log F(t)\bigr),\qquad F(0)=\mathrm P(N=1)=e^{-\rho},\qquad F(t)=\mathrm P(\tau\le t)."></div>
+        <p>In words: Møller and Rasmussen gave an integral equation for F, which for the exponential kernel is equivalent to this differential equation, and they noted it cannot be solved analytically. It can be solved numerically, which we use later as a check.</p>
+      </div>
+      <p>There were also upper bounds. Graham (2021) showed E[τ] ≤ 1/(1 − ρ), and in fact that τ is stochastically dominated by an Exp(1 − ρ) variable. Chen (2021) bounded τ by a "total birth time", a sum of a Borel(ρ) number of independent Exp(1) variables, which the paper says yields the similar bound E[τ] ≤ ρ/(1 − ρ). At ρ = 1/2 these bounds are 2 and 1. Daw (2024) and Daw and Yom-Tov (2026) then described the law of τ given the size N, as a sum of independent but not identical exponentials, and this conditional picture is what the paper builds on.</p>
+      <p class="short"><b>In short:</b> ignoring time, a cluster is a Poisson branching tree, so its size is Borel(ρ) with mean 1/(1 − ρ); its duration mixes tree shape with delays, and before this paper only an unsolvable ODE and upper bounds such as ρ/(1 − ρ) were known.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · Parking functions">
+      <span class="num">3 · PARKING FUNCTIONS AND PREFERENCE COUNTS</span>
+      <h2>What do parking cars have to do with family trees?</h2>
+      <p>The paper takes what it calls a detour through two deterministic combinatorial objects. Picture a one-way street with spaces numbered 1 to n. Cars arrive one at a time, each with a favourite space. A car drives to its favourite space, parks there if it is free, and otherwise takes the first free space after it. If it passes space n without finding one, it fails.</p>
+      <div class="def"><span class="label">Definition 2.1 · generalized parking function</span>
+        <p>For m ≤ n, a list π = (π<sub>1</sub>, …, π<sub>m</sub>) of positive integers is a generalized parking function of length m over n preferences if, after sorting into π<sub>(1)</sub> ≤ ⋯ ≤ π<sub>(m)</sub>,</p>
+        <div class="math" data-tex="\pi_{(i)}\le n-m+i\qquad\text{for } i=1,\dots,m."></div>
+        <p>In words: the list of m drivers' preferences over n spaces is a parking function exactly when every driver finds a space. When m = n this is a classic parking function, and the condition reads π<sub>(i)</sub> ≤ i: at least i drivers must want one of the first i spaces.</p>
+      </div>
+      <p>With three cars and three spaces, π = (2, 1, 1) works: the first car takes space 2, the second takes 1, and the third finds 1 and 2 taken and parks in 3. Sorted, it is (1, 1, 2), and 1 ≤ 1, 1 ≤ 2, 2 ≤ 3. The list (2, 2, 2) fails, since nobody ever takes space 1 and the third car runs off the end; sorted, its first entry 2 exceeds 1. The condition only looks at the sorted list, so whether everyone parks does not depend on the order in which the cars arrive. That suggests forgetting the order and keeping only how many drivers want each space.</p>
+      <div class="def"><span class="label">Definition 2.2 · preference counts</span>
+        <div class="math" data-tex="\kappa\in\mathbb N^n,\qquad \sum_{i=1}^n\kappa_i=n,\qquad \kappa^+_i=\sum_{j=1}^i\kappa_j\ \ge\ i\quad\text{for } i=1,\dots,n."></div>
+        <p>In words: the count κ<sub>i</sub> is the number of drivers who prefer space i, the counts add up to n, and the running totals κ<sup>+</sup> never fall behind the space number. The running totals form a nondecreasing staircase 1 ≤ κ<sup>+</sup><sub>1</sub> ≤ ⋯ ≤ κ<sup>+</sup><sub>n</sub> = n that stays on or above the diagonal, which is a Dyck path, so preference counts are counted by Catalan numbers.</p>
+      </div>
+      <p>Every parking function π of length n gives a preference count by κ<sub>i</sub>(π) = |{ℓ : π<sub>ℓ</sub> = i}|. The example π = (2, 1, 1) gives κ = (2, 1, 0) and κ<sup>+</sup> = (2, 3, 3). Many parking functions share a preference count: the ones with κ = (2, 1, 0) are the 3!/(2! 1! 0!) = 3 arrangements of the multiset {1, 1, 2}.</p>
+      <div class="fact"><span class="label">Fact · how many of each</span>
+        <p>There are (n + 1)<sup>n−1</sup> parking functions of length n and C<sub>n</sub> = (2n)!/((n + 1)! n!) preference counts. More generally, there are (n − m + 1)(n + 1)<sup>m−1</sup> generalized parking functions of length m over n preferences.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why (n + 1)<sup>n−1</sup>? Is there a way to see it without a long count?</span></summary><div class="pfbody">
+        <p>This is Pollak's circle argument as extended by Kenyon and Yin, which the paper cites for the general count; we reproduce it from their paper. Add a space n + 1 and bend the street into a circle, so a car that passes space n + 1 continues at space 1. Allow every preference in {1, …, n + 1}. Now every list of m preferences parks all cars, since nobody can fall off a circle, and exactly n + 1 − m spaces stay empty. There are (n + 1)<sup>m</sup> lists.</p>
+        <p>Adding k to every preference, modulo n + 1, rotates the whole outcome by k, empty spaces included. So each list belongs to a group of n + 1 rotations, and among them, the ones whose space n + 1 is empty number exactly n + 1 − m, one for each empty space that can be rotated to position n + 1. A list leaves space n + 1 empty precisely when nobody needed to pass n, which is the condition for being a generalized parking function on the original street. The fraction of parking functions is therefore (n + 1 − m)/(n + 1), and their number is (n + 1 − m)(n + 1)<sup>m−1</sup>. Taking m = n gives (n + 1)<sup>n−1</sup>.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>For n = 2 there are 3 parking functions, (1, 1), (1, 2), (2, 1), and C<sub>2</sub> = 2 preference counts, (2, 0) from the first and (1, 1) from the other two. For n = 3 there are 16 parking functions and 5 preference counts: (3, 0, 0), (2, 1, 0), (2, 0, 1), (1, 2, 0), (1, 1, 1). We confirmed the counts 1, 3, 16, 125 for n up to 4 by brute force.</p>
+      <p class="short"><b>In short:</b> a parking function is a list of preferences under which all cars park; counting how many cars want each space gives a preference count, a Dyck-path staircase κ<sup>+</sup><sub>i</sub> ≥ i; there are (n + 1)<sup>n−1</sup> parking functions and C<sub>n</sub> preference counts.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Building backwards">
+      <span class="num">4 · BUILDING THE CLUSTER BACKWARDS</span>
+      <h2>How can a cluster be generated so that its duration becomes a simple sum?</h2>
+      <p>Simulating a cluster forward in time mixes everything together. The approach of Daw (2024) and Daw and Yom-Tov (2026) is <span class="term">end-state conditioning</span>: construct the cluster in the opposite order from time. First choose the total size, then the skeleton that says which points have how many children, and only at the end the gaps between points. The paper gives the simplest version of this for the exponential kernel, and skips the parking function that earlier work sampled first, going straight to its preference count.</p>
+      <div class="def"><span class="label">Definition 2.3 · combinatorial cluster duration</span>
+        <p>(i) Sample N ~ Borel(ρ). If N = 1, set τ = 0.</p>
+        <p>(ii) Given N = n + 1, sample a length-n preference count κ with</p>
+        <div class="math" data-tex="\mathrm P(\kappa_1=k_1,\dots,\kappa_n=k_n)=\frac{1}{(n+1)^{n-1}}\binom{n}{k_1,\dots,k_n}=\frac{n!}{(n+1)^{n-1}\prod_{i=1}^n k_i!}.\qquad(4)"></div>
+        <p>(iii) Given κ, sample independent Z<sub>i</sub> ~ Exp(κ<sup>+</sup><sub>i</sub> − i + 1) for i = 1, …, n, and set</p>
+        <div class="math" data-tex="\tau=\sum_{i=1}^{N-1}Z_i."></div>
+        <p>In words: the size comes first, then a skeleton κ drawn with probability proportional to the number of parking functions that produce it (the multinomial coefficient counts them, and (n + 1)<sup>n−1</sup> is the total), and then each gap is exponential with a rate read off the staircase.</p>
+      </div>
+      <p>By Theorem 1 of Daw and Yom-Tov (2026), the τ built this way has the same distribution as the duration of the cluster defined by Eq. (1). The paper uses this as its starting point and does not reprove it.</p>
+      <p>The meaning of κ and of the rates is worth spelling out. The following reading is ours, but it is consistent with the paper's remark that preference counts encode descendant structure and with its comment that memorylessness is what lets step (iii) depend only on κ<sup>+</sup>. Number the points 0, 1, …, n in order of time. Then κ<sub>i</sub> is the number of children of point i − 1, so κ<sub>1</sub> counts the children of the first point. During the gap Z<sub>i</sub>, between points i − 1 and i, the points born so far are 0, …, i − 1. Between them they have κ<sup>+</sup><sub>i</sub> children, of which i − 1 have already appeared (points 1 to i − 1). So κ<sup>+</sup><sub>i</sub> − i + 1 children are still pending. Each pending child arrives after an Exp(1) delay from its parent's birth; by memorylessness the remaining wait of each is still Exp(1); and by the race fact, the next arrival comes after an Exp(κ<sup>+</sup><sub>i</sub> − i + 1) wait. The staircase condition κ<sup>+</sup><sub>i</sub> ≥ i says at least one child is pending until the last one arrives.</p>
+      <details class="pf"><summary><span class="tagd">check</span><span class="q">Does the reading "κ<sub>1</sub> is the number of children of the first point" agree with the branching tree?</span></summary><div class="pfbody">
+        <p>This check is ours. For N = 4 (n = 3), Eq. (4) gives P(κ<sub>1</sub> = 3) = 3!/(16 · 3!) = 1/16. In the branching tree, the first point has three childless children with probability (ρ<sup>3</sup>/6)e<sup>−ρ</sup> · e<sup>−3ρ</sup>, and P(N = 4) = (4ρ)<sup>3</sup>e<sup>−4ρ</sup>/4! = (8/3)ρ<sup>3</sup>e<sup>−4ρ</sup>; the ratio is (1/6)/(8/3) = 1/16. Likewise κ<sub>1</sub> = 1 has probability (3 + 6)/16 = 9/16 from Eq. (4), and in the tree the first point has a single child whose subtree has size 3, with probability ρe<sup>−ρ</sup> · (3/2)ρ<sup>2</sup>e<sup>−3ρ</sup>, whose ratio to P(N = 4) is (3/2)/(8/3) = 9/16. The conditional law of the full time-ordered skeleton is subtler, which is why the paper relies on the cited theorem rather than on this intuition.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p><b>Example 1.</b> Given N = 3, so n = 2, the two preference counts are (2, 0) and (1, 1). Eq. (4) gives them probabilities 2!/(3 · 2!) = 1/3 and 2!/(3 · 1! 1!) = 2/3, the 1 : 2 ratio found by listing trees in Section 2. For κ = (2, 0) the staircase is κ<sup>+</sup> = (2, 2) and the rates are 2 − 1 + 1 = 2 and 2 − 2 + 1 = 1: the first point has two children racing, and after one arrives the other is still pending. The expected duration is 1/2 + 1 = 3/2, which is also the expected maximum of two independent Exp(1) delays. For κ = (1, 1), κ<sup>+</sup> = (1, 2) and both rates are 1: a chain of two Exp(1) delays, expected duration 2. Averaging,</p>
+      <div class="math" data-tex="\mathrm E[\tau\mid N=3]=\tfrac13\cdot\tfrac32+\tfrac23\cdot 2=\tfrac{11}{6}\approx1.833."></div>
+      <p><b>Example 2.</b> Given N = 4, Eq. (4) puts weight 6/(16 ∏k<sub>i</sub>!) on each of the five preference counts:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>κ</th><th>κ<sup>+</sup></th><th>P (Eq. 4)</th><th>rates</th><th>E[τ | κ]</th></tr></thead>
+        <tbody>
+          <tr><td>(3, 0, 0)</td><td>(3, 3, 3)</td><td class="n">1/16</td><td class="n">3, 2, 1</td><td class="n">11/6</td></tr>
+          <tr><td>(2, 1, 0)</td><td>(2, 3, 3)</td><td class="n">3/16</td><td class="n">2, 2, 1</td><td class="n">2</td></tr>
+          <tr><td>(2, 0, 1)</td><td>(2, 2, 3)</td><td class="n">3/16</td><td class="n">2, 1, 1</td><td class="n">5/2</td></tr>
+          <tr><td>(1, 2, 0)</td><td>(1, 3, 3)</td><td class="n">3/16</td><td class="n">1, 2, 1</td><td class="n">5/2</td></tr>
+          <tr><td>(1, 1, 1)</td><td>(1, 2, 3)</td><td class="n">6/16</td><td class="n">1, 1, 1</td><td class="n">3</td></tr>
+        </tbody>
+      </table></div>
+      <p>The weighted average is E[τ | N = 4] = 245/96 ≈ 2.552. The chain (1, 1, 1) is the most likely skeleton and also the slowest, because it never has more than one child pending.</p>
+      <p>Taking expectations in step (iii) gives the formula that the rest of the paper evaluates. Writing m = i − 1, the rate of Z<sub>m+1</sub> is κ<sup>+</sup><sub>m+1</sub> − m, and the mean of an Exp(r) variable is 1/r.</p>
+      <div class="fact"><span class="label">Fact · the conditional mean (the inner sum of Eq. 13)</span>
+        <div class="math" data-tex="\mathrm E[\tau\mid N=n+1]=\sum_{m=0}^{n-1}\mathrm E\Bigl[\frac{1}{\kappa^+_{m+1}-m}\Bigr]."></div>
+        <p>In words: the expected duration of a cluster of size n + 1 is the sum, over the n gaps, of the expected reciprocal of the number of pending children. Only the marginal law of each κ<sup>+</sup><sub>m+1</sub> matters, not how they depend on each other.</p>
+      </div>
+      <p>The animation below does this computation on the screen. For the chosen size it lists every preference count, computes its probability from Eq. (4) with exact fractions, draws its staircase with the pending children in each gap, adds up 1/rate, and accumulates the weighted average. Its last frame recomputes each gap's expected reciprocal by the closed formula of Corollary 3.5 from Section 6, and the two answers agree.</p>
+      <div class="player" id="pHkEnum">
+        <div class="ptitle"><span class="label">Animation · every skeleton of a small cluster</span><div class="scen"><button class="chip" data-scen="2" aria-pressed="false">N = 3</button><button class="chip" data-scen="3" aria-pressed="true">N = 4</button><button class="chip" data-scen="4" aria-pressed="false">N = 5</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="A staircase of cumulative preference counts above the diagonal, with the number of pending children shaded in each gap"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--cool)"></i>pending children in a gap (the rate)</span><span><i class="sw" style="background:var(--accent)"></i>arrived points</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p class="short"><b>In short:</b> build the cluster backwards, size first (Borel), then a preference count κ with probability proportional to its number of parking functions (Eq. 4), then independent exponential gaps whose rates κ<sup>+</sup><sub>i</sub> − i + 1 count pending children; the mean duration given the size is a sum of expected reciprocal rates, 11/6 for N = 3 and 245/96 for N = 4.</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · One count at a time">
+      <span class="num">5 · SAMPLING THE SKELETON ONE COUNT AT A TIME</span>
+      <h2>How is the next count distributed, given the counts so far?</h2>
+      <p>To average 1/(κ<sup>+</sup><sub>m+1</sub> − m) one needs the law of κ<sup>+</sup><sub>m+1</sub>, and Eq. (4) describes all of κ at once. The first lemma breaks it into steps: given the first m counts, the next one is a binomial variable plus a single coin flip.</p>
+      <div class="fact"><span class="label">Lemma 3.1 · the next count</span>
+        <p>For a length-n preference count κ distributed by Eq. (4) and m &lt; n, writing k<sup>+</sup><sub>m</sub> = k<sub>1</sub> + ⋯ + k<sub>m</sub>,</p>
+        <div class="math" data-tex="\mathrm P\bigl(\kappa_{m+1}=k_{m+1}\mid\kappa_1=k_1,\dots,\kappa_m=k_m\bigr)=\frac{k^+_{m+1}-m}{k^+_m-m+1}\binom{n-k^+_m}{k_{m+1}}\frac{(n-m)^{\,n-k^+_{m+1}-1}}{(n-m+1)^{\,n-k^+_m-1}}.\qquad(5)"></div>
+        <p>Equivalently κ<sub>m+1</sub> has the law of X<sub>m</sub> + Y<sub>m</sub>, where, given κ<sup>+</sup><sub>m</sub>,</p>
+        <div class="math" data-tex="X_m\mid Y_m\sim\mathrm{Bin}\Bigl(n-\kappa^+_m-Y_m,\ \frac{1}{n-m+1}\Bigr),\qquad Y_m\sim\mathrm{Bern}\Bigl(\frac{n-\kappa^+_m}{(n-m)(\kappa^+_m-m+1)}\Bigr),\qquad(6)"></div>
+        <p>and the first count satisfies κ<sub>1</sub> − 1 ~ Bin(n − 1, 1/(n + 1)).</p>
+      </div>
+      <p>In words: of the n − κ<sup>+</sup><sub>m</sub> preferences not yet placed, each lands on value m + 1 with probability 1/(n − m + 1), as if spread evenly over the n − m remaining values plus one extra slot, and a coin flip Y<sub>m</sub> adds a correction. Only the running total κ<sup>+</sup><sub>m</sub> matters, so the staircase is a Markov chain. When the staircase touches the diagonal, κ<sup>+</sup><sub>m</sub> = m, the coin has probability (n − m)/(n − m) = 1 and forces κ<sub>m+1</sub> ≥ 1, which is exactly what keeps the cluster alive: with nothing pending, somebody must have a child.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Where do the binomial coefficient and the powers in Eq. (5) come from?</span></summary><div class="pfbody">
+        <p>From the paper. Count the parking functions π of length n whose first m counts are k<sub>1</sub>, …, k<sub>m</sub>. There are C(n, k<sub>1</sub>) ways to choose the positions in π holding the value 1, then C(n − k<sub>1</sub>, k<sub>2</sub>) for the value 2, and so on, giving ∏<sub>i≤m</sub> C(n − k<sup>+</sup><sub>i−1</sub>, k<sub>i</sub>) with k<sup>+</sup><sub>0</sub> = 0. The remaining n − k<sup>+</sup><sub>m</sub> positions must hold the values m + 1, …, n, and they must form a generalized parking function of length n − k<sup>+</sup><sub>m</sub> over n − m preferences. By the count in Section 3, with that length and number of preferences, there are (k<sup>+</sup><sub>m</sub> − m + 1)(n − m + 1)<sup>n−k<sup>+</sup><sub>m</sub>−1</sup> of them. Dividing by (n + 1)<sup>n−1</sup>,</p>
+        <div class="math" data-tex="\mathrm P(\kappa_1=k_1,\dots,\kappa_m=k_m)=(k^+_m-m+1)\frac{(n-m+1)^{\,n-k^+_m-1}}{(n+1)^{n-1}}\prod_{i=1}^m\binom{n-k^+_{i-1}}{k_i}.\qquad(7)"></div>
+        <p>Dividing Eq. (7) at m + 1 by Eq. (7) at m cancels all but one binomial coefficient and gives</p>
+        <div class="math" data-tex="\frac{(k^+_{m+1}-m)(n-m)^{\,n-k^+_{m+1}-1}}{(k^+_m-m+1)(n-m+1)^{\,n-k^+_m-1}}\binom{n-k^+_m}{k_{m+1}},\qquad(8)"></div>
+        <p>which is Eq. (5). The paper then states that X<sub>m</sub> + Y<sub>m</sub> has the same conditional probability mass function, a direct check. We confirmed by exact rational arithmetic that multiplying the step laws of Eq. (6) along every preference count reproduces Eq. (4) for every n up to 6.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p><b>Example 2 in steps.</b> For n = 3 the first count has κ<sub>1</sub> − 1 ~ Bin(2, 1/4), so P(κ<sub>1</sub> = 1, 2, 3) = 9/16, 6/16, 1/16, matching the table of Section 4 (the rows starting with 1 add to 9/16, those starting with 2 to 6/16). Given κ<sub>1</sub> = 2, step m = 1 uses κ<sup>+</sup><sub>1</sub> = 2, and the coin has probability (n − κ<sup>+</sup><sub>1</sub>)/((n − 1)(κ<sup>+</sup><sub>1</sub> − 1 + 1)) = 1/(2 · 2) = 1/4. If the coin shows 0 (probability 3/4), X<sub>1</sub> ~ Bin(1, 1/3); if it shows 1, X<sub>1</sub> ~ Bin(0, 1/3) = 0. So P(κ<sub>2</sub> = 0) = (3/4)(2/3) = 1/2 and P(κ<sub>2</sub> = 1) = (3/4)(1/3) + 1/4 = 1/2, matching the equal weights 3/16 and 3/16 of (2, 1, 0) and (2, 0, 1).</p>
+      <p>Because the law of each count depends only on the running total, Lemma 3.1 is also a fast exact sampler for the duration given the size: draw the counts one by one, and after each, draw the next gap. The animation runs this sampler. Each step flips the coin Y<sub>m</sub>, draws X<sub>m</sub>, extends the staircase, and draws the gap as an exponential with rate equal to the number of pending children, using a seeded random number generator so the same button gives the same cluster.</p>
+      <div class="player" id="pHkGrow">
+        <div class="ptitle"><span class="label">Animation · growing one cluster with Lemma 3.1</span><div class="scen"><button class="chip" data-scen="a" aria-pressed="true">N = 6</button><button class="chip" data-scen="b" aria-pressed="false">N = 10</button><button class="chip" data-scen="rand" aria-pressed="false">new draw</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 300" role="img" aria-label="Top: a timeline of cluster points. Bottom: the staircase of cumulative child counts with pending children shaded"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>points and their times</span><span><i class="sw" style="background:var(--cool)"></i>pending children</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p class="short"><b>In short:</b> counting the parking functions that start with given counts (Eq. 7) shows that the next count is a binomial plus a coin flip depending only on the running total (Eqs. 5 and 6); this makes the staircase a Markov chain and gives an exact sampler.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Reciprocal rates">
+      <span class="num">6 · THE EXPECTED RECIPROCAL RATE</span>
+      <h2>What is the average of 1/(number of pending children) in each gap?</h2>
+      <p>The fact in Section 4 needs E[1/(κ<sup>+</sup><sub>m+1</sub> − m)] for every m. Reciprocals of random variables are usually awkward, but here the binomial structure of Lemma 3.1 makes the conditional expectation collapse, leaving a recursion in m.</p>
+      <div class="fact"><span class="label">Lemma 3.3 · a recursion</span>
+        <p>For n ≥ 1, κ distributed by Eq. (4), and m = 0, 1, …, n − 1, with κ<sup>+</sup><sub>0</sub> = 0,</p>
+        <div class="math" data-tex="\mathrm E\Bigl[\frac{1}{\kappa^+_{m+1}-m}\Bigr]=\Bigl(1+\frac{1}{n-m}\Bigr)\mathrm E\Bigl[\frac{1}{\kappa^+_m-m+1}\Bigr]-\binom{n}{m}\frac{(m+1)^{m-1}}{(n+1)^{n-1}}(n-m)^{n-m-1}.\qquad(9)"></div>
+      </div>
+      <p>In words: the expected reciprocal of the pending count in gap m + 1 is the one from gap m, scaled up by (n − m + 1)/(n − m), minus a correction that is exactly the chance that the staircase touches the diagonal at m, times a factor. Touching the diagonal means one pending child, the largest possible reciprocal, and the correction accounts for the forced coin there.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does the reciprocal of a binomial-type variable have such a clean expectation?</span></summary><div class="pfbody">
+        <p>From the paper. The key step is the conditional statement</p>
+        <div class="math" data-tex="\mathrm E\Bigl[\frac{1}{\kappa^+_{m+1}-m}\Bigm|\kappa_1,\dots,\kappa_m\Bigr]=\frac{1}{\kappa^+_m-m+1}\Bigl(1+\frac{1}{n-m}\Bigr)-\Bigl(\frac{n-m}{n-m+1}\Bigr)^{n-m-1}\mathbf 1\{\kappa^+_m=m\}.\qquad(10)"></div>
+        <p>Write the conditional expectation as a sum over k = κ<sub>m+1</sub> from 0 to n − κ<sup>+</sup><sub>m</sub> using Eq. (5). The factor k<sup>+</sup><sub>m+1</sub> − m in Eq. (5) cancels the reciprocal being averaged, which is the whole trick. One subtlety: when κ<sup>+</sup><sub>m</sub> = m, the value k = 0 is impossible, but the cancelled sum would include it, so its term is subtracted; that term is (n − m)<sup>n−m−1</sup>/(n − m + 1)<sup>n−m−1</sup>, the indicator term. What remains is</p>
+        <div class="math" data-tex="\frac{1}{(n-m)(\kappa^+_m-m+1)(n-m+1)^{n-\kappa^+_m-1}}\sum_{k=0}^{n-\kappa^+_m}\binom{n-\kappa^+_m}{k}(n-m)^{n-\kappa^+_m-k}=\frac{n-m+1}{(n-m)(\kappa^+_m-m+1)},"></div>
+        <p>by the binomial theorem, since the sum is (1 + (n − m))<sup>n−κ<sup>+</sup><sub>m</sub></sup>. That proves Eq. (10). Taking expectations,</p>
+        <div class="math" data-tex="\mathrm E\Bigl[\frac{1}{\kappa^+_{m+1}-m}\Bigr]=\Bigl(1+\frac{1}{n-m}\Bigr)\mathrm E\Bigl[\frac{1}{\kappa^+_m-m+1}\Bigr]-\Bigl(\frac{n-m}{n-m+1}\Bigr)^{n-m-1}\mathrm P(\kappa^+_m=m).\qquad(11)"></div>
+        <p>Finally, κ<sup>+</sup><sub>m</sub> = m means the parking function splits into a parking function of length m on the values 1 to m and one of length n − m on the values m + 1 to n. There are (m + 1)<sup>m−1</sup> and (n − m + 1)<sup>n−m−1</sup> of these and C(n, m) ways to interleave them, so</p>
+        <div class="math" data-tex="\mathrm P(\kappa^+_m=m)=\binom{n}{m}\frac{(m+1)^{m-1}}{(n+1)^{n-1}}(n-m+1)^{n-m-1},"></div>
+        <p>and substituting into Eq. (11) gives Eq. (9).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <div class="fact"><span class="label">Corollary 3.5 · the closed form</span>
+        <div class="math" data-tex="\mathrm E\Bigl[\frac{1}{\kappa^+_{m+1}-m}\Bigr]=\frac{n+1}{n-m}-\frac{1}{n-m}\sum_{i=0}^{m}\binom{n}{i}\Bigl(\frac{i+1}{n+1}\Bigr)^{i-1}\Bigl(\frac{n-i}{n+1}\Bigr)^{n-i}.\qquad(12)"></div>
+        <p>In words: without the sum, the answer would be (n + 1)/(n − m), as if the pending count were always about (n − m)/(n + 1) of the way through; each term of the sum subtracts the effect of the staircase touching the diagonal at an earlier step i.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">derivation</span><span class="q">How does the recursion unroll into Eq. (12)?</span></summary><div class="pfbody">
+        <p>The paper says the recursion immediately yields the corollary; the unrolling below is ours. Put e<sub>m</sub> = E[1/(κ<sup>+</sup><sub>m+1</sub> − m)], and note that the expectation on the right of Eq. (9) is e<sub>m−1</sub>, with e<sub>−1</sub> = E[1/(κ<sup>+</sup><sub>0</sub> + 1)] = 1. Multiplying Eq. (9) by n − m gives</p>
+        <div class="math" data-tex="(n-m)\,e_m=(n-m+1)\,e_{m-1}-c_m,\qquad c_m=\binom{n}{m}\frac{(m+1)^{m-1}(n-m)^{n-m}}{(n+1)^{n-1}}=\binom{n}{m}\Bigl(\frac{m+1}{n+1}\Bigr)^{m-1}\Bigl(\frac{n-m}{n+1}\Bigr)^{n-m},"></div>
+        <p>where the last equality holds because the powers of n + 1 add up to (m − 1) + (n − m) − (n − 1) = 0. So a<sub>m</sub> = (n − m)e<sub>m</sub> satisfies a<sub>m</sub> = a<sub>m−1</sub> − c<sub>m</sub> with a<sub>−1</sub> = n + 1, hence a<sub>m</sub> = n + 1 − (c<sub>0</sub> + ⋯ + c<sub>m</sub>). Dividing by n − m is Eq. (12).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p><b>Example 1 again.</b> For n = 2, Eq. (12) at m = 0 gives 3/2 − (1/2) · 1 · 3 · (4/9) = 3/2 − 2/3 = 5/6. Directly, κ<sup>+</sup><sub>1</sub> is 2 with probability 1/3 and 1 with probability 2/3, so E[1/κ<sup>+</sup><sub>1</sub>] = 1/6 + 2/3 = 5/6. At m = 1, Eq. (12) gives 3 − (4/3 + 2/3) = 1, and indeed κ<sup>+</sup><sub>2</sub> − 1 = 1 always, since the last gap always has exactly one pending child. The sum 5/6 + 1 = 11/6 is E[τ | N = 3], as in Section 4. We checked Eq. (12) against full enumeration for every n up to 7, where the conditional means are 1, 11/6, 245/96, 319/100, 292987/77760, 206441/48020 and 263850379/55050240 for N = 2, …, 8.</p>
+      <p class="short"><b>In short:</b> because Eq. (5) contains the factor k<sup>+</sup><sub>m+1</sub> − m, averaging its reciprocal is a binomial-theorem computation, giving the recursion of Lemma 3.3 and the closed form (12), whose correction terms count the times the staircase touches the diagonal.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Summing over sizes">
+      <span class="num">7 · SUMMING OVER SIZES</span>
+      <h2>How does a triple sum turn into one expectation of a Borel variable?</h2>
+      <p>Now average over the size. The conditional means grow with n, the size probabilities shrink, and the paper shows that the whole double series reorganizes into expectations of one Borel variable B and the harmonic numbers H<sub>j</sub> = 1 + 1/2 + ⋯ + 1/j, which grow like log j.</p>
+      <div class="fact"><span class="label">Theorem 1.1 · the mean duration as a Borel expectation</span>
+        <p>Let B ~ Borel(ρ). The mean duration of the Markovian Hawkes cluster is</p>
+        <div class="math" data-tex="\mathrm E[\tau]=(1-\rho)\,\mathrm E\bigl[B\cdot\mathsf H_B\bigr]-1.\qquad(2)"></div>
+      </div>
+      <p>In words: draw a cluster size from the same Borel law, multiply it by its harmonic number, average, scale by 1 − ρ, and subtract 1. At ρ = 1/2 we computed E[B·H<sub>B</sub>] ≈ 3.6072, so E[τ] ≈ 0.5 · 3.6072 − 1 = 0.8036, comfortably below Chen's bound of 1 and Graham's bound of 2. The series converges quickly at this ρ: clusters of size up to 4 already contribute 0.452 of the 0.804, and sizes up to 8 contribute 0.684, by our computation.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Which sums are swapped, and where do the harmonic numbers come from?</span></summary><div class="pfbody">
+        <p>From the paper. Conditioning on the size and using P(N = n + 1) = (n + 1)<sup>n−1</sup>ρ<sup>n</sup>e<sup>−ρ(n+1)</sup>/n!,</p>
+        <div class="math" data-tex="\mathrm E[\tau]=\sum_{n=1}^\infty\sum_{m=0}^{n-1}\mathrm E\Bigl[\frac{1}{\kappa^+_{m+1}-m}\Bigr](n+1)^{n-1}\frac{\rho^ne^{-\rho(n+1)}}{n!},\qquad(13)"></div>
+        <p>where n = 0 is dropped because τ = 0 when N = 1. Substituting Eq. (12) gives Eq. (14). In its first part, the sum over m of (n + 1)/(n − m) is (n + 1)H<sub>n</sub>; in the second, the factors (n + 1) cancel. The result is</p>
+        <div class="math" data-tex="\mathrm E[\tau]=\sum_{n=1}^\infty\mathsf H_n(n+1)^n\frac{\rho^ne^{-\rho(n+1)}}{n!}-\sum_{n=1}^\infty\sum_{m=0}^{n-1}\sum_{i=0}^m\frac{(i+1)^{i-1}(n-i)^{n-i}}{n-m}\,\frac{\rho^ne^{-\rho(n+1)}}{i!\,(n-i)!}.\qquad(15)"></div>
+        <p><b>The triple sum.</b> Swap the sums over m and i: for fixed i, m runs from i to n − 1, and the sum of 1/(n − m) over that range is H<sub>n−i</sub>. Then swap the sums over i and n and set ℓ = n − i. The summand factors into a part depending on i and a part depending on ℓ:</p>
+        <div class="math" data-tex="\sum_{i=0}^\infty\frac{(\rho(i+1))^i}{(i+1)!}\rho e^{-\rho(i+1)}\ \cdot\ \sum_{\ell=1}^\infty\mathsf H_\ell\frac{(\rho\ell)^\ell e^{-\rho\ell}}{\rho\,\ell!}."></div>
+        <p>The second factor is</p>
+        <div class="math" data-tex="\sum_{\ell=1}^\infty\ell\,\mathsf H_\ell\frac{(\rho\ell)^{\ell-1}e^{-\rho\ell}}{\ell!}=\mathrm E\bigl[B\,\mathsf H_B\bigr],\qquad(16)"></div>
+        <p>and the first, with j = i + 1, is ρ times the total Borel probability:</p>
+        <div class="math" data-tex="\rho\sum_{j=1}^\infty\frac{(\rho j)^{j-1}}{j!}e^{-\rho j}=\rho.\qquad(17)"></div>
+        <p><b>The single sum.</b> Multiplying and dividing by n + 1 and setting j = n + 1,</p>
+        <div class="math" data-tex="\sum_{n=1}^\infty\mathsf H_n(n+1)^n\frac{\rho^ne^{-\rho(n+1)}}{n!}=\sum_{n=1}^\infty(n+1)\mathsf H_n\frac{(\rho(n+1))^ne^{-\rho(n+1)}}{(n+1)!}=\mathrm E\bigl[B\,\mathsf H_{B-1}\mathbf 1\{B\ge2\}\bigr].\qquad(18)"></div>
+        <p>Together,</p>
+        <div class="math" data-tex="\mathrm E[\tau]=\mathrm E\bigl[B\,\mathsf H_{B-1}\mathbf 1\{B\ge2\}\bigr]-\rho\,\mathrm E\bigl[B\,\mathsf H_B\bigr].\qquad(20)"></div>
+        <p><b>The last step.</b> At B = 1 the quantity inside is −ρ = (1 − ρ) · 1 · H<sub>1</sub> − 1. For B ≥ 2, H<sub>B−1</sub> = H<sub>B</sub> − 1/B, so B·H<sub>B−1</sub> − ρB·H<sub>B</sub> = −1 + (1 − ρ)B·H<sub>B</sub>. Both cases equal (1 − ρ)B·H<sub>B</sub> − 1, and taking expectations gives Eq. (2).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> inserting Corollary 3.5 into the average over sizes and swapping sums produces harmonic numbers and a factorization into two Borel series, which collapse to E[τ] = (1 − ρ)E[B·H<sub>B</sub>] − 1, about 0.8036 at ρ = 1/2.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · The integral">
+      <span class="num">8 · FROM A SERIES TO AN INTEGRAL</span>
+      <h2>How does the Borel expectation become a single integral?</h2>
+      <p>Theorem 1.1 is exact but still an infinite series. Two classical tools turn it into an integral over a finite interval: an integral formula for harmonic numbers, and the generating function of the Borel distribution, which is expressed through the Lambert W function.</p>
+      <div class="fact"><span class="label">Corollary 1.2 · the mean duration in closed form</span>
+        <div class="math" data-tex="\mathrm E[\tau]=\int_0^\rho\frac{e^{-u}-e^{-\rho}}{\rho e^{-\rho}-ue^{-u}}\,\mathrm du.\qquad(3)"></div>
+        <p>In words: the mean duration is the area under an explicit curve on [0, ρ]. Numerator and denominator both vanish at u = ρ, and by our computation their ratio tends to 1/(1 − ρ) there; the denominator is positive below ρ because ue<sup>−u</sup> increases on [0, 1]. So the integrand is bounded and the integral is easy to evaluate numerically.</p>
+      </div>
+      <p>The two tools first. The Eulerian representation of the harmonic numbers, which the paper cites from Lagarias, is H<sub>j</sub> = ∫<sub>0</sub><sup>1</sup> (1 − x<sup>j</sup>)/(1 − x) dx; it holds because (1 − x<sup>j</sup>)/(1 − x) = 1 + x + ⋯ + x<sup>j−1</sup>, whose integral is 1 + 1/2 + ⋯ + 1/j (our one-line check). The Lambert W function solves we<sup>w</sup> = z; its principal branch W<sub>0</sub> is the solution with w ≥ −1, defined for z ≥ −1/e. The paper uses the known formula for the probability generating function of the Borel distribution, E[x<sup>B</sup>] = −W<sub>0</sub>(−xρe<sup>−ρ</sup>)/ρ.</p>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Where does a Lambert W come from in a branching process?</span></summary><div class="pfbody">
+        <p>This derivation is ours; the paper cites Corless et al. for the formula. Let G(x) = E[x<sup>B</sup>]. A tree is its root plus a Poisson(ρ) number of independent subtrees, so G(x) = x · E[G(x)<sup>K</sup>] with K ~ Poisson(ρ), and the Poisson generating function gives G = x e<sup>ρ(G−1)</sup>. Put u = ρG. Then u e<sup>−u</sup> = xρe<sup>−ρ</sup>, that is, (−u)e<sup>−u</sup> = −xρe<sup>−ρ</sup>, so −u = W<sub>0</sub>(−xρe<sup>−ρ</sup>). The principal branch is the right one because u = ρG ≤ ρ &lt; 1 keeps −u above −1.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>With these, Theorem 1.1 becomes an integral over x in [0, 1]:</p>
+      <div class="math" data-tex="\mathrm E[\tau]=(1-\rho)\int_0^1\frac{\mathrm E[B]-\mathrm E[Bx^B]}{1-x}\,\mathrm dx-1,\qquad \mathrm E[Bx^B]=x\frac{\partial}{\partial x}\mathrm E[x^B]=-\frac1\rho\,\frac{\mathsf W_0(-x\rho e^{-\rho})}{1+\mathsf W_0(-x\rho e^{-\rho})}.\qquad(21),(22)"></div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does the substitution remove the Lambert W?</span></summary><div class="pfbody">
+        <p>From the paper. Using E[B] = 1/(1 − ρ), the integrand of Eq. (21) is (1/(1 − x))(1/(1 − ρ) + (1/ρ)W<sub>0</sub>/(1 + W<sub>0</sub>)), which is Eq. (23). Substitute u = −W<sub>0</sub>(−xρe<sup>−ρ</sup>). At x = 0, u = 0; at x = 1, u = −W<sub>0</sub>(−ρe<sup>−ρ</sup>) = ρ. The defining property of W gives −ue<sup>−u</sup> = −xρe<sup>−ρ</sup>, so x = ue<sup>−u</sup>/(ρe<sup>−ρ</sup>) and dx = (e<sup>−u</sup> − ue<sup>−u</sup>) du/(ρe<sup>−ρ</sup>). The integral becomes</p>
+        <div class="math" data-tex="\int_0^\rho\frac{e^{-u}-ue^{-u}}{\rho e^{-\rho}-ue^{-u}}\Bigl(\frac{1}{1-\rho}-\frac{u}{\rho(1-u)}\Bigr)\mathrm du=\frac{1}{\rho(1-\rho)}\int_0^\rho\frac{\rho e^{-u}-ue^{-u}}{\rho e^{-\rho}-ue^{-u}}\,\mathrm du,\qquad(24),(25)"></div>
+        <p>since the bracket equals (ρ − u)/(ρ(1 − ρ)(1 − u)) and its factor 1 − u cancels against e<sup>−u</sup> − ue<sup>−u</sup> = (1 − u)e<sup>−u</sup>. Multiplying by 1 − ρ, then writing the 1 that is subtracted as (1/ρ)∫<sub>0</sub><sup>ρ</sup> 1 du and combining the integrands over one denominator,</p>
+        <div class="math" data-tex="\mathrm E[\tau]=\frac1\rho\int_0^\rho\frac{\rho e^{-u}-ue^{-u}}{\rho e^{-\rho}-ue^{-u}}\,\mathrm du-1=\frac1\rho\int_0^\rho\frac{\rho e^{-u}-\rho e^{-\rho}}{\rho e^{-\rho}-ue^{-u}}\,\mathrm du,\qquad(26)"></div>
+        <p>and cancelling ρ gives Eq. (3).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>A remark of ours on the substitution: since u = −W<sub>0</sub>(−xρe<sup>−ρ</sup>) = ρE[x<sup>B</sup>] by the derivation above, the new variable is simply ρ times the Borel generating function, which runs from 0 to ρ as x runs from 0 to 1.</p>
+      <p>The paper also notes two consequences as ρ → 1, the critical point where clusters become infinite: E[τ]/(2 log E[N]) → 1, and E[τ] ~ −2 log(1 − ρ). The expected size grows like 1/(1 − ρ) but the expected duration only like its logarithm, because a big cluster has many children pending at once and they arrive in parallel. For small ρ, our own expansion of Eq. (3) gives E[τ] ≈ ρ: a cluster almost always has at most one other point, which comes with probability about ρ after a mean delay of 1.</p>
+      <p class="short"><b>In short:</b> the integral formula for H<sub>j</sub> and the Lambert W form of the Borel generating function turn Eq. (2) into an integral over x, and the substitution u = −W<sub>0</sub>(−xρe<sup>−ρ</sup>) removes W entirely, giving Eq. (3); asymptotically E[τ] ~ −2 log(1 − ρ).</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>The numbers</h2>
+      <p>The paper is purely theoretical and reports no numerical table. Its results are Theorem 1.1 (Eq. 2), Corollary 1.2 (Eq. 3), the technical Lemmas 3.1 and 3.3 with Corollary 3.5, and the asymptotic statements E[τ]/(2 log E[N]) → 1 and E[τ] ~ −2 log(1 − ρ). The table below is ours: E[τ] is computed from Eq. (3) by numerical integration and agrees to the digits shown with the series of Eq. (2) and with a numerical solution of the Møller-Rasmussen ODE (checked at ρ = 1/2 and 0.9). At ρ = 1/2 a simulation of 200,000 clusters by the branching picture gave 0.8085 with standard error 0.0036. The bounds are those quoted in the paper.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>ρ</th><th>E[N] = 1/(1 − ρ)</th><th>E[τ] (Eq. 3)</th><th>Chen: ρ/(1 − ρ)</th><th>Graham: 1/(1 − ρ)</th><th>−2 log(1 − ρ)</th></tr></thead>
+        <tbody>
+          <tr><td>0.1</td><td class="n">1.111</td><td class="n">0.1081</td><td class="n">0.111</td><td class="n">1.111</td><td class="n">0.2107</td></tr>
+          <tr><td>0.25</td><td class="n">1.333</td><td class="n">0.3077</td><td class="n">0.333</td><td class="n">1.333</td><td class="n">0.5754</td></tr>
+          <tr><td>0.5</td><td class="n">2</td><td class="n">0.8036</td><td class="n">1</td><td class="n">2</td><td class="n">1.3863</td></tr>
+          <tr><td>0.75</td><td class="n">4</td><td class="n">1.7901</td><td class="n">3</td><td class="n">4</td><td class="n">2.7726</td></tr>
+          <tr><td>0.9</td><td class="n">10</td><td class="n">3.2912</td><td class="n">9</td><td class="n">10</td><td class="n">4.6052</td></tr>
+          <tr><td>0.99</td><td class="n">100</td><td class="n">7.5830</td><td class="n">99</td><td class="n">100</td><td class="n">9.2103</td></tr>
+          <tr><td>0.999</td><td class="n">1000</td><td class="n">12.1320</td><td class="n">999</td><td class="n">1000</td><td class="n">13.8155</td></tr>
+        </tbody>
+      </table></div>
+      <p>Three things stand out, all from our computation. Near ρ = 0 the earlier bound ρ/(1 − ρ) is nearly tight, but by ρ = 0.9 it is almost three times too large, and at ρ = 0.999 it is more than 80 times too large: the true mean grows logarithmically, the bounds linearly in E[N]. The asymptotic −2 log(1 − ρ) approaches slowly; the ratio E[τ]/(−2 log(1 − ρ)) is 0.82 at ρ = 0.99 and 0.88 at ρ = 0.999. And the conditional means for small clusters, computed exactly from Corollary 3.5, are:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>N</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
+        <tbody>
+          <tr><td>E[τ | N]</td><td class="n">1</td><td class="n">1.833</td><td class="n">2.552</td><td class="n">3.190</td><td class="n">3.768</td><td class="n">4.299</td><td class="n">4.793</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved.</b> Lemma 3.1, Lemma 3.3, Corollary 3.5, Theorem 1.1 and Corollary 1.2 all have complete, short proofs in the paper, each a few lines of counting, the binomial theorem, swapping sums, and a change of variables. The one ingredient not proved in the paper is the equivalence between the combinatorial construction of Definition 2.3 and the cluster of Eq. (1), which is Theorem 1 of Daw and Yom-Tov (2026), published in Operations Research. The paper's disclosure states that its pre-submission review included a public Lean formalization made with the PaperFormalizer tool; we did not inspect it.</p>
+      <p><b>What we checked.</b> Exact enumeration confirms Eq. (4) against brute-force parking functions for n ≤ 4, the decomposition of Eq. (6) for n ≤ 6, and Corollary 3.5 for n ≤ 7. Equations (2) and (3) agree with each other and with the ODE, and a simulation is within 1.4 standard errors of the formula at ρ = 1/2. The interpretation of κ<sub>i</sub> as a child count and of the rates as pending children is ours; the paper states the construction without that gloss.</p>
+      <p><b>Not covered.</b> Despite the title, the result is the mean of the duration, not its distribution; the distribution function is still available only through the ODE. Everything relies on the exponential kernel, because memorylessness is what lets the rates depend only on κ<sup>+</sup>; the paper names non-exponential kernels as the main hurdle. The authors also suggest that Corollary 1.2 might be obtainable directly from the ODE, and argue that their route is preferable because it stays interpretable for longer and might extend to other kernels or performance measures.</p>
+      <p><b>Context.</b> This is an arXiv preprint and has not yet been peer reviewed. The disclosure says generative AI was used for coding support, reference searches and the pre-submission review, with the authors responsible for all statements and proofs.</p>
+      <p><b>Why it matters.</b> The first closed form for the simplest temporal property of the most standard self-exciting model is a clean result in its own right, and the size-versus-duration gap it quantifies, a size of order 1/(1 − ρ) against a duration of order log(1/(1 − ρ)), is the kind of fact a practitioner needs when Hawkes models are fitted to order flow, where branching ratios close to 1 are common (a connection of ours). The method is also a good example of a general trick: when a quantity mixes structure with randomness, condition on the end state, and a hidden combinatorial object, here parking functions, can make the structure exactly solvable.</p>
+    </section>
+
+    <!-- further reading -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>A. Daw and A. Goel, <a href="https://arxiv.org/abs/2611.33494" target="_blank" rel="noopener">On the cluster duration distribution of the Markovian Hawkes process</a>, arXiv:2611.33494 (2026). The paper itself; numbering in this chapter follows its <a href="https://arxiv.org/html/2611.33494" target="_blank" rel="noopener">HTML version</a>.</p>
+        <p>R. Kenyon and M. Yin, <a href="https://arxiv.org/abs/2103.17180" target="_blank" rel="noopener">Parking functions: from combinatorics to probability</a>, arXiv:2103.17180 (2021), Methodology and Computing in Applied Probability (2023). The source of the generalized parking function count used in Lemma 3.1; the circle argument in Section 3 follows its proof, which is Theorem 2.2 in the arXiv version we opened (the paper cites Theorem 2.3 of the journal version).</p>
+        <p>The paper's other key references, which we did not open for this chapter: A. G. Hawkes and D. Oakes, "A cluster process representation of a self-exciting process" (Journal of Applied Probability, 1974); J. Møller and J. G. Rasmussen, "Perfect simulation of Hawkes processes" (Advances in Applied Probability, 2005), for the ODE; A. Daw and G. B. Yom-Tov, "Asymmetries of service: interdependence and synchronicity" (Operations Research, 2026), for the construction of Definition 2.3; and E. Bacry, I. Mastromatteo and J.-F. Muzy, "Hawkes processes in finance" (Market Microstructure and Liquidity, 2015).</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.33494v1. Theorem, corollary, lemma, definition and equation numbers match the paper; section numbers in this chapter are our own. Examples 1 and 2, the intensity illustration, the reading of preference counts as child counts, the unrolling of Lemma 3.3, the Lambert W derivation and all tables of numbers are ours. The first animation enumerates preference counts with exact fractions and checks Corollary 3.5; the second samples a cluster with the binomial-plus-coin rule of Lemma 3.1 and exponential gaps.</p>
+  </footer>
+</div>
+
+
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-33494',date:'2026-11-26',title:'On the Cluster Duration Distribution of the Markovian Hawkes Process',authors:'Daw, Goel',field:'math.PR',tags:['Hawkes processes','parking functions','branching processes'],mins:40,
+     dek:'In a self-exciting cascade where every event triggers on average ρ more, the expected time from first event to last had no closed form, even though the cascade’s size has been known exactly for decades. This paper builds the cascade backwards from a random parking function and turns its mean length into a single integral, which grows only like −2 log(1 − ρ) as the size blows up like 1/(1 − ρ).'},
     {id:'2611-32528',date:'2026-11-25',title:'The Min-Cut Formulation of Ollivier-Ricci Curvature',authors:'Micaletto',field:'cs.DS',tags:['graph curvature','optimal transport','max-flow min-cut'],mins:40,
      dek:'The curvature of a network edge compares the random-walk neighbourhoods of its two ends, and computing it exactly was thought to need a table of distances and a linear program per edge. This paper shows that one minimum cut on a network built from adjacency lists alone gives the exact value with a certificate, and that nothing faster than bipartite matching is possible.'},
     {id:'2611-28063',date:'2026-11-24',title:"The Rotation Strategy Wins Penney's Game for Permutations",authors:'Roy Choudhury',field:'math.CO',tags:['consecutive patterns','cluster method','probability'],mins:40,
@@ -9399,6 +9766,115 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     run('ex1');
   })();
 
+
+
+  // ================= 2611.33494: Hawkes cluster skeletons =================
+  const hk={
+    gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1},
+    Q(p,q){const g=hk.gcd(p,q);return[p/g,q/g]},
+    add(a,b){return hk.Q(a[0]*b[1]+b[0]*a[1],a[1]*b[1])},
+    mul(a,b){return hk.Q(a[0]*b[0],a[1]*b[1])},
+    fs(a){return a[1]===1?''+a[0]:a[0]+'/'+a[1]},
+    fact(k){let r=1;for(let i=2;i<=k;i++)r*=i;return r},
+    comb(n,k){return hk.fact(n)/(hk.fact(k)*hk.fact(n-k))},
+    prefs(n){const out=[];(function rec(pre,s){if(pre.length===n){if(s===n)out.push(pre.slice());return}const i=pre.length+1;for(let k=0;k<=n-s;k++)if(s+k>=i){pre.push(k);rec(pre,s+k);pre.pop()}})([],0);return out},
+    cum(k){const c=[];let s=0;k.forEach((x,i)=>{s+=x;c[i]=s});return c},
+    // Corollary 3.5, Eq. (12)
+    cor35(n,m){let S=0;for(let i=0;i<=m;i++)S+=hk.comb(n,i)*Math.pow((i+1)/(n+1),i-1)*Math.pow((n-i)/(n+1),n-i);return (n+1)/(n-m)-S/(n-m)},
+    // staircase: columns i=1..n, bar from i-1 (arrived) to cp[i-1] (announced)
+    stair(el,n,cp,upto,X0,Y0,cell,hi){
+      for(let j=0;j<=n;j++){el('line',{x1:X0,y1:Y0-j*cell,x2:X0+n*cell,y2:Y0-j*cell,stroke:'var(--line)','stroke-width':.6});el('line',{x1:X0+j*cell,y1:Y0,x2:X0+j*cell,y2:Y0-n*cell,stroke:'var(--line)','stroke-width':.6})}
+      el('path',{d:`M${X0} ${Y0} L${X0+n*cell} ${Y0-n*cell}`,stroke:'var(--muted)','stroke-width':1,'stroke-dasharray':'3 3',fill:'none'});
+      for(let i=1;i<=n;i++){
+        el('text',{x:X0+(i-.5)*cell,y:Y0+13,class:'lab',style:'font-size:9px'}).textContent=i;
+        if(i>upto)continue;const lo=i-1,top=cp[i-1],r=top-lo;
+        el('rect',{x:X0+(i-1)*cell+2,y:Y0-top*cell,width:cell-4,height:r*cell,rx:3,fill:'var(--cool)',opacity:hi===i?1:.75});
+        el('rect',{x:X0+(i-1)*cell+2,y:Y0-lo*cell,width:cell-4,height:lo*cell,rx:2,fill:'var(--accent)',opacity:.28});
+        if(cell>=16)el('text',{x:X0+(i-.5)*cell,y:Y0-top*cell+r*cell/2+3.5,class:'lab',style:'font-size:9.5px;fill:var(--bg)'}).textContent=r;
+      }
+      el('text',{x:X0+n*cell/2,y:Y0+26,class:'lab',style:'font-size:9px'}).textContent='gap i';
+      for(let j=0;j<=n;j+=(n>6?2:1))el('text',{x:X0-8,y:Y0-j*cell+3,class:'lab',style:'font-size:8.5px'}).textContent=j;
+    }
+  };
+  (function(){
+    const root=document.getElementById('pHkEnum');if(!root)return;const P=Player(root);
+    function load(n){
+      const L=hk.prefs(n),tot0=[0,1];let tot=tot0;const den=Math.pow(n+1,n-1);
+      const F=[{t:'The setup',n,c:`Condition on N = ${n+1}: the first point plus ${n} more. Every skeleton is a preference count κ of length ${n}, a staircase κ⁺ that stays on or above the diagonal. There are ${L.length} of them (the Catalan number C<sub>${n}</sub>), and there are ${den} parking functions behind them.`}];
+      const perGap=Array.from({length:n},()=>[0,1]);
+      L.forEach((k,j)=>{const cp=hk.cum(k),rates=cp.map((c,i)=>c-i);
+        const mult=hk.fact(n)/k.reduce((a,x)=>a*hk.fact(x),1),p=hk.Q(mult,den);
+        let m=[0,1];rates.forEach(r=>m=hk.add(m,[1,r]));const prev=tot;tot=hk.add(tot,hk.mul(p,m));
+        rates.forEach((r,i)=>perGap[i]=hk.add(perGap[i],hk.mul(p,[1,r])));
+        F.push({n,k,cp,rates,p,m,tot,t:`Skeleton ${j+1} of ${L.length}`,
+          c:`κ = (${k.join(', ')}), so κ⁺ = (${cp.join(', ')}). ${mult} parking functions give this κ, so Eq. (4) gives probability ${mult}/${den}${hk.fs(p)!==mult+'/'+den?' = '+hk.fs(p):''}. Pending children per gap: ${rates.join(', ')}, so E[τ | κ] = ${rates.map(r=>'1/'+r).join(' + ').replace(/1\/1/g,'1')} = ${hk.fs(m)}. Running total: ${hk.fs(prev)} + ${hk.fs(p)} · ${hk.fs(m)} = ${hk.fs(tot)}.`});});
+      const c35=Array.from({length:n},(_,m)=>hk.cor35(n,m));
+      F.push({n,end:true,perGap,c35,tot,t:'Check against Corollary 3.5',
+        c:`The conditional mean is E[τ | N = ${n+1}] = ${hk.fs(tot)} ≈ ${(tot[0]/tot[1]).toFixed(4)}. The bars show each gap's expected reciprocal rate from the enumeration: ${perGap.map(hk.fs).join(', ')}. The dots are Eq. (12) evaluated directly: ${c35.map(x=>x.toFixed(4)).join(', ')}. They agree, and their sum is ${c35.reduce((a,b)=>a+b,0).toFixed(4)}.`});
+      F.delay=5200;
+      P.load(F,(fr,el)=>{const n=fr.n,cell=Math.min(40,150/n),X0=26,Y0=200;
+        if(fr.end){const W=Math.min(46,260/n),B0=200,S=120;
+          el('line',{x1:20,y1:B0,x2:320,y2:B0,stroke:'var(--line)','stroke-width':1});
+          fr.perGap.forEach((v,i)=>{const x=40+i*(W+10),h=v[0]/v[1]*S;
+            el('rect',{x,y:B0-h,width:W,height:h,rx:3,fill:'var(--cool)'});
+            el('circle',{cx:x+W/2,cy:B0-fr.c35[i]*S,r:4.5,fill:'var(--accent)'});
+            el('text',{x:x+W/2,y:B0-h-10,class:'lab',style:'font-size:9.5px'}).textContent=hk.fs(v);
+            el('text',{x:x+W/2,y:B0+14,class:'lab',style:'font-size:9px'}).textContent='m = '+i;});
+          el('text',{x:170,y:30,class:'msg',fill:'var(--fg)'}).textContent='expected 1/rate in gap m + 1';
+          el('text',{x:170,y:236,class:'msg',fill:'var(--accent)'}).textContent='sum = E[τ | N = '+(n+1)+'] = '+hk.fs(fr.tot);
+          return;}
+        if(!fr.k){hk.stair(el,n,[],0,X0,Y0,cell);
+          el('text',{x:250,y:90,class:'lab',style:'font-size:10px'}).textContent=hk.prefs(n).length+' staircases';
+          el('text',{x:250,y:108,class:'lab',style:'font-size:10px'}).textContent=Math.pow(n+1,n-1)+' parking functions';return;}
+        hk.stair(el,n,fr.cp,n,X0,Y0,cell);
+        const tx=250;
+        el('text',{x:tx,y:40,class:'msg',fill:'var(--fg)'}).textContent='κ = ('+fr.k.join(', ')+')';
+        el('text',{x:tx,y:62,class:'lab',style:'font-size:10px'}).textContent='P = '+hk.fs(fr.p);
+        el('text',{x:tx,y:80,class:'lab',style:'font-size:10px'}).textContent='rates '+fr.rates.join(', ');
+        el('text',{x:tx,y:98,class:'lab',style:'font-size:10px'}).textContent='E[τ | κ] = '+hk.fs(fr.m);
+        el('line',{x1:tx-50,y1:116,x2:tx+50,y2:116,stroke:'var(--line)'});
+        el('text',{x:tx,y:136,class:'lab',style:'font-size:10px'}).textContent='running E[τ | N]';
+        el('text',{x:tx,y:156,class:'msg',fill:'var(--accent)'}).textContent=hk.fs(fr.tot);
+      });
+    }
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(+b.dataset.scen)}));
+    load(3);
+  })();
+  (function(){
+    const root=document.getElementById('pHkGrow');if(!root)return;const P=Player(root);
+    const rng=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+    const SC={a:{n:5,seed:7},b:{n:9,seed:2026}};
+    function sample(n,seed){const R=rng(seed),steps=[];let K=0,t=0;const times=[0],cp=[];
+      for(let m=0;m<n;m++){const q=(n-K)/((n-m)*(K-m+1)),p=1/(n-m+1);
+        const y=R()<q?1:0,N=n-K-y;let x=0;for(let j=0;j<N;j++)if(R()<p)x++;
+        const k=x+y;K+=k;cp.push(K);const rate=K-m,z=-Math.log(1-R())/rate;t+=z;times.push(t);
+        steps.push({m,q,p,y,N,x,k,K,rate,z,t});}
+      return{steps,cp,times,tau:t}}
+    function load(n,seed){
+      const S=sample(n,seed);let exact=0;for(let m=0;m<n;m++)exact+=hk.cor35(n,m);
+      const F=[{u:0,t:'The setup',c:`Condition on N = ${n+1}. Nothing is sampled yet. The first point sits at time 0, and Lemma 3.1 will now draw its number of children, then the next point's, and so on, each time also drawing the gap to the next point.`}];
+      S.steps.forEach(s=>{const fq=s.q===1?'1':s.q===0?'0':s.q.toFixed(3);
+        F.push({u:s.m+1,t:`Point ${s.m}: ${s.k} ${s.k===1?'child':'children'}`,
+          c:`Point ${s.m} was born at time ${S.times[s.m].toFixed(2)}. The staircase stands at κ⁺<sub>${s.m}</sub> = ${s.K-s.k}. Coin Y ~ Bern(${fq}) shows ${s.y}; then X ~ Bin(${s.N}, 1/${n-s.m+1}) gives ${s.x}. So κ<sub>${s.m+1}</sub> = ${s.k} and κ⁺<sub>${s.m+1}</sub> = ${s.K}. Pending children: ${s.K} − ${s.m} = ${s.rate}, so the next gap is Exp(${s.rate}) with mean ${(1/s.rate).toFixed(2)}; it came out ${s.z.toFixed(2)}, putting point ${s.m+1} at time ${s.t.toFixed(2)}.${s.q===1?' The staircase touched the diagonal, so the coin was forced.':''}`});});
+      F.push({u:n,end:true,t:'The duration',c:`All ${n} children have arrived and nobody is pending, so the cluster ends with τ = ${S.tau.toFixed(2)}. For this size the exact mean from Corollary 3.5 is E[τ | N = ${n+1}] = ${exact.toFixed(3)}; a single draw scatters around it. Press "new draw" for another cluster.`});
+      F.delay=4600;
+      P.load(F,(fr,el)=>{const T=Math.max(S.tau,0.5)*1.05,X0=24,X1=316,sx=t=>X0+(X1-X0)*t/T,Y=46;
+        el('line',{x1:X0,y1:Y,x2:X1,y2:Y,stroke:'var(--line)','stroke-width':1.2});
+        el('text',{x:X0,y:Y+20,class:'lab',style:'font-size:9px'}).textContent='0';
+        el('text',{x:X1-8,y:Y+20,class:'lab',style:'font-size:9px'}).textContent=T.toFixed(1);
+        el('text',{x:170,y:18,class:'lab',style:'font-size:9.5px'}).textContent='time';
+        for(let i=0;i<=fr.u;i++){const x=sx(S.times[i]);el('circle',{cx:x,cy:Y,r:5.5,fill:'var(--accent)'});
+          if(i===fr.u&&!fr.end)el('circle',{cx:x,cy:Y,r:9,fill:'none',stroke:'var(--accent)','stroke-width':1.2});}
+        if(fr.u>0&&!fr.end){const s=S.steps[fr.u-1];el('path',{d:`M${sx(S.times[fr.u-1])} ${Y-12} L${sx(S.times[fr.u])} ${Y-12}`,stroke:'var(--cool)','stroke-width':2,fill:'none'});
+          el('text',{x:Math.min(290,Math.max(50,(sx(S.times[fr.u-1])+sx(S.times[fr.u]))/2)),y:Y-17,class:'lab',style:'font-size:9px'}).textContent='Z ~ Exp('+s.rate+')';}
+        if(fr.end){el('text',{x:170,y:Y+36,class:'msg',fill:'var(--accent)'}).textContent='τ = '+S.tau.toFixed(2)+'   ·   mean '+exact.toFixed(3);}
+        const cell=Math.min(22,170/n);hk.stair(el,n,S.cp,fr.u,(340-n*cell)/2,262,cell,fr.end?null:fr.u);
+      });
+    }
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.scen;root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+      if(k==='rand'){const n=4+Math.floor(Math.random()*7);load(n,Math.floor(Math.random()*1e9))}else load(SC[k].n,SC[k].seed)}));
+    load(SC.a.n,SC.a.seed);
+  })();
 
   route();
 })();
