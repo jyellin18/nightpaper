@@ -7508,10 +7508,368 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
 </div>
 
 
+<!-- ================= PAPER: 2611.34089 ================= -->
+<div class="wrap" id="view-p-2611-34089" hidden>
+  <div class="top"><a class="back" href="#home">← All papers</a><span class="label">Fri, Nov 27</span></div>
+  <div class="paperhead">
+    <h1>Concavity of Cardinality-Constrained Interval Stabbing and Interval Cover Problems</h1>
+    <p class="meta">Janez Brank and Tomaž Hočevar · submitted Nov 25, announced Nov 27, 2026 · cs.DS (also math.OC) · <a href="https://arxiv.org/abs/2611.34089" target="_blank" rel="noopener">arXiv 2611.34089</a></p>
+  </div>
+  <div class="tools" style="position:sticky">
+    <span class="label secLabel">Overview</span>
+    <button class="toggle openAll" aria-pressed="false">Open all proofs</button>
+    <i class="readbar"></i>
+  </div>
+
+  <article>
+    <p class="lead">If you may drop at most k pins on a line full of weighted intervals and you score the weight of every interval a pin touches, then each extra pin is worth no more than the one before it, even though the obvious strategy of placing each pin where it scores the most can fail. That is the paper's main theorem: the best score f(k) is a concave function of k. The proof is a small masterpiece of a standard idea. Write the problem as an integer linear program, relax the integrality, show that the relaxed program always has an optimal solution with whole-number values anyway, and then use the fact that a relaxed program can blend two solutions, which an integer one cannot. The authors give two proofs of the integrality step, one by sliding a fractional solution until it becomes whole, and one by quoting the theory of totally unimodular matrices. They then carry the result over to choosing k intervals to cover weighted points, and explain why concavity is exactly what lets a penalty per pin replace the hard limit of k pins.</p>
+
+    <div class="box">
+      <span class="label">By the end you'll be able to explain</span>
+      <ul>
+        <li>what cardinality-constrained interval stabbing is, why greedy pin placement fails on the paper's Figure 1, and why negative weights or general sets break concavity (Figures 2 and 3);</li>
+        <li>why it is enough to put pins at left endpoints, which turns the problem into one on the integers 1, …, n;</li>
+        <li>the integer program of Eq. (1), its linear programming relaxation LP(k), and why a relaxation can only score higher;</li>
+        <li>the sliding argument of Lemmas 1 and 2 that turns any optimal fractional solution into an optimal integral one, and why the parity of n shows up in it;</li>
+        <li>how Theorem 4.1 gets concavity of f from concavity of the function min{1, u};</li>
+        <li>how interval cover reduces to interval stabbing (Section 5 of the paper);</li>
+        <li>the alternative proof by total unimodularity (Section 6), and what concavity buys for Lagrangian penalty methods.</li>
+      </ul>
+    </div>
+
+    <details class="pf"><summary><span class="tagd">notation</span><span class="q">Symbols used throughout</span></summary><div class="pfbody">
+      <dl class="notation">
+        <dt>[ℓ<sub>j</sub>, r<sub>j</sub>], w<sub>j</sub></dt><dd>the j-th interval and its weight, for j = 1, …, N; all weights are positive</dd>
+        <dt>[n]</dt><dd>the set {1, 2, …, n}; after the reduction of Section 2, the candidate pin positions</dd>
+        <dt>⟦P⟧</dt><dd>1 if the statement P is true and 0 if it is false</dd>
+        <dt>S, v(S)</dt><dd>a set of pins (stabbing points) and the total weight of intervals it hits</dd>
+        <dt>f(k)</dt><dd>the best value v(S) over all S with at most k points</dd>
+        <dt>x<sub>i</sub></dt><dd>how much of a pin is placed at position i: 0 or 1 in the integer program, anything in [0, 1] in the relaxation</dd>
+        <dt>s<sub>j</sub></dt><dd>the total pin amount inside interval j, s<sub>j</sub> = Σ<sub>i</sub> x<sub>i</sub>⟦ℓ<sub>j</sub> ≤ i ≤ r<sub>j</sub>⟧</dd>
+        <dt>y<sub>j</sub></dt><dd>how much of interval j counts as hit; at an optimum y<sub>j</sub> = min{1, s<sub>j</sub>}</dd>
+        <dt>J(x, y)</dt><dd>the objective Σ<sub>j</sub> w<sub>j</sub>y<sub>j</sub></dd>
+        <dt>ILP(k), LP(k)</dt><dd>problem (1) with x, y required to be integers, and with that requirement dropped</dd>
+        <dt><b>1</b>, <b>c</b>, δ<sub>j</sub></dt><dd>the all-ones vector; a direction of movement for x; and the change of s<sub>j</sub> along it, δ<sub>j</sub> = Σ<sub>i</sub> c<sub>i</sub>⟦ℓ<sub>j</sub> ≤ i ≤ r<sub>j</sub>⟧</dd>
+        <dt>μ</dt><dd>a blending weight in (0, 1)</dd>
+        <dt>Υ(u)</dt><dd>the function min{1, u}</dd>
+        <dt>λ</dt><dd>a penalty per pin, in the Lagrangian section (in Section 2 of the paper, λ<sub>t</sub> also names the sorted left endpoints; we write the endpoints out instead)</dd>
+      </dl>
+    </div></details>
+
+    <div class="box">
+      <span class="label">Running examples</span>
+      <ul>
+        <li><b>Example R: six intervals.</b> This is the paper's Figure 1: the intervals [1, 3], [2, 5], [2, 5], [4, 7], [4, 7] and [6, 8], each of weight 1. One pin can hit at most 4 of them and two pins can hit all 6, but the greedy first pin blocks the second from doing its job.</li>
+        <li><b>Example W: a weighted line of four positions.</b> Positions 1, 2, 3, 4 and five intervals: A = [1, 1] with weight 2, and B = [2, 2], C = [2, 3], D = [3, 4], E = [4, 4] with weight 1 each. With k = 2 it has four different optimal pin pairs, and averaging them gives a fractional solution that the first animation slides back to a whole-number one.</li>
+      </ul>
+      <p class="note">Example R and its greedy failure are the paper's. Example W, its fractional solution, and every number computed for both examples beyond the paper's figure captions are ours, checked by brute-force enumeration.</p>
+    </div>
+
+    <!-- 1 -->
+    <section data-sec="1 · The problem">
+      <span class="num">1 · PINS ON A LINE</span>
+      <h2>What is cardinality-constrained interval stabbing?</h2>
+      <p>Imagine a calendar of events, each running over a stretch of time and each carrying a value, and suppose you may send an inspector out at only k moments. An inspector who shows up at time t sees every event in progress at t. Which k moments see the most total value? Problems of this shape are called <span class="term">interval stabbing</span>: a chosen point <span class="term">stabs</span> (or hits) every interval that contains it. The classical version asks for the fewest points that stab every interval, and it has a simple greedy solution, which the paper credits to Erickson's textbook and describes as repeatedly selecting the leftmost endpoint among the intervals and removing all stabbed intervals. This paper studies the budgeted version, in which at most k points are allowed and the goal is to hit as much weight as possible.</p>
+      <div class="def"><span class="label">Definition · the value of a set of pins and the best value f(k) (Section 2)</span>
+        <div class="math" data-tex="v(S)=\sum_{j=1}^{N} w_j\,[\![\,S\cap[\ell_j,r_j]\neq\emptyset\,]\!],\qquad f(k)=\max\{\,v(S): |S|\le k\,\}."></div>
+        <p>In words: given intervals [ℓ<sub>j</sub>, r<sub>j</sub>] with positive weights w<sub>j</sub>, a set S of real numbers is worth the total weight of the intervals that contain at least one of its points, counted once each no matter how many points land inside. The number f(k) is the best worth achievable with at most k points.</p>
+      </div>
+      <p>On Example R, a pin at 4.5 lies in [2, 5], [2, 5], [4, 7] and [4, 7], so it hits four intervals, and no single point does better, so f(1) = 4. Two pins at 2.5 and 6.5 hit [1, 3], [2, 5], [2, 5] and [4, 7], [4, 7], [6, 8] respectively, all six, so f(2) = 6.</p>
+      <p>The natural first idea is greedy: put the first pin where it scores the most, then the second pin where it adds the most, and so on. The paper's Figure 1 shows that this fails. The greedy first pin goes in the middle, at a point inside all of [2, 5], [2, 5], [4, 7], [4, 7], scoring 4. What remains is [1, 3] and [6, 8], which are disjoint, so the second pin can add only 1, for a total of 5. The optimal pair scores 6. The paper therefore says that solving the problem optimally calls for dynamic programming rather than a greedy rule.</p>
+      <p>The animation below runs both strategies on Example R. It computes, for every candidate pin position, how much weight it would add, follows the greedy choices, and then checks every pair of positions by brute force. Its last frame tabulates f(k) for every k and the gains f(k) − f(k − 1).</p>
+      <div class="player" id="pIsGreedy">
+        <div class="ptitle"><span class="label">Animation · greedy against brute force on Example R</span></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Six intervals drawn above a number line from 1 to 8, with candidate pins and the weight each would add"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>chosen pins</span><span><i class="sw" style="background:var(--cool)"></i>intervals already hit</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>The table in the last frame shows something that the greedy failure makes surprising. The gains are 4, 2, 0, 0: each extra pin is worth no more than the previous one. A function with this property is called concave.</p>
+      <div class="def"><span class="label">Definition · concavity in k (the form used in the proof of Theorem 4.1)</span>
+        <div class="math" data-tex="f(k_2)\ \ge\ (1-\mu)\,f(k_1)+\mu\,f(k_3)\quad\text{whenever } k_1<k_2<k_3,\quad \mu=\frac{k_2-k_1}{k_3-k_1}."></div>
+        <p>In words: on the graph of f, every point lies on or above the straight segment joining any two points on either side of it. For a function defined on the integers this is the same as saying that the gains f(k + 1) − f(k) never increase, which the paper phrases as "the marginal benefit of adding a stabbing point is non-increasing".</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why is "the segment lies below the graph" the same as "the gains never increase"?</span></summary><div class="pfbody">
+        <p>This standard argument is ours. Write g<sub>k</sub> = f(k) − f(k − 1). Taking k<sub>1</sub> = k − 1, k<sub>2</sub> = k, k<sub>3</sub> = k + 1 gives μ = 1/2 and the inequality f(k) ≥ (f(k − 1) + f(k + 1))/2, which rearranges to g<sub>k</sub> ≥ g<sub>k+1</sub>. Conversely, if the gains never increase, then f(k<sub>2</sub>) − f(k<sub>1</sub>) is a sum of k<sub>2</sub> − k<sub>1</sub> gains, each at least as large as every one of the k<sub>3</sub> − k<sub>2</sub> gains that make up f(k<sub>3</sub>) − f(k<sub>2</sub>). So the average gain on the left part is at least the average gain on the right part:</p>
+        <div class="math" data-tex="\frac{f(k_2)-f(k_1)}{k_2-k_1}\ \ge\ \frac{f(k_3)-f(k_2)}{k_3-k_2}."></div>
+        <p>Multiplying out by (k<sub>2</sub> − k<sub>1</sub>)(k<sub>3</sub> − k<sub>2</sub>) and dividing by k<sub>3</sub> − k<sub>1</sub> turns this into exactly f(k<sub>2</sub>) ≥ (1 − μ)f(k<sub>1</sub>) + μf(k<sub>3</sub>).</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Diminishing returns usually come with greedy algorithms: when the components of a solution can be picked in order of decreasing marginal benefit, the benefits naturally decrease. The paper's point is that here concavity holds without any greedy algorithm behind it. Two more of its figures show that the hypotheses matter.</p>
+      <div class="fact"><span class="label">Fact · positive weights are needed (Figure 2)</span>
+        <p>Take [1, 2] and [3, 4] with weight 2 each and [1, 4] with weight −3. One pin cannot avoid the long negative interval if it hits anything, so its best move is to hit nothing; two pins hit both short intervals for 2 + 2 − 3 = 1. With at most k points, the values for k = 0, 1, 2, 3 are 0, 0, 1, 1. The function is still non-decreasing, since extra pins may be placed where they hit nothing, but the gains 0, 1, 0 are not non-increasing.</p>
+      </div>
+      <div class="fact"><span class="label">Fact · intervals are needed (Figure 3)</span>
+        <p>In the more general <span class="term">hitting set</span> problem the sets to be hit need not be intervals. With points U = {1, 2, 3, 4} and the six sets {1}, {1, 4}, {2}, {2, 4}, {3}, {3, 4}, each of weight 1, the best values for k = 0, …, 4 are 0, 3, 4, 6, 6. The gain from k = 1 to k = 2 is 1, but the gain from k = 2 to k = 3 is 2, so concavity fails.</p>
+      </div>
+      <p>To check Figure 3 by hand: one point at 4 hits {1, 4}, {2, 4}, {3, 4}, which is 3. Two points can hit at most 4 sets, for instance 4 together with any of 1, 2, 3. Three points 1, 2, 3 hit all six sets. The paper concludes that concavity comes from the particular structure of intervals, and the proof will show exactly where that structure is used.</p>
+      <p class="aside">A connection of ours. The value v(S) is a coverage function, so it has diminishing returns as a function of the set S: adding a point to a bigger set helps no more than adding it to a smaller one. That property, called submodularity, is what makes greedy a good approximation for such problems. Figure 3 is also a coverage function, and its f(k) is not concave, so submodularity of v alone does not give concavity of f. The theorem of this paper is a statement about the optimal values, and it needs more than diminishing returns for sets.</p>
+      <p class="short"><b>In short:</b> f(k) is the most interval weight that at most k pins can hit; greedy pin placement can fail (Figure 1), yet on Example R the gains 4, 2, 0, 0 decrease, and the paper proves that they always do when the weights are positive and the sets are intervals.</p>
+    </section>
+
+    <!-- 2 -->
+    <section data-sec="2 · Left endpoints">
+      <span class="num">2 · ONLY LEFT ENDPOINTS MATTER</span>
+      <h2>Why can the pins be restricted to finitely many places?</h2>
+      <p>A pin can go anywhere on the real line, which makes the problem look continuous. The first step of Section 2 removes that worry: there is never a reason to put a pin anywhere except at a left endpoint of some interval.</p>
+      <div class="fact"><span class="label">Fact · pins at left endpoints suffice (Section 2)</span>
+        <p>For every selection S there is a selection of the same size, all of whose points are left endpoints ℓ<sub>j</sub>, that is worth at least as much.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can a pin always slide left to the nearest left endpoint without losing anything?</span></summary><div class="pfbody">
+        <p>This is the paper's argument. Take a point x of S that is not a left endpoint. If x lies to the left of every interval, it hits nothing, and replacing it by min<sub>j</sub> ℓ<sub>j</sub> cannot hurt. Otherwise let ℓ<sub>j</sub> be the rightmost left endpoint that is less than x. No interval begins in (ℓ<sub>j</sub>, x], so any interval that contains x began at or before ℓ<sub>j</sub>, and since it reaches x, it contains ℓ<sub>j</sub> too. Moving the pin from x to ℓ<sub>j</sub> therefore keeps every interval it hit. Repeating this for each point gives the claim.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>So sort the distinct left endpoints as p<sub>1</sub> &lt; p<sub>2</sub> &lt; ⋯ &lt; p<sub>n</sub> (the paper calls them λ<sub>1</sub>, …, λ<sub>n</sub>, a letter we keep free for later), with n ≤ N. Replace each interval [ℓ<sub>j</sub>, r<sub>j</sub>] by the index interval [L<sub>j</sub>, R<sub>j</sub>], where L<sub>j</sub> is the index of its own left endpoint and R<sub>j</sub> is the largest index t with p<sub>t</sub> ≤ r<sub>j</sub>. Choosing a set of indices is then the same as choosing the corresponding left endpoints. From here on the paper works with the <span class="term">integer interval hitting problem</span>: endpoints are integers in [n], pins are chosen among the integers 1, …, n, and at most k ≤ n of them are allowed. The weights may still be any positive real numbers.</p>
+      <p>On Example R the distinct left endpoints are 1, 2, 4, 6, so n = 4. The interval [1, 3] contains the endpoints 1 and 2, so it becomes [1, 2]; [2, 5] contains 2 and 4 and becomes [2, 3]; [4, 7] contains 4 and 6 and becomes [3, 4]; and [6, 8] contains only 6 and becomes [4, 4]. The integer version of Example R is therefore</p>
+      <div class="math" data-tex="[1,2],\ [2,3],\ [2,3],\ [3,4],\ [3,4],\ [4,4]\quad\text{on positions }1,2,3,4,\ \text{all weights }1."></div>
+      <p>The pins at 2.5 and 6.5 from Section 1 slide to the left endpoints 2 and 6, which are positions 2 and 4, and still hit all six intervals. Example W is already in integer form.</p>
+      <p class="short"><b>In short:</b> sliding each pin left to the nearest left endpoint never loses an interval, so the problem becomes choosing at most k of the integers 1, …, n, with intervals of integers.</p>
+    </section>
+
+    <!-- 3 -->
+    <section data-sec="3 · The linear program">
+      <span class="num">3 · AN INTEGER PROGRAM AND ITS RELAXATION</span>
+      <h2>How do we write f(k) as a linear program?</h2>
+      <p>Concavity is a statement about how the optimum changes with k, and the most powerful tool for such statements is linear programming, where the feasible set is convex and solutions can be averaged. To use it, the problem has to be written with linear constraints. A <span class="term">linear program</span> maximizes a linear function of real variables subject to linear inequalities and equations; an <span class="term">integer linear program</span> adds the demand that the variables be integers.</p>
+      <p>The paper introduces a variable x<sub>i</sub> for each position i, equal to 1 if a pin goes at i and 0 otherwise. The quantity s<sub>j</sub> = Σ<sub>i</sub> x<sub>i</sub>⟦ℓ<sub>j</sub> ≤ i ≤ r<sub>j</sub>⟧ is then the number of pins inside interval j. It is a shorthand, not a separate variable. A second variable y<sub>j</sub> records whether interval j is hit. Because all weights are positive, adding pins never hurts, so the paper asks for exactly k pins instead of at most k, which gives the same optimum and is more convenient for the proofs.</p>
+      <div class="def"><span class="label">Definition · ILP(k) and LP(k), Eq. (1)</span>
+        <div class="math" data-tex="\begin{array}{rl}\text{maximize} & J(\mathbf x,\mathbf y)=\sum_{j=1}^{N} w_j\,y_j\\[2pt] \text{subject to} & 0\le x_i\le 1\ \text{ for each } i\in[n],\\ & y_j\le 1\ \text{ and }\ y_j\le s_j\ \text{ for each } j\in[N],\\ & \sum_{i=1}^{n} x_i=k.\end{array}"></div>
+        <p>In words: place a total pin amount of k over the positions, at most one at each position; an interval scores its weight times y<sub>j</sub>, where y<sub>j</sub> can be at most 1 and at most the amount of pin inside the interval. Read with integer variables, this is ILP(k), whose optimum is f(k). Read with real variables, it is the relaxation LP(k), in which fractions of pins are allowed.</p>
+      </div>
+      <p>Since every weight is positive, an optimal solution pushes each y<sub>j</sub> as high as the constraints allow, so y<sub>j</sub> = min{1, s<sub>j</sub>}. It is therefore enough to specify x, and to think of J as a function of x alone:</p>
+      <div class="math" data-tex="J(\mathbf x)=\sum_{j=1}^{N} w_j\,\min\{1,\,s_j\}."></div>
+      <p>For instance, on Example W with k = 2, the whole-number choice x = (1, 0, 1, 0) puts pins at positions 1 and 3. Then s<sub>A</sub> = 1, s<sub>B</sub> = 0, s<sub>C</sub> = 1, s<sub>D</sub> = 1, s<sub>E</sub> = 0, and J = 2 + 0 + 1 + 1 + 0 = 4. The fractional choice x = (3/4, 1/2, 1/4, 1/2), which also adds up to 2, gives s<sub>A</sub> = 3/4, s<sub>B</sub> = 1/2, s<sub>C</sub> = 3/4, s<sub>D</sub> = 3/4, s<sub>E</sub> = 1/2, and J = 2·(3/4) + 1/2 + 3/4 + 3/4 + 1/2 = 4 as well. Both are optimal, since f(2) = 4 for Example W.</p>
+      <div class="fact"><span class="label">Fact · a relaxation can only do better</span>
+        <p>Every feasible solution of ILP(k) is feasible for LP(k) with the same objective value, so the optimum of LP(k) is at least f(k).</p>
+      </div>
+      <p>The interesting question is whether the relaxation does strictly better. For general hitting set it can, as a computation of ours on Figure 3 shows. Put half a pin at each of the four points, x = (1/2, 1/2, 1/2, 1/2), a total of 2. Each one-point set gets s = 1/2, and each two-point set {i, 4} gets s = 1. The relaxed score is 3·(1/2) + 3·1 = 4.5, more than f(2) = 4. The fractional solution cheats by spreading a pin thin over sets that a whole pin would have to choose between. The core of the paper is that for intervals this cannot happen.</p>
+      <p class="short"><b>In short:</b> Eq. (1) writes f(k) as an integer program with x<sub>i</sub> marking pins and y<sub>j</sub> = min{1, s<sub>j</sub>} marking hits; its relaxation LP(k) allows fractional pins and can only score at least f(k), strictly more for some hitting set instances.</p>
+    </section>
+
+    <!-- 4 -->
+    <section data-sec="4 · Integrality">
+      <span class="num">4 · THE RELAXATION HAS A WHOLE-NUMBER OPTIMUM</span>
+      <h2>Why does LP(k) never beat f(k) for intervals?</h2>
+      <p>The aim of Section 3 of the paper is Lemma 2: LP(k) always has an optimal solution in which every x<sub>i</sub> is 0 or 1. The idea is a perturbation argument. Start from an optimal fractional x and move it a little along a direction c, to x + εc or x − εc. If the direction is chosen well, both moves stay feasible and neither changes the objective to first order, so both stay optimal, and the move can be stretched until something becomes whole. Lemma 1 supplies the direction.</p>
+      <div class="def"><span class="label">Lemma 1 · a safe direction exists</span>
+        <p>Let x be a feasible solution of LP(k) with every x<sub>i</sub> strictly between 0 and 1. Then there is a nonzero vector c ∈ ℝ<sup>n</sup> with</p>
+        <div class="math" data-tex="\mathbf 1^{\top}\mathbf c=0\qquad\text{and}\qquad \delta_j=\sum_{i} c_i\,[\![\,\ell_j\le i\le r_j\,]\!]=0\ \ \text{for every } j \text{ with } s_j=1."></div>
+        <p>In words: there is a way to shift pin amount between positions that keeps the total equal to k and leaves untouched the pin amount inside every interval that currently holds exactly one pin's worth. The number δ<sub>j</sub> is how fast s<sub>j</sub> changes when x moves along c.</p>
+      </div>
+      <p>Why single out the intervals with s<sub>j</sub> = 1? Those are the ones sitting exactly on the corner of the function min{1, s}. An interval with s<sub>j</sub> &lt; 1 scores linearly in s<sub>j</sub>, and one with s<sub>j</sub> &gt; 1 is saturated and does not care about small changes. Only at s<sub>j</sub> = 1 would moving one way lose value while moving the other way gains nothing, and Lemma 1 freezes those.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why do the equations of Lemma 1 always have a nonzero solution?</span></summary><div class="pfbody">
+        <p>This is the paper's proof. Let m be the number of intervals with s<sub>j</sub> = 1. The conditions form a homogeneous linear system of m + 1 equations in the n unknowns c<sub>1</sub>, …, c<sub>n</sub>, and a homogeneous system with fewer equations than unknowns always has a nonzero solution. So the job is to count the equations carefully.</p>
+        <p><b>Duplicates and nesting.</b> Two identical equations can be merged. Could the terms of one equation δ<sub>j</sub> = 0 form a strict subset of the terms of another, δ<sub>j′</sub> = 0? Then s<sub>j</sub> would be a sum of a strict subset of the terms of s<sub>j′</sub>, and since every x<sub>i</sub> is strictly positive, s<sub>j</sub> &lt; s<sub>j′</sub>, so they cannot both equal 1. Hence any two remaining equations each have a term the other lacks. For intervals this means no two share a left endpoint, and if ℓ<sub>j</sub> &lt; ℓ<sub>j′</sub>, then also r<sub>j</sub> &lt; r<sub>j′</sub>, otherwise interval j′ would sit inside interval j.</p>
+        <p><b>Ordering.</b> So the m equations can be listed with strictly increasing left endpoints ℓ<sub>(1)</sub> &lt; ⋯ &lt; ℓ<sub>(m)</sub>, and then the right endpoints also increase strictly. Each such interval has at least two positions, because a single x<sub>i</sub> is less than 1 and could not give s<sub>j</sub> = 1. So r<sub>(t)</sub> &gt; ℓ<sub>(t)</sub>, and</p>
+        <div class="math" data-tex="1\le \ell_{(1)}<r_{(1)}<r_{(2)}<\cdots<r_{(m)}\le n."></div>
+        <p>Reading from the left gives t + 1 ≤ r<sub>(t)</sub>, and reading from the right gives r<sub>(t)</sub> ≤ n − m + t. At t = m this says m + 1 ≤ n. If m + 1 &lt; n there are more unknowns than equations and we are done.</p>
+        <p><b>The tight case m + 1 = n.</b> Then the two bounds force r<sub>(t)</sub> = t + 1, and since t ≤ ℓ<sub>(t)</sub> &lt; r<sub>(t)</sub>, also ℓ<sub>(t)</sub> = t. The system must be</p>
+        <div class="math" data-tex="c_1+c_2=0,\quad c_2+c_3=0,\quad\ldots,\quad c_{n-1}+c_n=0,\qquad c_1+c_2+\cdots+c_n=0."></div>
+        <p>If n is even, c = (1, −1, 1, −1, …, 1, −1) solves it. If n is odd, the intervals [1, 2], [3, 4], …, [n − 2, n − 1] all have s = 1, so x<sub>1</sub> + x<sub>2</sub> = 1, x<sub>3</sub> + x<sub>4</sub> = 1, and so on, and the total Σx<sub>i</sub> = k becomes (n − 1)/2 + x<sub>n</sub> = k. Since k is an integer, x<sub>n</sub> would be an integer, contradicting 0 &lt; x<sub>n</sub> &lt; 1. So for odd n the tight case cannot occur.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Here is where the interval structure enters. For general sets, the subset trick still removes nested equations, but there is no ordering that forces m + 1 ≤ n, and Figure 3 shows the conclusion really fails there.</p>
+      <div class="def"><span class="label">Lemma 2 · integrality</span>
+        <p>LP(k) has an optimal solution in which all x<sub>i</sub> are integers.</p>
+      </div>
+      <p>The proof argues by contradiction from a smallest counterexample. Suppose some instance of LP(k) has no integral optimal solution, and among all such instances take one with the least value of k + n + N, which the paper calls the <span class="term">rank</span> of the instance. The cases k = 0 and k = n are trivial, since the only feasible x is all zeros or all ones.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why can no optimal solution of the smallest counterexample have a coordinate equal to 0 or 1?</span></summary><div class="pfbody">
+        <p>This is the paper's argument, steps (1) and (2).</p>
+        <p><b>(1) A coordinate x<sub>t</sub> = 0.</b> Delete position t: shift every endpoint to the right of t down by one (ℓ′<sub>j</sub> = ℓ<sub>j</sub> − ⟦ℓ<sub>j</sub> &gt; t⟧ and r′<sub>j</sub> = r<sub>j</sub> − ⟦r<sub>j</sub> ≥ t⟧), and drop any interval that was just [t, t]. The vector x with x<sub>t</sub> removed is feasible for this smaller instance with the same value. The smaller instance has lower rank, so by minimality it has an integral optimal solution, and inserting a 0 back at position t gives an integral solution of the original instance worth at least J(x). Since x was optimal, that integral solution is optimal too, contradicting the choice of instance.</p>
+        <p><b>(2) A coordinate x<sub>t</sub> = 1.</b> Delete every interval containing t, then delete position t as in (1), and ask for k − 1 pins. The vector x with x<sub>t</sub> removed is feasible with value J(x) − Δ, where Δ is the total weight of the intervals containing t. Again the smaller instance has an integral optimum, and inserting a 1 at position t gives an integral solution of the original instance worth at least J(x), a contradiction.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>So in the smallest counterexample every optimal x is strictly between 0 and 1 in every coordinate, and Lemma 1 applies. Take its direction c and compare x + εc with x − εc for small ε &gt; 0. Both keep the total k, and both stay inside [0, 1]<sup>n</sup> for small ε. The objective changes interval by interval.</p>
+      <div class="fact"><span class="label">Fact · how J moves along c (cases (a), (b), (c) of the proof of Lemma 2)</span>
+        <p>(a) If s<sub>j</sub> &lt; 1, interval j contributes w<sub>j</sub>εδ<sub>j</sub> along +c and −w<sub>j</sub>εδ<sub>j</sub> along −c. (b) If s<sub>j</sub> = 1, then δ<sub>j</sub> = 0 and the contribution is unchanged. (c) If s<sub>j</sub> &gt; 1, the interval stays saturated for small ε and its contribution is unchanged. So the two moves change J by equal and opposite amounts. Since x is optimal, neither can increase J, and so both change it by exactly 0: both moves stay optimal.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">How does sliding along c finish off the smallest counterexample?</span></summary><div class="pfbody">
+        <p>This is the end of the paper's proof of Lemma 2. Increase ε until something happens: some x<sub>i</sub> reaches 0, some x<sub>i</sub> reaches 1, or some s<sub>j</sub> that was not 1 becomes 1. By steps (1) and (2) no optimal solution has a coordinate at 0 or 1, so the third event happens first: one more interval becomes tight while the tight ones stay tight. Repeat with a new direction from Lemma 1. Each round adds a tight interval, so eventually every s<sub>j</sub> equals 1. Lemma 1 still provides a direction c, and now moving along it changes no s<sub>j</sub> at all, so J is constant along the whole line and ε can be increased until some x<sub>i</sub> reaches 0 or 1. That optimal solution has an integer coordinate, contradicting steps (1) and (2). Hence no counterexample exists.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>The proof is by contradiction, but its engine is a procedure one can actually run. The animation below runs it on Example W, starting from x = (3/4, 1/2, 1/4, 1/2), the average of the four optimal pin pairs {1, 2}, {1, 3}, {1, 4} and {2, 4}. At each step it solves the linear system of Lemma 1 exactly, with fractions, picks a direction, and slides until the first event. When a coordinate reaches 0 or 1, the animation freezes it (by adding the equation c<sub>i</sub> = 0) and carries on. That freezing is our adaptation: it plays the role of the paper's instance-shrinking steps (1) and (2), which in a real instance, unlike the imaginary smallest counterexample, do happen. A second scenario runs the even-n chain from the proof of Lemma 1.</p>
+      <div class="player" id="pIsSlide">
+        <div class="ptitle"><span class="label">Animation · sliding a fractional optimum to a whole one</span><div class="scen"><button class="chip" data-scen="w" aria-pressed="true">Example W</button><button class="chip" data-scen="chain" aria-pressed="false">even chain</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 260" role="img" aria-label="Bars showing the pin amount x at each position, and the intervals below them with their pin totals s"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>pin amount x<sub>i</sub></span><span><i class="sw" style="background:var(--ok)"></i>tight interval, s = 1</span><span><i class="sw" style="background:var(--cool)"></i>other interval</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p>On Example W the walk takes three moves. First c = (−1, 1, 0, 0) moves pin amount from position 1 to position 2 until interval C = [2, 3] holds exactly one pin, at ε = 1/4. Then c = (0, −1, 1, 0) moves amount from 2 to 3 until D = [3, 4] is tight, reaching x = (1/2, 1/2, 1/2, 1/2). Now C and D are tight and the system of Lemma 1 is c<sub>2</sub> + c<sub>3</sub> = 0, c<sub>3</sub> + c<sub>4</sub> = 0, c<sub>1</sub> + ⋯ + c<sub>4</sub> = 0, whose solutions are the multiples of (−1, 1, −1, 1), the alternating pattern of the even case. Sliding by 1/2 lands on x = (0, 1, 0, 1), pins at 2 and 4, hitting B, C, D, E for a value of 4. The value is 4 at every frame, as the Fact above says it must be.</p>
+      <div class="fact"><span class="label">Corollary 1 · the relaxation is exact</span>
+        <p>The optimal value of LP(k) is f(k).</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does Lemma 2 give equality and not just an inequality?</span></summary><div class="pfbody">
+        <p>The paper's proof. By Lemma 2, LP(k) has an optimal solution x with integer entries, which is also feasible for ILP(k), so its value is at most f(k). In the other direction every ILP(k) solution is an LP(k) solution, so the LP optimum is at least f(k). Hence the two are equal.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> along a direction that keeps the total pin amount and the tight intervals fixed (Lemma 1), an optimal fractional solution can slide without losing value until a new interval becomes tight or a coordinate becomes whole; a smallest-counterexample argument turns this into Lemma 2, and Corollary 1 says the relaxed optimum is exactly f(k).</p>
+    </section>
+
+    <!-- 5 -->
+    <section data-sec="5 · Concavity">
+      <span class="num">5 · CONCAVITY</span>
+      <h2>How does integrality give diminishing returns?</h2>
+      <p>With Corollary 1 in hand, the paper can reason about f through LP(k), whose feasible sets for different k are slices of one convex box. The point is that the relaxation allows something the integer problem does not: an average of a solution with k<sub>1</sub> pins and a solution with k<sub>3</sub> pins is a legitimate solution with an intermediate number of pins. Integer solutions cannot be averaged, which is why concavity is not obvious from the combinatorial problem alone. The paper notes that using integral optimal solutions of relaxations to prove properties of combinatorial problems is a standard approach.</p>
+      <div class="def"><span class="label">Theorem 4.1 · concavity</span>
+        <p>For any positive weights w<sub>1</sub>, …, w<sub>N</sub> and intervals [ℓ<sub>j</sub>, r<sub>j</sub>], the function f(k) is concave.</p>
+      </div>
+      <p>The proof uses one more fact: the function Υ(u) = min{1, u} is concave. Its graph is a line of slope 1 that bends flat at u = 1, and a chord between two points of such a graph never rises above it.</p>
+      <details class="pf"><summary><span class="tagd">proof</span><span class="q">Why does blending two optimal solutions prove Theorem 4.1?</span></summary><div class="pfbody">
+        <p>This is the paper's proof. Take integers k<sub>1</sub> &lt; k<sub>2</sub> &lt; k<sub>3</sub> and μ = (k<sub>2</sub> − k<sub>1</sub>)/(k<sub>3</sub> − k<sub>1</sub>), which lies in (0, 1). For t = 1, 2, 3 let x<sup>(t)</sup> be an optimal solution of LP(k<sub>t</sub>), with pin totals s<sup>(t)</sup> and hits y<sup>(t)</sup>. Define the blend</p>
+        <div class="math" data-tex="\hat{\mathbf x}=(1-\mu)\,\mathbf x^{(1)}+\mu\,\mathbf x^{(3)}."></div>
+        <p>Each coordinate is a weighted average of numbers in [0, 1], so it lies in [0, 1], and the total is (1 − μ)k<sub>1</sub> + μk<sub>3</sub> = k<sub>2</sub>. So x̂ is feasible for LP(k<sub>2</sub>). Its pin totals are the same blend, ŝ = (1 − μ)s<sup>(1)</sup> + μs<sup>(3)</sup>, because each s<sub>j</sub> is a linear function of x. Concavity of Υ gives, for each interval,</p>
+        <div class="math" data-tex="\hat y_j=\Upsilon\big((1-\mu)s^{(1)}_j+\mu s^{(3)}_j\big)\ \ge\ (1-\mu)\,\Upsilon(s^{(1)}_j)+\mu\,\Upsilon(s^{(3)}_j)=(1-\mu)\,y^{(1)}_j+\mu\,y^{(3)}_j."></div>
+        <p>Multiplying by w<sub>j</sub> &gt; 0 and summing gives J(x̂) ≥ (1 − μ)J(x<sup>(1)</sup>) + μJ(x<sup>(3)</sup>). Finally x̂ cannot beat the optimum of LP(k<sub>2</sub>), and Corollary 1 identifies each LP optimum with f, so</p>
+        <div class="math" data-tex="f(k_2)=J(\mathbf x^{(2)})\ \ge\ J(\hat{\mathbf x})\ \ge\ (1-\mu)\,J(\mathbf x^{(1)})+\mu\,J(\mathbf x^{(3)})=(1-\mu)\,f(k_1)+\mu\,f(k_3)."></div>
+        <p>The printed proof drops the factor μ in front of J(x<sup>(3)</sup>) in two places; the inequality as derived, and as written here, has it.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>Worked on Example W with k<sub>1</sub> = 1, k<sub>2</sub> = 2, k<sub>3</sub> = 3, so μ = 1/2. Take x<sup>(1)</sup> = (1, 0, 0, 0), a single pin at 1 worth f(1) = 2, and x<sup>(3)</sup> = (1, 1, 0, 1), pins at 1, 2, 4 worth f(3) = 6. The blend is x̂ = (1, 1/2, 0, 1/2), with s<sub>A</sub> = 1 and s<sub>B</sub> = s<sub>C</sub> = s<sub>D</sub> = s<sub>E</sub> = 1/2, so J(x̂) = 2 + 4·(1/2) = 4. This is at least (2 + 6)/2 = 4, and indeed f(2) = 4. The full sequence f = 0, 2, 4, 6, 6 for Example W has gains 2, 2, 2, 0, concave though with ties.</p>
+      <p>It is worth seeing which half of the proof fails for Figure 3, since it explains where the interval structure was used. Everything up to J(x̂) ≥ (1 − μ)J(x<sup>(1)</sup>) + μJ(x<sup>(3)</sup>) never mentioned intervals, so (this remark is ours) the optimal value of the relaxation is concave in k for any hitting set problem. What fails for general sets is the last step, Corollary 1: the relaxed optimum can sit strictly above f(k), as the value 4.5 at k = 2 in Section 3 showed, and a concave function lying above f says nothing about f itself.</p>
+      <div class="fact"><span class="label">Fact · the two ingredients</span>
+        <p>Concavity of f comes from two separate facts: the relaxed optimum is always concave in k, because averaging is allowed and min{1, u} is concave; and for intervals, the relaxed optimum equals f(k), by Lemma 2.</p>
+      </div>
+      <p class="short"><b>In short:</b> averaging optimal relaxed solutions for k<sub>1</sub> and k<sub>3</sub> gives a feasible solution for k<sub>2</sub> that, because min{1, u} is concave, scores at least the average; integrality turns this statement about LP optima into Theorem 4.1 about f.</p>
+    </section>
+
+    <!-- 6 -->
+    <section data-sec="6 · Interval cover">
+      <span class="num">6 · INTERVAL COVER</span>
+      <h2>Does the same hold when we choose intervals instead of points?</h2>
+      <p>A closely related problem flips the roles. Now there are N weighted points and n intervals, and we choose up to k intervals so as to maximize the total weight of the points covered by their union. This is the <span class="term">interval cover</span> problem, the interval case of the maximum coverage problem. Section 5 of the paper shows that its best value f̂(k) is concave too, by turning every interval cover instance into an interval stabbing instance with the same values.</p>
+      <div class="def"><span class="label">Definition · interval cover (Section 5)</span>
+        <div class="math" data-tex="\hat v(S)=\sum_{j=1}^{N} w_j\,[\![\,\exists\, i\in S:\ \ell_i\le j\le r_i\,]\!],\qquad \hat f(k)=\max\{\,\hat v(S): |S|\le k\,\}."></div>
+        <p>In words: the points are 1, …, N with weights w<sub>j</sub>, the intervals [ℓ<sub>i</sub>, r<sub>i</sub>] for i ∈ [n] have endpoints among those points, a selection S of intervals is worth the weight of every point lying in at least one of them, and f̂(k) is the best worth with at most k intervals.</p>
+      </div>
+      <p>The reduction has two steps. First, an interval contained in another is never worth choosing, because the larger one covers everything it does, so it can be deleted. After that, no two intervals start at the same point, and if one starts to the left of another it also ends to the left. Sorted by left endpoint, the intervals have ℓ<sub>1</sub> &lt; ⋯ &lt; ℓ<sub>n</sub> and r<sub>1</sub> &lt; ⋯ &lt; r<sub>n</sub>.</p>
+      <p>Second, look at a single point j and ask which intervals contain it. If j lies in intervals i and i″ with i &lt; i′ &lt; i″, then j ≤ r<sub>i</sub> &lt; r<sub>i′</sub> and ℓ<sub>i′</sub> &lt; ℓ<sub>i″</sub> ≤ j, so j lies in interval i′ as well. The intervals containing j are therefore a consecutive run of indices.</p>
+      <div class="fact"><span class="label">Fact · the reduction (Section 5)</span>
+        <div class="math" data-tex="L_j=\min\{\,i: r_i\ge j\,\},\qquad R_j=\max\{\,i: \ell_i\le j\,\}."></div>
+        <p>Point j lies in exactly the intervals with index i between L<sub>j</sub> and R<sub>j</sub>. So the stabbing instance with intervals [L<sub>j</sub>, R<sub>j</sub>] of weights w<sub>j</sub>, on positions 1, …, n, gives every selection S ⊆ [n] the same value as the cover instance: v(S) = v̂(S). Hence f̂ = f, and f̂ is concave by Theorem 4.1.</p>
+      </div>
+      <p>A small example of ours. Take five points with weights w = (2, 1, 3, 1, 2) and intervals [1, 2], [2, 4], [3, 5] and [3, 4]. The last sits inside [2, 4], so it is deleted, leaving I<sub>1</sub> = [1, 2], I<sub>2</sub> = [2, 4], I<sub>3</sub> = [3, 5]. Point 1 lies only in I<sub>1</sub>, so [L<sub>1</sub>, R<sub>1</sub>] = [1, 1]; point 2 lies in I<sub>1</sub> and I<sub>2</sub>, giving [1, 2]; points 3 and 4 lie in I<sub>2</sub> and I<sub>3</sub>, giving [2, 3] twice; point 5 lies only in I<sub>3</sub>, giving [3, 3]. Choosing interval I<sub>3</sub> covers points 3, 4, 5 for 3 + 1 + 2 = 6, and in the stabbing instance a pin at position 3 hits [2, 3], [2, 3], [3, 3] for the same 6. The best values are f̂(1) = 6, f̂(2) = 9 (I<sub>1</sub> and I<sub>3</sub> cover everything) and f̂(3) = 9, with gains 6, 3, 0.</p>
+      <p class="short"><b>In short:</b> after deleting nested intervals, the intervals containing any one point form a consecutive run [L<sub>j</sub>, R<sub>j</sub>], so choosing k intervals to cover weighted points is exactly a stabbing problem with k pins, and concavity carries over.</p>
+    </section>
+
+    <!-- 7 -->
+    <section data-sec="7 · Total unimodularity">
+      <span class="num">7 · A SECOND PROOF BY TOTAL UNIMODULARITY</span>
+      <h2>Is there a general reason the relaxation is integral?</h2>
+      <p>The sliding argument of Lemmas 1 and 2 is elementary but long. Section 6 of the paper gives a second route through a classical theory, which explains integrality as a property of the constraint matrix alone. The prerequisite is a fact from linear programming that we state without proof, as the paper does, citing Schrijver's textbook.</p>
+      <div class="def"><span class="label">Definition · totally unimodular and interval matrices (Section 6)</span>
+        <p>A matrix M is <span class="term">totally unimodular</span> if every square submatrix has determinant 0, 1 or −1. A matrix is an <span class="term">interval matrix</span> if each column has at most one contiguous block of 1's and 0's elsewhere.</p>
+        <p>In words: total unimodularity says that no way of picking equally many rows and columns produces a determinant bigger than 1 in size. An interval matrix is one whose columns look like intervals of rows.</p>
+      </div>
+      <div class="fact"><span class="label">Fact · two theorems quoted by the paper (Schrijver, pp. 279 and 267)</span>
+        <p>Every interval matrix is totally unimodular. And a linear program with constraints Az ≤ b, where A is totally unimodular and b is an integer vector, has an integral optimal solution whenever it has an optimal solution at all.</p>
+      </div>
+      <p>Here is an informal reason for the second fact, ours and not a proof. An optimal solution can be found at a corner of the feasible region, and a corner solves a square system Bz = b′ made of some of the constraints held with equality. By Cramer's rule each coordinate of the solution is a ratio of two determinants, with det B in the denominator. If det B is ±1 and b′ is an integer vector, the numerator is an integer determinant, and the corner is an integer point.</p>
+      <p>To use this, the paper writes LP(k) in matrix form with the stacked variable z = (x, y): maximize ŵ<sup>⊤</sup>z with ŵ = (0, w), subject to Az ≤ b, where</p>
+      <div class="math" data-tex="A=\begin{bmatrix}-I_n & 0_{n\times N}\\ I_n & 0_{n\times N}\\ 0_{N\times n} & I_N\\ -S & I_N\\ \mathbf 1_n^{\top} & \mathbf 0_N^{\top}\\ -\mathbf 1_n^{\top} & \mathbf 0_N^{\top}\end{bmatrix},\qquad \mathbf b=\begin{bmatrix}\mathbf 0_n\\ \mathbf 1_n\\ \mathbf 1_N\\ \mathbf 0_N\\ k\\ -k\end{bmatrix}."></div>
+      <p>The block rows say, in order, x ≥ 0, x ≤ 1, y ≤ 1, y ≤ Sx, and Σx ≤ k together with Σx ≥ k. The N × n matrix S has entries S<sub>ji</sub> = ⟦ℓ<sub>j</sub> ≤ i ≤ r<sub>j</sub>⟧, so that s = Sx. Each row of S is a single block of 1's, because interval j covers consecutive positions; so S<sup>⊤</sup> is an interval matrix. Adding two columns of all 1's keeps it an interval matrix, so [S<sup>⊤</sup>, <b>1</b><sub>n</sub>, <b>1</b><sub>n</sub>] is totally unimodular.</p>
+      <p>Three operations preserve total unimodularity: multiplying a row by −1, transposing, and inserting a row or column with at most one nonzero entry, equal to ±1. (Each follows from expanding a determinant, as the paper notes.) Using them, [S<sup>⊤</sup>, <b>1</b>, <b>1</b>] can be turned into A, so A is totally unimodular, b is an integer vector, and LP(k) has an integral optimal solution. That is Lemma 2 again.</p>
+      <p>On the integer version of Example R, the rows of S, one per interval [1, 2], [2, 3], [2, 3], [3, 4], [3, 4], [4, 4], are</p>
+      <div class="math" data-tex="S=\begin{bmatrix}1&1&0&0\\0&1&1&0\\0&1&1&0\\0&0&1&1\\0&0&1&1\\0&0&0&1\end{bmatrix},"></div>
+      <p>and each row is one block of consecutive 1's. For Figure 3 the picture changes, and this computation is ours. Its rows {1, 4}, {2, 4}, {3, 4} are not consecutive, yet S by itself happens to be totally unimodular; we checked every square submatrix. The trouble appears only with the cardinality row of 1's. The square submatrix made of the rows for {1, 4}, {2, 4}, {3, 4} and the row <b>1</b><sup>⊤</sup>, on all four columns, is</p>
+      <div class="math" data-tex="\det\begin{bmatrix}1&0&0&1\\0&1&0&1\\0&0&1&1\\1&1&1&1\end{bmatrix}=-2,"></div>
+      <p>so the constraint matrix for Figure 3 is not totally unimodular, consistent with the fractional score 4.5 found in Section 3.</p>
+      <details class="pf"><summary><span class="tagd">check</span><span class="q">How does that determinant come out to −2?</span></summary><div class="pfbody">
+        <p>Our computation. Subtract the first three rows from the last: it becomes (0, 0, 0, 1 − 3) = (0, 0, 0, −2). The matrix is now upper triangular with diagonal 1, 1, 1, −2, and row subtraction does not change a determinant, so the determinant is −2.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p class="short"><b>In short:</b> the constraint matrix of LP(k) is built from an interval matrix by operations that preserve total unimodularity, so classical theory guarantees an integral optimum; for Figure 3 a 4 × 4 submatrix with determinant −2 shows where that breaks.</p>
+    </section>
+
+    <!-- 8 -->
+    <section data-sec="8 · Penalties">
+      <span class="num">8 · WHY CONCAVITY IS USEFUL</span>
+      <h2>What does concavity buy an algorithm?</h2>
+      <p>A hard limit of k pins is awkward for algorithms, because a dynamic program must then remember how many pins it has used. The paper's conclusion points to a classical alternative, Lagrangian optimization, citing Jain and Vazirani: drop the limit, charge a penalty λ for each pin, and solve the unconstrained problem of maximizing the hit weight minus λ times the number of pins. Large penalties lead to few pins and small penalties to many. Concavity guarantees that suitable penalties "support" the optimal value function at a given k, so one can binary search for a penalty whose unconstrained problem uses the right number of pins. The paper states that this solves the constrained problem with an additional logarithmic factor in the running time. It does not spell out the unconstrained algorithm or the search, so the details below are ours.</p>
+      <p>Write the penalized optimum as a function of λ. Grouping selections by their size,</p>
+      <div class="math" data-tex="g(\lambda)=\max_{S}\big(v(S)-\lambda\,|S|\big)=\max_{k}\big(f(k)-\lambda k\big)."></div>
+      <p>Geometrically, plot the points (k, f(k)) and lower a line of slope λ from above until it touches them. The touching points are the sizes the penalized problem picks, and the line's height at k = 0 is g(λ).</p>
+      <div class="fact"><span class="label">Fact · supporting penalties (our formulation of the paper's remark)</span>
+        <p>If f is concave, then size k is optimal for the penalty λ exactly when f(k + 1) − f(k) ≤ λ ≤ f(k) − f(k − 1), and then f(k) = g(λ) + λk. If f is not concave, some sizes may be optimal for no penalty at all, and then the penalized problem can never recover f(k) for them.</p>
+      </div>
+      <details class="pf"><summary><span class="tagd">why</span><span class="q">Why do the gains decide which sizes a penalty picks?</span></summary><div class="pfbody">
+        <p>Our argument. Size k beats size k + 1 under penalty λ when f(k) − λk ≥ f(k + 1) − λ(k + 1), that is, when λ ≥ f(k + 1) − f(k); and it beats k − 1 when λ ≤ f(k) − f(k − 1). If the gains never increase, beating both neighbours already means beating every size: moving further right only adds gains that are at most λ, and moving further left only removes gains that are at least λ. So the interval condition is necessary and sufficient. Without concavity, an interior size k with a small gain before it and a larger gain after it would need λ ≤ f(k) − f(k − 1) &lt; f(k + 1) − f(k) ≤ λ, which is impossible.</p>
+        <p class="qed">∎</p>
+      </div></details>
+      <p>On Example R, f = 0, 4, 6, 6, 6 with gains 4, 2, 0, 0. Every penalty between 2 and 4 picks one pin, every penalty between 0 and 2 picks two, and the boundaries 2 and 4 are ties. On Figure 3, f = 0, 3, 4, 6, 6 with gains 3, 1, 2, 0: size 2 would need 2 ≤ λ ≤ 1, so no penalty ever produces two points, and f(2) = 4 is invisible to the penalized problem. Ties need care in practice: on Example W, every gain up to k = 3 equals 2, so at λ = 2 the sizes 0, 1, 2 and 3 all tie, and an algorithm asked for k = 2 must break the tie correctly, or use f(2) = g(2) + 2·2 = 0 + 4 = 4 directly.</p>
+      <p>The last animation lowers the line for a sequence of penalties. For each λ it computes f(k) by brute force, evaluates f(k) − λk for every k, and marks the winners. Switch to Figure 3 to watch size 2 get skipped.</p>
+      <div class="player" id="pIsPenalty">
+        <div class="ptitle"><span class="label">Animation · a penalty per pin</span><div class="scen"><button class="chip" data-scen="r" aria-pressed="true">Example R</button><button class="chip" data-scen="hit" aria-pressed="false">Figure 3</button></div></div>
+        <div class="stage"><svg viewBox="0 0 340 250" role="img" aria-label="Points (k, f(k)) with a supporting line of slope lambda touching them from above"></svg></div>
+        <div class="legend"><span><i class="sw" style="background:var(--cool)"></i>(k, f(k))</span><span><i class="sw" style="background:var(--accent)"></i>supporting line, slope λ</span></div>
+        <div class="caption" aria-live="polite"></div>
+        <div class="controls"><button class="btn prev" aria-label="Previous step">◀</button><button class="btn play">▶ Play</button><button class="btn next" aria-label="Next step">▶▶</button><div class="dots"></div></div>
+      </div>
+      <p class="short"><b>In short:</b> replacing "at most k pins" by "pay λ per pin" recovers every f(k) exactly when f is concave, which is what makes a binary search over λ, with a logarithmic overhead, a valid way to solve the constrained problem.</p>
+    </section>
+
+    <!-- results -->
+    <section data-sec="Results">
+      <span class="num">RESULTS</span>
+      <h2>The results</h2>
+      <p>The paper is purely theoretical, with no experiments or running times measured. Its results are the following statements, all proved in the paper except the two textbook theorems that Section 6 quotes.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Result</th><th>Statement</th><th>Method</th></tr></thead>
+        <tbody>
+          <tr><td>Section 2</td><td>Pins may be restricted to left endpoints; the problem becomes ILP(k), Eq. (1)</td><td>sliding pins left</td></tr>
+          <tr><td>Lemma 1</td><td>An all-fractional feasible x has a direction c ≠ 0 keeping Σx and every tight s<sub>j</sub> fixed</td><td>counting equations, parity of n</td></tr>
+          <tr><td>Lemma 2</td><td>LP(k) has an optimal solution with all x<sub>i</sub> integral</td><td>smallest counterexample and perturbation</td></tr>
+          <tr><td>Corollary 1</td><td>The optimum of LP(k) equals f(k)</td><td>Lemma 2</td></tr>
+          <tr><td>Theorem 4.1</td><td>f(k) is concave for positive weights</td><td>blending LP optima, concavity of min{1, u}</td></tr>
+          <tr><td>Section 5</td><td>Interval cover f̂(k) equals a stabbing f(k), so it is concave</td><td>reduction via [L<sub>j</sub>, R<sub>j</sub>]</td></tr>
+          <tr><td>Section 6</td><td>Second proof of integrality</td><td>total unimodularity (quoted from Schrijver)</td></tr>
+        </tbody>
+      </table></div>
+      <p>The numbers the paper does give are its three examples:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Example</th><th>f(0), f(1), …</th><th>Gains</th><th>Concave?</th></tr></thead>
+        <tbody>
+          <tr><td>Figure 1, greedy counterexample, k = 2</td><td class="n">greedy 4 then at most 1 more; optimum 6</td><td class="n">(ours: 4, 2, 0, 0)</td><td>yes</td></tr>
+          <tr><td>Figure 2, a negative weight</td><td class="n">0, 0, 1, 1</td><td class="n">0, 1, 0</td><td>no</td></tr>
+          <tr><td>Figure 3, hitting set</td><td class="n">0, 3, 4, 6, 6</td><td class="n">3, 1, 2, 0</td><td>no</td></tr>
+        </tbody>
+      </table></div>
+      <p>The paper's caption for Figure 1 counts greedy as stabbing four intervals with its first point and states that two points can stab all six; the full sequence and gains for Example R are our computation, as are the examples W and the interval cover example.</p>
+    </section>
+
+    <!-- assessment -->
+    <section data-sec="Assessment">
+      <span class="num">ASSESSMENT</span>
+      <h2>What is shown, and what is claimed</h2>
+      <p><b>Proved.</b> The reduction to left endpoints, Lemmas 1 and 2, Corollary 1, Theorem 4.1 and the interval cover reduction all have complete, elementary proofs in the paper, and we followed each step. The second integrality proof is complete modulo two standard theorems cited from Schrijver's book. Our animations and brute-force checks agree with every statement on the examples we tried, which is evidence, not proof.</p>
+      <p><b>Claimed but not worked out.</b> The practical motivation, that concavity allows a Lagrangian binary search over penalties with only a logarithmic overhead, is stated in one paragraph of the conclusion. The paper does not give the algorithm for the unconstrained penalized problem, the dynamic program it alludes to for the constrained one, a running time, or a treatment of ties, which matter when f is linear over a stretch, as in Example W. Our Section 8 fills in the elementary part of that argument; the complexity claim remains the paper's.</p>
+      <p><b>Small slips.</b> The printed proof of Theorem 4.1 omits the factor μ in front of J(x<sup>(3)</sup>) in two displayed lines, step (1) of Lemma 2 writes an interval as [ℓ<sub>j</sub>, d<sub>j</sub>] where [ℓ<sub>j</sub>, r<sub>j</sub>] is meant, and Section 6 says "totally uniform" for totally unimodular. None affects the argument.</p>
+      <p><b>Novelty and context.</b> The paper presents concavity as its contribution and remarks that it is notable because no greedy algorithm is available. It does not survey whether concavity of these value functions appeared earlier, and we did not check the literature ourselves. Given that the total unimodularity route of Section 6 uses only standard textbook facts, a reader should treat the result as a clean and useful observation with two careful proofs rather than a deep new technique. This is an arXiv preprint and has not yet been peer reviewed.</p>
+      <p><b>Why it matters.</b> The chapter is a compact tour of a recurring pattern in optimization: write a combinatorial problem as an integer program, prove the relaxation is integral, then exploit convexity of the relaxation. The same pattern underlies bipartite matching and network flows, and the penalty trick of Section 8 is the reason Lagrangian relaxation is a standard tool in combinatorial optimization and in the QUBO and annealing formulations where hard constraints become penalties (a connection of ours). Figure 3 is a good warning about that last setting: when the value function is not concave, some constrained optima are unreachable by any choice of penalty weight.</p>
+    </section>
+
+    <!-- further reading -->
+    <section data-sec="Further reading">
+      <span class="num">FURTHER READING</span>
+      <h2>Further reading</h2>
+      <div class="refs">
+        <p>J. Brank and T. Hočevar, <a href="https://arxiv.org/abs/2611.34089" target="_blank" rel="noopener">Concavity of cardinality-constrained interval stabbing and interval cover problems</a>, arXiv:2611.34089 (2026). The paper itself; numbering in this chapter follows its <a href="https://arxiv.org/html/2611.34089" target="_blank" rel="noopener">HTML version</a>.</p>
+        <p>The paper's key references, which we did not open for this chapter: A. Schrijver, <i>Theory of Linear and Integer Programming</i> (Wiley, 1986), for total unimodularity and interval matrices (pp. 267 and 279); K. Jain and V. V. Vazirani, "Approximation algorithms for metric facility location and k-median problems using the primal-dual schema and Lagrangian relaxation" (Journal of the ACM, 2001), for the penalty method; J. Erickson, <i>Algorithms</i> (2019), for the greedy algorithm for classical interval stabbing; and D. S. Hochbaum, "Approximating covering and packing problems" (1997), for maximum coverage.</p>
+      </div>
+    </section>
+  </article>
+  <footer>
+    <p>Built from a full read of arXiv 2611.34089v1. Lemma, corollary, theorem and equation numbers match the paper; section numbers in this chapter are our own, and the paper's Sections 2 to 6 correspond to our Sections 2 to 7. Example W, the interval cover example, the fractional score 4.5 for Figure 3, the determinant −2, the remarks on submodularity and on concavity of the relaxed optimum, and the Lagrangian details of Section 8 are ours. The first animation computes greedy and brute-force values on Example R; the second solves the linear system of Lemma 1 with exact fractions and runs the sliding moves of Lemma 2; the third computes f by brute force and the best size for each penalty.</p>
+  </footer>
+</div>
+
+
 <script>
 (function(){
   // ================= catalog =================
   const PAPERS=[
+    {id:'2611-34089',date:'2026-11-27',title:'Concavity of Cardinality-Constrained Interval Stabbing and Interval Cover Problems',authors:'Brank, Hočevar',field:'cs.DS',tags:['linear programming','integrality','Lagrangian relaxation'],mins:35,
+     dek:'Drop k pins on a line of weighted intervals to hit as much weight as possible, and each extra pin is worth no more than the last, even though placing pins greedily can fail. The proof writes the problem as a linear program, shows its relaxation always has a whole-number optimum, and then blends solutions in a way only fractions allow.'},
     {id:'2611-33494',date:'2026-11-26',title:'On the Cluster Duration Distribution of the Markovian Hawkes Process',authors:'Daw, Goel',field:'math.PR',tags:['Hawkes processes','parking functions','branching processes'],mins:40,
      dek:'In a self-exciting cascade where every event triggers on average ρ more, the expected time from first event to last had no closed form, even though the cascade’s size has been known exactly for decades. This paper builds the cascade backwards from a random parking function and turns its mean length into a single integral, which grows only like −2 log(1 − ρ) as the size blows up like 1/(1 − ρ).'},
     {id:'2611-32528',date:'2026-11-25',title:'The Min-Cut Formulation of Ollivier-Ricci Curvature',authors:'Micaletto',field:'cs.DS',tags:['graph curvature','optimal transport','max-flow min-cut'],mins:40,
@@ -9874,6 +10232,151 @@ footer{margin-top:40px;font-size:.85rem;color:var(--muted);display:grid;gap:6px}
     root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.scen;root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));
       if(k==='rand'){const n=4+Math.floor(Math.random()*7);load(n,Math.floor(Math.random()*1e9))}else load(SC[k].n,SC[k].seed)}));
     load(SC.a.n,SC.a.seed);
+  })();
+
+
+  // ================= 2611.34089: interval stabbing =================
+  const istab={
+    gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1},
+    fr(n,d){if(d===undefined)d=1;if(d<0){n=-n;d=-d}const g=istab.gcd(n,d);return[n/g,d/g]},
+    add(a,b){return istab.fr(a[0]*b[1]+b[0]*a[1],a[1]*b[1])},
+    sub(a,b){return istab.fr(a[0]*b[1]-b[0]*a[1],a[1]*b[1])},
+    mul(a,b){return istab.fr(a[0]*b[0],a[1]*b[1])},
+    div(a,b){return istab.fr(a[0]*b[1],a[1]*b[0])},
+    cmp(a,b){return a[0]*b[1]-b[0]*a[1]},
+    fs(a){return a[1]===1?String(a[0]).replace('-','−'):(a[0]<0?'−':'')+Math.abs(a[0])+'/'+a[1]},
+    combos(arr,k){const out=[];(function rec(st,cur){if(cur.length===k){out.push(cur.slice());return}for(let i=st;i<arr.length;i++){cur.push(arr[i]);rec(i+1,cur);cur.pop()}})(0,[]);return out},
+    stabVal(iv,S){let v=0;iv.forEach(([l,r,w])=>{if(S.some(p=>l<=p&&p<=r))v+=w});return v},
+    nullspace(rows,n){const Z=[0,1],A=rows.map(r=>r.slice()),piv=[];let rI=0;
+      for(let c=0;c<n;c++){let p=-1;for(let i=rI;i<A.length;i++)if(A[i][c][0]!==0){p=i;break}if(p<0)continue;
+        [A[rI],A[p]]=[A[p],A[rI]];const pv=A[rI][c];A[rI]=A[rI].map(v=>istab.div(v,pv));
+        for(let i=0;i<A.length;i++)if(i!==rI&&A[i][c][0]!==0){const f=A[i][c];A[i]=A[i].map((v,j)=>istab.sub(v,istab.mul(f,A[rI][j])))}
+        piv.push(c);rI++;}
+      const B=[];for(let f=0;f<n;f++){if(piv.includes(f))continue;const v=Array.from({length:n},()=>Z.slice());v[f]=[1,1];piv.forEach((pc,k)=>{v[pc]=istab.fr(-A[k][f][0],A[k][f][1])});B.push(v)}
+      return B}
+  };
+
+  // greedy vs brute force on Example R
+  (function(){
+    const root=document.getElementById('pIsGreedy');if(!root)return;const P=Player(root);
+    const IV=[[1,3,1],[2,5,1],[2,5,1],[4,7,1],[4,7,1],[6,8,1]],C=[1,2,4,6];
+    const gain=(S,p)=>istab.stabVal(IV,S.concat([p]))-istab.stabVal(IV,S);
+    const argmax=(S)=>{let b=null,bg=-1;C.forEach(p=>{if(S.includes(p))return;const g=gain(S,p);if(g>bg){bg=g;b=p}});return[b,bg]};
+    const g1=C.map(p=>gain([],p)),[p1,v1]=argmax([]),g2=C.map(p=>p===p1?null:gain([p1],p)),[p2,v2]=argmax([p1]);
+    const pairs=istab.combos(C,2).map(S=>({S,v:istab.stabVal(IV,S)}));let best=pairs[0];pairs.forEach(q=>{if(q.v>best.v)best=q});
+    const f=[0,1,2,3,4].map(k=>Math.max(...istab.combos(C,k).map(S=>istab.stabVal(IV,S))));
+    const F=[
+      {pins:[],t:'Six intervals',c:'The intervals of Figure 1, each of weight 1. By Section 2 only left endpoints matter, so the candidate pins are 1, 2, 4 and 6, marked on the axis.'},
+      {pins:[],gains:g1,pick:p1,t:'Greedy, first pin',c:`For each candidate the animation counts the intervals it would hit: ${C.map((p,i)=>p+' → '+g1[i]).join(', ')}. Greedy takes the best, ${p1}, worth ${v1}.`},
+      {pins:[p1],gains:g2,pick:p2,t:'Greedy, second pin',c:`With ${p1} placed, the extra hits are ${C.map((p,i)=>g2[i]===null?null:p+' → '+g2[i]).filter(Boolean).join(', ')}. The leftovers [1, 3] and [6, 8] are disjoint, so the best addition is ${v2}. Greedy ends at ${v1+v2}.`},
+      {pins:[p1,p2],t:`Greedy total ${v1+v2}`,c:`Greedy has used both pins and hit ${v1+v2} of the 6 intervals. It cannot recover: its first pin was in the one place that splits the rest.`},
+      {pins:best.S,pairs,t:'Brute force over all pairs',c:`Checking all ${pairs.length} pairs of candidates: ${pairs.map(q=>'{'+q.S.join(', ')+'} → '+q.v).join(', ')}. The best is {${best.S.join(', ')}}, hitting all ${best.v}.`},
+      {pins:best.S,table:true,t:'The value function',c:`Brute force for every k gives f = ${f.join(', ')}, so the gains are ${f.slice(1).map((v,i)=>v-f[i]).join(', ')}. They never increase, even though greedy failed. Theorem 4.1 says this always happens.`}];
+    F.delay=5200;
+    P.load(F,(fr,el)=>{const X=t=>30+(t-1)*40,AX=170;
+      el('line',{x1:20,y1:AX,x2:320,y2:AX,stroke:'var(--line)','stroke-width':1.2});
+      for(let t=1;t<=8;t++){el('line',{x1:X(t),y1:AX-3,x2:X(t),y2:AX+3,stroke:'var(--muted)'});el('text',{x:X(t),y:AX+15,class:'lab'}).textContent=t;}
+      IV.forEach(([l,r],j)=>{const y=150-j*22,hit=fr.pins.some(p=>l<=p&&p<=r);
+        el('line',{x1:X(l),y1:y,x2:X(r),y2:y,stroke:hit?'var(--cool)':'var(--muted)','stroke-width':hit?4:2.5,'stroke-linecap':'round'});
+        el('text',{x:(X(l)+X(r))/2,y:y-5,class:'lab',style:'font-size:8.5px'}).textContent='['+l+', '+r+']';});
+      C.forEach((p,i)=>{el('circle',{cx:X(p),cy:AX,r:4,fill:'none',stroke:'var(--muted)','stroke-width':1.2});
+        if(fr.gains&&fr.gains[i]!==null)el('text',{x:X(p),y:AX+32,class:'msg',fill:p===fr.pick?'var(--accent)':'var(--fg)'}).textContent='+'+fr.gains[i];});
+      if(fr.gains)el('text',{x:24,y:AX+32,class:'lab',style:'text-anchor:start;font-size:9px'}).textContent='gain';
+      fr.pins.forEach(p=>{el('line',{x1:X(p),y1:20,x2:X(p),y2:AX,stroke:'var(--accent)','stroke-width':1.5,'stroke-dasharray':'4 3'});el('circle',{cx:X(p),cy:AX,r:5.5,fill:'var(--accent)'})});
+      el('text',{x:320,y:16,class:'msg',fill:'var(--accent)',style:'text-anchor:end'}).textContent='hit: '+istab.stabVal(IV,fr.pins);
+      if(fr.table){el('rect',{x:20,y:206,width:300,height:40,rx:6,fill:'var(--raise)'});
+        [['k',0],['f(k)',1],['gain',2]].forEach(([h,r])=>el('text',{x:30,y:217+r*12,class:'lab',style:'text-anchor:start;font-size:9px'}).textContent=h);
+        f.forEach((v,k)=>{const x=110+k*48;el('text',{x,y:217,class:'lab',style:'font-size:9px'}).textContent=k;el('text',{x,y:229,class:'lab',style:'font-size:9px',fill:'var(--fg)'}).textContent=v;if(k)el('text',{x:x-24,y:241,class:'lab',style:'font-size:9px',fill:'var(--accent)'}).textContent='+'+(v-f[k-1]);});}
+    });
+  })();
+
+  // sliding a fractional optimum (Lemmas 1 and 2)
+  (function(){
+    const root=document.getElementById('pIsSlide');if(!root)return;const P=Player(root);const Z=[0,1],ONE=[1,1];
+    const SC={
+      w:{n:4,k:2,iv:[['A',1,1,2],['B',2,2,1],['C',2,3,1],['D',3,4,1],['E',4,4,1]],x:[[3,4],[1,2],[1,4],[1,2]],
+         intro:'Example W with k = 2. The start x = (3/4, 1/2, 1/4, 1/2) is the average of the four optimal pin pairs, so it is optimal too: J is concave in x, so an average of optimal solutions scores at least their common value, the inequality at the heart of Section 5. No interval has s exactly 1 yet.'},
+      chain:{n:4,k:2,iv:[['A',1,2,1],['B',2,3,1],['C',3,4,1]],x:[[1,2],[1,2],[1,2],[1,2]],
+         intro:'Three unit-weight intervals [1, 2], [2, 3], [3, 4] with k = 2 and half a pin everywhere. All three intervals are tight, so there are m = 3 interval equations plus the total: m + 1 = n = 4, the tight case of Lemma 1 with n even.'}};
+    const sOf=(x,[,l,r])=>{let s=Z;for(let i=l;i<=r;i++)s=istab.add(s,x[i-1]);return s};
+    const Jof=(x,iv)=>iv.reduce((a,I)=>{const s=sOf(x,I);return istab.add(a,istab.mul([I[3],1],istab.cmp(s,ONE)<0?s:ONE))},Z);
+    const xs=x=>'('+x.map(istab.fs).join(', ')+')';
+    function run(sc){const {n,iv}=sc;let x=sc.x.slice();const out=[];
+      for(let it=0;it<10;it++){
+        const frozen=[];x.forEach((v,i)=>{if(v[0]===0||istab.cmp(v,ONE)===0)frozen.push(i)});if(frozen.length===n)break;
+        const s=iv.map(I=>sOf(x,I)),tight=iv.map((I,j)=>istab.cmp(s[j],ONE)===0?j:-1).filter(j=>j>=0);
+        const rows=[Array.from({length:n},()=>ONE)].concat(frozen.map(f=>Array.from({length:n},(_,i)=>i===f?ONE:Z)),tight.map(j=>Array.from({length:n},(_,i)=>iv[j][1]<=i+1&&i+1<=iv[j][2]?ONE:Z)));
+        const B=istab.nullspace(rows,n);if(!B.length)break;let c=B[0];
+        const dOf=c=>iv.map(([,l,r])=>{let d=Z;for(let i=l;i<=r;i++)d=istab.add(d,c[i-1]);return d});let d=dOf(c);
+        let slope=Z;iv.forEach((I,j)=>{if(istab.cmp(s[j],ONE)<0)slope=istab.add(slope,istab.mul([I[3],1],d[j]))});
+        if(slope[0]<0){c=c.map(v=>istab.fr(-v[0],v[1]));d=dOf(c);slope=istab.fr(-slope[0],slope[1])}
+        let eps=null,why=null;
+        c.forEach((ci,i)=>{let e=null;if(ci[0]>0)e=istab.div(istab.sub(ONE,x[i]),ci);else if(ci[0]<0)e=istab.div(istab.fr(-x[i][0],x[i][1]),ci);
+          if(e&&(eps===null||istab.cmp(e,eps)<0)){eps=e;why={kind:'x',i}}});
+        iv.forEach((I,j)=>{if(istab.cmp(s[j],ONE)!==0&&d[j][0]!==0){const e=istab.div(istab.sub(ONE,s[j]),d[j]);if(e[0]>0&&istab.cmp(e,eps)<0){eps=e;why={kind:'s',j}}}});
+        const nx=x.map((v,i)=>istab.add(v,istab.mul(eps,c[i])));
+        out.push({x,c,d,eps,why,nx,tight,frozen,slope});x=nx;}
+      return out}
+    function load(key){const sc=SC[key],iv=sc.iv,M=run(sc),F=[];
+      F.push({x:sc.x,t:'The start',c:sc.intro+` Value J = ${istab.fs(Jof(sc.x,iv))}.`});
+      M.forEach((m,q)=>{
+        const eqs=['the total'].concat(m.frozen.map(i=>'x'+(i+1)+' frozen'),m.tight.map(j=>iv[j][0]+' tight'));
+        F.push({x:m.x,dir:m.c,t:`Move ${q+1}: a direction`,c:`Lemma 1's system has ${eqs.length} equation${eqs.length>1?'s':''} (${eqs.join(', ')}) in ${sc.n} unknowns. Solving it exactly gives c = ${xs(m.c)}. Along c the loose intervals change at total weighted rate ${istab.fs(m.slope)}, so x + εc and x − εc are both still optimal.`});
+        const ev=m.why.kind==='s'?`interval ${iv[m.why.j][0]} reaches s = 1 and becomes tight`:`x${m.why.i+1} reaches ${istab.fs(m.nx[m.why.i])}, a whole number`;
+        F.push({x:m.nx,t:`Move ${q+1}: slide by ${istab.fs(m.eps)}`,c:`Sliding along c, the first event is at ε = ${istab.fs(m.eps)}: ${ev}. Now x = ${xs(m.nx)} and J = ${istab.fs(Jof(m.nx,iv))}, unchanged.${m.why.kind==='x'?' This coordinate is frozen from now on.':''}`});});
+      const xf=M.length?M[M.length-1].nx:sc.x,pins=xf.map((v,i)=>v[0]===1&&v[1]===1?i+1:null).filter(Boolean);
+      F.push({x:xf,t:'Whole',c:`Every coordinate is 0 or 1: pins at ${pins.join(' and ')}, hitting ${iv.filter(I=>pins.some(p=>I[1]<=p&&p<=I[2])).map(I=>I[0]).join(', ')} for J = ${istab.fs(Jof(xf,iv))}, the same value as the fractional start. This is the integral optimum that Lemma 2 promises.`});
+      F.delay=5600;
+      P.load(F,(fr,el)=>{const PX=i=>70+(i-1)*66,BASE=104,H=72;
+        el('line',{x1:30,y1:BASE,x2:320,y2:BASE,stroke:'var(--line)'});
+        el('line',{x1:30,y1:BASE-H,x2:320,y2:BASE-H,stroke:'var(--line)','stroke-dasharray':'2 4'});
+        el('text',{x:24,y:BASE-H+3,class:'lab',style:'text-anchor:end;font-size:9px'}).textContent='1';
+        el('text',{x:24,y:BASE+3,class:'lab',style:'text-anchor:end;font-size:9px'}).textContent='0';
+        fr.x.forEach((v,i)=>{const h=v[0]/v[1]*H,px=PX(i+1);
+          el('rect',{x:px-15,y:BASE-h,width:30,height:Math.max(h,1),rx:3,fill:'var(--accent)',opacity:(v[0]===0||v[0]===v[1])?1:.75});
+          el('text',{x:px,y:BASE-h-5,class:'lab',style:'font-size:9.5px'}).textContent=istab.fs(v);
+          el('text',{x:px,y:BASE+13,class:'lab'}).textContent='x'+(i+1);
+          if(fr.dir&&fr.dir[i][0]!==0){const up=fr.dir[i][0]>0,col='var(--deep)';el('path',{d:up?`M${px+22} ${BASE-30} l0 -16 m-4 5 l4 -5 l4 5`:`M${px+22} ${BASE-46} l0 16 m-4 -5 l4 5 l4 -5`,stroke:col,'stroke-width':1.6,fill:'none'});
+            el('text',{x:px+22,y:BASE-52,class:'lab',fill:col,style:'font-size:9px'}).textContent=istab.fs(fr.dir[i]);}});
+        iv.forEach((I,j)=>{const [nm,l,r]=I,y=136+j*20,s=sOf(fr.x,I),tight=istab.cmp(s,ONE)===0,col=tight?'var(--ok)':'var(--cool)';
+          el('line',{x1:PX(l)-16,y1:y,x2:PX(r)+16,y2:y,stroke:col,'stroke-width':tight?4:2.5,'stroke-linecap':'round'});
+          el('text',{x:22,y:y+3,class:'lab',style:'text-anchor:start;font-size:9px'}).textContent=nm+(I[3]!==1?' ×'+I[3]:'');
+          el('text',{x:318,y:y+3,class:'lab',fill:col,style:'text-anchor:end;font-size:9px'}).textContent='s = '+istab.fs(s);});
+        el('text',{x:170,y:18,class:'msg',fill:'var(--fg)'}).textContent='J = '+istab.fs(Jof(fr.x,iv))+'   ·   Σx = '+istab.fs(fr.x.reduce((a,v)=>istab.add(a,v),Z));
+      });}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen)}));
+    load('w');
+  })();
+
+  // a penalty per pin (Lagrangian)
+  (function(){
+    const root=document.getElementById('pIsPenalty');if(!root)return;const P=Player(root);
+    const Rint=[[1,2,1],[2,3,1],[2,3,1],[3,4,1],[3,4,1],[4,4,1]],U=[1,2,3,4];
+    const sets=[[1],[1,4],[2],[2,4],[3],[3,4]];
+    const fR=[0,1,2,3,4].map(k=>Math.max(...istab.combos(U,k).map(S=>istab.stabVal(Rint,S))));
+    const fH=[0,1,2,3,4].map(k=>Math.max(...istab.combos(U,k).map(S=>sets.filter(T=>T.some(p=>S.includes(p))).length)));
+    const LAMS=[5,3,2,1.5,1,0.5];
+    function load(key){const f=key==='r'?fR:fH,name=key==='r'?'Example R':'Figure 3';const seen=new Set();
+      const F=[{t:'The values',c:`${name}: brute force over all pin sets gives f = ${f.join(', ')}, with gains ${f.slice(1).map((v,i)=>v-f[i]).join(', ')}. ${key==='r'?'The gains decrease, so f is concave.':'The gains go 3, 1, 2: not concave.'}`}];
+      LAMS.forEach(L=>{const sc=f.map((v,k)=>v-L*k),g=Math.max(...sc),win=sc.map((v,k)=>Math.abs(v-g)<1e-9?k:-1).filter(k=>k>=0);win.forEach(k=>seen.add(k));
+        F.push({L,g,win,t:`λ = ${L}`,c:`Scores f(k) − ${L===1?'':L}k are ${sc.map(v=>String(+v.toFixed(2)).replace('-','−')).join(', ')}. The best is ${String(+g.toFixed(2)).replace('-','−')}, reached at k = ${win.join(' and ')}${win.length>1?', a tie':''}. The line of slope ${L} through height ${String(+g.toFixed(2)).replace('-','−')} touches the points there and lies above all others.`});});
+      const miss=[0,1,2,3].filter(k=>!seen.has(k));
+      F.push({end:true,seen:[...seen],miss:key==='hit'?miss:[],t:'Which sizes appeared',c:key==='r'?`The sizes picked were ${[...seen].sort().join(', ')}. Sizes 3 and 4 add nothing (f stays 6) and appear only at λ = 0. Every size where f still grows is reachable, as concavity guarantees.`:`The sizes picked were ${[...seen].sort().join(', ')}. Size ${miss.join(', ')} never appeared: f(2) = 4 lies below the segment from (1, 3) to (3, 6), so no line can touch it from above. A penalty method cannot find f(2) here.`});
+      F.delay=4600;
+      P.load(F,(fr,el)=>{const X=k=>60+k*60,Y=v=>200-v*25;
+        el('line',{x1:40,y1:200,x2:320,y2:200,stroke:'var(--line)'});el('line',{x1:40,y1:200,x2:40,y2:40,stroke:'var(--line)'});
+        for(let k=0;k<=4;k++)el('text',{x:X(k),y:215,class:'lab'}).textContent='k = '+k;
+        for(let v=0;v<=6;v+=2)el('text',{x:32,y:Y(v)+3,class:'lab',style:'text-anchor:end'}).textContent=v;
+        el('path',{d:f.map((v,k)=>(k?'L':'M')+X(k)+' '+Y(v)).join(' '),stroke:'var(--cool)','stroke-width':1.2,fill:'none',opacity:.5});
+        if(fr.L!==undefined){const k0=-0.4,k1=4.4;el('line',{x1:X(k0),y1:Y(fr.g+fr.L*k0),x2:X(k1),y2:Y(fr.g+fr.L*k1),stroke:'var(--accent)','stroke-width':2});
+          el('text',{x:320,y:30,class:'msg',fill:'var(--accent)',style:'text-anchor:end'}).textContent='λ = '+fr.L+' · g(λ) = '+String(+fr.g.toFixed(2)).replace('-','−');}
+        f.forEach((v,k)=>{const w=fr.win&&fr.win.includes(k),s=fr.end&&fr.seen.includes(k);
+          el('circle',{cx:X(k),cy:Y(v),r:w||s?7:5,fill:w||s?'var(--accent)':'var(--cool)',stroke:fr.end&&fr.miss.includes(k)?'var(--bad)':'none','stroke-width':2});
+          el('text',{x:X(k),y:Y(v)-11,class:'lab'}).textContent=v;});
+        if(fr.end)el('text',{x:180,y:240,class:'msg',fill:'var(--fg)'}).textContent='reached: k = '+fr.seen.sort().join(', ');
+      });}
+    root.querySelectorAll('[data-scen]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('[data-scen]').forEach(x=>x.setAttribute('aria-pressed',x===b));load(b.dataset.scen)}));
+    load('r');
   })();
 
   route();
